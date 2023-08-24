@@ -36,8 +36,10 @@
 			<div class="simplebar-mask">
 				<div class="simplebar-offset">
 					<main class="simplebar-content p-4">
-						<slot />
-						<div class="mx-2">
+						<div class="min-h-[calc(100vh-240px)]">
+							<slot />
+						</div>
+						<div class="ml-[5px] mr-[10px]">
 							<Footer />
 						</div>
 					</main>
