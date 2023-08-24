@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en" data-page="website-analytics"  >
+<head>
+	<meta charset="UTF-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="%sveltekit.assets%/images/favicon.ico"/>
+    <link rel="manifest" href="%sveltekit.assets%/manifest.json"/>
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
+    />
+    <script>
+        if (!('theme-mode' in localStorage)) localStorage.setItem('theme-mode', 'light')
+        if (!('theme-color' in localStorage)) localStorage.setItem('theme-color', 'blue')
+        if (localStorage.getItem('theme-mode') === 'dark' || (!('theme-mode' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark')
+        } else {
+            document.documentElement.classList.remove('dark')
+        }
+        document.documentElement.setAttribute('data-theme', localStorage.getItem('theme-mode') || 'light')
+        document.documentElement.setAttribute('data-theme-color', localStorage.getItem('theme-color') || 'blue')
+    </script>
+    <script src="/js/plotly-2.24.1.min.js" charset="utf-8"></script>
+    <title>Navigator</title>
+
+    %sveltekit.head%
+</head>
+<body
+        data-sveltekit-preload-data="hover"
+        data-sveltekit-prefetch    
+>
+    <div style="display: contents">
+        %sveltekit.body%
+    </div>
+
+</body>
+</html>

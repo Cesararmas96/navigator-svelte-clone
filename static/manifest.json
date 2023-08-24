@@ -1,0 +1,14 @@
+{
+	"name": "Navigator App",
+	"short_name": "navigator",
+	"theme_color": "#2196f3",
+	"background_color": "#2196f3",
+	"display": "standalone",
+	"start_url": "/",
+	"icons": [
+		{
+			"src": "/images/troc.png",
+			"sizes": "512x512"
+		}
+	]
+}

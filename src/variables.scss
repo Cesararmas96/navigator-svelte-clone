@@ -1,0 +1,43 @@
+/* Variables and mixins declared here will be available in all other SCSS files */
+:root {
+	--color-blue: 0 64 107;
+	--color-green: 38 65 52;
+	--color-indigo: 206 138 0; // yellow
+	--color-orange: 247 100 0;
+	--color-purple: 158 0 255;
+	--color-red: 198 0 0;
+	--color-cyan: 83 87 91; // gray
+	--color-teal: 0 0 0; // black
+	
+
+	--color-blue-700: 100 100 100;
+	--color-green-700: 0 0 0;
+
+	// Theme colors
+	--theme-color-light: --color-blue;
+	--theme-light-100: 240 247 252;
+	--theme-light-200: 229 239 248;
+	--theme-light-300: 217 231 243;
+	--theme-light-400: 206 223 238;
+	--theme-light-500: 0 166 255;
+
+	--theme-dark-100: 41 60 72;
+	--theme-dark-200: 49 72 87;
+	--theme-dark-300: 60 86 103;
+	--theme-dark-400: 86 117 138;
+	--theme-dark-500: 104 138 160;
+
+	--body-light-bg: 247 250 254;
+	--body-dark-bg: 34 49 58;
+
+	--sidebar-width: 15rem;
+	--sidebar-min-width: 3.875rem;
+
+	--tooltip-bg: #1f2e36;
+	--tooltip-color: #e0f3ff;
+
+	--text-heading: #23416f;
+	--text-muted: #627da7;
+}
+
+	

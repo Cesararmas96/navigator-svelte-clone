@@ -1,0 +1,60 @@
+/* Write your global styles here, in SCSS syntax. Variables and mixins from the src/variables.scss file are available here without importing */
+// Tailwind
+@import "../static/scss/vendors/tailwind";
+
+// Abstract
+@import "../static/scss/abstract/mixins";
+// @import "../static/scss/abstract/variables";
+
+// Base
+@import "../static/scss/base/font";
+@import "../static/scss/base/base";
+@import "../static/scss/base/code";
+
+// Layout
+@import "../static/scss/layout/main";
+@import "../static/scss/layout/sidebar";
+@import "../static/scss/layout/header";
+
+// Components
+@import "../static/scss/components/dropdown";
+@import "../static/scss/components/modal";
+@import "../static/scss/components/caret";
+@import "../static/scss/components/card";
+@import "../static/scss/components/form";
+@import "../static/scss/components/button";
+@import "../static/scss/components/nav";
+@import "../static/scss/components/table";
+
+@import "../static/scss/components/collapse";
+
+// Templates
+@import "../static/scss/page/website-analytics";
+@import "../static/scss/page/e-commerce";
+@import "../static/scss/page/faq";
+
+// Misc
+@import "../static/scss/misc/scrollbar";
+@import "../static/scss/misc/print";
+
+// Theme
+@import "../static/scss/theme/theme";
+
+// Vendors
+@import "../static/scss/vendors/material-symbols";
+@import "../static/scss/vendors/simplebar";
+@import "../static/scss/vendors/sweetalert2";
+@import "../static/scss/vendors/jsvectormap";
+@import "../static/scss/vendors/chartjs";
+@import "../static/scss/vendors/quill";
+@import "../static/scss/vendors/fullcalendar";
+@import "../static/scss/vendors/vanillajs-datepicker";
+@import "../static/scss/vendors/nice-select2";
+// @import "../static/scss/vendors/dropzone";
+@import "../static/scss/vendors/vanilla-colorful";
+@import "../static/scss/vendors/nouislider";
+@import "../static/scss/vendors/embla-carousel";
+@import "../static/scss/vendors/tippy";
+
+// Grid Extended
+@import "../static/scss/grid/grid-extended";
