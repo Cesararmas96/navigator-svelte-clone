@@ -10,8 +10,8 @@
 		"title": "MTD Postpaid Same Month Returns",
 		"url": null,
 		"query_slug": {
-			"method": "POST",
-			"url": "https://api-dev.t-mobile.com/api/v1/program/walmart/query/walmart_postpaid_returns",
+			"method": "GET",
+			"url": "https://gorest.co.in/public/v2/posts",
 			"body": ""
 		},
 		"params": {	
@@ -61,8 +61,8 @@
 		"module_id": null,
 		"filtering_show": null,
 		"program_id": 3,
-		"widget_type_id": "api-table",
-		"classbase": "RestTableWidget",
+		"widget_type_id": "rest-table",
+		"classbase": "ApiTableWidget",
 		"widgetcat_id": 3,
 		"program_slug": "walmart",
 		"user_id": null,
@@ -224,7 +224,9 @@
 		"title": "Postpaid",
 		"url": null,
 		"query_slug": {
-			"slug": "walmart_sales_postpaid"
+			"method": "GET",
+			"url": "https://gorest.co.in/public/v2/users",
+			"body": ""
 		},
 		"params": {
 			"ajax": {
@@ -329,8 +331,8 @@
 		"module_id": null,
 		"filtering_show": null,
 		"program_id": 3,
-		"widget_type_id": "api-card",
-		"classbase": "CardWidget",
+		"widget_type_id": "rest-table",
+		"classbase": "ApiTableWidget",
 		"widgetcat_id": 3,
 		"program_slug": "walmart",
 		"user_id": null,
@@ -946,7 +948,9 @@
 		"title": "Prepaid",
 		"url": null,
 		"query_slug": {
-			"slug": "walmart_sales_prepaid"
+			"method": "GET",
+			"url": "https://gorest.co.in/public/v2/posts",
+			"body": ""
 		},
 		"params": {
 			"ajax": {
@@ -1052,8 +1056,8 @@
 		"module_id": null,
 		"filtering_show": null,
 		"program_id": 3,
-		"widget_type_id": "api-card",
-		"classbase": "CardWidget",
+		"widget_type_id": "rest-table",
+		"classbase": "ApiTableWidget",
 		"widgetcat_id": 3,
 		"program_slug": "walmart",
 		"user_id": null,

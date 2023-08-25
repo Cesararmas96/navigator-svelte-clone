@@ -7,6 +7,8 @@
 	import { writable } from 'svelte/store'
 	import { selectedWidgetSettings } from '$lib/stores/widgets'
 	import { createEventDispatcher } from 'svelte'
+	import ComponentType from './ComponentType.svelte'
+	import ComponentBase from './ComponentBase.svelte'
 
 	const dispatch = createEventDispatcher()
 
@@ -76,11 +78,13 @@
 	}
 
 	let widgetStore = writable(widget)
-
+	let widgetBase: string
 	$: {
 		if (widget.data.params && !widget.data.params?.settings)
 			widget.data.params.settings = Object.assign({}, defaultSettings.params.settings)
 
+		widgetBase = widget.data.widget_type_id.split('-')[0]
+		widgetBase = widgetBase.charAt(0).toUpperCase() + widgetBase.slice(1)
 		$widgetStore = widget
 		setContext('widget', widgetStore)
 	}
@@ -179,7 +183,7 @@
 
 	<!-- Widget Content -->
 	<div
-		class="widget-content flex h-full w-full cursor-auto space-y-4 rounded-md text-sm"
+		class="widget-content relative flex h-full w-full cursor-auto space-y-4 rounded-md text-sm"
 		class:overflow-hidden={!scrollable}
 		class:overflow-y-auto={scrollable}
 		on:pointerdown={(event) => {
@@ -187,8 +191,13 @@
 			event.stopPropagation()
 		}}
 	>
-		<div class="h-auto w-full">
+		<div class="absolute h-auto w-full">
 			<!-- load dynamic widgets -->
+			{#if $widgetStore?.data.classbase === 'ApiTableWidget'}
+				<ComponentBase name={widgetBase} let:data let:methods>
+					<ComponentType name={$widgetStore?.data.classbase} {data} {methods} />
+				</ComponentBase>
+			{/if}
 		</div>
 	</div>
 
