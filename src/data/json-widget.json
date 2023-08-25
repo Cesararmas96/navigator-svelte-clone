@@ -141,7 +141,7 @@
 		"widget_name": "Other Quality Metrics",
 		"widget_id": 1289,
 		"title": "Other Quality Metrics",
-		"url": null,
+		"url": "-ilPkG2TKzI",
 		"query_slug": {
 			"slug": "walmart_kpi_metrics"
 		},
@@ -206,8 +206,8 @@
 		"module_id": null,
 		"filtering_show": null,
 		"program_id": 3,
-		"widget_type_id": "api-card",
-		"classbase": "CardWidget",
+		"widget_type_id": "media-video",
+		"classbase": "MediaWidget",
 		"widgetcat_id": 3,
 		"program_slug": "walmart",
 		"user_id": null,

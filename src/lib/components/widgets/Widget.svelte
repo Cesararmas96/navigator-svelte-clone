@@ -193,7 +193,7 @@
 	>
 		<div class="absolute h-auto w-full">
 			<!-- load dynamic widgets -->
-			{#if $widgetStore?.data.classbase === 'ApiTableWidget'}
+			{#if $widgetStore?.data.classbase === 'ApiTableWidget' || $widgetStore?.data.classbase === 'MediaWidget'}
 				<ComponentBase name={widgetBase} let:data let:methods>
 					<ComponentType name={$widgetStore?.data.classbase} {data} {methods} />
 				</ComponentBase>
