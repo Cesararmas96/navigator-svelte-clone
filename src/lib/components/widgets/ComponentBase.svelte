@@ -10,6 +10,6 @@
 	})
 </script>
 
-<svelte:component this={Thing} let:data let:methods>
-	<slot {data} {methods} />
+<svelte:component this={Thing} let:data>
+	<slot {data} />
 </svelte:component>

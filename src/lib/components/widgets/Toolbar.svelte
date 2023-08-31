@@ -24,8 +24,8 @@
 
 	let bg: string
 	let toolbar: any
-	$: bg = $widget.data?.params?.settings?.appearance?.background
-	$: toolbar = $widget.data?.params?.settings?.toolbar
+	$: bg = $widget?.params?.settings?.appearance?.background
+	$: toolbar = $widget?.params?.settings?.toolbar
 </script>
 
 <div

@@ -3,7 +3,7 @@
 
 	let widget: any = getContext('widget')
 
-	const data = $widget.data.url
+	const data = $widget.url
 </script>
 
 <slot {data} />

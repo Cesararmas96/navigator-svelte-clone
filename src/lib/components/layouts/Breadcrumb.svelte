@@ -50,11 +50,6 @@
 </script>
 
 <div class="content-header px-5">
-	<a
-		data-toggle="sidebar"
-		class="btn icon -ml-2 mr-2 hover:bg-light-200 dark:hover:bg-dark-100 md:hidden"
-		href="">west</a
-	>
 	<div class="flex flex-shrink-0 items-center text-heading">
 		<!-- <i class="icon mr-2">public</i>  -->
 		<span class="font-bold">{breadcrumb || 404}</span>

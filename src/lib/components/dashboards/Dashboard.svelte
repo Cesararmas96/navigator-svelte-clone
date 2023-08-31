@@ -46,7 +46,12 @@
 			movable={item.data.params?.settings?.draggable && !item.data.params?.settings?.fixed}
 			resizable={item.data.params?.settings?.resizable && !item.data.params?.settings?.fixed}
 		>
-			<Widget widget={item} on:handleDraggable={(e) => e.detail} />
+			<Widget
+				widget={item.data}
+				on:handleResizable={(e) => {
+					item.data.params.settings.resizable = e.detail.resizable && !e.detail.fixed
+				}}
+			/>
 		</GridItem>
 	{/each}
 </Grid>

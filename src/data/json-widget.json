@@ -11,7 +11,7 @@
 		"url": null,
 		"query_slug": {
 			"method": "GET",
-			"url": "https://gorest.co.in/public/v2/posts",
+			"url": "https://api.breakingbadquotes.xyz/v1/quotes/5",
 			"body": ""
 		},
 		"params": {	

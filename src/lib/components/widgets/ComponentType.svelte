@@ -3,7 +3,6 @@
 
 	export let name: string
 	export let data: any
-	export let methods: string[]
 
 	let Thing: any
 
@@ -12,4 +11,4 @@
 	})
 </script>
 
-<svelte:component this={Thing} {data} {methods} />
+<svelte:component this={Thing} {data} />

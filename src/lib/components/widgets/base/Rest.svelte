@@ -3,26 +3,32 @@
 	import { getContext } from 'svelte'
 
 	let widget: any = getContext('widget')
-	const url = $widget.data.query_slug.url
-	const method = $widget.data.query_slug.method
-	const body = $widget.data.query_slug.body
 
+	let widgetActions: any = getContext('widgetActions')
+
+	const url = $widget.query_slug.url
+	const method = $widget.query_slug.method
+	const body = $widget.query_slug.body
+
+	let data: any
 	async function fetchData() {
-		return await getData(url, method)
+		data = getData(url, method)
 	}
 
-	async function refresh() {
-		console.log('refreshing')
-	}
-	async function filter() {
-		console.log('filtering')
+	if (!$widgetActions.find((action: any) => action.name === 'reloadFetchData')) {
+		const actions = $widgetActions
+		actions.push({
+			name: 'reloadFetchData',
+			action: () => fetchData()
+		})
+		$widgetActions = actions
 	}
 
-	const methods = ['refresh', 'filter']
+	fetchData()
 </script>
 
-{#await fetchData()}
+{#await data}
 	<p>loading</p>
 {:then data}
-	<slot {data} {methods} />
+	<slot {data} />
 {/await}
