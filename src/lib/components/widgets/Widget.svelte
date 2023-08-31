@@ -7,12 +7,12 @@
 	import { writable } from 'svelte/store'
 	import { selectedWidgetSettings } from '$lib/stores/widgets'
 	import { createEventDispatcher } from 'svelte'
+	import ComponentType from './ComponentType.svelte'
+	import ComponentBase from './ComponentBase.svelte'
 
 	const dispatch = createEventDispatcher()
 
 	export let widget: any
-
-	$: widget
 
 	const defaultSettings = {
 		title: '',
@@ -77,9 +77,20 @@
 
 	let widgetStore = writable(widget)
 
+	let widgetActions = writable([])
+	setContext('widgetActions', widgetActions)
+
+	let widgetBase: string
 	$: {
-		if (widget.data.params && !widget.data.params?.settings)
-			widget.data.params.settings = Object.assign({}, defaultSettings.params.settings)
+		if (widget.params && !widget.params?.settings)
+			widget.params.settings = Object.assign({}, defaultSettings.params.settings)
+
+		widgetBase = widget.widget_type_id.split('-')[0]
+		widgetBase = widgetBase.charAt(0).toUpperCase() + widgetBase.slice(1)
+		if (widgetBase === 'Rest' || widgetBase === 'Api') {
+			let reloadFetchData = writable(false)
+			setContext('reloadFetchData', reloadFetchData)
+		}
 
 		$widgetStore = widget
 		setContext('widget', widgetStore)
@@ -88,10 +99,13 @@
 	$: {
 		if (
 			$selectedWidgetSettings?.state === 'saved' &&
-			$selectedWidgetSettings?.widget?.uid === widget?.data?.uid
+			$selectedWidgetSettings?.widget?.uid === widget?.uid
 		) {
-			dispatch('handleDraggable', $selectedWidgetSettings.widget.params.settings.general.draggable)
-			widget.data = $selectedWidgetSettings.widget
+			dispatch('handleResizable', {
+				resizable: $selectedWidgetSettings.widget.params.settings.general.resizable,
+				fixed: $selectedWidgetSettings.widget.params.settings.general.fixed
+			})
+			widget = $selectedWidgetSettings.widget
 			$widgetStore = widget
 			$selectedWidgetSettings = null
 		}
@@ -111,17 +125,17 @@
 	let draggable: boolean
 
 	$: {
-		fixed = widget?.data?.params?.settings?.general?.fixed
-		header = widget?.data?.params?.settings?.header?.show
-		footer = widget?.data?.params?.settings?.footer?.show
-		scrollable = widget?.data?.params?.settings?.general?.scrollable
-		draggable = fixed ? false : widget?.data?.params?.settings?.general?.draggable
+		fixed = widget?.params?.settings?.general?.fixed
+		header = widget?.params?.settings?.header?.show
+		footer = widget?.params?.settings?.footer?.show
+		scrollable = widget?.params?.settings?.general?.scrollable
+		draggable = fixed ? false : widget?.params?.settings?.general?.draggable
 		if ($themeMode !== 'dark') {
-			opacity = widget?.data?.params?.settings?.appearance?.opacity
-			background = widget?.data?.params?.settings?.appearance?.background || '#ffffff'
-			backgroundRGB = widget?.data?.params?.settings?.appearance?.backgroundRGB || '255, 255, 255'
-			color = widget?.data?.params?.settings?.appearance?.color || '#37507f'
-			border = widget?.data?.params?.settings?.appearance?.border
+			opacity = widget?.params?.settings?.appearance?.opacity
+			background = widget?.params?.settings?.appearance?.background || '#ffffff'
+			backgroundRGB = widget?.params?.settings?.appearance?.backgroundRGB || '255, 255, 255'
+			color = widget?.params?.settings?.appearance?.color || '#37507f'
+			border = widget?.params?.settings?.appearance?.border
 		}
 	}
 
@@ -134,7 +148,7 @@
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
 <div
-	id={widget?.data?.uid}
+	id={widget?.uid}
 	style:height={'inherit'}
 	style:color
 	style:--widget-bg-image={'url(' + background + ')'}
@@ -179,7 +193,7 @@
 
 	<!-- Widget Content -->
 	<div
-		class="widget-content flex h-full w-full cursor-auto space-y-4 rounded-md text-sm"
+		class="widget-content relative flex h-full w-full cursor-auto space-y-4 rounded-md text-sm"
 		class:overflow-hidden={!scrollable}
 		class:overflow-y-auto={scrollable}
 		on:pointerdown={(event) => {
@@ -187,8 +201,13 @@
 			event.stopPropagation()
 		}}
 	>
-		<div class="h-auto w-full">
+		<div class="absolute h-auto w-full">
 			<!-- load dynamic widgets -->
+			{#if $widgetStore?.classbase === 'ApiTableWidget' || $widgetStore?.classbase === 'MediaWidget'}
+				<ComponentBase name={widgetBase} let:data>
+					<ComponentType name={$widgetStore?.classbase} {data} />
+				</ComponentBase>
+			{/if}
 		</div>
 	</div>
 

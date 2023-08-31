@@ -11,9 +11,11 @@
 	import { setContext } from 'svelte'
 	import SettingsToolbar from './settings/Toolbar.svelte'
 	import SettingsFooter from './settings/Footer.svelte'
+	import SettingsType from './settings/Type.svelte'
 
 	const patternUrl =
 		/(https:\/\/www\.|http:\/\/www\.|https:\/\/|http:\/\/)?[a-zA-Z]{2,}(\.[a-zA-Z]{2,})(\.[a-zA-Z]{2,})?\/[a-zA-Z0-9]{2,}|((https:\/\/www\.|http:\/\/www\.|https:\/\/|http:\/\/)?[a-zA-Z]{2,}(\.[a-zA-Z]{2,})(\.[a-zA-Z]{2,})?)|(https:\/\/www\.|http:\/\/www\.|https:\/\/|http:\/\/)?[a-zA-Z0-9]{2,}\.[a-zA-Z0-9]{2,}\.[a-zA-Z0-9]{2,}(\.[a-zA-Z0-9]{2,})?/
+
 	const patternHex = /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/
 
 	let transitionParams = {
@@ -182,6 +184,15 @@
 						<Icon icon="mdi:chevron-double-down" size="20" classes="mt-1" />
 					</span>
 					<SettingsAppearance />
+				</AccordionItem>
+				<AccordionItem
+					borderOpenClass="p-2 border-l border-r border-b border-gray-200 dark:border-gray-700"
+				>
+					<span slot="header" class="flex gap-2 text-base">
+						<Icon icon="mdi:cog-outline" size="18" />
+						<span>Widget type</span>
+					</span>
+					<SettingsType />
 				</AccordionItem>
 				{#if !$widgetSettings.params.settings.general.fixed}
 					<AccordionItem

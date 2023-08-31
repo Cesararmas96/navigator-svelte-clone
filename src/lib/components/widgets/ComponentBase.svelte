@@ -6,10 +6,10 @@
 	let Thing: any
 
 	onMount(async () => {
-		Thing = (await import(`../charts/amcharts/${name}.svelte`)).default
+		Thing = (await import(`./base/${name}.svelte`)).default
 	})
 </script>
 
-<svelte:component this={Thing}>
-	<p>some slotted content</p>
+<svelte:component this={Thing} let:data>
+	<slot {data} />
 </svelte:component>

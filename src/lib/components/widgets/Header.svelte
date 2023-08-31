@@ -6,7 +6,7 @@
 	export let isToolbarVisible: boolean
 
 	const widget: any = getContext('widget')
-	const showToolbar: boolean = $widget?.data?.params?.settings?.toolbar?.show
+	const showToolbar: boolean = $widget?.params?.settings?.toolbar?.show
 </script>
 
 <div class="widget-header space-y flex space-x-3">

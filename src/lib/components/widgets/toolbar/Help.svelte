@@ -18,7 +18,7 @@
 	<div class="flex space-x-4">
 		<div class="w-full px-6 pl-3">
 			<div class="mb-1.5 text-sm text-gray-500 dark:text-gray-400">
-				{$widget?.data?.description || '...'}
+				{$widget?.description || '...'}
 			</div>
 		</div>
 	</div>

@@ -12,7 +12,6 @@
 		"format": "prettier --plugin-search-dir . --write ."
 	},
 	"devDependencies": {
-		"@fontsource/merriweather": "^5.0.8",
 		"@sveltejs/adapter-auto": "^2.0.0",
 		"@sveltejs/kit": "^1.20.4",
 		"@typescript-eslint/eslint-plugin": "^5.45.0",
@@ -46,10 +45,10 @@
 		"embla-carousel": "^8.0.0-rc07",
 		"flowbite": "^1.7.0",
 		"flowbite-svelte": "^0.40.2",
+		"html2canvas": "^1.4.1",
 		"jsvectormap": "^1.5.3",
 		"material-symbols": "^0.9.0",
 		"moment": "^2.29.4",
-		"plotly.js": "^2.25.1",
 		"simplebar": "^6.2.5",
 		"svelte-grid-extended": "^1.1.1",
 		"svelte-grid-layout": "^1.0.3",

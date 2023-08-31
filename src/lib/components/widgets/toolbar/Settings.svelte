@@ -14,7 +14,7 @@
 		e.preventDefault()
 		e.stopPropagation()
 		dispatch('itemClick', { click: true })
-		$selectedWidgetSettings = { widget: $widget.data, state: 'edit' }
+		$selectedWidgetSettings = { widget: $widget, state: 'edit' }
 		$hideWidgetSettings = !hideWidgetSettings
 	}
 </script>
