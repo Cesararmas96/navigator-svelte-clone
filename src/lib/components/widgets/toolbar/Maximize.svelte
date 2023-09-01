@@ -11,7 +11,14 @@
     $: maximize = $widgetActions.find((action: any) => action.name === "maximizeWidget");
     const handleMaximize = () => {
         isMaximize = !isMaximize;
-        maximize.action();
+
+        if (!isMaximize) {
+            $selectedWidgetMaximize = null;
+        } else {
+            maximize.action();
+        }
+
+
     };
 
 
