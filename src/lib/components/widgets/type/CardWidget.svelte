@@ -6,13 +6,9 @@
 	let widget: any = getContext('widget')
 	export let data: any
 	$: {
-		console.log('Ejecutar funcion', data)
-		console.log('Widget', $widget)
-
 		buildCards()
 	}
 
-	console.log('CARD DATA', data)
 	let cards: any[] = []
 	const trendcard = {}
 	const format_definition =
@@ -26,7 +22,6 @@
 
 	function buildCards() {
 		const values = data ? data[0] : []
-		// console.log('Ejecutando', values)
 
 		Object.keys(values).map((card, cardIndex) => {
 			let configExtend = (format_definition && format_definition[card]) || {}
@@ -57,10 +52,7 @@
 	}
 </script>
 
-<!-- {#if cards && cards.length > 0} -->
-<!-- {cards} -->
-
-{#if data && cards}
+{#if data}
 	<div class="grid grid-cols-12 gap-3">
 		{#each cards as card}
 			<div class={`col-span-${card.col}`}>
