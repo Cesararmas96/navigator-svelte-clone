@@ -17,6 +17,10 @@
         data = ($selectedWidgetMaximize?.data) ? $selectedWidgetMaximize.data : getData(url, method);
     }
 
+    async function reloadData() {
+        data = getData(url, method);
+    }
+
     function storeData() {
         selectedWidgetMaximize.set({
             data, widget: $widget
@@ -28,7 +32,7 @@
         const actions = $widgetActions;
         actions.push({
             name: "reloadFetchData",
-            action: () => fetchData()
+            action: () => reloadData()
         });
         $widgetActions = actions;
     }
