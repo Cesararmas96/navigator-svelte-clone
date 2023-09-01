@@ -1,0 +1,71 @@
+<script lang="ts">
+	import Card from './CardWidget/Card.svelte'
+	import { fnFormats } from '$lib/utils/formats'
+	import { getContext } from 'svelte'
+
+	let widget: any = getContext('widget')
+	export let data: any
+	$: {
+		console.log('Ejecutar funcion', data)
+		console.log('Widget', $widget)
+
+		buildCards()
+	}
+
+	console.log('CARD DATA', data)
+	let cards: any[] = []
+	const trendcard = {}
+	const format_definition =
+		$widget.params.card &&
+		$widget.params.card.cards &&
+		Object.keys($widget.params.card.cards).length > 0 // Old version
+			? $widget.params.card.cards
+			: $widget.format_definition && Object.keys($widget.format_definition).length > 0 // New version
+			? $widget.format_definition
+			: {}
+
+	function buildCards() {
+		const values = data ? data[0] : []
+		// console.log('Ejecutando', values)
+
+		Object.keys(values).map((card, cardIndex) => {
+			let configExtend = (format_definition && format_definition[card]) || {}
+
+			if (!configExtend.hidden) {
+				// if ($widget.params.card && $widget.params.card.type === 'trend-card') {
+				// 	$widget.trendcard![card] = {}
+				// 	// configExtend = generateTrendCard(card, configExtend)
+				// }
+
+				cards.push({
+					uid: card,
+					title: fnFormats(card, 'toUpperCase'),
+					data: values[card],
+					order: cardIndex,
+					icon: 'tabler-brand-google-analytics',
+					col:
+						$widget.params.card && $widget.params.card.colspan
+							? $widget.params.card.colspan
+							: $widget.params.cols || 12,
+					format: 'fnFormatNumberOne',
+					frontMask: '',
+					backMask: '',
+					...configExtend
+				})
+			}
+		})
+	}
+</script>
+
+<!-- {#if cards && cards.length > 0} -->
+<!-- {cards} -->
+
+{#if data && cards}
+	<div class="grid grid-cols-12 gap-3">
+		{#each cards as card}
+			<div class={`col-span-${card.col}`}>
+				<Card {card} />
+			</div>
+		{/each}
+	</div>
+{/if}
