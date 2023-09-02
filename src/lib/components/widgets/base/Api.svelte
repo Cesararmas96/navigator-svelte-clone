@@ -219,6 +219,24 @@
 		$widgetActions = actions
 	}
 
+	if (!$widgetActions.find((action: any) => action.name === 'exportData')) {
+		const actions = $widgetActions
+		actions.push({
+			name: 'exportData'
+			// action: () => fetchData()
+		})
+		$widgetActions = actions
+	}
+
+	if (!$widgetActions.find((action: any) => action.name === 'filterData')) {
+		const actions = $widgetActions
+		actions.push({
+			name: 'filterData'
+			// action: () => fetchData()
+		})
+		$widgetActions = actions
+	}
+
 	fetchData()
 </script>
 

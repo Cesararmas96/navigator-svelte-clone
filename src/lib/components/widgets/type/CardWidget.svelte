@@ -53,6 +53,7 @@
 </script>
 
 {#if data}
+	<!-- data -->
 	<div class="grid grid-cols-12 gap-3">
 		{#each cards as card}
 			<div class={`col-span-${card.col}`}>
