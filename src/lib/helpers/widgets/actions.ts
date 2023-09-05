@@ -1,5 +1,6 @@
 import {selectedWidgetMaximize} from "$lib/stores/widgets";
 import {getData} from "$lib/services/getData";
+import type {WidgetAction} from "../../../interfaces/widgets/actions";
 
 
 export async function fetchData(selectedWidget: any, url, method) {
@@ -16,11 +17,6 @@ export function storeData(data, widget): void {
     });
 }
 
-
-interface WidgetAction {
-    name: string;
-    action: () => void;
-}
 
 export function addWidgetAction(
     widgetActions: WidgetAction[],

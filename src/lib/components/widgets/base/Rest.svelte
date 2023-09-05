@@ -1,16 +1,18 @@
 <script lang="ts">
     import {getContext, onMount} from "svelte";
     import {selectedWidgetMaximize} from "$lib/stores/widgets";
-    import {addWidgetAction, fetchData, reloadData, storeData} from "$lib/helpers/widgets/actions";
+    import {addWidgetAction, fetchData, reloadData, storeData} from "$lib/helpers";
+    import type {Widget} from "../../../../interfaces/widgets/widgets";
+    import type {WidgetAction} from "../../../../interfaces";
+    import type {Writable} from "svelte/store";
 
-    let widget: any = getContext("widget");
+    let widget: Widget = getContext("widget");
 
-    let widgetActions: any = getContext("widgetActions");
+    let widgetActions = getContext("widgetActions");
 
     const url = $widget.query_slug.url;
     const method = $widget.query_slug.method;
-    const body = $widget.query_slug.body;
-    let data: any;
+    let data: Array<object> | undefined;
 
 
     $widgetActions = addWidgetAction($widgetActions, "reloadFetchData", () => {
