@@ -1,8 +1,7 @@
 <script lang="ts">
-    import {getData} from "$lib/services/getData";
     import {getContext, onMount} from "svelte";
     import {selectedWidgetMaximize} from "$lib/stores/widgets";
-    import {fetchData, reloadData, storeData} from "$lib/helpers/widgets";
+    import {addWidgetAction, fetchData, reloadData, storeData} from "$lib/helpers/widgets/actions";
 
     let widget: any = getContext("widget");
 
@@ -11,28 +10,16 @@
     const url = $widget.query_slug.url;
     const method = $widget.query_slug.method;
     const body = $widget.query_slug.body;
-
     let data: any;
 
 
-    if (!$widgetActions.find((action: any) => action.name === "reloadFetchData")) {
-        const actions = $widgetActions;
-        actions.push({
-            name: "reloadFetchData",
-            action: () => {
-                data = reloadData(url, method);
-            }
-        });
-        $widgetActions = actions;
-    }
-    if (!$widgetActions.find((action: any) => action.name === "maximizeWidget")) {
-        const actions = $widgetActions;
-        actions.push({
-            name: "maximizeWidget",
-            action: () => storeData(data, $widget)
-        });
-        $widgetActions = actions;
-    }
+    $widgetActions = addWidgetAction($widgetActions, "reloadFetchData", () => {
+        data = reloadData(url, method);
+    });
+
+    $widgetActions = addWidgetAction($widgetActions, "maximizeWidget", () => {
+        storeData(data, $widget);
+    });
 
 
     onMount(() => {
