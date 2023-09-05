@@ -10,7 +10,6 @@
 	const urlBase = import.meta.env.VITE_API_URL
 	const slug = $widget.query_slug.slug
 	const conditionsRaw = $widget.conditions
-
 	const method = $widget.params.ajax.method || $widget.params.ajax.type
 	let data: any
 
@@ -18,7 +17,7 @@
 		console.log('SLUG', slug)
 		const conditions = buildConditions()
 		console.log('CONDITIONS TOTAL', conditions)
-		data = await getData(`${urlBase}/api/v2/services/queries/${slug}`, method, conditions)
+		data = getData(`${urlBase}/api/v2/services/queries/${slug}`, method, conditions)
 	}
 
 	function buildConditions() {

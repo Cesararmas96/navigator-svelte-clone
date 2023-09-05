@@ -56,7 +56,7 @@
 	<!-- data -->
 	<div class="grid grid-cols-12 gap-3">
 		{#each cards as card}
-			<div class={`col-span-${card.col}`}>
+			<div style:grid-column={`span ${card.col} / span ${card.col}`} class="my-2">
 				<Card {card} />
 			</div>
 		{/each}

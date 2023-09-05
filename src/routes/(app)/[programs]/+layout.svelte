@@ -28,23 +28,14 @@
 <div id="content" class={$sidebarMin ? 'content-alt' : ''}>
 	<Breadcrumb />
 
-	<div class="simplebar-scrollable-y simplebar-mouse-entered" data-simplebar="init">
-		<div class="simplebar-wrapper">
-			<div class="simplebar-height-auto-observer-wrapper">
-				<div class="simplebar-height-auto-observer" />
+	<div data-simplebar>
+		<main class=" p-4">
+			<div class="min-h-[calc(100vh-240px)]">
+				<slot />
 			</div>
-			<div class="simplebar-mask">
-				<div class="simplebar-offset">
-					<main class="simplebar-content p-4">
-						<div class="min-h-[calc(100vh-240px)]">
-							<slot />
-						</div>
-						<div class="ml-[5px] mr-[10px]">
-							<Footer />
-						</div>
-					</main>
-				</div>
+			<div class="ml-[5px] mr-[10px]">
+				<Footer />
 			</div>
-		</div>
+		</main>
 	</div>
 </div>

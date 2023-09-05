@@ -192,16 +192,16 @@
 	</div>
 
 	<!-- Widget Content -->
+	<!-- class:overflow-hidden={!scrollable}
+	class:overflow-y-auto={scrollable} -->
 	<div
-		class="widget-content relative flex h-full w-full cursor-auto space-y-4 rounded-md text-sm"
-		class:overflow-hidden={!scrollable}
-		class:overflow-y-auto={scrollable}
+		class="widget-content relative flex h-full w-full cursor-auto space-y-4 overflow-hidden rounded-md text-sm"
 		on:pointerdown={(event) => {
 			event.preventDefault()
 			event.stopPropagation()
 		}}
 	>
-		<div class="absolute h-auto w-full">
+		<div class="absolute h-auto w-full" data-simplebar>
 			<!-- load dynamic widgets -->
 			{#if $widgetStore?.classbase === 'CardWidget' || $widgetStore?.classbase === 'ApiTableWidget' || $widgetStore?.classbase === 'MediaWidget'}
 				<ComponentBase name={widgetBase} let:data>

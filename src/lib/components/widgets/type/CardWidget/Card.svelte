@@ -11,7 +11,7 @@
 </script>
 
 <div
-	class="apiCard-content animate__animated animate__zoomIn card navigator-blue cursor-pointer overflow-hidden rounded-md border border-light-200 p-6 py-3 hover:-translate-y-1 hover:scale-100 hover:shadow-lg dark:border-dark-200 dark:bg-[#22313a]"
+	class="apiCard-content animate__animated animate__zoomIn card navigator-blue h-full cursor-pointer overflow-hidden rounded-md border border-light-200 p-6 py-3 hover:-translate-y-0.5 hover:scale-100 hover:shadow-lg dark:border-dark-200 dark:bg-[#22313a]"
 >
 	<div class="px-3">
 		<div class="flex h-8 items-center justify-between">
