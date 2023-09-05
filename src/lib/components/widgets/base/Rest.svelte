@@ -2,7 +2,7 @@
     import {getData} from "$lib/services/getData";
     import {getContext, onMount} from "svelte";
     import {selectedWidgetMaximize} from "$lib/stores/widgets";
-    import {fetchData} from "$lib/helpers/widgets";
+    import {fetchData, reloadData, storeData} from "$lib/helpers/widgets";
 
     let widget: any = getContext("widget");
 
@@ -15,24 +15,13 @@
     let data: any;
 
 
-    async function reloadData() {
-        data = getData(url, method);
-        
-
-    }
-
-    function storeData() {
-        selectedWidgetMaximize.set({
-            data, widget: $widget
-        });
-    }
-
-
     if (!$widgetActions.find((action: any) => action.name === "reloadFetchData")) {
         const actions = $widgetActions;
         actions.push({
             name: "reloadFetchData",
-            action: () => reloadData()
+            action: () => {
+                data = reloadData(url, method);
+            }
         });
         $widgetActions = actions;
     }
@@ -40,7 +29,7 @@
         const actions = $widgetActions;
         actions.push({
             name: "maximizeWidget",
-            action: () => storeData()
+            action: () => storeData(data, $widget)
         });
         $widgetActions = actions;
     }
