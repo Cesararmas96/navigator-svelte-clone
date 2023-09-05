@@ -1,7 +1,8 @@
 <script lang="ts">
     import {getData} from "$lib/services/getData";
-    import {getContext} from "svelte";
+    import {getContext, onMount} from "svelte";
     import {selectedWidgetMaximize} from "$lib/stores/widgets";
+    import {fetchData} from "$lib/helpers/widgets";
 
     let widget: any = getContext("widget");
 
@@ -13,12 +14,11 @@
 
     let data: any;
 
-    async function fetchData() {
-        data = ($selectedWidgetMaximize?.data) ? $selectedWidgetMaximize.data : getData(url, method);
-    }
 
     async function reloadData() {
         data = getData(url, method);
+        
+
     }
 
     function storeData() {
@@ -46,7 +46,9 @@
     }
 
 
-    fetchData();
+    onMount(() => {
+        data = fetchData($selectedWidgetMaximize, url, method);
+    });
 
 </script>
 
