@@ -201,7 +201,7 @@
 			event.stopPropagation()
 		}}
 	>
-		<div class="absolute h-auto w-full" data-simplebar>
+		<div class="absolute h-auto w-full overflow-hidden">
 			<!-- load dynamic widgets -->
 			{#if $widgetStore?.classbase === 'CardWidget' || $widgetStore?.classbase === 'ApiTableWidget' || $widgetStore?.classbase === 'MediaWidget'}
 				<ComponentBase name={widgetBase} let:data>

@@ -14,9 +14,9 @@
 	let data: any
 
 	async function fetchData() {
-		console.log('SLUG', slug)
+		// console.log('SLUG', slug)
 		const conditions = buildConditions()
-		console.log('CONDITIONS TOTAL', conditions)
+		// console.log('CONDITIONS TOTAL', conditions)
 		data = getData(`${urlBase}/api/v2/services/queries/${slug}`, method, conditions)
 	}
 
