@@ -16,14 +16,16 @@
 
     async function togglePin() {
         try {
+            isPinned = !isPinned;
+            icon = isPinned ? "tabler:pinned" : "tabler:pinned-off";
+
+            
             const method = isPinned ? "DELETE" : "PUT";
             const response = await getData(endpoint, method, {
                 widget_id: widgetId,
                 user_id: userId,
             });
             console.log(response);
-            isPinned = !isPinned;
-            icon = isPinned ? "tabler:pinned" : "tabler:pinned-off";
         } catch (error: any) {
             console.error("Error:", error.message);
         }
