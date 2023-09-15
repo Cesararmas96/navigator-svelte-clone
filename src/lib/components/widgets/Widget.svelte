@@ -57,30 +57,33 @@
 		{/if}
 	</div>
 
-	{#if !$widget.collapse}
-		<!-- Widget Content -->
-		<div
-			id={`widget-main-content-${$widget.uid}`}
-			class="widget-content relative flex w-full cursor-auto space-y-4 rounded-md text-sm"
-			on:pointerdown={(event) => {
-				event.preventDefault()
-				event.stopPropagation()
-			}}
-		>
-			<div class="h-full w-full">
-				<ContentTop widget={$widget} />
+	<!-- Widget Content -->
+	<div
+		id={`widget-main-content-${$widget.uid}`}
+		class:hidden={$widget.collapse}
+		class="widget-content relative flex w-full cursor-auto space-y-4 rounded-md text-sm"
+		on:pointerdown={(event) => {
+			event.preventDefault()
+			event.stopPropagation()
+		}}
+	>
+		<div class="h-full w-full">
+			<ContentTop widget={$widget} />
 
-				<Content widget={$widget} />
+			<Content widget={$widget} />
 
-				<ContentBottom widget={$widget} />
-			</div>
+			<ContentBottom widget={$widget} />
 		</div>
-	{/if}
+	</div>
 	<Instances widget={$widget} {isToolbarVisible} {fixed} {isOwner} on:handleInstanceResize />
 </div>
 <!-- Widget Footer -->
-{#if !$widget.temp && !$widget.collapse}
-	<div id={`widget-footer-${$widget.uid}`} class="absolute bottom-0 -ml-1 h-8 w-full p-1">
+{#if !$widget.temp}
+	<div
+		class:hidden={$widget.collapse}
+		id={`widget-footer-${$widget.uid}`}
+		class="absolute bottom-0 -ml-1 h-8 w-full p-1"
+	>
 		{#if !fixed && footer}
 			<WidgetFooter isToolbarVisible={true} />
 		{/if}
