@@ -19,7 +19,7 @@
             isPinned = !isPinned;
             icon = isPinned ? "tabler:pinned" : "tabler:pinned-off";
 
-            
+
             const method = isPinned ? "DELETE" : "PUT";
             const response = await getData(endpoint, method, {
                 widget_id: widgetId,
