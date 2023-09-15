@@ -85,15 +85,17 @@
 		if (widget.params && !widget.params?.settings)
 			widget.params.settings = Object.assign({}, defaultSettings.params.settings)
 
-		widgetBase = widget.widget_type_id.split('-')[0]
-		widgetBase = widgetBase.charAt(0).toUpperCase() + widgetBase.slice(1)
-		if (widgetBase === 'Rest' || widgetBase === 'Api') {
-			let reloadFetchData = writable(false)
-			setContext('reloadFetchData', reloadFetchData)
-		}
+		if (widget?.widget_type_id) {
+			widgetBase = widget.widget_type_id.split('-')[0]
+			widgetBase = widgetBase.charAt(0).toUpperCase() + widgetBase.slice(1)
+			if (widgetBase === 'Rest' || widgetBase === 'Api') {
+				let reloadFetchData = writable(false)
+				setContext('reloadFetchData', reloadFetchData)
+			}
 
-		$widgetStore = widget
-		setContext('widget', widgetStore)
+			$widgetStore = widget
+			setContext('widget', widgetStore)
+		}
 	}
 
 	$: {
