@@ -35,8 +35,6 @@ export async function getData(
 		// Add authentication token handling here
 		const loggedIn = true
 		// Temporarily
-		const token =
-			'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTQ4OTQyNTcsImlhdCI6MTY5NDUzNDI1NywiaXNzIjoiTW9iaWxlaW5zaWdodCIsInVzZXIiOjE1Nzc5LCJ1c2VybmFtZSI6ImptZW5kb3phMUB0cm9jZ2xvYmFsLmNvbSIsInVzZXJfaWQiOjE1Nzc5LCJpZCI6ImptZW5kb3phMUB0cm9jZ2xvYmFsLmNvbSJ9.xwXHhGTMyx2MpASt990i9xoyIuZYTUadWkLHlmAk518'
 
 		options.headers = options.headers || {}
 
@@ -46,7 +44,7 @@ export async function getData(
 				options.headers['Content-Type'] || 'application/json; charset=utf-8'
 
 		// Add the authentication token if authenticated
-		if (loggedIn) options.headers.authorization = options.headers.authorization || `Bearer ${token}`
+		if (loggedIn) options.headers.authorization = options.headers.authorization || null
 
 		const headers = new Headers(options.headers)
 
@@ -77,10 +75,19 @@ export async function getData(
 	}
 }
 
-// const getQueryData = (
-// 	url: string,
-// 	method = 'POST',
-// 	payload: Record<string, any> = {},
-// 	queryParams: Record<string, any> = {},
-// 	options: Record<string, any> = {}
-// ) => {}
+export async function getApiData(
+	url: string,
+	method = 'POST',
+	payload: Record<string, any> = {},
+	queryParams: Record<string, any> = {},
+	options: Record<string, any> = {}
+) {
+	const token =
+		'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTQ4OTQyNTcsImlhdCI6MTY5NDUzNDI1NywiaXNzIjoiTW9iaWxlaW5zaWdodCIsInVzZXIiOjE1Nzc5LCJ1c2VybmFtZSI6ImptZW5kb3phMUB0cm9jZ2xvYmFsLmNvbSIsInVzZXJfaWQiOjE1Nzc5LCJpZCI6ImptZW5kb3phMUB0cm9jZ2xvYmFsLmNvbSJ9.xwXHhGTMyx2MpASt990i9xoyIuZYTUadWkLHlmAk518'
+
+	const headers = {
+		authorization: `Bearer ${token}`
+	}
+
+	getData(url, method, payload, queryParams, { ...options, headers })
+}

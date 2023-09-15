@@ -1,8 +1,7 @@
 <script lang="ts">
 	import { storeProgram } from '$lib/stores/programs'
 
-	// const baseUrl = import.meta.env.BASE_URL
-	const baseUrl = 'https://front-staging.navi.mobileinsight.com'
+	const baseUrl = import.meta.env.VITE_BASE_URL
 
 	export let program: any
 
@@ -38,7 +37,7 @@
 		alt=""
 		class="h-auto w-full rounded-md object-cover object-center dark:bg-gray-900"
 		use:lazy={{
-			src: `${baseUrl}/v2/assets/img/programs/${program.program_slug}/${program.program_slug}-home.png`
+			src: `${baseUrl}/assets/img/programs/${program.program_slug}/${program.program_slug}-home.png`
 		}}
 	/>
 {:else}
@@ -51,7 +50,7 @@
 			alt=""
 			class="h-auto w-full rounded-md object-cover object-center dark:bg-gray-900"
 			use:lazy={{
-				src: `${baseUrl}/v2/assets/img/programs/${program.program_slug}/${program.program_slug}-home.png`
+				src: `${baseUrl}/assets/img/programs/${program.program_slug}/${program.program_slug}-home.png`
 			}}
 		/>
 		<div class="mb-2 mt-6">

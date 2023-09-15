@@ -1,7 +1,7 @@
 <script lang="ts">
 	import moment from 'moment'
 	import Loading from '$lib/components/common/Loading.svelte'
-	import { getData } from '$lib/services/getData'
+	import { getApiData } from '$lib/services/getData'
 	import { getContext } from 'svelte'
 
 	let widget: any = getContext('widget')
@@ -10,14 +10,14 @@
 	const urlBase = import.meta.env.VITE_API_URL
 	const slug = $widget.query_slug.slug
 	const conditionsRaw = $widget.conditions
-	const method = $widget.params.ajax.method || $widget.params.ajax.type
+	const method = $widget.params?.ajax?.method || $widget.params?.ajax?.type
 	let data: any
 
 	async function fetchData() {
 		// console.log('SLUG', slug)
 		const conditions = buildConditions()
 		// console.log('CONDITIONS TOTAL', conditions)
-		data = getData(`${urlBase}/api/v2/services/queries/${slug}`, method, conditions)
+		data = getApiData(`${urlBase}/api/v2/services/queries/${slug}`, method, conditions)
 	}
 
 	function buildConditions() {
