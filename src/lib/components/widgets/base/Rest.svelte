@@ -1,4 +1,8 @@
 <script lang="ts">
+	import { addWidgetAction } from '$lib/helpers/widget/actions'
+	import { addWidgetData } from '$lib/helpers/widget/data'
+	import { getData } from '$lib/services/getData'
+	import { getContext, onMount } from 'svelte'
     import {getContext, onMount} from "svelte";
     import {selectedWidgetMaximize} from "$lib/stores/widgets";
     import {addWidgetAction, fetchData, reloadData, storeData} from "$lib/helpers";
@@ -7,31 +11,42 @@
     import type {Writable} from "svelte/store";
 
     let widget: Widget = getContext("widget");
+	let widgetActions: any = getContext('widgetActions')
 
-    let widgetActions = getContext("widgetActions");
+	const url = $widget.query_slug.url
+	const method = $widget.query_slug.method
+	const body = $widget.query_slug.body
 
-    const url = $widget.query_slug.url;
-    const method = $widget.query_slug.method;
-    let data: Array<object> | undefined;
+	let data: any
+	let dataStore: any = getContext('widgetData')
 
-
-    $widgetActions = addWidgetAction($widgetActions, "reloadFetchData", () => {
-        data = reloadData(url, method);
-    });
+	async function fetchData() {
+		data = null
+		data = getData(url, method)
+		addWidgetData(dataStore, data)
+	}
 
     $widgetActions = addWidgetAction($widgetActions, "maximizeWidget", () => {
         storeData(data, $widget);
     });
+	$widgetActions = addWidgetAction($widgetActions, {
+		name: 'reloadFetchData',
+		action: () => fetchData()
+	})
 
-
-    onMount(() => {
-        data = fetchData($selectedWidgetMaximize, url, method);
-    });
-
+	onMount(() => {
+		if (!$dataStore) {
+			console.log('onMount fetching data', $widget.uid)
+			fetchData()
+		} else {
+			console.log('onMount $dataStore', $widget.uid)
+			data = $dataStore
+		}
+	})
 </script>
 
 {#await data}
-    <p>loading</p>
+	<p>loading</p>
 {:then data}
-    <slot {data}/>
+	<slot {data} />
 {/await}

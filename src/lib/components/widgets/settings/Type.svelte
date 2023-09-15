@@ -1,7 +1,8 @@
 <script lang="ts">
 	import Dropdown from '$lib/components/common/Dropdown.svelte'
-	import { Input, Label, Textarea } from 'flowbite-svelte'
+	import { Input, Label, Radio, Textarea } from 'flowbite-svelte'
 	import { getContext } from 'svelte'
+	import TypeMedia from './TypeMedia.svelte'
 
 	let widgetSettings: any
 	widgetSettings = getContext('widgetSettings')
@@ -52,16 +53,21 @@
 		}
 	}
 
-	var regExp = /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/
-	const getYoutubeID = (url: string) => {
-		if (!url) return null
-		var match = url.match(regExp)
-		return match && match[2].length == 11 ? match[2] : null
-	}
+	const checkClass =
+		'w-full h-10 cursor-pointer flex flex-col gap-1 text-sm leading-none justify-center text-center items-center rounded-lg border-2 border-gray-200 bg-white p-2 text-gray-500 hover:bg-gray-50 hover:text-gray-600 peer-checked:border-primary-300 peer-checked:text-gray-600 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-300 dark:peer-checked:text-gray-300'
 </script>
 
 <div class="mb-4">
-	<Dropdown {items} selectedValue={type} label={'Type'} on:change={handleType} />
+	<Label class="mb-2 block">Type</Label>
+	<div class="mb-3 mt-2 grid w-full grid-cols-3 gap-2">
+		{#each items as item}
+			<Radio bind:group={type} custom value={item.value}>
+				<div class={checkClass}>
+					{item.label}
+				</div>
+			</Radio>
+		{/each}
+	</div>
 
 	{#if type === 'api'}
 		<Label for="slug" class="mb-2 block">Slug</Label>
@@ -99,14 +105,7 @@
 			/>
 		{/if}
 	{:else if type === 'media'}
-		<Label for="slug" class="mb-2 block">Media URL</Label>
-		<Input
-			id="url"
-			name="url"
-			class="form-control border-1 mb-3 rounded p-2 focus:ring-0"
-			placeholder="Media URL (iFrame, Youtube, Vimeo, etc.)"
-			bind:value={$widgetSettings.url}
-		/>
-		{@html getYoutubeID($widgetSettings.url)}
+		<Label class="mb-2 block">Source</Label>
+		<TypeMedia />
 	{/if}
 </div>
