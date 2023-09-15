@@ -1,3 +1,5 @@
-import { writable } from "svelte/store";
+import { writable } from 'svelte/store'
 
-export const storeProgram = writable<any | null>(null);
+export const storeProgram = writable<any | null>(null)
+
+export const variablesOperationalProgram = writable<any[]>([])

@@ -51,6 +51,8 @@ export async function getData(
 		const configRequest: RequestInit = {
 			method,
 			headers: headers,
+			// mode: 'no-cors',
+			// redirect: 'follow',
 			body: JSON.stringify(payload)
 		}
 
@@ -83,10 +85,11 @@ export async function getApiData(
 	options: Record<string, any> = {}
 ) {
 	const token =
-		'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTQ4OTQyNTcsImlhdCI6MTY5NDUzNDI1NywiaXNzIjoiTW9iaWxlaW5zaWdodCIsInVzZXIiOjE1Nzc5LCJ1c2VybmFtZSI6ImptZW5kb3phMUB0cm9jZ2xvYmFsLmNvbSIsInVzZXJfaWQiOjE1Nzc5LCJpZCI6ImptZW5kb3phMUB0cm9jZ2xvYmFsLmNvbSJ9.xwXHhGTMyx2MpASt990i9xoyIuZYTUadWkLHlmAk518'
-
+		'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTUxNDM3OTgsImlhdCI6MTY5NDc4Mzc5OCwiaXNzIjoiTW9iaWxlaW5zaWdodCIsInVzZXIiOjE1Nzc5LCJ1c2VybmFtZSI6ImptZW5kb3phMUB0cm9jZ2xvYmFsLmNvbSIsInVzZXJfaWQiOjE1Nzc5LCJpZCI6ImptZW5kb3phMUB0cm9jZ2xvYmFsLmNvbSJ9.cL6aOd93tjeYXnQqym3g2CABnzyhL3vGM9ddpTCMeic'
 	const headers = {
-		authorization: `Bearer ${token}`
+		authorization: `Bearer ${token}`,
+		// origin: 'https://navigator.mobileinsight.com',
+		accept: 'application/json, text/plain, */*'
 	}
 
 	return await getData(url, method, payload, queryParams, { ...options, headers })
