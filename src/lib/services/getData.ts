@@ -76,3 +76,11 @@ export async function getData(
 		throw new Error(`Request error: ${error}`)
 	}
 }
+
+// const getQueryData = (
+// 	url: string,
+// 	method = 'POST',
+// 	payload: Record<string, any> = {},
+// 	queryParams: Record<string, any> = {},
+// 	options: Record<string, any> = {}
+// ) => {}
