@@ -2,6 +2,7 @@
 	import { Input, Label, Textarea, Toggle } from 'flowbite-svelte'
 	import IconsDropDown from '../IconsDropDown.svelte'
 	import { getContext } from 'svelte'
+	import RichTextArea from '$lib/components/common/RichTextArea.svelte'
 
 	let widgetSettings: any
 	widgetSettings = getContext('widgetSettings')
@@ -19,7 +20,9 @@
 	/>
 </div>
 <div class="">
-	<Label for="description" class="mb-2">Description</Label>
+	<Label for="description" class="mb-2">Tooltip Help</Label>
+	<RichTextArea />
+
 	<Textarea
 		id="description"
 		class="form-control border-1 mb-3 rounded p-2 focus:ring-0"

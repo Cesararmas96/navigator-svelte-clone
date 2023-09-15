@@ -2,10 +2,10 @@
 	import { Tooltip } from 'flowbite-svelte'
 	import Icon from '$lib/components/common/Icon.svelte'
 	import { getContext } from 'svelte'
+	import { getWidgetAction } from '$lib/helpers/widget/actions'
 
 	let widgetActions: any = getContext('widgetActions')
-
-	$: reload = $widgetActions.find((action: any) => action.name === 'reloadFetchData')
+	$: reload = getWidgetAction($widgetActions, 'reloadFetchData')
 </script>
 
 {#if reload}

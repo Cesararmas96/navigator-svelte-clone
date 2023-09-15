@@ -12,6 +12,7 @@
 	import ToolbarClone from './toolbar/Clone.svelte'
 	import ToolbarMaximize from './toolbar/Maximize.svelte'
 	import ToolbarClose from './toolbar/Close.svelte'
+	import ToolbarCollapse from './toolbar/Collapse.svelte'
 
 	export let isToolbarVisible: boolean
 
@@ -40,8 +41,10 @@
 		{#if toolbar.reload}<ToolbarReload />{/if}
 		{#if toolbar.filtering}<ToolbarFilter />{/if}
 		{#if toolbar.clone}<ToolbarClone />{/if}
+		<ToolbarCollapse />
 		{#if toolbar.max}<ToolbarMaximize />{/if}
 		{#if toolbar.pin}<ToolbarPin />{/if}
+		{#if toolbar.help && $widget.description}<ToolbarHelp helpText={$widget.description} />{/if}
 
 		<Tooltip placement="left" triggeredBy="#more-actions">More</Tooltip>
 		<button
@@ -63,7 +66,6 @@
 			{#if isWidgetOwner}
 				<ToolbarSettings on:itemClick={() => (menuOpen = !menuOpen)} />
 			{/if}
-			{#if toolbar.help}<ToolbarHelp />{/if}
 		</Dropdown>
 
 		{#if isWidgetOwner}<ToolbarClose />{/if}

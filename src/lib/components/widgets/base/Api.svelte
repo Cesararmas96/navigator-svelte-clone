@@ -6,7 +6,7 @@
 
 	const url = import.meta.env.VITE_API_URL
 	const slug = $widget.query_slug.slug
-	const method = $widget.params.ajax.method || $widget.params.ajax.type
+	// const method = $widget.params.ajax.method || $widget.params.ajax.type
 
 	async function fetchData() {
 		// console.log('fetchData')
