@@ -140,7 +140,7 @@
 						<svelte:fragment slot="subtext">
 							{#if item.new}
 								<span
-									class="bg-primary-500 dark:bg-primary-500 ml-3 inline-flex items-center justify-center rounded-full px-2 text-sm font-medium text-gray-800"
+									class="ml-3 inline-flex items-center justify-center rounded-full bg-primary-500 px-2 text-sm font-medium text-gray-800 dark:bg-primary-500"
 									>New</span
 								>
 							{/if}

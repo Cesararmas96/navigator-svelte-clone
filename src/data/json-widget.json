@@ -14,7 +14,7 @@
 			"url": "https://api.breakingbadquotes.xyz/v1/quotes/5",
 			"body": ""
 		},
-		"params": {	
+		"params": {
 			"ajax": {
 				"method": "POST"
 			},
@@ -313,7 +313,7 @@
 			"fg_color": "#333"
 		},
 		"conditions": {
-			"filterdate": "CURRENT_DATE",
+			"filterdate": "YESTERDAY",
 			"querylimit": 1,
 			"where_cond": {
 				"territory_id": "null"
@@ -414,7 +414,7 @@
 			"fg_color": "#333"
 		},
 		"conditions": {
-			"lastdate": "CURRENT_DATE",
+			"lastdate": "YESTERDAY",
 			"firstdate": "FDOM"
 		},
 		"cond_definition": null,
@@ -458,7 +458,7 @@
 			"fg_color": "#333"
 		},
 		"conditions": {
-			"filterdate": "CURRENT_DATE",
+			"filterdate": "YESTERDAY",
 			"where_cond": {
 				"territory_id": "!null"
 			},
@@ -642,7 +642,7 @@
 			"fg_color": "#333"
 		},
 		"conditions": {
-			"filterdate": "CURRENT_DATE"
+			"filterdate": "YESTERDAY"
 		},
 		"cond_definition": null,
 		"where_definition": null,
@@ -707,7 +707,7 @@
 			"fg_color": "#333"
 		},
 		"conditions": {
-			"lastdate": "CURRENT_DATE",
+			"lastdate": "YESTERDAY",
 			"firstdate": "FDOM"
 		},
 		"cond_definition": null,
@@ -776,7 +776,7 @@
 			"fg_color": "#333"
 		},
 		"conditions": {
-			"lastdate": "CURRENT_DATE",
+			"lastdate": "YESTERDAY",
 			"firstdate": "FDOM"
 		},
 		"cond_definition": null,
@@ -912,7 +912,7 @@
 			"fg_color": "#333"
 		},
 		"conditions": {
-			"filterdate": "CURRENT_DATE",
+			"filterdate": "YESTERDAY",
 			"querylimit": 1,
 			"where_cond": {
 				"territory_id": "null"
@@ -1038,7 +1038,7 @@
 			"fg_color": "#333"
 		},
 		"conditions": {
-			"filterdate": "CURRENT_DATE",
+			"filterdate": "YESTERDAY",
 			"querylimit": 1,
 			"where_cond": {
 				"territory_id": "null"
@@ -1175,7 +1175,7 @@
 			"fg_color": "#333"
 		},
 		"conditions": {
-			"filterdate": "CURRENT_DATE",
+			"filterdate": "YESTERDAY",
 			"querylimit": 1,
 			"where_cond": {
 				"territory_id": "null"
@@ -1243,7 +1243,7 @@
 			"fg_color": "#333"
 		},
 		"conditions": {
-			"lastdate": "CURRENT_DATE",
+			"lastdate": "YESTERDAY",
 			"firstdate": "FDOM"
 		},
 		"cond_definition": null,
@@ -1302,7 +1302,7 @@
 								"conditions": {
 									"fields": ["store_id", "store_name"],
 									"grouping": [],
-									"lastdate": "CURRENT_DATE",
+									"lastdate": "YESTERDAY",
 									"ordering": "store_id",
 									"firstdate": "FDOM",
 									"where_cond": {}
@@ -1340,7 +1340,7 @@
 		"conditions": {
 			"fields": ["coalesce((count(store_id)-sum(store_sales)),0) as num_zero_stores"],
 			"grouping": ["company_id"],
-			"lastdate": "CURRENT_DATE",
+			"lastdate": "YESTERDAY",
 			"firstdate": "FDOM"
 		},
 		"cond_definition": null,
@@ -1463,7 +1463,7 @@
 			"fg_color": "#333"
 		},
 		"conditions": {
-			"lastdate": "CURRENT_DATE",
+			"lastdate": "YESTERDAY",
 			"firstdate": "FDOM"
 		},
 		"cond_definition": null,
@@ -1554,7 +1554,7 @@
 			"fg_color": "#333"
 		},
 		"conditions": {
-			"lastdate": "CURRENT_DATE",
+			"lastdate": "YESTERDAY",
 			"firstdate": "FDOM"
 		},
 		"cond_definition": null,
@@ -1687,7 +1687,7 @@
 			"fg_color": "#333"
 		},
 		"conditions": {
-			"lastdate": "CURRENT_DATE",
+			"lastdate": "YESTERDAY",
 			"firstdate": "FDOM"
 		},
 		"cond_definition": null,
@@ -1941,7 +1941,7 @@
 			"fg_color": "#333"
 		},
 		"conditions": {
-			"filterdate": "CURRENT_DATE",
+			"filterdate": "YESTERDAY",
 			"where_cond": {
 				"territory_id": "!null"
 			},
@@ -2234,7 +2234,7 @@
 				"coalesce(nullif(mpp_attach_postpaid,'0'),0) as mpp_attach_postpaid",
 				"coalesce(nullif(mpp_attach_prepaid,'0'),0) as mpp_attach_prepaid"
 			],
-			"filterdate": "CURRENT_DATE",
+			"filterdate": "YESTERDAY",
 			"where_cond": {
 				"territory_id": "!null"
 			},

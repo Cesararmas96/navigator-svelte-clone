@@ -1,14 +1,25 @@
 <script lang="ts">
-	import { DropdownItem } from 'flowbite-svelte'
+	import { DropdownItem, Modal, Select, Input, Checkbox, Label } from 'flowbite-svelte'
 	import Icon from '$lib/components/common/Icon.svelte'
-	import { createEventDispatcher } from 'svelte'
+	import { createEventDispatcher, getContext } from 'svelte'
+	import { openExportDataModal } from '$lib/helpers/common/modal'
+
 	const dispatch = createEventDispatcher()
 
+	let modal: any = getContext('modal')
+	let widgetActions: any = getContext('widgetActions')
+
+	$: exportData = $widgetActions.find((action: any) => action.name === 'exportData')
+
 	function onClick() {
-		dispatch('itemClick', { click: true })
+		openExportDataModal(modal)
+		// openExportData = true
+		// dispatch('itemClick', { click: true })
 	}
 </script>
 
-<DropdownItem class="flex items-center gap-2" on:click={onClick}>
-	<Icon icon="tabler:file-export" size="18" /> Export Data
-</DropdownItem>
+{#if exportData}
+	<DropdownItem class="flex items-center gap-2" on:click={onClick}>
+		<Icon icon="tabler:file-export" size="18" /> Export Data
+	</DropdownItem>
+{/if}

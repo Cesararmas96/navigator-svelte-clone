@@ -49,6 +49,8 @@
 		"jsvectormap": "^1.5.3",
 		"material-symbols": "^0.9.0",
 		"moment": "^2.29.4",
+		"@types/accounting": "0.4.2",
+		"accounting": "0.4.1",
 		"simplebar": "^6.2.5",
 		"svelte-grid-extended": "^1.1.1",
 		"svelte-grid-layout": "^1.0.3",
