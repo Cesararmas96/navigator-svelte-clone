@@ -85,7 +85,7 @@
 		class="absolute bottom-0 -ml-1 h-8 w-full p-1"
 	>
 		{#if !fixed && footer}
-			<WidgetFooter isToolbarVisible={true} />
+			<WidgetFooter {isToolbarVisible} />
 		{/if}
 	</div>
 {/if}
