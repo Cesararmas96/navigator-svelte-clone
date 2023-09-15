@@ -2,6 +2,7 @@
 	import moment from 'moment'
 	import Loading from '$lib/components/common/Loading.svelte'
 	import { getApiData } from '$lib/services/getData'
+	import { variablesOperationalProgram } from '$lib/stores/programs'
 	import { getContext } from 'svelte'
 
 	let widget: any = getContext('widget')
@@ -181,9 +182,7 @@
 					validateDate = moment(entryDate).subtract(1, 'year').endOf('year').format('YYYY-MM-DD')
 					break
 				default:
-				// const variables = useProgramVariables()
-
-				// validateDate = variables[strDate] || strDate
+					validateDate = $variablesOperationalProgram[strDate as any] || strDate
 			}
 		}
 
