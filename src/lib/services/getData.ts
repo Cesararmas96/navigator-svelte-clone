@@ -89,5 +89,5 @@ export async function getApiData(
 		authorization: `Bearer ${token}`
 	}
 
-	getData(url, method, payload, queryParams, { ...options, headers })
+	return await getData(url, method, payload, queryParams, { ...options, headers })
 }
