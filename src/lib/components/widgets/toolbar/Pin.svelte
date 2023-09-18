@@ -25,14 +25,9 @@
                 widget_id: widgetId,
                 user_id: userId,
             });
-
-
+            console.log(response);
         } catch (error: any) {
-
-            isPinned = !isPinned;
             console.error("Error:", error.message);
-
-
         }
     }
 </script>
