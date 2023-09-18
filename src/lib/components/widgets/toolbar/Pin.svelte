@@ -1,7 +1,7 @@
 <script lang="ts">
     import {Tooltip} from "flowbite-svelte";
     import Icon from "$lib/components/common/Icon.svelte";
-    import {getData} from "$lib/services/getData";
+    import {getApiData, getData} from "$lib/services/getData";
 
     $: isPinned = false;
     let widgetId = 18724;
@@ -21,7 +21,7 @@
 
 
             const method = isPinned ? "DELETE" : "PUT";
-            const response = await getData(endpoint, method, {
+            const response = await getApiData(endpoint, method, {
                 widget_id: widgetId,
                 user_id: userId,
             });

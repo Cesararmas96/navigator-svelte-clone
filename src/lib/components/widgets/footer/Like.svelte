@@ -1,6 +1,6 @@
 <script>
     import Icon from '$lib/components/common/Icon.svelte'
-    import {getData} from "$lib/services/getData";
+    import {getApiData, getData} from "$lib/services/getData";
 
     let icon
 
@@ -20,7 +20,7 @@
             icon = isLiked ? 'twemoji:red-heart' : 'icon-park-outline:like';
 
             const method = isLiked ? "PUT" : "DELETE";
-            const response = await getData(endpoint, method, {
+            const response = await getApiData(endpoint, method, {
                 object_uuid: objectUuid,
                 object_type: objectType
             });
