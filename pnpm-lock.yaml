@@ -1,5 +1,9 @@
 lockfileVersion: '6.0'
 
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
 dependencies:
   '@floating-ui/dom':
     specifier: ^1.4.5
@@ -64,6 +68,9 @@ dependencies:
   sweetalert2:
     specifier: ^11.7.12
     version: 11.7.20
+  tabulator-tables:
+    specifier: ^5.5.2
+    version: 5.5.2
   tailwind-merge:
     specifier: ^1.14.0
     version: 1.14.0
@@ -81,6 +88,9 @@ devDependencies:
   '@types/quill':
     specifier: ^2.0.11
     version: 2.0.11
+  '@types/tabulator-tables':
+    specifier: ^5.5.2
+    version: 5.5.2
   '@typescript-eslint/eslint-plugin':
     specifier: ^5.45.0
     version: 5.62.0(@typescript-eslint/parser@5.62.0)(eslint@8.45.0)(typescript@5.1.6)
@@ -649,6 +659,10 @@ packages:
 
   /@types/semver@7.5.0:
     resolution: {integrity: sha512-G8hZ6XJiHnuhQKR7ZmysCeJWE08o8T0AXtk5darsCaTVsYZhhgUrq53jizaR2FvsoeCwJhlmwTjkXBY5Pn/ZHw==}
+    dev: true
+
+  /@types/tabulator-tables@5.5.2:
+    resolution: {integrity: sha512-8MNNuFsX6Z50QC3jx7tl3/hLOf53DlzJXd8pS7IxDqKcRXqJa8SYGxWBVkz9zJ/uN2GXcB8NmFiV3srt3xjCIA==}
     dev: true
 
   /@types/unist@2.0.8:
@@ -3231,6 +3245,10 @@ packages:
     resolution: {integrity: sha512-GdU1TkiLpGGC0mcPV8bKmS7G0MR7caxambPkEU8zyepRSNR9EaEvIjNhX5QNkL0VFVzHbI3l12NtuEklkJ0D4Q==}
     dev: false
 
+  /tabulator-tables@5.5.2:
+    resolution: {integrity: sha512-GlzUPXeH9Rw1iPXcl3uBLJk6Sz51xdwscZ5RrsKxDQDQ+t2g31hGq/0xjaj6ea62wHgl8vzVsHuwap0jKzsUNg==}
+    dev: false
+
   /tailwind-merge@1.14.0:
     resolution: {integrity: sha512-3mFKyCo/MBcgyOTlrY8T7odzZFx+w+qKSMAmdFzRvqBfLlSigU6TZnlFHK0lkMwj9Bj8OYU+9yW9lmGuS0QEnQ==}
     dev: false
@@ -3603,13 +3621,6 @@ packages:
       tslib: 2.3.0
     dev: false
 
-  /zwitch@2.0.4:
-    resolution: {integrity: sha512-bXE4cR/kVZhKZX/RjPEflHaKVhUVl85noU3v6b8apfQEc1x4A+zBxjZ4lN8LqGd6WZ3dl98pY4o717VFmoPp+A==}
-    dev: false
-
-settings:
-  autoInstallPeers: true
-  excludeLinksFromLockfile: false
   /zwitch@2.0.4:
     resolution: {integrity: sha512-bXE4cR/kVZhKZX/RjPEflHaKVhUVl85noU3v6b8apfQEc1x4A+zBxjZ4lN8LqGd6WZ3dl98pY4o717VFmoPp+A==}
     dev: false

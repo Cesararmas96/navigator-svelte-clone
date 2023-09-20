@@ -2,10 +2,9 @@
 	import { isDarkMode, isUrl } from '$lib/helpers/common/common'
 	import { initWidgetActions } from '$lib/helpers/widget/actions'
 	import { initInstances } from '$lib/helpers/widget/instances'
-	import { createEventDispatcher, getContext, onMount, setContext } from 'svelte'
-	import { writable, type Writable } from 'svelte/store'
+	import { createEventDispatcher, setContext } from 'svelte'
+	import { writable } from 'svelte/store'
 	import { selectedWidgetSettings } from '$lib/stores/widgets'
-	import { initWidgetData } from '$lib/helpers/widget/data'
 
 	let isToolbarVisible: boolean = false
 	let fixed: boolean
@@ -78,16 +77,14 @@
 	const bgTypeClass = (bg: string) => {
 		return !isDarkMode() ? (isUrl(bg) ? 'widget-bg-image' : 'widget-bg-color') : ''
 	}
-
 	let widgetStore = writable(widget)
-
-	initWidgetActions()
-	initInstances()
-	initWidgetData()
 
 	let widgetBase: string
 	$: {
-		if (widget) {
+		if (!widget.loaded) {
+			widget.instances = []
+			initWidgetActions()
+			initInstances()
 			if (widget.params && !widget.params?.settings && !widget.temp) {
 				widget.params.settings = Object.assign({}, defaultSettings.params.settings)
 			}
@@ -95,6 +92,8 @@
 				widgetBase = widget.widget_type_id.split('-')[0]
 				widgetBase = widgetBase.charAt(0).toUpperCase() + widgetBase.slice(1)
 			}
+			widget.loaded = true
+			widget.context = 'widget'
 			$widgetStore = widget
 			setContext('widget', widgetStore)
 		}

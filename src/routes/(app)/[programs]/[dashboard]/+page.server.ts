@@ -2,7 +2,7 @@ import { sendErrorNotification } from "$lib/stores/toast";
 import type { Actions } from "@sveltejs/kit";
 
 export const actions: Actions = {
-	create: async ({ request }) => {
+	create: async ({request}) => {
 		try {
 			const form = await request.formData();
 

@@ -1,13 +1,22 @@
 <script lang="ts">
 	import { onMount } from 'svelte'
+	import type { Writable } from 'svelte/store'
 
-	export let name: string
+	export let widget: Writable<any>
 	export let data: any
 
 	let Thing: any
 
 	onMount(async () => {
-		Thing = (await import(`./type/${name}.svelte`)).default
+		$widget.data = data
+		Thing = (await import(`./type/${$widget.classbase}.svelte`)).default
+		if ($widget.temp) {
+			$widget.instance_loaded = true
+		}
+		// if ($widget.attributes.explorer === 'v2') {
+		// 	$widget.instance_loaded = true
+		// 	$widget.attributes.explorer = 'v3'
+		// }
 	})
 </script>
 

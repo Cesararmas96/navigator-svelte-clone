@@ -7,16 +7,8 @@
 		TableHead,
 		TableHeadCell
 	} from 'flowbite-svelte'
-	import { getContext, onMount } from 'svelte'
-	import type { Writable } from 'svelte/store'
 
 	export let data: any
-
-	const widget = getContext<Writable<any>>('widget')
-
-	onMount(() => {
-		if ($widget.temp) $widget.instance_loaded = true
-	})
 </script>
 
 {#if data}

@@ -14,12 +14,15 @@ export const addInstance = (instances: Writable<any[]>, newInstance: any) => {
   instanceConfig.temp = true;
   instanceConfig.title = newInstance.title + ' (temp)';
   instanceConfig.master_filtering = true;
+  delete instanceConfig.instance_loaded;
+  delete instanceConfig.loaded;
+  delete instanceConfig.fetch;
 
   instances.update(instances => [...instances, instanceConfig]);
 }
 
-export const removeInstance = (instances: Writable<any[]>, instanceId: string) => {
-  instances.update(is => is.filter(instance => instance.id !== instanceId));
+export const removeInstance = (instances: Writable<any[]>, instanceUId: string) => {
+  instances.update(is => is.filter(instance => instance.uid !== instanceUId));
 }
 
 const deepClone = (obj: any) => {

@@ -3,8 +3,11 @@
 	import Loading from '$lib/components/common/Loading.svelte'
 	import { getApiData } from '$lib/services/getData'
 	import { getContext } from 'svelte'
+	import type { Writable } from 'svelte/store'
+	import { addWidgetAction } from '$lib/helpers'
 
-	let widget: any = getContext('widget')
+	export let widget: Writable<any>
+
 	let widgetActions: any = getContext('widgetActions')
 
 	const urlBase = import.meta.env.VITE_API_URL
@@ -209,34 +212,36 @@
 		})
 	}
 
-	if (!$widgetActions.find((action: any) => action.name === 'reloadFetchData')) {
-		const actions = $widgetActions
-		actions.push({
-			name: 'reloadFetchData',
-			action: () => fetchData()
-		})
-		$widgetActions = actions
-	}
+	addWidgetAction(widgetActions, {
+		name: 'reloadFetchData',
+		action: () => fetchData()
+	})
 
-	if (!$widgetActions.find((action: any) => action.name === 'exportData')) {
-		const actions = $widgetActions
-		actions.push({
-			name: 'exportData'
-			// action: () => fetchData()
-		})
-		$widgetActions = actions
-	}
+	// if (!$widgetActions.find((action: any) => action.name === 'exportData')) {
+	// 	const actions = $widgetActions
+	// 	actions.push({
+	// 		name: 'exportData'
+	// 		// action: () => fetchData()
+	// 	})
+	// 	$widgetActions = actions
+	// }
 
-	if (!$widgetActions.find((action: any) => action.name === 'filterData')) {
-		const actions = $widgetActions
-		actions.push({
-			name: 'filterData'
-			// action: () => fetchData()
-		})
-		$widgetActions = actions
+	// if (!$widgetActions.find((action: any) => action.name === 'filterData')) {
+	// 	const actions = $widgetActions
+	// 	actions.push({
+	// 		name: 'filterData'
+	// 		// action: () => fetchData()
+	// 	})
+	// 	$widgetActions = actions
+	// }
+	$: if (!$widget.fetch) {
+		if (!$widget.data) {
+			fetchData()
+		} else {
+			data = $widget.data // $dataStore
+		}
+		$widget.fetch = true
 	}
-
-	fetchData()
 </script>
 
 {#await data}

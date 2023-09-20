@@ -1,9 +1,8 @@
 <script lang="ts">
 	import { initWidgetActions } from '$lib/helpers/widget/actions'
-	import { initWidgetData } from '$lib/helpers/widget/data'
 	import { initInstances } from '$lib/helpers/widget/instances'
-	import { createEventDispatcher, getContext, setContext } from 'svelte'
-	import { writable, type Writable } from 'svelte/store'
+	import { createEventDispatcher, setContext } from 'svelte'
+	import { writable } from 'svelte/store'
 
 	export let isToolbarVisible: boolean
 	export let fixed: boolean
@@ -14,25 +13,21 @@
 	export let widget: any
 	let widgetStore = writable(widget)
 
-	const data = getContext<Writable<any[]>>('widgetData')
-	initWidgetActions()
-	initInstances()
-	initWidgetData($data)
-
 	let widgetBase: string
 	$: {
-		if (widget) {
+		if (!widget.loaded) {
+			console.log('creo instancia')
+			initWidgetActions()
+			initInstances()
+
 			widget.params.settings.toolbar.clone = false
 
 			if (widget.widget_type_id) {
 				widgetBase = widget.widget_type_id.split('-')[0]
 				widgetBase = widgetBase.charAt(0).toUpperCase() + widgetBase.slice(1)
-				// if (widgetBase === 'Rest' || widgetBase === 'Api') {
-				// 	let reloadFetchData = writable(false)
-				// 	setContext('reloadFetchData', reloadFetchData)
-				// }
 			}
 			$widgetStore = widget
+			widget.loaded = true
 			setContext('widget', widgetStore)
 		}
 	}
@@ -40,6 +35,11 @@
 	$: if ($widgetStore.instance_loaded) {
 		$widgetStore.instance_loaded = null
 		dispatch('handleInstanceResize')
+	}
+
+	$: if ($widgetStore.close_instance) {
+		$widgetStore.instance_loaded = null
+		dispatch('handleCloseInstance', $widgetStore.uid)
 	}
 
 	$: if ($widgetStore.collapse_action) {
