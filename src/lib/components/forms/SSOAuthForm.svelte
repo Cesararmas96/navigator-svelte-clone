@@ -58,10 +58,10 @@
     background-color: #fff;
     border-radius: 5px;
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+    text-align: center; /* Center align the content within the form */
   }
 
   h2 {
-    text-align: center;
     font-size: 24px;
     margin-bottom: 20px;
   }

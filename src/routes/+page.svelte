@@ -17,6 +17,8 @@
 		if (!$themeColor) $themeColor = localStorage.getItem('theme-color') || 'blue'
 		loading = false
 	})
+
+
 </script>
 
 {#if loading}
