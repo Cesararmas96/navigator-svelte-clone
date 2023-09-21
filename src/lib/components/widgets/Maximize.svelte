@@ -1,13 +1,16 @@
 <script>
 	import { selectedWidgetMaximize } from '$lib/stores/widgets'
 	import Widget from './Widget.svelte'
+	import WidgetBox from './WidgetBox.svelte'
 
 	$: widget = $selectedWidgetMaximize
 </script>
 
 {#if widget}
 	<div class="widget-maximize">
-		<Widget widget={$widget} />
+		<WidgetBox widget={$widget} let:widget let:fixed let:isOwner let:isToolbarVisible>
+			<Widget {widget} {fixed} {isToolbarVisible} {isOwner} />
+		</WidgetBox>
 	</div>
 {/if}
 

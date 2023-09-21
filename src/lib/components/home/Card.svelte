@@ -1,14 +1,15 @@
 <script lang="ts">
 	import { storeProgram } from '$lib/stores/programs'
+	import { goto } from '$app/navigation'
 
-	// const baseUrl = import.meta.env.BASE_URL
-	const baseUrl = 'https://front-staging.navi.mobileinsight.com'
+	const baseUrl = import.meta.env.VITE_BASE_URL
 
 	export let program: any
 
 	const handleClickProgram = (program: any) => {
 		storeProgram.set(program)
 		localStorage.setItem('program', JSON.stringify(program))
+		goto(`/${program.program_slug}`)
 	}
 
 	const loaded = new Map()
@@ -38,24 +39,25 @@
 		alt=""
 		class="h-auto w-full rounded-md object-cover object-center dark:bg-gray-900"
 		use:lazy={{
-			src: `${baseUrl}/v2/assets/img/programs/${program.program_slug}/${program.program_slug}-home.png`
+			src: `${baseUrl}/assets/img/programs/${program.program_slug}/${program.program_slug}-home.png`
 		}}
 	/>
 {:else}
-	<a
+	<!-- svelte-ignore a11y-click-events-have-key-events -->
+	<!-- svelte-ignore a11y-no-static-element-interactions -->
+	<div
 		class="animate__animated animate__zoomIn card cursor-pointer p-6 hover:-translate-y-1 hover:scale-100 hover:shadow-lg"
-		href={`/${program.program_slug}`}
 		on:click={() => handleClickProgram(program)}
 	>
 		<img
 			alt=""
 			class="h-auto w-full rounded-md object-cover object-center dark:bg-gray-900"
 			use:lazy={{
-				src: `${baseUrl}/v2/assets/img/programs/${program.program_slug}/${program.program_slug}-home.png`
+				src: `${baseUrl}/assets/img/programs/${program.program_slug}/${program.program_slug}-home.png`
 			}}
 		/>
 		<div class="mb-2 mt-6">
 			<h3 class="tracki text-center text-lg font-semibold uppercase">{program.program_name}</h3>
 		</div>
-	</a>
+	</div>
 {/if}

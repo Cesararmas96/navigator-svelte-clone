@@ -10,11 +10,11 @@
 		"title": "MTD Postpaid Same Month Returns",
 		"url": null,
 		"query_slug": {
-			"method": "POST",
-			"url": "https://api-dev.t-mobile.com/api/v1/program/walmart/query/walmart_postpaid_returns",
+			"method": "GET",
+			"url": "https://api.breakingbadquotes.xyz/v1/quotes/5",
 			"body": ""
 		},
-		"params": {	
+		"params": {
 			"ajax": {
 				"method": "POST"
 			},
@@ -61,8 +61,8 @@
 		"module_id": null,
 		"filtering_show": null,
 		"program_id": 3,
-		"widget_type_id": "api-table",
-		"classbase": "RestTableWidget",
+		"widget_type_id": "rest-table",
+		"classbase": "ApiTableWidget",
 		"widgetcat_id": 3,
 		"program_slug": "walmart",
 		"user_id": null,
@@ -141,7 +141,7 @@
 		"widget_name": "Other Quality Metrics",
 		"widget_id": 1289,
 		"title": "Other Quality Metrics",
-		"url": null,
+		"url": "-ilPkG2TKzI",
 		"query_slug": {
 			"slug": "walmart_kpi_metrics"
 		},
@@ -206,8 +206,8 @@
 		"module_id": null,
 		"filtering_show": null,
 		"program_id": 3,
-		"widget_type_id": "api-card",
-		"classbase": "CardWidget",
+		"widget_type_id": "media-video",
+		"classbase": "MediaWidget",
 		"widgetcat_id": 3,
 		"program_slug": "walmart",
 		"user_id": null,
@@ -224,7 +224,9 @@
 		"title": "Postpaid",
 		"url": null,
 		"query_slug": {
-			"slug": "walmart_sales_postpaid"
+			"method": "GET",
+			"url": "https://gorest.co.in/public/v2/users",
+			"body": ""
 		},
 		"params": {
 			"ajax": {
@@ -311,7 +313,7 @@
 			"fg_color": "#333"
 		},
 		"conditions": {
-			"filterdate": "CURRENT_DATE",
+			"filterdate": "YESTERDAY",
 			"querylimit": 1,
 			"where_cond": {
 				"territory_id": "null"
@@ -329,8 +331,8 @@
 		"module_id": null,
 		"filtering_show": null,
 		"program_id": 3,
-		"widget_type_id": "api-card",
-		"classbase": "CardWidget",
+		"widget_type_id": "rest-table",
+		"classbase": "ApiTableWidget",
 		"widgetcat_id": 3,
 		"program_slug": "walmart",
 		"user_id": null,
@@ -412,7 +414,7 @@
 			"fg_color": "#333"
 		},
 		"conditions": {
-			"lastdate": "CURRENT_DATE",
+			"lastdate": "YESTERDAY",
 			"firstdate": "FDOM"
 		},
 		"cond_definition": null,
@@ -456,7 +458,7 @@
 			"fg_color": "#333"
 		},
 		"conditions": {
-			"filterdate": "CURRENT_DATE",
+			"filterdate": "YESTERDAY",
 			"where_cond": {
 				"territory_id": "!null"
 			},
@@ -640,7 +642,7 @@
 			"fg_color": "#333"
 		},
 		"conditions": {
-			"filterdate": "CURRENT_DATE"
+			"filterdate": "YESTERDAY"
 		},
 		"cond_definition": null,
 		"where_definition": null,
@@ -705,7 +707,7 @@
 			"fg_color": "#333"
 		},
 		"conditions": {
-			"lastdate": "CURRENT_DATE",
+			"lastdate": "YESTERDAY",
 			"firstdate": "FDOM"
 		},
 		"cond_definition": null,
@@ -774,7 +776,7 @@
 			"fg_color": "#333"
 		},
 		"conditions": {
-			"lastdate": "CURRENT_DATE",
+			"lastdate": "YESTERDAY",
 			"firstdate": "FDOM"
 		},
 		"cond_definition": null,
@@ -910,7 +912,7 @@
 			"fg_color": "#333"
 		},
 		"conditions": {
-			"filterdate": "CURRENT_DATE",
+			"filterdate": "YESTERDAY",
 			"querylimit": 1,
 			"where_cond": {
 				"territory_id": "null"
@@ -946,7 +948,9 @@
 		"title": "Prepaid",
 		"url": null,
 		"query_slug": {
-			"slug": "walmart_sales_prepaid"
+			"method": "GET",
+			"url": "https://gorest.co.in/public/v2/posts",
+			"body": ""
 		},
 		"params": {
 			"ajax": {
@@ -1034,7 +1038,7 @@
 			"fg_color": "#333"
 		},
 		"conditions": {
-			"filterdate": "CURRENT_DATE",
+			"filterdate": "YESTERDAY",
 			"querylimit": 1,
 			"where_cond": {
 				"territory_id": "null"
@@ -1052,8 +1056,8 @@
 		"module_id": null,
 		"filtering_show": null,
 		"program_id": 3,
-		"widget_type_id": "api-card",
-		"classbase": "CardWidget",
+		"widget_type_id": "rest-table",
+		"classbase": "ApiTableWidget",
 		"widgetcat_id": 3,
 		"program_slug": "walmart",
 		"user_id": null,
@@ -1171,7 +1175,7 @@
 			"fg_color": "#333"
 		},
 		"conditions": {
-			"filterdate": "CURRENT_DATE",
+			"filterdate": "YESTERDAY",
 			"querylimit": 1,
 			"where_cond": {
 				"territory_id": "null"
@@ -1239,7 +1243,7 @@
 			"fg_color": "#333"
 		},
 		"conditions": {
-			"lastdate": "CURRENT_DATE",
+			"lastdate": "YESTERDAY",
 			"firstdate": "FDOM"
 		},
 		"cond_definition": null,
@@ -1298,7 +1302,7 @@
 								"conditions": {
 									"fields": ["store_id", "store_name"],
 									"grouping": [],
-									"lastdate": "CURRENT_DATE",
+									"lastdate": "YESTERDAY",
 									"ordering": "store_id",
 									"firstdate": "FDOM",
 									"where_cond": {}
@@ -1336,7 +1340,7 @@
 		"conditions": {
 			"fields": ["coalesce((count(store_id)-sum(store_sales)),0) as num_zero_stores"],
 			"grouping": ["company_id"],
-			"lastdate": "CURRENT_DATE",
+			"lastdate": "YESTERDAY",
 			"firstdate": "FDOM"
 		},
 		"cond_definition": null,
@@ -1459,7 +1463,7 @@
 			"fg_color": "#333"
 		},
 		"conditions": {
-			"lastdate": "CURRENT_DATE",
+			"lastdate": "YESTERDAY",
 			"firstdate": "FDOM"
 		},
 		"cond_definition": null,
@@ -1550,7 +1554,7 @@
 			"fg_color": "#333"
 		},
 		"conditions": {
-			"lastdate": "CURRENT_DATE",
+			"lastdate": "YESTERDAY",
 			"firstdate": "FDOM"
 		},
 		"cond_definition": null,
@@ -1683,7 +1687,7 @@
 			"fg_color": "#333"
 		},
 		"conditions": {
-			"lastdate": "CURRENT_DATE",
+			"lastdate": "YESTERDAY",
 			"firstdate": "FDOM"
 		},
 		"cond_definition": null,
@@ -1937,7 +1941,7 @@
 			"fg_color": "#333"
 		},
 		"conditions": {
-			"filterdate": "CURRENT_DATE",
+			"filterdate": "YESTERDAY",
 			"where_cond": {
 				"territory_id": "!null"
 			},
@@ -2230,7 +2234,7 @@
 				"coalesce(nullif(mpp_attach_postpaid,'0'),0) as mpp_attach_postpaid",
 				"coalesce(nullif(mpp_attach_prepaid,'0'),0) as mpp_attach_prepaid"
 			],
-			"filterdate": "CURRENT_DATE",
+			"filterdate": "YESTERDAY",
 			"where_cond": {
 				"territory_id": "!null"
 			},

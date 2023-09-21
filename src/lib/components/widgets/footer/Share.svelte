@@ -7,7 +7,7 @@
 
 <span class="inline-flex items-center text-sm">
 	<a
-		href={`/share/widget/${$widget?.data?.uid}`}
+		href={`/share/widget/${$widget?.uid}`}
 		target="_blank"
 		class="icon btn hover:bg-light-100 dark:hover:bg-dark-200"
 	>

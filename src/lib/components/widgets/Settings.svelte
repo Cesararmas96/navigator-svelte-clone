@@ -11,9 +11,17 @@
 	import { setContext } from 'svelte'
 	import SettingsToolbar from './settings/Toolbar.svelte'
 	import SettingsFooter from './settings/Footer.svelte'
+	import SettingsType from './settings/Type.svelte'
+	import {
+		sendErrorNotification,
+		sendInfoNotification,
+		sendSuccessNotification,
+		sendWarningNotification
+	} from '$lib/stores/toast'
 
 	const patternUrl =
 		/(https:\/\/www\.|http:\/\/www\.|https:\/\/|http:\/\/)?[a-zA-Z]{2,}(\.[a-zA-Z]{2,})(\.[a-zA-Z]{2,})?\/[a-zA-Z0-9]{2,}|((https:\/\/www\.|http:\/\/www\.|https:\/\/|http:\/\/)?[a-zA-Z]{2,}(\.[a-zA-Z]{2,})(\.[a-zA-Z]{2,})?)|(https:\/\/www\.|http:\/\/www\.|https:\/\/|http:\/\/)?[a-zA-Z0-9]{2,}\.[a-zA-Z0-9]{2,}\.[a-zA-Z0-9]{2,}(\.[a-zA-Z0-9]{2,})?/
+
 	const patternHex = /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/
 
 	let transitionParams = {
@@ -98,9 +106,14 @@
 	}
 
 	const update = () => {
-		hexToRGB()
-		$selectedWidgetSettings = { widget: $widgetSettings, state: 'saved' }
-		$hideWidgetSettings = true
+		try {
+			hexToRGB()
+			$selectedWidgetSettings = { widget: $widgetSettings, state: 'saved' }
+			$hideWidgetSettings = true
+			sendSuccessNotification('Updated widget')
+		} catch (error) {
+			sendErrorNotification('An error occurred, please try again later')
+		}
 	}
 
 	const hexToRGB = () => {
@@ -131,27 +144,29 @@
 	{transitionParams}
 	bind:hidden={$hideWidgetSettings}
 	id="sidebarSettings"
-	class="w-[350px] p-2"
+	class="w-[350px] p-0"
 >
-	<div class="flex items-center">
-		<h5
-			id="drawer-label"
-			class="mb-4 inline-flex items-center text-base font-semibold text-gray-500 dark:text-gray-400"
-		>
-			<Icon icon="mdi:widgets-outline" classes="mr-1" size="20px" />
-			Widget
-		</h5>
-		<CloseButton on:click={() => close()} class="mb-4 dark:text-white" />
-	</div>
 	<form method="POST" class="mb-6" action="?/create" use:enhance>
-		<Button class="my-3 w-full rounded p-2 text-sm" type="submit" on:click={update}
-			><Icon
-				icon="streamline:interface-edit-write-2-change-document-edit-modify-paper-pencil-write-writing"
-				classes="mr-2"
-			/> Update widget</Button
-		>
+		<div class="sticky top-0 flex w-full flex-col bg-inherit bg-white p-2 dark:bg-gray-800">
+			<div class="mb-2 flex items-center">
+				<h5
+					id="drawer-label"
+					class=" inline-flex items-center text-base font-semibold text-gray-500 dark:text-gray-400"
+				>
+					<Icon icon="mdi:widgets-outline" classes="mr-1" size="20px" />
+					Widget
+				</h5>
+				<CloseButton on:click={() => close()} class="dark:text-white" />
+			</div>
+			<Button class="mb-2 mt-3 w-full rounded p-2 text-sm" type="submit" on:click={update}
+				><Icon
+					icon="streamline:interface-edit-write-2-change-document-edit-modify-paper-pencil-write-writing"
+					classes="mr-2"
+				/> Update widget</Button
+			>
+		</div>
 		{#if $widgetSettings}
-			<Accordion>
+			<Accordion class="p-2">
 				<AccordionItem
 					open
 					borderOpenClass="p-2 border-l border-r border-b border-gray-200 dark:border-gray-700"
@@ -182,6 +197,21 @@
 						<Icon icon="mdi:chevron-double-down" size="20" classes="mt-1" />
 					</span>
 					<SettingsAppearance />
+				</AccordionItem>
+				<AccordionItem
+					borderOpenClass="p-2 border-l border-r border-b border-gray-200 dark:border-gray-700"
+				>
+					<span slot="header" class="flex gap-2 text-base">
+						<Icon icon="mdi:cog-outline" size="18" />
+						<span>Widget type</span>
+					</span>
+					<div slot="arrowup">
+						<Icon icon="mdi:chevron-double-up" size="20" classes="mt-1" />
+					</div>
+					<span slot="arrowdown">
+						<Icon icon="mdi:chevron-double-down" size="20" classes="mt-1" />
+					</span>
+					<SettingsType />
 				</AccordionItem>
 				{#if !$widgetSettings.params.settings.general.fixed}
 					<AccordionItem
