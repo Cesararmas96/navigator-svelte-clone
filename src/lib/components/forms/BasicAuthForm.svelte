@@ -29,7 +29,7 @@
       }
     }
 
-    console.log(authMethod)
+
   </script>
 
     <P size="4xl" class="text-center">{authMethod.name}</P>
