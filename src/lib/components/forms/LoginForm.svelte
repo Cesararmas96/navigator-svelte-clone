@@ -3,6 +3,7 @@
     import {Input, Label, Button, Alert} from "flowbite-svelte";
     import {fly} from "svelte/transition";
     import {goto} from "$app/navigation";
+    import {isAuthenticated} from "$lib/stores";
 
     export let authMethod: any;
     export let apiUrl: string;
@@ -32,6 +33,8 @@
             if (response.ok) {
                 const data = await response.json();
                 sessionStorage.setItem("authToken", data.token);
+                isAuthenticated.set(true);
+                console.log($isAuthenticated);
                 await goto("/home");
             } else {
                 const error = await response.json();
