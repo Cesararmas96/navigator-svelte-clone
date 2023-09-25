@@ -1,0 +1,101 @@
+<script lang="ts">
+    import {createEventDispatcher} from "svelte";
+    import {Input, Label, Button, Alert} from "flowbite-svelte";
+    import {fly} from "svelte/transition";
+    import {goto} from "$app/navigation";
+
+
+    export let authMethod: any;
+    export let apiUrl: string;
+    let username = "";
+    let password = "";
+    let errors = {
+        status: null,
+        error: "",
+        reason: ""
+    };
+
+    const dispatch = createEventDispatcher();
+
+
+    function onLoginSuccess(token: string) {
+        console.log(token);
+        sessionStorage.setItem("authToken", token);
+        goto("/home");
+    }
+
+    function onLoginFail() {
+        console.log("Error on login");
+    }
+
+
+    async function handleSubmit(e: { preventDefault: () => void }) {
+        e.preventDefault();
+
+        const headers = new Headers(authMethod.headers);
+        headers.append("Content-Type", "application/json");
+
+        const response = await fetch(`${apiUrl}${authMethod.uri}`, {
+            method: "POST",
+            headers,
+            body: JSON.stringify({username, password})
+        });
+
+        if (response.ok) {
+
+            const data = await response.json();
+            sessionStorage.setItem("authToken", data.token);
+            await goto("/home");
+
+        } else {
+            const error = await response.json();
+            errors = {
+                status: error.status,
+                error: error.error,
+                reason: error.reason
+            };
+            dispatch("fail");
+        }
+    }
+
+    function closeAlertError() {
+        errors = {
+            status: null,
+            error: "",
+            reason: ""
+        };
+    }
+</script>
+
+<form class="space-y-5" on:submit={handleSubmit}>
+    <p class="mb-7">Enter your email and password to login</p>
+
+    {#if errors?.status}
+        <Alert
+                color="yellow"
+                dismissable
+                transition={fly}
+                params={{ x: 200 }}
+                class="border-l-4"
+                on:click={closeAlertError}
+        >
+            <iconify-icon icon="tabler:info-triangle" height="unset" class="mr-1 w-4 h-4"/>
+            {errors?.reason}
+        </Alert>
+    {/if}
+
+    <div>
+        <Label for="email" class="mb-1">Email</Label>
+        <Input bind:value={username} type="text" id="email" placeholder="email@email.com" required/>
+    </div>
+    <div>
+        <Label for="password" class="mb-1">Password</Label>
+        <Input bind:value={password} type="password" id="password" placeholder="**********" required/>
+    </div>
+
+    <div class="flex justify-end">
+        <a class="text-sm dark:text-gray-400" href="/">Forgot your password?</a>
+    </div>
+
+    <Button color="blue" class="w-full" type="submit">SIGN IN</Button>
+</form>

@@ -35,15 +35,7 @@
 
     onMount(() => importLoginMethods());
 
-    function onLoginSuccess(token: string) {
-        console.log(token);
-        sessionStorage.setItem("authToken", token);
-        goto("/home");
-    }
 
-    function onLoginFail() {
-        console.log("Error on login");
-    }
 </script>
 
 
@@ -75,8 +67,7 @@
 								'x-auth-method': 'BasicAuth'
 							}
 						}}
-                            on:success={onLoginSuccess}
-                            on:fail={onLoginFail}
+
                     />
 
                     <div
