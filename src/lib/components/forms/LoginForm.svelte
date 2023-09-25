@@ -4,7 +4,6 @@
     import {fly} from "svelte/transition";
     import {goto} from "$app/navigation";
 
-
     export let authMethod: any;
     export let apiUrl: string;
     let username = "";
@@ -17,44 +16,34 @@
 
     const dispatch = createEventDispatcher();
 
-
-    function onLoginSuccess(token: string) {
-        console.log(token);
-        sessionStorage.setItem("authToken", token);
-        goto("/home");
-    }
-
-    function onLoginFail() {
-        console.log("Error on login");
-    }
-
-
-    async function handleSubmit(e: { preventDefault: () => void }) {
+    async function handleSubmit(e: Event) {
         e.preventDefault();
 
-        const headers = new Headers(authMethod.headers);
-        headers.append("Content-Type", "application/json");
+        try {
+            const response = await fetch(`${apiUrl}${authMethod.uri}`, {
+                method: "POST",
+                headers: {
+                    ...authMethod.headers,
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({username, password})
+            });
 
-        const response = await fetch(`${apiUrl}${authMethod.uri}`, {
-            method: "POST",
-            headers,
-            body: JSON.stringify({username, password})
-        });
-
-        if (response.ok) {
-
-            const data = await response.json();
-            sessionStorage.setItem("authToken", data.token);
-            await goto("/home");
-
-        } else {
-            const error = await response.json();
-            errors = {
-                status: error.status,
-                error: error.error,
-                reason: error.reason
-            };
-            dispatch("fail");
+            if (response.ok) {
+                const data = await response.json();
+                sessionStorage.setItem("authToken", data.token);
+                await goto("/home");
+            } else {
+                const error = await response.json();
+                errors = {
+                    status: error.status,
+                    error: error.error,
+                    reason: error.reason
+                };
+                dispatch("fail");
+            }
+        } catch (error) {
+            console.error("An error occurred:", error);
         }
     }
 
