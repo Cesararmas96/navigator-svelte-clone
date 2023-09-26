@@ -15,27 +15,43 @@
 
     initModal()
 
+
+    const sessionEndpoint = 'https://api.dev.navigator.mobileinsight.com/api/v1/user/session'
+
+
     const handleAuthentication = async () => {
+        const token = sessionStorage.getItem('token')
 
-        const rawSession = sessionStorage.getItem('session')
-        const user = JSON.parse(rawSession)
+        if (token) {
+            try {
 
-        const validatedUser = validateUser(user)
+                const rawSession = await fetch(sessionEndpoint, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    }
+                })
+                const session = await rawSession.json()
+                console.log(session)
+            } catch (error) {
+                sessionStorage.clear()
+                goto('/login')
+            }
+        }
+        if (!token) {
+            await goto('/login')
+            sessionStorage.clear()
+        }
 
-
-        if (!validatedUser) goto('/login')
     }
 
 
 </script>
-
 
 {#await handleAuthentication() then auth}
     <slot/>
     <Toasts/>
     <Modal/>
     <WidgetSettings/>
-
 {/await}
-
-

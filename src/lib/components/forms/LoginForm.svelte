@@ -39,8 +39,6 @@
                 console.log(data);
                 sessionStorage.setItem("token", data.token);
                 sessionStorage.setItem("session", JSON.stringify(data));
-                // Update the session data store here
-                console.log(data);
 
                 await goto("/home");
             } else {

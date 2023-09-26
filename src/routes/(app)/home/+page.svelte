@@ -8,8 +8,7 @@
         return program.program_name.localeCompare(program2.program_name);
     });
 
-    const token = sessionStorage.getItem("token");
-    if (!token) goto("/login");
+
 </script>
 
 {#if programs}
