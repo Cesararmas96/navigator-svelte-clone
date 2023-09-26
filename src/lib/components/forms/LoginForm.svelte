@@ -1,9 +1,10 @@
 <script lang="ts">
-    import {createEventDispatcher} from "svelte";
+    import {createEventDispatcher, setContext} from "svelte";
     import {Input, Label, Button, Alert} from "flowbite-svelte";
     import {fly} from "svelte/transition";
     import {goto} from "$app/navigation";
-    import {isAuthenticated} from "$lib/stores";
+    import {isAuthenticated, sessionData} from "$lib/stores";
+    import {writable} from "svelte/store";
 
     export let authMethod: any;
     export let apiUrl: string;
@@ -14,6 +15,9 @@
         error: "",
         reason: ""
     };
+
+    // Initialize the session data store and set the context here
+
 
     const dispatch = createEventDispatcher();
 
@@ -32,9 +36,12 @@
 
             if (response.ok) {
                 const data = await response.json();
+                console.log(data);
                 sessionStorage.setItem("token", data.token);
-                isAuthenticated.set(true);
-                console.log($isAuthenticated);
+                sessionStorage.setItem("session", JSON.stringify(data));
+                // Update the session data store here
+                console.log(data);
+
                 await goto("/home");
             } else {
                 const error = await response.json();
