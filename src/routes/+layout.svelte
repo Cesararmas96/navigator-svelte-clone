@@ -11,14 +11,19 @@
     import {isAuthenticated} from "$lib/stores/";
     import {goto} from "$app/navigation";
     import {onMount} from "svelte";
+    import {validateUser} from "$lib/helpers/auth/session.ts";
 
     initModal()
 
     const handleAuthentication = async () => {
 
-        const token = sessionStorage.getItem('token')
-        if (!token) goto('/login')
+        const rawSession = sessionStorage.getItem('session')
+        const user = JSON.parse(rawSession)
 
+        const validatedUser = validateUser(user)
+
+
+        if (!validatedUser) goto('/login')
     }
 
 
