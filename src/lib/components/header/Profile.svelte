@@ -4,7 +4,7 @@
 
 
     export function handleLogout() {
-        sessionStorage.removeItem('authToken')
+        sessionStorage.removeItem('token')
         goto('/login')
     }
 

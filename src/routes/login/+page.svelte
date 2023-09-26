@@ -6,6 +6,7 @@
 
     import "iconify-icon";
     import LoginForm from "$lib/components/forms/LoginForm.svelte";
+    import {isAuthenticated} from "$lib/stores";
 
 
     const EXTERNAL_AUTH_METHODS = ["AzureAuth", "ADFSAuth"];
@@ -13,6 +14,9 @@
 
     let authMethods: Array<any> = [];
     let apiUrl = import.meta.env.VITE_API_URL;
+
+
+    if (sessionStorage.getItem("token")) goto("/home");
 
 
     const importLoginMethods = async () => {
@@ -33,7 +37,10 @@
         }
     };
 
-    onMount(() => importLoginMethods());
+    onMount(() => {
+        importLoginMethods();
+
+    });
 
 
 </script>

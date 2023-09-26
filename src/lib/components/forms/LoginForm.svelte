@@ -32,7 +32,7 @@
 
             if (response.ok) {
                 const data = await response.json();
-                sessionStorage.setItem("authToken", data.token);
+                sessionStorage.setItem("token", data.token);
                 isAuthenticated.set(true);
                 console.log($isAuthenticated);
                 await goto("/home");

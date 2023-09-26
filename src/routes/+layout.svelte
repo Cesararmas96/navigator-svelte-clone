@@ -13,11 +13,12 @@
     import {onMount} from "svelte";
 
     initModal()
-    
+
     const handleAuthentication = async () => {
-        if (!$isAuthenticated) {
-            goto('/login')
-        }
+
+        const token = sessionStorage.getItem('token')
+        if (!token) goto('/login')
+
     }
 
 
