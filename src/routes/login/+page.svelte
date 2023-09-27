@@ -46,10 +46,21 @@
             // Code to be executed every second goes here
             if (sessionStorage.getItem("token")) {
                 goto("/home");
+
+                setTimeout(() => {
+                    location.reload();
+                }, 500);
+
+
                 return;
             }
             if (localStorage.getItem("token")) {
                 goto("/home");
+
+                setTimeout(() => {
+                    location.reload();
+                }, 1);
+
                 return;
             }
 

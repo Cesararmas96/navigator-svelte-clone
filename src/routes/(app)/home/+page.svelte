@@ -4,6 +4,7 @@
     import {programs} from "../../../data/programs";
     import {goto} from "$app/navigation";
     import {copyToken, pasteToken} from "$lib/helpers/auth/session";
+    import {onMount} from "svelte";
 
     const allPrograms = programs.sort(function (program: any, program2: any) {
         return program.program_name.localeCompare(program2.program_name);
