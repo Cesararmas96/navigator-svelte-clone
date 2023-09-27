@@ -33,3 +33,31 @@ export function validateUser(user) {
 
 	return true
 }
+
+export const handleAuthorization = async () => {
+	const sessionEndpoint = 'https://api.dev.navigator.mobileinsight.com/api/v1/user/session'
+
+	const token = sessionStorage.getItem('token')
+
+	if (token) {
+		try {
+			const rawSession = await fetch(sessionEndpoint, {
+				method: 'GET',
+				headers: {
+					'Content-Type': 'application/json',
+					Authorization: `Bearer ${token}`
+				}
+			})
+			const session = await rawSession.json()
+			console.log(session)
+			return session
+		} catch (error) {
+			sessionStorage.clear()
+			goto('/login')
+		}
+	}
+	if (!token) {
+		await goto('/login')
+		sessionStorage.clear()
+	}
+}
