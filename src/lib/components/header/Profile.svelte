@@ -2,12 +2,7 @@
     import {Avatar, Dropdown, DropdownItem} from "flowbite-svelte";
     import {goto} from "$app/navigation";
     import type {User} from "../../../interfaces/session";
-
-
-    export function handleLogout() {
-        sessionStorage.clear();
-        goto("/login");
-    }
+    import {handleLogout} from "$lib/helpers/auth/session";
 
 
     const rawSession = sessionStorage.getItem("session");

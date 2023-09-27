@@ -3,6 +3,7 @@
     import Card from "$lib/components/home/Card.svelte";
     import {programs} from "../../../data/programs";
     import {goto} from "$app/navigation";
+    import {copyToken, pasteToken} from "$lib/helpers/auth/session";
 
     const allPrograms = programs.sort(function (program: any, program2: any) {
         return program.program_name.localeCompare(program2.program_name);

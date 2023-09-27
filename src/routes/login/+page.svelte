@@ -16,9 +16,6 @@
     let apiUrl = import.meta.env.VITE_API_URL;
 
 
-    if (sessionStorage.getItem("token")) goto("/home");
-
-
     const importLoginMethods = async () => {
         try {
             const response = await fetch(`${apiUrl}/api/v1/auth/methods`);
@@ -31,7 +28,6 @@
             authMethods = Object.values(authMethodsObject).filter((authMethod) =>
                 EXTERNAL_AUTH_METHODS.includes(authMethod.name)
             );
-            console.log(authMethods);
         } catch (error) {
             console.error("An error occurred:", error);
         }
@@ -39,8 +35,20 @@
 
     onMount(() => {
         importLoginMethods();
+        executeEverySecond();
 
     });
+
+
+    function executeEverySecond() {
+        setInterval(function () {
+            // Code to be executed every second goes here
+            if (sessionStorage.getItem("token")) goto("/home");
+            if (localStorage.getItem("token")) goto("/home");
+
+            console.log("This function executes every second.");
+        }, 200); // 1000 milliseconds = 1 second
+    }
 
 
 </script>
