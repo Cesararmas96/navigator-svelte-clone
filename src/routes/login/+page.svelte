@@ -7,6 +7,7 @@
     import "iconify-icon";
     import LoginForm from "$lib/components/forms/LoginForm.svelte";
     import {isAuthenticated} from "$lib/stores";
+    import {page} from "$app/stores";
 
 
     const EXTERNAL_AUTH_METHODS = ["AzureAuth", "ADFSAuth"];
@@ -35,19 +36,25 @@
 
     onMount(() => {
         importLoginMethods();
-        executeEverySecond();
+        checkTokenExists();
 
     });
 
 
-    function executeEverySecond() {
+    function checkTokenExists() {
         setInterval(function () {
             // Code to be executed every second goes here
-            if (sessionStorage.getItem("token")) goto("/home");
-            if (localStorage.getItem("token")) goto("/home");
+            if (sessionStorage.getItem("token")) {
+                goto("/home");
+                return;
+            }
+            if (localStorage.getItem("token")) {
+                goto("/home");
+                return;
+            }
 
-            console.log("This function executes every second.");
-        }, 200); // 1000 milliseconds = 1 second
+            console.log("Executing");
+        }, 200);
     }
 
 

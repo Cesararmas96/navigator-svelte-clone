@@ -39,7 +39,6 @@
                 const data = await response.json();
                 console.log(data);
                 sessionStorage.setItem("token", data.token);
-                sessionStorage.setItem("session", JSON.stringify(data));
 
                 await goto("/home");
             } else {
