@@ -62,28 +62,29 @@ export const handleAuthorization = async () => {
 	}
 }
 
-export function handleLogout() {
+export async function handleLogout() {
 	const token = sessionStorage.getItem('token')
-	// const rawSession = sessionStorage.getItem('session')
-	// const session = JSON.parse(rawSession)
-
 	const endpoint = 'https://api.dev.navigator.mobileinsight.com/api/v1/logout'
 
 	try {
-		// const { token_type: tokenType } = session
-		fetch(endpoint, {
+		const response = await fetch(endpoint, {
 			method: 'GET',
 			headers: {
 				'Content-Type': 'application/json',
-				Authorization: `$Bearer ${token}`
+				Authorization: `Bearer ${token}`
 			}
 		})
+		if (response.ok) {
+			sessionStorage.clear()
+			await goto('/login')
+		} else {
+			console.log('Error logging out')
+			await goto('/login')
+		}
 	} catch (error) {
-		console.log('Error loging out')
+		console.error('An error occurred while logging out:', error)
+		await goto('/login')
 	}
-
-	sessionStorage.clear()
-	goto('/login')
 }
 
 export function copyToken() {
