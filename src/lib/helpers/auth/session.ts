@@ -99,12 +99,12 @@ export function copyToken() {
 }
 
 export function pasteToken() {
-	// const token = localStorage.getItem('token')
-	// if (!token) return
-	//
-	// sessionStorage.setItem('token', token)
-	//
-	// localStorage.removeItem('token')
+	const token = localStorage.getItem('token')
+	if (!token) return
+
+	sessionStorage.setItem('token', token)
+
+	localStorage.removeItem('token')
 }
 
 export function handleCloseWindow(e) {
