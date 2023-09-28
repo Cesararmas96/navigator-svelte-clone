@@ -20,8 +20,10 @@
 {#await sessionPromise then session}
     <Dropdown triggeredBy=".avatarProfile" containerClass="">
         <div slot="header" class="px-4 py-2">
-            <span class="block text-sm text-gray-900 dark:text-white"> {session.session.first_name} {session?.session.last_name}</span>
-            <span class="block truncate text-sm font-medium"> {session.session.email} </span>
+            <a href="/profile">
+                <span class="block text-sm text-gray-900 dark:text-white"> {session.session.first_name} {session?.session.last_name}</span>
+                <span class="block truncate text-sm font-medium"> {session.session.email} </span>
+            </a>
         </div>
         <DropdownItem>Dashboard</DropdownItem>
         <DropdownItem>Settings</DropdownItem>
