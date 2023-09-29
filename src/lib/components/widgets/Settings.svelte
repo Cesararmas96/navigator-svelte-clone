@@ -12,12 +12,7 @@
 	import SettingsToolbar from './settings/Toolbar.svelte'
 	import SettingsFooter from './settings/Footer.svelte'
 	import SettingsType from './settings/Type.svelte'
-	import {
-		sendErrorNotification,
-		sendInfoNotification,
-		sendSuccessNotification,
-		sendWarningNotification
-	} from '$lib/stores/toast'
+	import { sendErrorNotification, sendSuccessNotification } from '$lib/stores/toast'
 
 	const patternUrl =
 		/(https:\/\/www\.|http:\/\/www\.|https:\/\/|http:\/\/)?[a-zA-Z]{2,}(\.[a-zA-Z]{2,})(\.[a-zA-Z]{2,})?\/[a-zA-Z0-9]{2,}|((https:\/\/www\.|http:\/\/www\.|https:\/\/|http:\/\/)?[a-zA-Z]{2,}(\.[a-zA-Z]{2,})(\.[a-zA-Z]{2,})?)|(https:\/\/www\.|http:\/\/www\.|https:\/\/|http:\/\/)?[a-zA-Z0-9]{2,}\.[a-zA-Z0-9]{2,}\.[a-zA-Z0-9]{2,}(\.[a-zA-Z0-9]{2,})?/

@@ -521,7 +521,7 @@ export const iconEquivalences: Record<string, any> = {
 	'fa fa-play-circle-o': 'mdi:play-circle-outline',
 	'far fa-play-circle': 'mdi:play-circle-outline',
 	'fa fa-plug': '',
-	'fa fa-plus': '',
+	'fa fa-plus': 'tabler:plus',
 	'fa fa-plus-circle': '',
 	'fa fa-plus-square': '',
 	'fa fa-plus-square-o': '',

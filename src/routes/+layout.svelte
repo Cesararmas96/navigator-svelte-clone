@@ -11,6 +11,7 @@
 	import { page, navigating } from '$app/stores'
 	import { Spinner } from 'flowbite-svelte'
 	import WidgetMaximize from '$lib/components/widgets/Maximize.svelte'
+	import WidgetFormBuilderDrawer from '$lib/components/widgets/FormBuilderDrawer.svelte'
 
 	initModal()
 </script>
@@ -28,4 +29,5 @@
 <Toasts />
 <Modal />
 <WidgetSettings />
+<WidgetFormBuilderDrawer />
 <WidgetMaximize />

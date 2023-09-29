@@ -2,7 +2,7 @@
 	import { isDarkMode, isUrl } from '$lib/helpers/common/common'
 	import { initWidgetActions } from '$lib/helpers/widget/actions'
 	import { initInstances } from '$lib/helpers/widget/instances'
-	import { createEventDispatcher, setContext } from 'svelte'
+	import { createEventDispatcher, onDestroy, setContext } from 'svelte'
 	import { writable } from 'svelte/store'
 	import { selectedWidgetSettings } from '$lib/stores/widgets'
 
@@ -18,6 +18,7 @@
 	const dispatch = createEventDispatcher()
 
 	export let widget: any
+	export let resized: boolean = false
 
 	const defaultSettings = {
 		title: '',
@@ -77,11 +78,12 @@
 	const bgTypeClass = (bg: string) => {
 		return !isDarkMode() ? (isUrl(bg) ? 'widget-bg-image' : 'widget-bg-color') : ''
 	}
-	let widgetStore = writable(widget)
+	let widgetStore: any
 
 	let widgetBase: string
 	$: {
 		if (!widget.loaded) {
+			widgetStore = writable(widget)
 			widget.instances = []
 			initWidgetActions()
 			initInstances()
@@ -126,12 +128,28 @@
 		}
 	}
 
-	$: if ($widgetStore.collapse_action) {
+	$: if ($widgetStore?.collapse_action) {
 		$widgetStore.collapse_action = null
 		setTimeout(() => {
 			dispatch('handleResize')
 		}, 100)
 	}
+
+	$: if ($widgetStore?.clone) {
+		$widgetStore.clone = false
+		dispatch('handleCloning')
+	}
+
+	$: if ($widgetStore?.remove) {
+		$widgetStore.remove = false
+		dispatch('handleRemove')
+	}
+
+	onDestroy(() => {
+		console.log('destroyed', $widgetStore.title)
+	})
+
+	$: if (resized) $widgetStore.resized = true
 </script>
 
 <!-- svelte-ignore a11y-no-static-element-interactions -->
@@ -163,7 +181,9 @@
 		event.stopPropagation()
 	}}
 >
-	<slot {isToolbarVisible} {fixed} {isOwner} />
+	{#if widgetStore}
+		<slot widget={widgetStore} {isToolbarVisible} {fixed} {isOwner} />
+	{/if}
 </div>
 
 <style>

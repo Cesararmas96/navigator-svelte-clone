@@ -20,7 +20,9 @@
 	let header: boolean
 	let footer: boolean
 
-	const widget = getContext<Writable<any>>('widget')
+	// $: widget = getContext<Writable<any>>('widget')
+	export let widget: Writable<any>
+
 	const widgetActions = getContext<Writable<any>>('widgetActions')
 	$: {
 		header = $widget?.params?.settings?.header?.show

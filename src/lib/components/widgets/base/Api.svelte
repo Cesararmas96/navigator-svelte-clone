@@ -5,13 +5,13 @@
 	import { getContext } from 'svelte'
 	import type { Writable } from 'svelte/store'
 	import { addWidgetAction } from '$lib/helpers'
+	import { sendErrorNotification } from '$lib/stores/toast'
 
 	export let widget: Writable<any>
 
 	let widgetActions: any = getContext('widgetActions')
 
-	const urlBase = import.meta.env.VITE_API_URL
-	const slug = $widget.query_slug.slug
+	const slug = $widget.query_slug!.slug
 	const conditionsRaw = $widget.conditions
 	const method = $widget.params?.ajax?.method || $widget.params?.ajax?.type
 	let data: any
@@ -20,7 +20,11 @@
 		// console.log('SLUG', slug)
 		const conditions = buildConditions()
 		// console.log('CONDITIONS TOTAL', conditions)
-		data = getApiData(`${urlBase}/api/v2/services/queries/${slug}`, method, conditions)
+		try {
+			data = getApiData(slug, method, conditions)
+		} catch (error) {
+			console.log(error)
+		}
 	}
 
 	function buildConditions() {
@@ -248,4 +252,6 @@
 	<Loading />
 {:then data}
 	<slot {data} />
+{:catch error}
+	{sendErrorNotification(error)}
 {/await}

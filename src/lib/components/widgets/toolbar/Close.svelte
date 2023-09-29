@@ -7,13 +7,11 @@
 	const widget = getContext<Writable<any>>('widget')
 
 	const handleClick = () => {
-		if ($widget.temp) {
-			$widget.close_instance = true
-		}
+		$widget.remove = true
 	}
 </script>
 
 <button class="icon btn hover:bg-light-100 dark:hover:bg-dark-200" on:click={handleClick}>
 	<Icon icon="tabler:x" size="18" />
 </button>
-<Tooltip>Close</Tooltip>
+<Tooltip placement="left">Remove</Tooltip>
