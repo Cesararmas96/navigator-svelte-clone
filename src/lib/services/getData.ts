@@ -1,5 +1,5 @@
-import { handleError } from "$lib/helpers/common/errors"
-import { sendErrorNotification } from "$lib/stores/toast"
+import { handleError } from '$lib/helpers/common/errors'
+import { sendErrorNotification } from '$lib/stores/toast'
 
 /**
  * Perform an HTTP request using the fetch API.
@@ -59,7 +59,7 @@ export async function getData(
 		}
 
 		if (method === 'GET') delete configRequest.body
-		const response = await fetch(`${urlWithParams}`, configRequest) || {}
+		const response = (await fetch(`${urlWithParams}`, configRequest)) || {}
 
 		// const validResponseStatus = [200, 202]
 		// if (validResponseStatus.includes(response?.status)) {
@@ -68,11 +68,12 @@ export async function getData(
 
 		if (!response?.ok) {
 			let statusText = response.statusText || 'Request error'
-			statusText = response.statusText.includes('reason') ? JSON.parse(response.statusText).reason : statusText
+			statusText = response.statusText.includes('reason')
+				? JSON.parse(response.statusText).reason
+				: statusText
 			throw new Error(`Request error: ${response.status} ${statusText}`)
 		}
 		return await response.json()
-
 	} catch (error) {
 		console.log('error', error)
 		throw error
@@ -87,16 +88,16 @@ export async function getApiData(
 	options: Record<string, any> = {}
 ) {
 	if (!options.authorization) {
-		const token = 
-			'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTYxMTk5MTYsImlhdCI6MTY5NTc1OTkxNiwiaXNzIjoiTW9iaWxlaW5zaWdodCIsInVzZXIiOjE1Nzc5LCJ1c2VybmFtZSI6ImptZW5kb3phMUB0cm9jZ2xvYmFsLmNvbSIsInVzZXJfaWQiOjE1Nzc5LCJpZCI6ImptZW5kb3phMUB0cm9jZ2xvYmFsLmNvbSJ9.qi4R8IHjibsd3m5_gFytGgm2ZUb-341lStf1hFVonxY'
+		const token =
+			'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTYzNTI0NjgsImlhdCI6MTY5NTk5MjQ2OCwiaXNzIjoiTW9iaWxlaW5zaWdodCIsInVzZXIiOjE1Nzc5LCJ1c2VybmFtZSI6ImptZW5kb3phMUB0cm9jZ2xvYmFsLmNvbSIsInVzZXJfaWQiOjE1Nzc5LCJpZCI6ImptZW5kb3phMUB0cm9jZ2xvYmFsLmNvbSJ9.l80MbKgtLyTs1-40iDrGQglMadrra0_8imHkZCWMGs0'
 		const headers = { authorization: `Bearer ${token}` }
 		options = { ...options, headers }
-	}	
-	let response = await getData(getQuerySlug(url), method, payload, queryParams, options)
+	}
+	const response = await getData(getQuerySlug(url), method, payload, queryParams, options)
 	return response
 }
 
-const getQuerySlug = (widgetSlug: any) =>{
+const getQuerySlug = (widgetSlug: any) => {
 	let slugQuery = widgetSlug
 
 	if (Array.isArray(slugQuery)) {

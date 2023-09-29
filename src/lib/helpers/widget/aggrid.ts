@@ -1,367 +1,376 @@
-import { sendWarningNotification } from "$lib/stores/toast";
-import moment from "moment";
+import { sendWarningNotification } from '$lib/stores/toast'
+import moment from 'moment'
 
 export const cellClass = (formatDefinition: any): string => {
-  let cellClass = '';
-  cellClass += (!formatDefinition.align && formatDefinition.format) ? ' text-right' : '';
-  cellClass += formatDefinition.align ? ` text-${formatDefinition.align}` : '';
-  return cellClass;
+	let cellClass = ''
+	cellClass += !formatDefinition.align && formatDefinition.format ? ' text-right' : ''
+	cellClass += formatDefinition.align ? ` text-${formatDefinition.align}` : ''
+	return cellClass
 }
 
 export const headerClass = (formatDefinition: any): string => {
-  let cellClass = '';
-  cellClass += (!formatDefinition.align && formatDefinition.format) ? ' header-right' : '';
-  cellClass += formatDefinition.align ? ` header-${formatDefinition.align}` : '';
-  return cellClass;
+	let cellClass = ''
+	cellClass += !formatDefinition.align && formatDefinition.format ? ' header-right' : ''
+	cellClass += formatDefinition.align ? ` header-${formatDefinition.align}` : ''
+	return cellClass
 }
 
 export const gridHeight = (uid: string, formatDefinition: any): any => {
-  const widgetHeight = document.getElementById(`widget-${uid}`)!.offsetHeight;
-  const headerHeight = document.getElementById(`widget-header-${uid}`)!.offsetHeight;
-  const contentHeight = widgetHeight - headerHeight;
-  return `${contentHeight}px`;
+	const widgetHeight = document.getElementById(`widget-${uid}`)!.offsetHeight
+	const headerHeight = document.getElementById(`widget-header-${uid}`)!.offsetHeight
+	const contentHeight = widgetHeight - headerHeight
+	return `${contentHeight}px`
 }
 
 export const recordsPerPage = (formatDefinition: any): any => {
-  let recordsPerPage = '10';
-  formatDefinition = (formatDefinition.aggrid) ? formatDefinition.aggrid : formatDefinition.pqgrid;
-  recordsPerPage = formatDefinition && formatDefinition.pageModel && formatDefinition.pageModel.rPP ? formatDefinition.pageModel.rPP : recordsPerPage;
-  return recordsPerPage;
+	let recordsPerPage = '10'
+	formatDefinition = formatDefinition.aggrid ? formatDefinition.aggrid : formatDefinition.pqgrid
+	recordsPerPage =
+		formatDefinition && formatDefinition.pageModel && formatDefinition.pageModel.rPP
+			? formatDefinition.pageModel.rPP
+			: recordsPerPage
+	return recordsPerPage
 }
 
 export const formatByPattern = (value: number, pattern: string): string => {
-  let result: string = "";
-  // if (!value) return result
-  const formatCurrency = (val: number, decimals: number) => 
-    "$" + val.toLocaleString(undefined, { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
+	let result = ''
+	// if (!value) return result
+	const formatCurrency = (val: number, decimals: number) =>
+		'$' +
+		val.toLocaleString(undefined, {
+			minimumFractionDigits: decimals,
+			maximumFractionDigits: decimals
+		})
 
-  const formatPercentage = (val: number, decimals: number) => 
-    (val * 100).toLocaleString(undefined, { minimumFractionDigits: decimals, maximumFractionDigits: decimals }) + "%";
+	const formatPercentage = (val: number, decimals: number) =>
+		(val * 100).toLocaleString(undefined, {
+			minimumFractionDigits: decimals,
+			maximumFractionDigits: decimals
+		}) + '%'
 
-  switch (pattern) {
-    case "####":
-    case "#,###":
-    case "##,###":
-    case "$#,###":
-    case "$##,###":
-      result = (pattern[0] === "$" ? "$" : "") + Math.round(value).toLocaleString();
-      break;
+	switch (pattern) {
+		case '####':
+		case '#,###':
+		case '##,###':
+		case '$#,###':
+		case '$##,###':
+			result = (pattern[0] === '$' ? '$' : '') + Math.round(value).toLocaleString()
+			break
 
-    case "#,###.0":
-    case "##,###.0":
-    case "$#,###.0":
-    case "$##,###.0":
-      result = formatCurrency(value, 1);
-      break;
+		case '#,###.0':
+		case '##,###.0':
+		case '$#,###.0':
+		case '$##,###.0':
+			result = formatCurrency(value, 1)
+			break
 
-    case "#,###.00":
-    case "##,###.00":
-    case "$#,###.00":
-    case "$##,###.00":
-      result = formatCurrency(value, 2);
-      break;
+		case '#,###.00':
+		case '##,###.00':
+		case '$#,###.00':
+		case '$##,###.00':
+			result = formatCurrency(value, 2)
+			break
 
-    case "yy-mm-dd":
-      const date = new Date(value);
-      const year = String(date.getFullYear()).slice(-2);
-      const month = String(date.getMonth() + 1).padStart(2, '0');
-      const day = String(date.getDate()).padStart(2, '0');
-      result = `${year}-${month}-${day}`;
-      break;
+		case 'yy-mm-dd':
+			const date = new Date(value)
+			const year = String(date.getFullYear()).slice(-2)
+			const month = String(date.getMonth() + 1).padStart(2, '0')
+			const day = String(date.getDate()).padStart(2, '0')
+			result = `${year}-${month}-${day}`
+			break
 
-    case "##,###.0%":
-    case "#,###.0%":
-      result = formatPercentage(value, 1);
-      break;
+		case '##,###.0%':
+		case '#,###.0%':
+			result = formatPercentage(value, 1)
+			break
 
-    case "##,###.00%":
-    case "#,###.00%":
-      result = formatPercentage(value, 2);
-      break;
+		case '##,###.00%':
+		case '#,###.00%':
+			result = formatPercentage(value, 2)
+			break
 
-    default:
-      throw new Error("Patrón no reconocido");
-  }
+		default:
+			throw new Error('Patrón no reconocido')
+	}
 
-  return result;
+	return result
 }
 
 export const gridFunctionsMap: { [key: string]: (params: any) => void } = {
-  scorecardKeyWalmartMetrics: scorecardKeyWalmartMetrics,
-  scorecardOperational: scorecardOperational,
-  scorecardSales: scorecardSales,
-  epsonFieldSuccessIndex: epsonFieldSuccessIndex,
-  keyMetrics: keyMetrics,
-  keyMetricsScorecard: keyMetricsScorecard,
-  scorecardKeyMetrics: scorecardKeyMetrics,
-  tmFieldSuccessIndex: tmFieldSuccessIndex,
-  lorealDataIntegrity: lorealDataIntegrity,
-  lorealProposalController: lorealProposalController,
+	scorecardKeyWalmartMetrics: scorecardKeyWalmartMetrics,
+	scorecardOperational: scorecardOperational,
+	scorecardSales: scorecardSales,
+	epsonFieldSuccessIndex: epsonFieldSuccessIndex,
+	keyMetrics: keyMetrics,
+	keyMetricsScorecard: keyMetricsScorecard,
+	scorecardKeyMetrics: scorecardKeyMetrics,
+	tmFieldSuccessIndex: tmFieldSuccessIndex,
+	lorealDataIntegrity: lorealDataIntegrity,
+	lorealProposalController: lorealProposalController
 }
 
 function scorecardKeyWalmartMetrics(params: any) {
-  if (!params.data.store_id && params.data.market_name) {
-    return {
-      cls: 'cls-market'
-    }
-  } else if (!params.data.market_name && params.data.district_name) {
-    return {
-      cls: 'cls-district'
-    }
-  } else if (!params.data.district_name && params.data.region_name) {
-    return {
-      cls: 'cls-region'
-    }
-  } else if (!params.data.region_name && params.data.territory_name) {
-    return {
-      cls: 'cls-territory'
-    }
-  } else if (!params.data.region_name && !params.data.territory_name) {
-    return {
-      cls: 'cls-company'
-    }
-  }
+	if (!params.data.store_id && params.data.market_name) {
+		return {
+			cls: 'cls-market'
+		}
+	} else if (!params.data.market_name && params.data.district_name) {
+		return {
+			cls: 'cls-district'
+		}
+	} else if (!params.data.district_name && params.data.region_name) {
+		return {
+			cls: 'cls-region'
+		}
+	} else if (!params.data.region_name && params.data.territory_name) {
+		return {
+			cls: 'cls-territory'
+		}
+	} else if (!params.data.region_name && !params.data.territory_name) {
+		return {
+			cls: 'cls-company'
+		}
+	}
 }
 
 function scorecardOperational(params: any) {
-  if (!params.data.store_id && params.data.market_name) {
-    return {
-      cls: 'cls-market',
-    }
-  } else if (!params.data.market_name && params.data.district_name) {
-    return {
-      cls: 'cls-district',
-    }
-  } else if (!params.data.district_name && params.data.region_name) {
-    return {
-      cls: 'cls-region',
-    }
-  } else if (!params.data.region_name && params.data.territory_name) {
-    return {
-      cls: 'cls-territory',
-    }
-  } else if (!params.data.region_name && !params.data.territory_name) {
-    return {
-      cls: 'cls-company',
-    }
-  }
+	if (!params.data.store_id && params.data.market_name) {
+		return {
+			cls: 'cls-market'
+		}
+	} else if (!params.data.market_name && params.data.district_name) {
+		return {
+			cls: 'cls-district'
+		}
+	} else if (!params.data.district_name && params.data.region_name) {
+		return {
+			cls: 'cls-region'
+		}
+	} else if (!params.data.region_name && params.data.territory_name) {
+		return {
+			cls: 'cls-territory'
+		}
+	} else if (!params.data.region_name && !params.data.territory_name) {
+		return {
+			cls: 'cls-company'
+		}
+	}
 }
 
 function scorecardSales(params: any) {
-  if (!params.data.store_id && params.data.market) {
-    return {
-      cls: 'cls-market',
-    }
-  } else if (!params.data.market && params.data.district_id) {
-    return {
-      cls: 'cls-district',
-    }
-  } else if (!params.data.district_id && params.data.region_name) {
-    return {
-      cls: 'cls-region',
-    }
-  } else if (!params.data.region_name && params.data.territory_id) {
-    return {
-      cls: 'cls-territory',
-    }
-  } else if (!params.data.region_name && !params.data.territory_id) {
-    return {
-      cls: 'cls-company',
-    }
-  }
+	if (!params.data.store_id && params.data.market) {
+		return {
+			cls: 'cls-market'
+		}
+	} else if (!params.data.market && params.data.district_id) {
+		return {
+			cls: 'cls-district'
+		}
+	} else if (!params.data.district_id && params.data.region_name) {
+		return {
+			cls: 'cls-region'
+		}
+	} else if (!params.data.region_name && params.data.territory_id) {
+		return {
+			cls: 'cls-territory'
+		}
+	} else if (!params.data.region_name && !params.data.territory_id) {
+		return {
+			cls: 'cls-company'
+		}
+	}
 }
 
 function epsonFieldSuccessIndex(params: any) {
-  if (params.data.region_id && params.data.area && !params.data.district) {
-    return {
-      cls: 'cls-market bold',
-    }
-  } else if (!params.data.region_id && !params.data.district) {
-    return {
-      cls: 'cls-company bold',
-    }
-  }
+	if (params.data.region_id && params.data.area && !params.data.district) {
+		return {
+			cls: 'cls-market bold'
+		}
+	} else if (!params.data.region_id && !params.data.district) {
+		return {
+			cls: 'cls-company bold'
+		}
+	}
 }
 
 function keyMetrics(params: any) {
-  if (!params.data.store_id && params.data.market_name) {
-    return {
-      cls: 'cls-market',
-    }
-  } else if (!params.data.market_name && params.data.district_name) {
-    return {
-      cls: 'cls-district',
-    }
-  } else if (!params.data.district_name && params.data.region_name) {
-    return {
-      cls: 'cls-region',
-    }
-  } else if (!params.data.region_name && params.data.territory_name) {
-    return {
-      cls: 'cls-territory',
-    }
-  } else if (!params.data.region_name && !params.data.territory_name) {
-    return {
-      cls: 'cls-company',
-    }
-  }
+	if (!params.data.store_id && params.data.market_name) {
+		return {
+			cls: 'cls-market'
+		}
+	} else if (!params.data.market_name && params.data.district_name) {
+		return {
+			cls: 'cls-district'
+		}
+	} else if (!params.data.district_name && params.data.region_name) {
+		return {
+			cls: 'cls-region'
+		}
+	} else if (!params.data.region_name && params.data.territory_name) {
+		return {
+			cls: 'cls-territory'
+		}
+	} else if (!params.data.region_name && !params.data.territory_name) {
+		return {
+			cls: 'cls-company'
+		}
+	}
 }
 
 function keyMetricsScorecard(params: any) {
-  if (!params.data.store_id && params.data.market) {
-    return {
-      cls: 'cls-market',
-    }
-  } else if (!params.data.market && params.data.district_id) {
-    return {
-      cls: 'cls-district',
-    }
-  } else if (!params.data.district_id && params.data.region_name) {
-    return {
-      cls: 'cls-region',
-    }
-  } else if (!params.data.region_name && params.data.territory_id) {
-    return {
-      cls: 'cls-territory',
-    }
-  } else if (!params.data.region_name && !params.data.territory_id) {
-    return {
-      cls: 'cls-company',
-    }
-  }
+	if (!params.data.store_id && params.data.market) {
+		return {
+			cls: 'cls-market'
+		}
+	} else if (!params.data.market && params.data.district_id) {
+		return {
+			cls: 'cls-district'
+		}
+	} else if (!params.data.district_id && params.data.region_name) {
+		return {
+			cls: 'cls-region'
+		}
+	} else if (!params.data.region_name && params.data.territory_id) {
+		return {
+			cls: 'cls-territory'
+		}
+	} else if (!params.data.region_name && !params.data.territory_id) {
+		return {
+			cls: 'cls-company'
+		}
+	}
 }
 
 function scorecardKeyMetrics(params: any) {
-  if (!params.data.store_id && params.data.market_name) {
-    return {
-      cls: 'cls-market',
-    }
-  } else if (!params.data.market_name && params.data.district_id) {
-    return {
-      cls: 'cls-district',
-    }
-  } else if (!params.data.district_id && params.data.region_name) {
-    return {
-      cls: 'cls-region',
-    }
-  } else if (!params.data.region_name && params.data.territory_name) {
-    return {
-      cls: 'cls-territory',
-    }
-  } else if (!params.data.region_name && !params.data.territory_name) {
-    return {
-      cls: 'cls-company',
-    }
-  }
+	if (!params.data.store_id && params.data.market_name) {
+		return {
+			cls: 'cls-market'
+		}
+	} else if (!params.data.market_name && params.data.district_id) {
+		return {
+			cls: 'cls-district'
+		}
+	} else if (!params.data.district_id && params.data.region_name) {
+		return {
+			cls: 'cls-region'
+		}
+	} else if (!params.data.region_name && params.data.territory_name) {
+		return {
+			cls: 'cls-territory'
+		}
+	} else if (!params.data.region_name && !params.data.territory_name) {
+		return {
+			cls: 'cls-company'
+		}
+	}
 }
 
 function // Trend Micro
 tmFieldSuccessIndex(params: any) {
-  if (!params.data.visitor_email) {
-    return {
-      cls: 'cls-company bold',
-    }
-  }
+	if (!params.data.visitor_email) {
+		return {
+			cls: 'cls-company bold'
+		}
+	}
 }
 
 function // LOREAL
 lorealDataIntegrity(params: any) {
-  if (
-    !params.data.pos_enabled ||
-    !params.data.customer_enabled ||
-    !params.data.platform_enabled
-  ) {
-    return {
-      cls: 'cls-red bold',
-    }
-  }
+	if (!params.data.pos_enabled || !params.data.customer_enabled || !params.data.platform_enabled) {
+		return {
+			cls: 'cls-red bold'
+		}
+	}
 }
 
 function lorealProposalController(params: any) {
-  if (params.data.proposal_name) {
-    return {
-      cls: 'cls-controller-review bold',
-    }
-  }
+	if (params.data.proposal_name) {
+		return {
+			cls: 'cls-controller-review bold'
+		}
+	}
 }
 
 export const cellClassRules = (formatDefinition: any, thresholds: any): any => {
-  let rule = {};
-  if (!thresholds) return rule;
-  if (formatDefinition.render) {
-    const fn = gridCellFunctionsMap[formatDefinition.render];
-    if (fn) rule = fn(thresholds[formatDefinition.dataIndx])
-    else sendWarningNotification(`Function ${formatDefinition.render} not found in gridCellFunctionsMap`)
-  }
-  return rule;
+	let rule = {}
+	if (!thresholds) return rule
+	if (formatDefinition.render) {
+		const fn = gridCellFunctionsMap[formatDefinition.render]
+		if (fn) rule = fn(thresholds[formatDefinition.dataIndx])
+		else
+			sendWarningNotification(
+				`Function ${formatDefinition.render} not found in gridCellFunctionsMap`
+			)
+	}
+	return rule
 }
 
 const operatorTokens: any = {
-  lt: '<',
-  gt: '>',
-  eq: '===',
-  ne: '!==',
-  let: '<=',
-  get: '>=',
+	lt: '<',
+	gt: '>',
+	eq: '===',
+	ne: '!==',
+	let: '<=',
+	get: '>='
 }
 
 export const gridCellFunctionsMap: { [key: string]: (params: any) => any } = {
-  metricsRender: metricsRender,
+	metricsRender: metricsRender
 }
 
 function metricsRender(threshold: any) {
-  if (threshold && threshold.maximum) {
-    const operator = operatorTokens[threshold.maximum.operator];
-    return { [threshold.maximum.class]: `x ${operator} ${threshold.maximum.value}`}
-  }
+	if (threshold && threshold.maximum) {
+		const operator = operatorTokens[threshold.maximum.operator]
+		return { [threshold.maximum.class]: `x ${operator} ${threshold.maximum.value}` }
+	}
 }
 
 export const gridCellBuildFunctionsMap: { [key: string]: (params: any) => any } = {
-  modulesActive: modulesActive,
-  modulesProgram: modulesProgram,
-  actions: actions
+	modulesActive: modulesActive,
+	modulesProgram: modulesProgram,
+	actions: actions
 }
 
 function modulesActive(params: any) {
-  if (params.column.colId === 'active') {
-    const cls = params.data[params.column.colId] ? 'badge-success' : 'badge-danger'
-    return `<span class='badge ${cls}'>${params.data[params.column.colId] ? 'Active' : 'Disable'}</span>`
-  }
+	if (params.column.colId === 'active') {
+		const cls = params.data[params.column.colId] ? 'badge-success' : 'badge-danger'
+		return `<span class='badge ${cls}'>${
+			params.data[params.column.colId] ? 'Active' : 'Disable'
+		}</span>`
+	}
 }
 
 function modulesProgram(params: any) {
-  return params.data[params.column.colId]
+	return params.data[params.column.colId]
 }
 
 function actions(params: any) {
-  const container = document.createElement('span');
-  container.classList.add('flex', 'items-center', 'justify-center', 'gap-1', 'mt-0.5', 'opacity-60')
-  params.widget.params.actions.btns.map((btn: any) => {
-    container.appendChild(createActionBtn({btn, ...params}));    
-  })
-  return container;
+	const container = document.createElement('span')
+	container.classList.add('flex', 'items-center', 'justify-center', 'gap-1', 'mt-0.5', 'opacity-60')
+	params.widget.params.actions.btns.map((btn: any) => {
+		container.appendChild(createActionBtn({ btn, ...params }))
+	})
+	return container
 }
 
 const icons: any = {
-  edit: 'material-symbols:edit-square-outline-rounded',
-  delete: 'material-symbols:delete-outline-rounded',
+	edit: 'material-symbols:edit-square-outline-rounded',
+	delete: 'material-symbols:delete-outline-rounded'
 }
 
 function createActionBtn(params: any) {
-  const data = params.data;
-  const widget = params.widget;
+	const data = params.data
+	const widget = params.widget
 
-  const btn = document.createElement('iconify-icon');
-  btn.icon = icons[params.btn];
-  btn.height = '20px';
-  btn.dataset.action = params.btn;
-  btn.dataset.data = data[widget.params.model.primaryKey];
-  btn.classList.add('cursor-pointer');
-  btn.addEventListener('click', params.callback);
-  return btn;
+	const btn = document.createElement('iconify-icon')
+	btn.icon = icons[params.btn]
+	btn.height = '20px'
+	btn.dataset.action = params.btn
+	btn.dataset.data = data[widget.params?.model?.primaryKey]
+	btn.classList.add('cursor-pointer')
+	btn.addEventListener('click', params.callback)
+	return btn
 }
-
-
 
 // function dateAndTime(widget: WidgetPqTable, pq: any, ui: any) {
 //   try {
@@ -820,35 +829,35 @@ function btnsRenderWmResetTrackersReplace(widget: WidgetPqTable, pq: any, ui: an
  */
 
 export const formulaFunctionsMap: { [key: string]: (params: any, widget: any) => any } = {
-  goldStarStatus: goldStarStatus,
+	goldStarStatus: goldStarStatus
 }
 
 function goldStarStatus(params: any, widget: any) {
-  console.log('goldStarStatus', params)
-  if (widget.params.thresholds!) {
-    let goldStartCount = 0
+	console.log('goldStarStatus', params)
+	if (widget.params.thresholds!) {
+		const goldStartCount = 0
 
-    // const pqGrid = pq.getPqGrid()
+		// const pqGrid = pq.getPqGrid()
 
-    // pqGrid.getColModel().forEach((column: any) => {
-    //   let green = false
+		// pqGrid.getColModel().forEach((column: any) => {
+		//   let green = false
 
-    //   evalThresholds(
-    //     rd,
-    //     widget.thresholds!.value,
-    //     column.dataIndx,
-    //     (data: any, threshold: any, field: any) => {
-    //       return (green = true)
-    //     }
-    //   )
+		//   evalThresholds(
+		//     rd,
+		//     widget.thresholds!.value,
+		//     column.dataIndx,
+		//     (data: any, threshold: any, field: any) => {
+		//       return (green = true)
+		//     }
+		//   )
 
-    //   if (green) {
-    //     goldStartCount++
-    //   }
-    // })
+		//   if (green) {
+		//     goldStartCount++
+		//   }
+		// })
 
-    return goldStartCount
-  } else {
-    return ''
-  }
+		return goldStartCount
+	} else {
+		return ''
+	}
 }

@@ -73,7 +73,9 @@
 				>
 					<div slot="title" class="flex items-center gap-2">
 						<Icon icon={dashboard.attributes.icon} size="20px" />
-						{dashboard.description}
+						<p title={dashboard?.dashboard_id}>
+							{dashboard.description}
+						</p>
 						<MenuButton
 							class="dots-menu-{dashboard.dashboard_id.toString()} invisible m-0 p-0 hover:bg-gray-100 focus:ring-0 dark:text-white dark:hover:bg-gray-500 dark:focus:ring-0"
 							vertical
