@@ -3,6 +3,7 @@
     import {goto} from "$app/navigation";
     import type {User} from "../../../interfaces/session";
     import {handleAuthorization, handleLogout} from "$lib/helpers/auth/session";
+    import Icon from "$lib/components/common/Icon.svelte";
 
 
     const sessionPromise: Promise<User> = handleAuthorization();
@@ -18,12 +19,20 @@
         size={'sm'}
 />
 {#await sessionPromise then session}
+
     <Dropdown triggeredBy=".avatarProfile" containerClass="">
-        <div slot="header" class="px-4 py-2">
-            <a href="/profile">
-                <span class="block text-sm text-gray-900 dark:text-white"> {session.session.first_name} {session?.session.last_name}</span>
-                <span class="block truncate text-sm font-medium"> {session.session.email} </span>
-            </a>
+
+        <div>
+            <DropdownItem>
+                <div class="flex">
+
+                    <Icon icon="iconamoon:profile" size="20px"/>
+                    <a href="/profile" class="mx-2">
+                        Profile
+
+                    </a>
+                </div>
+            </DropdownItem>
         </div>
         <DropdownItem>Dashboard</DropdownItem>
         <DropdownItem>Settings</DropdownItem>
