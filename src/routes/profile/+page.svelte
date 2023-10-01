@@ -78,11 +78,11 @@
 
                         <div class="card mb-5 p-5 max-w-2xl flex">
                             <div class="m-4 flex">
-                                <p class="pb-1 px-3">Old password</p>
+                                <p class="pb-1 px-3">New password</p>
                                 <input type="password" class="form-control mb-6 " placeholder="Password"/>
                             </div>
                             <div class="m-4 flex">
-                                <p class="pb-1 px-3">Confirm password</p>
+                                <p class="pb-1 px-3">Confirm new password</p>
                                 <input type="password" class="form-control mb-6" placeholder="Password"/>
                             </div>
                         </div>
