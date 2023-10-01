@@ -115,15 +115,16 @@
 
 
         // 4. Push newWidget to storeWidgets
-
-
-        console.log($storeWidgets);
-
         $storeWidgets.push(newWidget);
 
-        console.log($storeWidgets);
 
-        // 3.5 Also delete the previous widget if selected option was cut
+        // 5 Also delete the previous widget if selected option was cut
+        const behavior = sessionStorage.getItem("behavior");
+        console.log(behavior);
+        if (behavior === "cut") {
+            console.log($dashboard);
+
+        }
 
 
     };

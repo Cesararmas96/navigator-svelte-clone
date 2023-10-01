@@ -31,17 +31,9 @@
 
     const cwidget = getContext("widget");
 
-    const handleCopyWidget = (widget) => {
-
-
-        // copyWidgetStore.set(widget);
-        // console.log(copyWidgetStore);
-
+    const handleCopyOrCutWidget = (widget: any, action: string) => {
         sessionStorage.setItem("copiedWidget", JSON.stringify($widget));
-
-
-        // sessionStorage.setItem("copiedWidget");
-
+        sessionStorage.setItem("behavior", action);
 
     };
 
@@ -76,12 +68,27 @@
             <ToolbarHelp helpText={$widget.description}/>
         {/if}
         <!--Trying copy widget-->
-        <button class="icon btn hover:bg-light-100 dark:hover:bg-dark-200" on:click={() => handleCopyWidget(widget)}>
+        <button class="icon btn hover:bg-light-100 dark:hover:bg-dark-200"
+                on:click={() => handleCopyOrCutWidget(widget, 'copy')}>
             <Icon
-                    icon={'tabler:arrows-diagonal'}
+                    icon={'ph:copy-bold'}
                     size="18"
             />
+
         </button>
+        <Tooltip placement="left">Copy</Tooltip>
+
+
+        <button class="icon btn hover:bg-light-100 dark:hover:bg-dark-200"
+                on:click={() => handleCopyOrCutWidget(widget, 'cut')}>
+            <Icon
+                    icon={'ion:cut-sharp'}
+                    size="18"
+            />
+
+        </button>
+        <Tooltip placement="left">Cut</Tooltip>
+
 
         <Tooltip placement="left" triggeredBy="#more-actions">More</Tooltip>
         <button
