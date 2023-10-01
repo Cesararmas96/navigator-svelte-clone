@@ -2,7 +2,11 @@
 
     import {handleAuthorization} from "$lib/helpers/auth/session";
     import {goto} from "$app/navigation";
-    import {Card} from "flowbite-svelte";
+
+    import Icon from "$lib/components/common/Icon.svelte";
+
+    import {TabItem, Tabs} from 'flowbite-svelte';
+    import Profile from "$lib/components/profile/Profile.svelte";
 
 
     let rawSession
@@ -19,36 +23,78 @@
 
 
 {#await rawSession then session}
-    <img src="/images/troc.gif" alt="troc logo" class="flex mr-auto ml-auto mb-3.5">
-    <Card class="flex ml-auto mr-auto">
-        <h6 class="mb-2 text-xl font-bold tracking-tight text-gray-900 dark:text-white">First name</h6>
-        <p class="font-normal text-gray-700 dark:text-gray-400 leading-tight">{session.session.first_name}</p>
 
-        <h6 class="mb-2 text-xl font-bold tracking-tight text-gray-900 dark:text-white">Last name</h6>
-        <p class="font-normal text-gray-700 dark:text-gray-400 leading-tight">{session.session.last_name}</p>
+    <Tabs>
+        <Profile session={session}/>
+        <TabItem>
 
 
-        <h6 class="mb-2 text-xl font-bold tracking-tight text-gray-900 dark:text-white">Email</h6>
-        <p class="font-normal text-gray-700 dark:text-gray-400 leading-tight">{session.session.email}</p>
+            <div slot="title" class="items-center gap-2 flex">
+                <Icon icon="mdi:user" size="20px"/>
+                Identities
+            </div>
+            <p>
+                <b>Profile:</b>
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore
+                et
+                dolore magna aliqua.
+            </p>
+        </TabItem>
+        <TabItem>
+
+            <div slot="title" class="flex items-center gap-2">
+                <Icon icon="mdi:world" size="20px"/>
+                Accounts
+            </div>
 
 
-        <h6 class="mb-2 text-xl font-bold tracking-tight text-gray-900 dark:text-white">Groups</h6>
-        <p class="font-normal text-gray-700 dark:text-gray-400 leading-tight">{session.session.groups}</p>
+            <p class="text-sm text-gray-500 dark:text-gray-400">
+                <b>Settings:</b>
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore
+                et
+                dolore magna aliqua.
+            </p>
+        </TabItem>
 
-        <h6 class="mb-2 text-xl font-bold tracking-tight text-gray-900 dark:text-white">User</h6>
-        <p class="font-normal text-gray-700 dark:text-gray-400 leading-tight">{session.session.user}</p>
+
+        <TabItem open>
+
+            <div slot="title" class="flex items-center gap-2">
+                <Icon icon="mdi:lock" size="20px"/>
+                Accounts
+            </div>
 
 
-        <h6 class="mb-2 text-xl font-bold tracking-tight text-gray-900 dark:text-white">Programs assigned</h6>
+            <div id="content">
 
 
-        {#each session.session.programs as program}
+                <div class="p-5" data-simplebar>
+                    <div class="mx-auto max-sm">
+                        <div class="card mb-5 p-5 max-w-sm flex">
+                            <p class="pb-1">Current password</p>
+                            <input type="password" class="form-control mb-6 " placeholder="Password"/>
 
-            <p class="font-normal text-gray-700 dark:text-gray-400 leading-tight">{program}</p>
+                        </div>
 
-        {/each}
+                        <div class="card mb-5 p-5 max-w-2xl flex">
+                            <div class="m-4 flex">
+                                <p class="pb-1 px-3">Old password</p>
+                                <input type="password" class="form-control mb-6 " placeholder="Password"/>
+                            </div>
+                            <div class="m-4 flex">
+                                <p class="pb-1 px-3">Old password</p>
+                                <input type="password" class="form-control mb-6" placeholder="Password"/>
+                            </div>
+                        </div>
 
-    </Card>
+
+                    </div>
+                </div>
+            </div>
+
+
+        </TabItem>
+    </Tabs>
 
 
 {/await}
