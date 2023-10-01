@@ -1,5 +1,124 @@
 import { sendWarningNotification } from '$lib/stores/toast'
-import moment from 'moment'
+import moment from 'moment-timezone'
+import { capitalizeWord } from '../common/common'
+import type { ValueGetterParams } from 'ag-grid-community'
+import { fnFormatMoney, fnFormatPercent, formats } from '../common/formats'
+
+export const colAction = (widget: any, callbacks: any) => {
+  return {
+    headerName: 'Actions',
+    field: 'actions',
+    order: 9999,
+    cellClass: 'text-center',
+    headerClass: 'header-center',
+    maxWidth: 100,
+    cellRenderer: (params: ValueGetterParams) => {
+      return gridCellBuildFunctionsMap['actions']({
+        data: params.data,
+        widget: widget,
+        callback: callbacks[widget.params.actions.postRender]
+      })
+    }
+  }
+}
+
+type FunctionMapType = {
+  [key: string]: number[];
+};
+
+/**
+ * @description Genera las columnas por defecto a partir de los datos
+ * @param data
+ */
+export const generateColumnDefsByData = (data: any, definitions: any, simpleTable: boolean) => {
+  const columns: any[] = []
+  Object.entries(data).map(([key, value]: [string, any], idx: number) => {
+    if (Object.keys(definitions).map((key: string) => key).includes(key)) return
+    columns.push({
+      headerName: capitalizeWord(key).replace('_', ' '),
+      field: key,
+      order: 9998,
+      resizable: true,
+      hide: Array.isArray(value) || typeof value === 'object',
+      valueFormatter: (params: any) => {
+        if (simpleTable) {
+          const def: FunctionMapType = definitions;
+          for (const [fnName, indices] of Object.entries(def)) {
+            if (indices.includes(idx)) {          
+                const fn = formats[fnName]; 
+                console.log(fnName, fn);
+                return fn(value);
+                // console.log(value);
+                // break; 
+            }
+          }
+        } else {
+          return moment(params.value, 'YYYY-MM-DD HH:mm:ss.SSSSSSZ', true).isValid()
+            ? moment(params.value, 'YYYY-MM-DD HH:mm:ss.SSSSSSZ').format(
+                'ddd, MMM DD YYYY, HH:mm:ss'
+              )
+            : params.value
+        }
+      }
+    })
+  })
+  return columns
+}
+
+/**
+ * @description Genera las columnas por defecto a partir de los datos
+ * @param data
+ */
+export const generateColumnDefsByDefinition = (definition: any, widget: any, callbacks: any) => {
+  return Object.entries(definition)
+    .filter(([key, col]: [string, any]) => !col.hidden) // Filtrar columnas ocultas
+    .map(([key, col]: [string, any]) => {
+      return key === 'actions'
+        ? colAction(widget, callbacks)
+        : {
+            order: col.order,
+            headerName: col.title,
+            field: key,
+            format: col.format,
+            cellClass: cellClass(col),
+            cellClassRules: cellClassRules(col, widget.params.thresholds),
+            headerClass: headerClass(col),
+            // valueFormatter: (params: any) => {
+            // 	return params.colDef.format
+            // 		? formatByPattern(params.value, params.colDef.format)
+            // 		: params.value
+            // },
+            cellRenderer: (params: ValueGetterParams) => {
+              if (col.render && gridCellBuildFunctionsMap[col.render])
+                return gridCellBuildFunctionsMap[col.render](params)
+
+              // if ($widget.params.pqgrid?.formulas && Array.isArray($widget.params.pqgrid?.formulas)) {
+              // 	$widget.params.pqgrid.formulas.map((formula: any, formulaIndex: number) => {
+              // 		if (typeof formulaFunctionsMap[formula[1]] === 'function') {
+              // 			const pqFormula = formula[1].toString()
+              // 			return formulaFunctionsMap[pqFormula](params, $widget)
+
+              // 			// $widget.params.pqgrid.formulas[formulaIndex][1] = (...args: any) => {
+              // 			// 	return formulaFunctionsMap[pqFormula](params)
+              // 			// }
+              // 		} else {
+              // 			// console.log(
+              // 			// 	`The formula ${payload.params.value.pqgrid.formulas} function not exist.`
+              // 			// )
+              // 			// delete payload.params.value.pqgrid.formulas[formulaIndex]
+              // 		}
+              // 	})
+              // } else {
+              // 	// 	: params.data[key]
+              // 	return params.data[key]
+              // }
+              return col.format ? formatByPattern(params.data[key], col.format) : params.data[key]
+
+              // return params.data[key]
+            }
+          }
+    })
+}
 
 export const cellClass = (formatDefinition: any): string => {
 	let cellClass = ''
@@ -32,21 +151,21 @@ export const recordsPerPage = (formatDefinition: any): any => {
 	return recordsPerPage
 }
 
+// const formatCurrency = (val: number, decimals: number) =>
+//   '$' + val.toLocaleString(undefined, {
+//     minimumFractionDigits: decimals,
+//     maximumFractionDigits: decimals
+//   })
+
+// const formatPercentage = (val: number, decimals: number) =>
+//   (val * 100).toLocaleString(undefined, {
+//     minimumFractionDigits: decimals,
+//     maximumFractionDigits: decimals
+//   }) + '%'
+
 export const formatByPattern = (value: number, pattern: string): string => {
 	let result = ''
 	// if (!value) return result
-	const formatCurrency = (val: number, decimals: number) =>
-		'$' +
-		val.toLocaleString(undefined, {
-			minimumFractionDigits: decimals,
-			maximumFractionDigits: decimals
-		})
-
-	const formatPercentage = (val: number, decimals: number) =>
-		(val * 100).toLocaleString(undefined, {
-			minimumFractionDigits: decimals,
-			maximumFractionDigits: decimals
-		}) + '%'
 
 	switch (pattern) {
 		case '####':
@@ -61,14 +180,14 @@ export const formatByPattern = (value: number, pattern: string): string => {
 		case '##,###.0':
 		case '$#,###.0':
 		case '$##,###.0':
-			result = formatCurrency(value, 1)
+			result = fnFormatMoney(value)
 			break
 
 		case '#,###.00':
 		case '##,###.00':
 		case '$#,###.00':
 		case '$##,###.00':
-			result = formatCurrency(value, 2)
+			result = fnFormatMoney(value)
 			break
 
 		case 'yy-mm-dd':
@@ -81,12 +200,12 @@ export const formatByPattern = (value: number, pattern: string): string => {
 
 		case '##,###.0%':
 		case '#,###.0%':
-			result = formatPercentage(value, 1)
+			result = fnFormatPercent(value, '0.0%', 1)
 			break
 
 		case '##,###.00%':
 		case '#,###.00%':
-			result = formatPercentage(value, 2)
+			result = fnFormatPercent(value, '0.00%', 2)
 			break
 
 		default:
@@ -315,7 +434,7 @@ const operatorTokens: any = {
 }
 
 export const gridCellFunctionsMap: { [key: string]: (params: any) => any } = {
-	metricsRender: metricsRender
+	metricsRender: metricsRender,
 }
 
 function metricsRender(threshold: any) {
@@ -328,7 +447,9 @@ function metricsRender(threshold: any) {
 export const gridCellBuildFunctionsMap: { [key: string]: (params: any) => any } = {
 	modulesActive: modulesActive,
 	modulesProgram: modulesProgram,
-	actions: actions
+	actions: actions,
+  jsonPretty: jsonPretty,
+  dateAndTime: dateAndTime,
 }
 
 function modulesActive(params: any) {
@@ -342,6 +463,25 @@ function modulesActive(params: any) {
 
 function modulesProgram(params: any) {
 	return params.data[params.column.colId]
+}
+
+function jsonPretty(params: any) {
+  try {
+    return JSON.stringify(params.data[params.column.colId])
+  } catch (error) {
+    return params.data[params.column.colId]
+  }
+}
+
+function dateAndTime(params: any) {
+  try {
+    if (params.column.colId && params.data[params.column.colId]) {
+      const date = moment.tz(params.data[params.column.colId], 'America/New_York')
+      return date.format('ddd, MMM DD YYYY, HH:mm:ss')
+    }
+  } catch (error) {
+    console.log(error)
+  }
 }
 
 function actions(params: any) {
@@ -371,18 +511,6 @@ function createActionBtn(params: any) {
 	btn.addEventListener('click', params.callback)
 	return btn
 }
-
-// function dateAndTime(widget: WidgetPqTable, pq: any, ui: any) {
-//   try {
-//     if (ui.dataIndx && ui.rowData[ui.dataIndx]) {
-//       const date = moment.tz(ui.rowData[ui.dataIndx], 'America/New_York')
-
-//       return date.format('ddd, MMM DD YYYY, HH:mm:ss')
-//     }
-//   } catch (error) {
-//     console.log(error)
-//   }
-// }
 
 /** 
 function btnsRenderActionsDefaults(widget: WidgetPqTable, pq: any, ui: any) {
@@ -502,26 +630,6 @@ function btnsRenderActionsDefaults(widget: WidgetPqTable, pq: any, ui: any) {
 
   return {
     text: btns.join(''),
-  }
-}
-
-function jsonPretty(widget: WidgetPqTable, pq: any, ui: any) {
-  try {
-    return JSON.stringify(ui.rowData[ui.dataIndx])
-  } catch (error) {
-    return ui.rowData[ui.dataIndx]
-  }
-}
-
-function dateAndTime(widget: WidgetPqTable, pq: any, ui: any) {
-  try {
-    if (ui.dataIndx && ui.rowData[ui.dataIndx]) {
-      const date = moment.tz(ui.rowData[ui.dataIndx], 'America/New_York')
-
-      return date.format('ddd, MMM DD YYYY, HH:mm:ss')
-    }
-  } catch (error) {
-    console.log(error)
   }
 }
 

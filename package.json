@@ -55,6 +55,7 @@
 		"jsvectormap": "^1.5.3",
 		"material-symbols": "^0.9.0",
 		"moment": "^2.29.4",
+		"moment-timezone": "^0.5.43",
 		"pdfjs-dist": "^3.10.111",
 		"simplebar": "^6.2.5",
 		"svelte-exmarkdown": "^3.0.0",

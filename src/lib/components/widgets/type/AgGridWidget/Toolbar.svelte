@@ -8,9 +8,10 @@
 	export let position: string
 	export let btnsActions: any
 
-	const buttons = btnsActions[position]
-		? Object.entries(btnsActions[position]).map(([key, value]: [string, any]) => value)
-		: []
+	const buttons =
+		btnsActions && btnsActions[position]
+			? Object.entries(btnsActions[position]).map(([key, value]: [string, any]) => value)
+			: []
 
 	const handleClick = (method: string) => {
 		dispatch('click', method)

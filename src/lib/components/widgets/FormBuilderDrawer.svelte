@@ -40,11 +40,12 @@
 	}
 
 	$: if ($selectedFormBuilderWidget && $selectedFormBuilderRecord) {
-		const slug = $selectedFormBuilderWidget.query_slug.slug
+		const baseUrl = import.meta.env.VITE_API_URL
+		const slug = $selectedFormBuilderWidget.params.model.meta
 		const conditions = $selectedFormBuilderWidget.conditions
 		const record = $selectedFormBuilderRecord
-		schema = getApiData(`${slug}:meta`, 'GET', conditions)
-		data = getApiData(`${slug}/${record.data}`, 'GET', conditions)
+		schema = getApiData(`${baseUrl}/${slug}:meta`, 'GET', conditions)
+		data = getApiData(`${baseUrl}/${slug}/${record.data}`, 'GET', conditions)
 		schema.then((s: any) => {
 			title = `${capitalizeWord(record.action)} ${s.title}`
 			btnText = `${record.action === 'delete' ? 'Delete' : btnTextMap[record.action]} ${s.title}`

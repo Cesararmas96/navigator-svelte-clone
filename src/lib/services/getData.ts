@@ -106,15 +106,15 @@ const getQuerySlug = (widgetSlug: any) => {
 	}
 
 	let slugNew = null
-
 	if (slugQuery && slugQuery.includes('{BASE_URL_API}')) {
 		slugNew = slugQuery.replace('{BASE_URL_API}', import.meta.env.VITE_API_URL)
 	} else if (slugQuery && slugQuery.includes('{BASE_URL_DATA}')) {
 		slugNew = slugQuery.replace('{BASE_URL_DATA}', import.meta.env.VITE_DATA_URL)
-	} else if (slugQuery && slugQuery.includes('/api/v2')) {
-		slugNew = `${import.meta.env.VITE_API_URL}${slugQuery}`
 	} else {
-		slugNew = `${import.meta.env.VITE_API_URL}/api/v2/services/queries/${slugQuery}`
+		slugNew = slugQuery && (slugQuery.includes('http'))
+			? slugQuery
+			: `${import.meta.env.VITE_API_URL}/api/v2/services/queries/${slugQuery}`
 	}
+
 	return slugNew
 }
