@@ -61,7 +61,7 @@
 
             <div slot="title" class="flex items-center gap-2">
                 <Icon icon="mdi:lock" size="20px"/>
-                Accounts
+                Security
             </div>
 
 
@@ -82,7 +82,7 @@
                                 <input type="password" class="form-control mb-6 " placeholder="Password"/>
                             </div>
                             <div class="m-4 flex">
-                                <p class="pb-1 px-3">Old password</p>
+                                <p class="pb-1 px-3">Confirm password</p>
                                 <input type="password" class="form-control mb-6" placeholder="Password"/>
                             </div>
                         </div>
