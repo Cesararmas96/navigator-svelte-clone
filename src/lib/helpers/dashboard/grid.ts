@@ -1,5 +1,8 @@
 import { generateUID } from "../common/common"
 
+const rowHeight = 12
+const minRowHeight = 14
+
 export const loadV2Locations = (_dashboard: any, _widgets: any[], cols: number, isMobile: boolean) => {
   let widgets: any[] = []
   let x: number = 0
@@ -12,14 +15,14 @@ export const loadV2Locations = (_dashboard: any, _widgets: any[], cols: number, 
       const w = parseInt(locations[index]) * (cols / 12)
       if (w + x > cols) {
         x = 0
-        y += 4
+        y += minRowHeight
       }
-      widgets.push({ uid, x, y, w, h: 4, data })
+      widgets.push({ uid, x, y, w, h: minRowHeight, data })
       x += w
     })
   } else {
     const data = _widgets[0]
-    widgets.push({ uid: data.uid, x: 0, y: 0, w: cols, h: 4, data })
+    widgets.push({ uid: data.uid, x: 0, y: 0, w: cols, h: minRowHeight, data })
   }
   return widgets
 }
@@ -102,7 +105,7 @@ export const resizeItem = (item: any, items: any[]) => {
     document.getElementById(`widget-instances-${item.uid}`)?.clientHeight || 0
   const height = header + content + widgetInstances
   const prevousHeight = maxHeight(item.y, items)
-  item.h = Math.ceil(height / 40)
+  item.h = Math.ceil(height / rowHeight)
   return reorderAfterResize(item, prevousHeight, items)
 }
 
@@ -141,7 +144,6 @@ const maxHeight = (yPos: number, items: any[]) => {
 
 const reorderAfterResize = (item: any, prevousHeight: number, items: any[]) => {
   const height = maxHeight(item.y, items) - prevousHeight
-  console.log(height)
   items.map((i) => {
     if (i.y > item.y) i.y += height
     return i

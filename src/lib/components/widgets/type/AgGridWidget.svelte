@@ -24,9 +24,10 @@
 	export let simpleTable: boolean = false
 
 	const widget = getContext<Writable<any>>('widget')
-	$: console.log($widget)
 
-	const formatDefinitionKeys = Object.keys($widget.format_definition).map((key: string) => key)
+	const formatDefinitionKeys = $widget.format_definition
+		? Object.keys($widget.format_definition).map((key: string) => key)
+		: []
 
 	/**
 	 * @description Almacena las funciones de las acciones de los botones en las celdas
@@ -67,14 +68,10 @@
 	 */
 	let columnDefs: ColDef[] =
 		simpleTable || !$widget.format_definition || Object.keys($widget.format_definition).length === 0
-			? generateColumnDefsByData(
-					$widget.data && $widget.data.length > 0 ? $widget.data[0] : {},
-					$widget.format_definition,
-					simpleTable
-			  )
+			? generateColumnDefsByData($widget, simpleTable)
 			: [
-					...generateColumnDefsByDefinition($widget.format_definition, $widget, actionBtnMap),
-					...generateColumnDefsByData($widget.data[0], $widget.format_definition, simpleTable)
+					...generateColumnDefsByDefinition($widget, actionBtnMap),
+					...generateColumnDefsByData($widget, simpleTable)
 			  ]
 
 	/**
@@ -123,6 +120,7 @@
 		const eGridDiv: HTMLElement = document.querySelector(`#grid-${$widget.uid}`)!
 		new Grid(eGridDiv, gridOptions)
 		eGridDiv.style.height = gridHeight($widget.uid, $widget.params)
+		if ($widget.temp) $widget.instance_loaded = true
 	})
 
 	$: isDark = $themeMode === 'dark'

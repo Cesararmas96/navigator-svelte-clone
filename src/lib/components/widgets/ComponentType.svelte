@@ -11,7 +11,7 @@
 		$widget.data = data
 		Thing = (await import(`./type/${$widget.classbase}.svelte`)).default
 		if ($widget.temp) {
-			$widget.instance_loaded = true
+			$widget.instance_loading = true
 		}
 		// if ($widget.attributes.explorer === 'v2') {
 		// 	$widget.instance_loaded = true

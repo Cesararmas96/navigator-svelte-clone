@@ -4,19 +4,18 @@
 	import { createEventDispatcher, setContext } from 'svelte'
 	import { writable } from 'svelte/store'
 
+	export let widget: any
 	export let isToolbarVisible: boolean
 	export let fixed: boolean
 	export let isOwner: boolean
 
 	const dispatch = createEventDispatcher()
 
-	export let widget: any
 	let widgetStore = writable(widget)
 
 	let widgetBase: string
 	$: {
 		if (!widget.loaded) {
-			console.log('creo instancia')
 			initWidgetActions()
 			initInstances()
 
@@ -33,6 +32,7 @@
 	}
 
 	$: if ($widgetStore.instance_loaded) {
+		$widgetStore.instance_loading = null
 		$widgetStore.instance_loaded = null
 		dispatch('handleInstanceResize')
 	}
@@ -50,4 +50,4 @@
 	}
 </script>
 
-<slot {isToolbarVisible} {fixed} {isOwner} />
+<slot widget={widgetStore} {isToolbarVisible} {fixed} {isOwner} />

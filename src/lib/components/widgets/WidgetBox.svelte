@@ -2,8 +2,8 @@
 	import { isDarkMode, isUrl } from '$lib/helpers/common/common'
 	import { initWidgetActions } from '$lib/helpers/widget/actions'
 	import { initInstances } from '$lib/helpers/widget/instances'
-	import { createEventDispatcher, onDestroy, setContext } from 'svelte'
-	import { writable } from 'svelte/store'
+	import { createEventDispatcher, getContext, onDestroy, setContext } from 'svelte'
+	import { writable, type Writable } from 'svelte/store'
 	import { selectedWidgetSettings } from '$lib/stores/widgets'
 
 	let isToolbarVisible: boolean = false
@@ -79,6 +79,7 @@
 		return !isDarkMode() ? (isUrl(bg) ? 'widget-bg-image' : 'widget-bg-color') : ''
 	}
 	let widgetStore: any
+	let instances: any
 
 	let widgetBase: string
 	$: {
@@ -86,7 +87,8 @@
 			widgetStore = writable(widget)
 			widget.instances = []
 			initWidgetActions()
-			initInstances()
+			// initInstances()
+			instances = getContext<Writable<any[]>>('widgetInstances')
 			if (widget.params && !widget.params?.settings && !widget.temp) {
 				widget.params.settings = Object.assign({}, defaultSettings.params.settings)
 			}
@@ -166,6 +168,7 @@
 	class:border={!isDarkMode() && border}
 	class:border-gray-200={!isDarkMode() && border}
 	class:cursor-default={fixed || !draggable}
+	class:widget-drilldown-open={$instances && $instances.length > 0}
 	class={`card justify-content-between flex h-full w-full flex-col rounded-lg p-1 ${bgTypeClass(
 		background
 	)}`}
@@ -210,5 +213,10 @@
 
 	.widget-bg-color:is([data-theme='dark']) {
 		background-color: inherit;
+	}
+
+	.widget-drilldown-open {
+		box-shadow: rgba(0, 0, 0, 0.35) 0px 0px 15px;
+		z-index: 10;
 	}
 </style>

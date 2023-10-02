@@ -7,7 +7,11 @@
 	const widget = getContext<Writable<any>>('widget')
 
 	const handleClick = () => {
-		$widget.remove = true
+		if ($widget.temp) {
+			$widget.close_instance = true
+		} else {
+			$widget.remove = true
+		}
 	}
 </script>
 

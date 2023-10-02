@@ -11,6 +11,8 @@
 	import { addWidgetAction } from '$lib/helpers'
 	import { selectedWidgetMaximize } from '$lib/stores/widgets'
 
+	const dispatch = createEventDispatcher()
+
 	export let isToolbarVisible: boolean
 	export let fixed: boolean
 	export let isOwner: boolean
@@ -20,7 +22,6 @@
 	let header: boolean
 	let footer: boolean
 
-	// $: widget = getContext<Writable<any>>('widget')
 	export let widget: Writable<any>
 
 	const widgetActions = getContext<Writable<any>>('widgetActions')
@@ -40,6 +41,11 @@
 				})
 			}
 		}
+	}
+
+	const handleInstanceResize = (event: Event) => {
+		$widget.instance_loading = false
+		dispatch('handleInstanceResize', event)
 	}
 
 	$: scrollable = !$widget.temp ? $widget?.params?.settings?.general?.scrollable : false
@@ -90,7 +96,13 @@
 			<ContentBottom {widget} />
 		</div>
 	</div>
-	<Instances widget={$widget} {isToolbarVisible} {fixed} {isOwner} on:handleInstanceResize />
+	<Instances
+		{widget}
+		{isToolbarVisible}
+		{fixed}
+		{isOwner}
+		on:handleInstanceResize={handleInstanceResize}
+	/>
 </div>
 <!-- Widget Footer -->
 {#if !$widget.temp}

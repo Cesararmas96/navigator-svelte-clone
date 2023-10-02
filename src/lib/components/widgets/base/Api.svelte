@@ -11,7 +11,7 @@
 
 	let widgetActions: any = getContext('widgetActions')
 
-	const slug = $widget.query_slug!.slug
+	const slug = $widget.query_slug?.slug || $widget.params.query?.slug
 	const conditionsRaw = $widget.conditions
 	const method = $widget.params?.ajax?.method || $widget.params?.ajax?.type
 	let data: any

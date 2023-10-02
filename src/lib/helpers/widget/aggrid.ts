@@ -30,7 +30,9 @@ type FunctionMapType = {
  * @description Genera las columnas por defecto a partir de los datos
  * @param data
  */
-export const generateColumnDefsByData = (data: any, definitions: any, simpleTable: boolean) => {
+export const generateColumnDefsByData = (widget: any, simpleTable: boolean) => {
+  const data = widget.data && widget.data.length > 0 ? widget.data[0] : {}
+  const definitions = widget.format_definition || {}
   const columns: any[] = []
   Object.entries(data).map(([key, value]: [string, any], idx: number) => {
     if (Object.keys(definitions).map((key: string) => key).includes(key)) return
@@ -46,7 +48,6 @@ export const generateColumnDefsByData = (data: any, definitions: any, simpleTabl
           for (const [fnName, indices] of Object.entries(def)) {
             if (indices.includes(idx)) {          
                 const fn = formats[fnName]; 
-                console.log(fnName, fn);
                 return fn(value);
                 // console.log(value);
                 // break; 
@@ -69,8 +70,9 @@ export const generateColumnDefsByData = (data: any, definitions: any, simpleTabl
  * @description Genera las columnas por defecto a partir de los datos
  * @param data
  */
-export const generateColumnDefsByDefinition = (definition: any, widget: any, callbacks: any) => {
-  return Object.entries(definition)
+export const generateColumnDefsByDefinition = (widget: any, callbacks: any) => {
+  const definitions = widget.format_definition
+  return Object.entries(definitions)
     .filter(([key, col]: [string, any]) => !col.hidden) // Filtrar columnas ocultas
     .map(([key, col]: [string, any]) => {
       return key === 'actions'
@@ -138,7 +140,7 @@ export const gridHeight = (uid: string, formatDefinition: any): any => {
 	const widgetHeight = document.getElementById(`widget-${uid}`)!.offsetHeight
 	const headerHeight = document.getElementById(`widget-header-${uid}`)!.offsetHeight
 	const contentHeight = widgetHeight - headerHeight
-	return `${contentHeight}px`
+	return contentHeight && contentHeight > 200 ? `${contentHeight}px` : '200px'
 }
 
 export const recordsPerPage = (formatDefinition: any): any => {

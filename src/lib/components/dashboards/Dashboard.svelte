@@ -14,7 +14,7 @@
 	export let dashboard: any
 
 	const cols = 12
-	const itemSize = { height: 40 }
+	const itemSize = { height: 10 }
 
 	let innerWidth: number
 	let gridItems: any[] = []
@@ -48,6 +48,7 @@
 
 	let resizedUID = ''
 	$: changeItemSize = (item: any) => {
+		console.log('changeItemSize', item)
 		resizedUID = item.uid
 	}
 </script>
@@ -64,8 +65,6 @@
 			class="grid-item"
 			activeClass="grid-item-active"
 			previewClass="bg-red-500 rounded"
-			movable={item.data.params?.settings?.draggable && !item.data.params?.settings?.fixed}
-			resizable={item.data.params?.settings?.resizable && !item.data.params?.settings?.fixed}
 			on:change={(e) => {
 				changeItemSize(item)
 			}}
