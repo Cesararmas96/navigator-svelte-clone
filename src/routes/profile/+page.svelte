@@ -7,6 +7,7 @@
 
     import {TabItem, Tabs} from 'flowbite-svelte';
     import Profile from "$lib/components/profile/Profile.svelte";
+    import PasswordStrength from "$lib/components/forms/PasswordStrength.svelte";
 
 
     let rawSession
@@ -17,7 +18,7 @@
         goto('/login')
     }
     console.log(rawSession)
-
+    let password = ''
 
 </script>
 
@@ -76,15 +77,16 @@
 
                         </div>
 
-                        <div class="card mb-5 p-5 max-w-2xl flex">
-                            <div class="m-4 flex">
-                                <p class="pb-1 px-3">New password</p>
-                                <input type="password" class="form-control mb-6 " placeholder="Password"/>
-                            </div>
-                            <div class="m-4 flex">
-                                <p class="pb-1 px-3">Confirm new password</p>
-                                <input type="password" class="form-control mb-6" placeholder="Password"/>
-                            </div>
+                        <div class="card mb-5 p-5 max-w-8xl mb-10">
+
+                            <p class="pb-1 px-3">New password</p>
+                            <input style="min-width: 2000px" type="password" name="password" bind:value={password}/>
+                            <PasswordStrength {password}/>
+
+
+                            <p class="pb-1 px-3 pt-3">Confirm new password</p>
+                            <input type="password" class="form-control mb-6" placeholder="Password"/>
+
                         </div>
 
 

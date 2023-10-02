@@ -36,7 +36,7 @@
         </div>
         <DropdownItem>Dashboard</DropdownItem>
         <DropdownItem>Settings</DropdownItem>
-        <DropdownItem>Earnings</DropdownItem>
+        <!--        <DropdownItem>Earnings</DropdownItem>-->
         <DropdownItem slot="footer" on:click={handleLogout}>Sign out</DropdownItem>
     </Dropdown>
 {/await}
