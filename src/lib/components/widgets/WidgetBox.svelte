@@ -88,7 +88,7 @@
 			widget.instances = []
 			initWidgetActions()
 			// initInstances()
-			instances = getContext<Writable<any[]>>('widgetInstances')
+			// instances = getContext<Writable<any[]>>('widgetInstances')
 			if (widget.params && !widget.params?.settings && !widget.temp) {
 				widget.params.settings = Object.assign({}, defaultSettings.params.settings)
 			}
@@ -168,7 +168,7 @@
 	class:border={!isDarkMode() && border}
 	class:border-gray-200={!isDarkMode() && border}
 	class:cursor-default={fixed || !draggable}
-	class:widget-drilldown-open={$instances && $instances.length > 0}
+	class:widget-drilldown-open={$widgetStore.instances && $widgetStore.instances.length > 0}
 	class={`card justify-content-between flex h-full w-full flex-col rounded-lg p-1 ${bgTypeClass(
 		background
 	)}`}
