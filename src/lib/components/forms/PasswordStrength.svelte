@@ -15,7 +15,8 @@
     }
 
     #color-indicators span {
-        height: 5px;
+        margin-top: 3px;
+        height: 3px;
     }
 
     span.valid:nth-child(1) {

@@ -72,22 +72,22 @@
 
             <div class="flex flex-row">
                 <Profile session={session}/>
-                <div class="flex-col">
+                <div class="flex-col ml-10">
 
 
                     <p class="w-40">Current password</p>
-                    <input type="password" class="form-control mb-6 " placeholder="Password"/>
+                    <input type="password" class=" mb-6 " placeholder="Password" style="min-width: 600px"/>
 
 
                     <p class="">New password</p>
-                    <input type="password" class="form-control" name="password" bind:value={password}/>
+                    <input type="password" class="" name="password" bind:value={password} style="min-width: 600px"/>
                     <div class="mb-6">
                         <PasswordStrength {password}/>
                     </div>
 
 
                     <p>Confirm new password</p>
-                    <input type="password" class="form-control mb-6" placeholder="Password"/>
+                    <input type="password" class=" mb-6" placeholder="Password" style="min-width: 600px"/>
                 </div>
 
             </div>
