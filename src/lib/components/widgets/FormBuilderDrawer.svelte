@@ -9,6 +9,10 @@
 	import { sineIn } from 'svelte/easing'
 	import Icon from '../common/Icon.svelte'
 	import { capitalizeWord } from '$lib/helpers/common/common'
+	import { Form } from '@mixoo/form'
+
+	import '@mixoo/ui/css/theme/default.css'
+	import '@mixoo/form/css/theme/default.css'
 
 	let title: string = ''
 	let btnText: string = ''
@@ -37,6 +41,14 @@
 		new: 'Save',
 		edit: 'Update',
 		view: 'View'
+	}
+
+	function handleSubmit(payload: any) {
+		console.log('submit', payload.detail)
+	}
+
+	function handleErrors(errors: any) {
+		console.log('errors', errors.detail)
 	}
 
 	$: if ($selectedFormBuilderWidget && $selectedFormBuilderRecord) {
@@ -73,17 +85,21 @@
 				</h5>
 				<CloseButton on:click={() => close()} class="dark:text-white" />
 			</div>
-			<Button class="mb-2 mt-3 w-full rounded p-2 text-sm" type="submit" on:click={update}
+			<!-- <Button class="mb-2 mt-3 w-full rounded p-2 text-sm" type="submit" on:click={update}
 				><Icon
 					icon="streamline:interface-edit-write-2-change-document-edit-modify-paper-pencil-write-writing"
 					classes="mr-2"
 				/>{btnText}</Button
-			>
+			> -->
 		</div>
 
-		<pre>{JSON.stringify(schema, null, 2)}</pre>
+		<div class="px-4">
+			<Form {schema} on:submit={handleSubmit} on:error={handleErrors} debug />
+		</div>
+
+		<!-- <pre>{JSON.stringify(schema, null, 2)}</pre>
 		{#await data then data}
 			<pre>{JSON.stringify(data, null, 2)}</pre>
-		{/await}
+		{/await} -->
 	</Drawer>
 {/await}
