@@ -26,20 +26,21 @@
 {#await rawSession then session}
 
     <Tabs>
-        <Profile session={session}/>
         <TabItem>
-
-
             <div slot="title" class="items-center gap-2 flex">
                 <Icon icon="mdi:user" size="20px"/>
                 Identities
             </div>
-            <p>
-                <b>Profile:</b>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore
-                et
-                dolore magna aliqua.
-            </p>
+            <div class="flex flex-row">
+
+                <Profile session={session}/>
+                <p>
+                    <b>Profile:</b>
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore
+                    et
+                    dolore magna aliqua.
+                </p>
+            </div>
         </TabItem>
         <TabItem>
 
@@ -48,13 +49,16 @@
                 Accounts
             </div>
 
+            <div class="flex flex-row">
+                <Profile session={session}/>
 
-            <p class="text-sm text-gray-500 dark:text-gray-400">
-                <b>Settings:</b>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore
-                et
-                dolore magna aliqua.
-            </p>
+                <p class="text-sm text-gray-500 dark:text-gray-400">
+                    <b>Settings:</b>
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore
+                    et
+                    dolore magna aliqua.
+                </p>
+            </div>
         </TabItem>
 
 
@@ -66,32 +70,26 @@
             </div>
 
 
-            <div id="content">
+            <div class="flex flex-row">
+                <Profile session={session}/>
+                <div class="flex-col">
 
 
-                <div class="p-5" data-simplebar>
-                    <div class="mx-auto max-sm">
-                        <div class="card mb-5 p-5 max-w-sm flex">
-                            <p class="pb-1">Current password</p>
-                            <input type="password" class="form-control mb-6 " placeholder="Password"/>
-
-                        </div>
-
-                        <div class="card mb-5 p-5 max-w-8xl mb-10">
-
-                            <p class="pb-1 px-3">New password</p>
-                            <input style="min-width: 2000px" type="password" name="password" bind:value={password}/>
-                            <PasswordStrength {password}/>
+                    <p class="w-40">Current password</p>
+                    <input type="password" class="form-control mb-6 " placeholder="Password"/>
 
 
-                            <p class="pb-1 px-3 pt-3">Confirm new password</p>
-                            <input type="password" class="form-control mb-6" placeholder="Password"/>
-
-                        </div>
-
-
+                    <p class="">New password</p>
+                    <input type="password" class="form-control" name="password" bind:value={password}/>
+                    <div class="mb-6">
+                        <PasswordStrength {password}/>
                     </div>
+
+
+                    <p>Confirm new password</p>
+                    <input type="password" class="form-control mb-6" placeholder="Password"/>
                 </div>
+
             </div>
 
 
