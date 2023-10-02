@@ -5,7 +5,7 @@
 
 <Header/>
 
-<div class="mx-auto flex w-full">
+<div class="mx-auto flex-row w-full">
     <div class="mx-auto w-full">
         <div class="flex h-[calc(100vh-4rem)] flex-col justify-between" data-simplebar>
             <main class="pt-10">
