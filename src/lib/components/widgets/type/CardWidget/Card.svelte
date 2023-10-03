@@ -26,21 +26,21 @@
 		clearInstances(widget)
 		let drilldowns: any[] = card.drilldowns && Array.isArray(card.drilldowns) ? card.drilldowns : []
 		drilldowns.forEach((drilldown: any) => {
+			console.log('$widget', $widget)
 			const drilldownConfig = Object.assign(
 				{},
 				{
 					master_filtering: true,
-					// conditions:
-					//   !drilldownOptions!.extendConditions ||
-					//   drilldownOptions!.extendConditions === 'false'
-					//     ? {}
-					//     : conditions.value,
+					conditions:
+						!drilldown!.extendConditions || drilldown!.extendConditions === 'false'
+							? {}
+							: $widget.conditions,
 					dashboard_id: $widget.dashboard_id,
 					module_id: $widget.module_id,
 					program_id: $widget.program_id,
 					widget_type_id: $widget.widget_type_id,
-					parent: $widget.uid
-					// dataExtra: drilldownOptions!.dataExtra,
+					parent: $widget.uid,
+					dataExtra: drilldown!.dataExtra // TODO: investigar que es el dataExtra
 				},
 				drilldown,
 				{
