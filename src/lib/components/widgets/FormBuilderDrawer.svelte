@@ -64,7 +64,7 @@
 		const jsonSchema = await getApiData(`${slug}:meta`, 'GET', conditions)
 
 		if (jsonSchema) {
-			schema = jsonSchema
+			jsonSchema['noHeader'] = true
 			title = `${capitalizeWord(record.action)} ${jsonSchema?.title}`
 			description = jsonSchema?.description
 			btnText = `${record.action === 'delete' ? 'Delete' : btnTextMap[record.action]} ${
@@ -72,25 +72,30 @@
 			}`
 
 			if (record?.data) {
-				getModelByID(record, slug, conditions)
+				getModelByID(jsonSchema, record, slug, conditions)
+			} else {
+				schema = jsonSchema
 			}
 		}
 	}
 
 	async function getModelByID(
+		jsonSchema: Record<string, any>,
 		record: Record<string, any>,
 		slug: string,
 		conditions: Record<string, any>
 	) {
 		const dataSchema = await getApiData(`${slug}/${record.data}`, 'GET', conditions)
 
-		title = `${capitalizeWord(record.action)} ${schema?.title} #${record.data}`
+		title = `${capitalizeWord(record.action)} ${jsonSchema?.title} #${record.data}`
 
 		if (dataSchema) {
-			Object.keys(schema.properties).map((property) => {
-				schema.properties[property].default = dataSchema[property]
+			Object.keys(jsonSchema.properties).map((property) => {
+				jsonSchema.properties[property].default = dataSchema[property]
 			})
 		}
+
+		schema = jsonSchema
 	}
 
 	async function handleSubmit(payload: any) {

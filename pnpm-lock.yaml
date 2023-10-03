@@ -5,11 +5,11 @@ dependencies:
     specifier: ^1.4.5
     version: 1.4.5
   '@mixoo/form':
-    specifier: ^1.1.1
-    version: 1.1.1(svelte@4.1.1)
+    specifier: ^1.1.3
+    version: 1.1.3(@mixoo/ui@1.0.6)(svelte@4.1.1)
   '@mixoo/ui':
-    specifier: ^1.0.4
-    version: 1.0.4(svelte@4.1.1)
+    specifier: ^1.0.6
+    version: 1.0.6(svelte@4.1.1)
   '@popperjs/core':
     specifier: ^2.11.8
     version: 2.11.8
@@ -533,122 +533,123 @@ packages:
       svelte: 4.1.1
     dev: false
 
-  /@mixoo-ui/button@1.0.3(svelte@4.1.1):
-    resolution: {integrity: sha512-eDGjUM1iYoTsaOGrFZghdt/SwACJ8fqLJChm9oB8uE92Xig83TvhPRXTju+10g4U5FkWtNmpX6fx8AaY27J7Ww==}
+  /@mixoo-ui/button@1.0.5(svelte@4.1.1):
+    resolution: {integrity: sha512-znwSa7pc5FGrAKnwjLK+XyqiRsX4Ox1Keu3PPnhUfZN7oqVcfFImg1dUvUnZnIwifuBB1YU1HUYa0+VZknDxoA==}
     peerDependencies:
       svelte: ^4
     dependencies:
-      '@mixoo-ui/core': 1.0.2
+      '@mixoo-ui/core': 1.0.4
       svelte: 4.1.1
     dev: false
 
-  /@mixoo-ui/checkbox@1.0.2(svelte@4.1.1):
-    resolution: {integrity: sha512-IWjGJnG2K6EJIoYVpDnou9oiclSEFaiEMuomE4CIyvuoDfUHeIEevvT5iqlGyBoEMG3aWYUWlOFqU4JQWrLlZA==}
+  /@mixoo-ui/checkbox@1.0.4(svelte@4.1.1):
+    resolution: {integrity: sha512-IfbBfUzQRbaPvFDPog+c83phTAjiDkAKa+1/p0j1puMMHh4pKklI2WmM9asYe8iEFthEm39PMpn0DgKfr9Aa0A==}
     peerDependencies:
       svelte: ^4
     dependencies:
-      '@mixoo-ui/core': 1.0.2
+      '@mixoo-ui/core': 1.0.4
       svelte: 4.1.1
     dev: false
 
-  /@mixoo-ui/core@1.0.2:
-    resolution: {integrity: sha512-SX1YcfhzOdvwthee2kt970LIv7dWcpcWGV3A8CMk4L17msBaKWWRTG4wu4UIo+gGrvr1yoOWuBqKE6+965HzfA==}
+  /@mixoo-ui/core@1.0.4:
+    resolution: {integrity: sha512-yXq8SyHha+QCxdYGuAV6jjA2oYNh3GIi/TGapcRB4LIE5G2Qyf3pa+yoAr467FyGQSnodFOtn+jO3YsBApU3PA==}
     dependencies:
       cva: /class-variance-authority@0.7.0
     dev: false
 
-  /@mixoo-ui/input@1.0.3(svelte@4.1.1):
-    resolution: {integrity: sha512-KbUOcJeMneYC29y6O4ggAMpSd9ahU3wGR4cHnqsw0OyIm+YlW9mX+jrSgnrc5C9etF/5iBV9jMVGYnVomajD7g==}
+  /@mixoo-ui/input@1.0.5(svelte@4.1.1):
+    resolution: {integrity: sha512-Nt1YnWoO/NniGXOGUWoGj4Lh4AWoN9nHfxEDUO6kf4HcuEJ6u3uEnzZYVtS0H7Xa2so8/zxPPNfNI1eg1XCbDA==}
     peerDependencies:
       svelte: ^4
     dependencies:
       '@floating-ui/dom': 1.5.3
-      '@mixoo-ui/core': 1.0.2
+      '@mixoo-ui/core': 1.0.4
       svelte: 4.1.1
     dev: false
 
-  /@mixoo-ui/number@1.0.2(svelte@4.1.1):
-    resolution: {integrity: sha512-/OCi0pFdRmnt5vrhlU3BYnNV3tTDiV1iomyvBFhBmKJiubu3o8fp5YBxwnwgu7afHigPK9ihi/FB0H4vBc5IgA==}
+  /@mixoo-ui/number@1.0.4(svelte@4.1.1):
+    resolution: {integrity: sha512-EAUDIiUcqxvjKPY0wVBVrZN0zLHdiMn4hfWVnTglYPKv7qEimwYs3oKynYEQYHOmFMDp2B1XLr3Ly0oU5posgQ==}
     peerDependencies:
       svelte: ^4
     dependencies:
-      '@mixoo-ui/core': 1.0.2
-      '@mixoo-ui/input': 1.0.3(svelte@4.1.1)
+      '@mixoo-ui/core': 1.0.4
+      '@mixoo-ui/input': 1.0.5(svelte@4.1.1)
       svelte: 4.1.1
     dev: false
 
-  /@mixoo-ui/radio@1.0.2(svelte@4.1.1):
-    resolution: {integrity: sha512-DrK3cX1SpFADXpyVldLR4OLRmAjfSKd1nTA9XHL8spoRfTf4nimhCq9CUb5ValY5Kk+k8en7ILR1YuEPH2IbMg==}
+  /@mixoo-ui/radio@1.0.4(svelte@4.1.1):
+    resolution: {integrity: sha512-5T+anZ27j/HzLpEbgumjCFDeAQXyqJmanawZ4Xr8CGRZHO0V+Plaj2yzu/EcgcFgvltaOL7I2qlu0OGzpNIOag==}
     peerDependencies:
       svelte: ^4
     dependencies:
-      '@mixoo-ui/core': 1.0.2
+      '@mixoo-ui/core': 1.0.4
       svelte: 4.1.1
     dev: false
 
-  /@mixoo-ui/select@1.0.3(svelte@4.1.1):
-    resolution: {integrity: sha512-CW/31GttBXeU3+NLNT4IMPOJJjet3wL/HcMWQKarZDRh6H9DL2g/mgSIKzApPnlWfRVfYcJBBJE5eXLcaWyGig==}
+  /@mixoo-ui/select@1.0.5(svelte@4.1.1):
+    resolution: {integrity: sha512-WkiQZ4tD9gt3vlpdK/AZbOsO/RILcEyiHPyyNiwWCBDBgc4BXhL2zheAQMJU9YRoslDXfz7423id1bwU4ebDZQ==}
     peerDependencies:
       svelte: ^4
     dependencies:
       '@melt-ui/svelte': 0.50.0(svelte@4.1.1)
-      '@mixoo-ui/core': 1.0.2
-      '@mixoo-ui/input': 1.0.3(svelte@4.1.1)
-      '@mixoo/virtual-list': 1.0.1(svelte@4.1.1)
+      '@mixoo-ui/core': 1.0.4
+      '@mixoo-ui/input': 1.0.5(svelte@4.1.1)
+      '@mixoo/virtual-list': 1.0.3(svelte@4.1.1)
       svelte: 4.1.1
     dev: false
 
-  /@mixoo-ui/switch@1.0.3(svelte@4.1.1):
-    resolution: {integrity: sha512-27t1cPVDezmvwiOk0DDI4seFtT5On+ruLiXy2ghupmrDsISIZXqEKmfepCtA89/z+4AAQqBwXU3qcFEJpteH6Q==}
+  /@mixoo-ui/switch@1.0.5(svelte@4.1.1):
+    resolution: {integrity: sha512-WK8WyJ1DDELoyxuDE8D9mvyYqKZH3rrB7Tsu8R/5qB+dELy20YMGozavYdGIaSeA6cP6puaIOATINQWN2G3Xtg==}
     peerDependencies:
       svelte: ^4
     dependencies:
       '@floating-ui/dom': 1.5.3
       '@melt-ui/svelte': 0.50.0(svelte@4.1.1)
-      '@mixoo-ui/core': 1.0.2
+      '@mixoo-ui/core': 1.0.4
       svelte: 4.1.1
     dev: false
 
-  /@mixoo-ui/textarea@1.0.3(svelte@4.1.1):
-    resolution: {integrity: sha512-9/PIJhjZWZudwHNTPOBGCHWZd5g8TJbo2Km5l6z6tITDVZs6IK6BUANbBsEA/reePzwih3ZRn38h0tUz27udew==}
+  /@mixoo-ui/textarea@1.0.5(svelte@4.1.1):
+    resolution: {integrity: sha512-vPyVKEMKQUBt4NVkn1DM8fQqfBMY3iZKInK9RcwBEP22sHEbuMEHCTDuKHHKAO1iz//pVTzF9uuui6pn4FlKbA==}
     peerDependencies:
       svelte: ^4
     dependencies:
       '@floating-ui/dom': 1.5.3
-      '@mixoo-ui/core': 1.0.2
+      '@mixoo-ui/core': 1.0.4
       svelte: 4.1.1
     dev: false
 
-  /@mixoo/form@1.1.1(svelte@4.1.1):
-    resolution: {integrity: sha512-sgN4O7lBVtuHzTj5LnSxSrDqYK0SrDjyG7yl8/SFj/sATwQmFfG+Aciyo0NDWXEmRhV1uPic3p60STnUO8jIRw==}
+  /@mixoo/form@1.1.3(@mixoo/ui@1.0.6)(svelte@4.1.1):
+    resolution: {integrity: sha512-NKe4rfiYTfKKGz/vbcmoDqv2IpQSD4kxNZD2dOintqZEbct4gNdUtLQsaCOoR+LJsYuqAdB8bL47hraDFCM+5A==}
     peerDependencies:
+      '@mixoo/ui': ^1.0.6
       svelte: ^4
     dependencies:
-      '@mixoo-ui/core': 1.0.2
-      '@mixoo/ui': 1.0.4(svelte@4.1.1)
+      '@mixoo-ui/core': 1.0.4
+      '@mixoo/ui': 1.0.6(svelte@4.1.1)
       jsonschema: 1.4.1
       svelte: 4.1.1
       url: 0.11.3
     dev: false
 
-  /@mixoo/ui@1.0.4(svelte@4.1.1):
-    resolution: {integrity: sha512-ASQK7OSjU/02d5AicddB1WWhVpRMfEVFrZHjxBLq1YCG45l9SHXUaxNPlwvaRHVPy9lgHIpYpFr+UDHt9B4FWA==}
+  /@mixoo/ui@1.0.6(svelte@4.1.1):
+    resolution: {integrity: sha512-3xq4WOsf7Eqazz5zcCydCHcKJGj/p3sNkiCOeIhB6qk3gRCDddkbmu2fcxfdqvipQbqeVKJuzCK90321uiJhKw==}
     peerDependencies:
       svelte: ^4
     dependencies:
-      '@mixoo-ui/button': 1.0.3(svelte@4.1.1)
-      '@mixoo-ui/checkbox': 1.0.2(svelte@4.1.1)
-      '@mixoo-ui/input': 1.0.3(svelte@4.1.1)
-      '@mixoo-ui/number': 1.0.2(svelte@4.1.1)
-      '@mixoo-ui/radio': 1.0.2(svelte@4.1.1)
-      '@mixoo-ui/select': 1.0.3(svelte@4.1.1)
-      '@mixoo-ui/switch': 1.0.3(svelte@4.1.1)
-      '@mixoo-ui/textarea': 1.0.3(svelte@4.1.1)
+      '@mixoo-ui/button': 1.0.5(svelte@4.1.1)
+      '@mixoo-ui/checkbox': 1.0.4(svelte@4.1.1)
+      '@mixoo-ui/input': 1.0.5(svelte@4.1.1)
+      '@mixoo-ui/number': 1.0.4(svelte@4.1.1)
+      '@mixoo-ui/radio': 1.0.4(svelte@4.1.1)
+      '@mixoo-ui/select': 1.0.5(svelte@4.1.1)
+      '@mixoo-ui/switch': 1.0.5(svelte@4.1.1)
+      '@mixoo-ui/textarea': 1.0.5(svelte@4.1.1)
       svelte: 4.1.1
     dev: false
 
-  /@mixoo/virtual-list@1.0.1(svelte@4.1.1):
-    resolution: {integrity: sha512-MbBPSnADFp44KOXgEXgDj/nP4E/sCe981Wu2ZvqbFc7fUlHX9SglBI8BuKzW0ODw6BRTXFUlc554OPKwpB65nQ==}
+  /@mixoo/virtual-list@1.0.3(svelte@4.1.1):
+    resolution: {integrity: sha512-RatPT4vlRyaAR2dQr1yy+iCBUjTherFh0YSIDQIj+V2YRJK/8dI+2sbHqrBM0QM+tznnTikEGL3grI3phR3sSg==}
     peerDependencies:
       svelte: ^4
     dependencies:
