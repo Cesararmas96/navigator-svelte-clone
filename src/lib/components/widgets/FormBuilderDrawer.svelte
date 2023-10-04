@@ -12,13 +12,18 @@
 	import { Form } from '@mixoo/form'
 	import { sendErrorNotification, sendSuccessNotification } from '$lib/stores/toast'
 	import Loading from '$lib/components/common/Loading.svelte'
+	// import { startCase, capitalize, merge, orderBy, map } from 'lodash-es'
 
 	import '@mixoo/ui/css/theme/default.css'
 	import '@mixoo/form/css/theme/default.css'
 
+	const baseUrl = import.meta.env.VITE_API_URL
+	// TODO: take for session to merged
+	const token =
+		'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTY3OTI5NzAsImlhdCI6MTY5NjQzMjk3MCwiaXNzIjoiTW9iaWxlaW5zaWdodCIsInVzZXIiOjE1Nzc5LCJ1c2VybmFtZSI6ImptZW5kb3phMUB0cm9jZ2xvYmFsLmNvbSIsInVzZXJfaWQiOjE1Nzc5LCJpZCI6ImptZW5kb3phMUB0cm9jZ2xvYmFsLmNvbSJ9.cw43iQVJkE6zzGiSfrV-8CCxK-MDkv9ZjOJCyIqkDxg'
 	let title: string = ''
 	let description: string = ''
-	let btnText: string = ''
+	// let btnText: string = ''
 	let schema: any
 	const urlBase = import.meta.env.VITE_API_URL
 
@@ -42,11 +47,11 @@
 	// 	close()
 	// }
 
-	const btnTextMap: any = {
-		new: 'Save',
-		edit: 'Update',
-		view: 'View'
-	}
+	// const btnTextMap: any = {
+	// 	new: 'Save',
+	// 	edit: 'Update',
+	// 	view: 'View'
+	// }
 
 	$: if ($selectedFormBuilderWidget && $selectedFormBuilderRecord) {
 		const slug = $selectedFormBuilderWidget.query_slug.slug
@@ -67,15 +72,32 @@
 			jsonSchema['noHeader'] = true
 			title = `${capitalizeWord(record.action)} ${jsonSchema?.title}`
 			description = jsonSchema?.description
-			btnText = `${record.action === 'delete' ? 'Delete' : btnTextMap[record.action]} ${
-				jsonSchema.title
-			}`
+			// btnText = `${btnTextMap[record.action]} ${jsonSchema.title}`
+
+			Object.keys(jsonSchema.properties).map((property) => {
+				if (
+					jsonSchema.properties[property]?.$ref &&
+					jsonSchema.properties[property]?.type === 'object'
+				) {
+					jsonSchema.properties[property].type = 'select'
+
+					jsonSchema.properties[property].$ref['_fetch'] = {
+						baseUrl: `${baseUrl}/${jsonSchema.properties[property].$ref?.url || 'api/v1/'}`,
+						headers: {
+							authorization: `Bearer ${token}`
+						}
+					}
+				}
+			})
 
 			if (record?.data) {
 				getModelByID(jsonSchema, record, slug, conditions)
 			} else {
 				schema = jsonSchema
 			}
+		} else {
+			sendErrorNotification('The form could not be loaded')
+			close()
 		}
 	}
 
@@ -98,19 +120,32 @@
 		schema = jsonSchema
 	}
 
+	// function schemaComputed() {
+	// 	// TODO: Merge jsonchema with jsonchema bd
+	// 	// const a = merge({}, { a: 'a' }, { b: 'b' })
+	// 	// console.log(a)
+	// }
+
 	async function handleSubmit(payload: any) {
-		console.log('submit', payload.detail)
+		let url = `${urlBase}/${$selectedFormBuilderWidget.params?.model?.meta}`
+		let method = 'PUT'
+		let message = 'Successfully created'
 
-		// const dataModel = await getApiData(
-		// 	`${urlBase}/${$selectedFormBuilderWidget.params?.model?.meta}`,
-		// 	'PUT',
-		// 	payload.detail
-		// )
+		if ($selectedFormBuilderRecord?.action === 'edit') {
+			url = `${url}/${$selectedFormBuilderRecord.data}`
+			method = 'POST'
+			message = 'Successfully updated'
+		}
 
-		// if (dataModel) {
-		// 	sendSuccessNotification('Successfully created')
-		// 	close()
-		// }
+		const dataModel = await getApiData(url, method, payload.detail)
+
+		if (dataModel) {
+			sendSuccessNotification(message)
+			close()
+		} else {
+			console.log('Error here', dataModel)
+			sendErrorNotification('There has been a problem...')
+		}
 	}
 
 	function handleErrors(errors: any) {
@@ -120,7 +155,7 @@
 </script>
 
 <Drawer
-	activateClickOutside={!schema}
+	activateClickOutside={false}
 	placement="right"
 	transitionType="fly"
 	{transitionParams}
@@ -158,5 +193,5 @@
 		<Loading />
 	{/if}
 
-	<pre>{JSON.stringify(schema, null, 2)}</pre>
+	<!-- <pre>{JSON.stringify(schema, null, 2)}</pre> -->
 </Drawer>

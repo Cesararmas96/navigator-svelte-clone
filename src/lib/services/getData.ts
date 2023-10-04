@@ -89,7 +89,7 @@ export async function getApiData(
 ) {
 	if (!options.authorization) {
 		const token =
-			'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTYzNTI0NjgsImlhdCI6MTY5NTk5MjQ2OCwiaXNzIjoiTW9iaWxlaW5zaWdodCIsInVzZXIiOjE1Nzc5LCJ1c2VybmFtZSI6ImptZW5kb3phMUB0cm9jZ2xvYmFsLmNvbSIsInVzZXJfaWQiOjE1Nzc5LCJpZCI6ImptZW5kb3phMUB0cm9jZ2xvYmFsLmNvbSJ9.l80MbKgtLyTs1-40iDrGQglMadrra0_8imHkZCWMGs0'
+			'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTY3OTI5NzAsImlhdCI6MTY5NjQzMjk3MCwiaXNzIjoiTW9iaWxlaW5zaWdodCIsInVzZXIiOjE1Nzc5LCJ1c2VybmFtZSI6ImptZW5kb3phMUB0cm9jZ2xvYmFsLmNvbSIsInVzZXJfaWQiOjE1Nzc5LCJpZCI6ImptZW5kb3phMUB0cm9jZ2xvYmFsLmNvbSJ9.cw43iQVJkE6zzGiSfrV-8CCxK-MDkv9ZjOJCyIqkDxg'
 		const headers = { authorization: `Bearer ${token}` }
 		options = { ...options, headers }
 	}
@@ -114,7 +114,10 @@ const getQuerySlug = (widgetSlug: any) => {
 	} else if (slugQuery && slugQuery.includes('/api/v2')) {
 		slugNew = `${import.meta.env.VITE_API_URL}${slugQuery}`
 	} else {
-		slugNew = `${import.meta.env.VITE_API_URL}/api/v2/services/queries/${slugQuery}`
+		slugNew =
+			slugQuery && slugQuery.includes('http')
+				? slugQuery
+				: (slugNew = `${import.meta.env.VITE_API_URL}/api/v2/services/queries/${slugQuery}`)
 	}
 	return slugNew
 }
