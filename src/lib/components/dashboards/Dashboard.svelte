@@ -6,6 +6,8 @@
 
     import {getContext, onMount} from "svelte";
     import {selectedDashboard, storeDashboards} from "$lib/stores/dashboards";
+    import {insertWidget} from "$lib/helpers/widgets/actions";
+    import {getApiData} from "$lib/services/getData";
 
 
     export let dashboard: any;
@@ -96,33 +98,117 @@
     };
 
 
-    const widget = getContext("widget");
-    // TODO add also a cut option
     const handleDashboardPaste = () => {
-        // 1. Get dashboard ID
-        const {dashboard_id: newDashboardId}: number = dashboard;
 
-
-        // 	2. Get widget from context/store. Get the dashboard id from it
+        // 1. Get widget from session storage
         let copiedWidget = sessionStorage.getItem("copiedWidget");
-
+        // TODO if widget does not exist, a modal should appear telling the user nothing was copied
         if (!copiedWidget) return;
         copiedWidget = JSON.parse(copiedWidget);
 
+        // TODO get session from session storage
+        const session = {
+            "session": {
+                "user_id": 15779,
+                "username": "jmendoza1@trocglobal.com",
+                "first_name": "Jose",
+                "last_name": "Mendoza",
+                "email": "jmendoza1@trocglobal.com",
+                "enabled": true,
+                "superuser": true,
+                "last_login": "2022-11-16T15:01:45.971224Z",
+                "title": null,
+                "associate_id": null,
+                "group_id": [
+                    1
+                ],
+                "groups": [
+                    "superuser"
+                ],
+                "programs": [
+                    "walmart",
+                    "mso",
+                    "epson",
+                    "xfinity",
+                    "wm_assembly",
+                    "wm_reset",
+                    "troc",
+                    "trendmicro",
+                    "viba",
+                    "flexroc",
+                    "cricket",
+                    "us_cellular",
+                    "totalplay",
+                    "tcl",
+                    "worp",
+                    "romeo",
+                    "hisense",
+                    "tro_charter",
+                    "tro_xfinity",
+                    "bose",
+                    "viba_demo",
+                    "wsp_viba",
+                    "usc_wm",
+                    "tmobile",
+                    "usc_viba",
+                    "verizon",
+                    "mso_viba",
+                    "tro_xfinity_viba",
+                    "venu",
+                    "polestar",
+                    "directv",
+                    "troc_financial",
+                    "samsclub",
+                    "monstermex",
+                    "smartjobs"
+                ],
+                "user": "jmendoza1",
+                "domain": "trocglobal.com"
+            },
+            "username": "jmendoza1@trocglobal.com",
+            "id": "jmendoza1@trocglobal.com",
+            "expires_in": "2023-10-07T17:46:52.591394Z",
+            "token_type": "Bearer",
+            "created": 1696340812.7020254,
+            "last_visit": 1696340812.7020254,
+            "last_visited": "Last visited: 1696340812.7020254"
+        };
 
-        // 	3. Create a new widget with previous data and new dashboard id
-        const newWidget = {...copiedWidget, id: newDashboardId};
+
+        // 2. Extract data
+        const {program_id, dashboard_id} = dashboard; // Get program_id and dashboard_id from current dashboard
+        const widget_id = 278; // Set default widget_id template
+        const tempTitle = "Temp Title"; // Choose a title
+        const userId = session.session.user_id; // Get the user_id from session, to assign the widget
+
+        // 3. Build the payload
+        const payload = {program_id, dashboard_id, title: tempTitle, widget_id, user_id: userId};
 
 
-        // 4. Push newWidget to storeWidgets
-        $storeWidgets.push(newWidget);
+        // 4. Insert the widget
+        try {
+            // 4.1 Make API request to insert the widget
+            console.log($storeWidgets);
+            getApiData("https://api.dev.navigator.mobileinsight.com/api/v2/widgets", "PUT", payload).then((w) => {
+                console.log($storeWidgets);
+                // 4.2 Insert the widget into widgets store
+                $storeWidgets.push(w.data);
+            });
+        } catch (e: any) {
+            console.log(`There was an error: ${e.message}`);
+        }
 
 
-        // 5 Also delete the previous widget if selected option was cut
+        // 5. Check if behavior was cut to remove widget
         const behavior = sessionStorage.getItem("behavior");
-        console.log(behavior);
         if (behavior === "cut") {
-            console.log($dashboard);
+            try {
+                getApiData(`https://api.dev.navigator.mobileinsight.com/api/v2/widgets/${copiedWidget.uid}`, "DELETE");
+            } catch (e) {
+                console.log(e.message);
+
+            }
+
 
         }
 

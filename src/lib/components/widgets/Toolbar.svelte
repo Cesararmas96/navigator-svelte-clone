@@ -13,6 +13,7 @@
     import ToolbarMaximize from "./toolbar/Maximize.svelte";
     import ToolbarClose from "./toolbar/Close.svelte";
     import ToolbarCollapse from "./toolbar/Collapse.svelte";
+    import {getData} from "$lib/services/getData";
 
     export let isToolbarVisible: boolean;
 
@@ -31,9 +32,14 @@
 
     const cwidget = getContext("widget");
 
+
+    // Checks that widget is not a system widget to show buttons
+    const isWidgetSystem = !$widget.user_id;
+
     const handleCopyOrCutWidget = (widget: any, action: string) => {
         sessionStorage.setItem("copiedWidget", JSON.stringify($widget));
         sessionStorage.setItem("behavior", action);
+
 
     };
 
@@ -79,15 +85,18 @@
         <Tooltip placement="left">Copy</Tooltip>
 
 
-        <button class="icon btn hover:bg-light-100 dark:hover:bg-dark-200"
-                on:click={() => handleCopyOrCutWidget(widget, 'cut')}>
-            <Icon
-                    icon={'ion:cut-sharp'}
-                    size="18"
-            />
+        {#if (!isWidgetSystem)}
+            <button class="icon btn hover:bg-light-100 dark:hover:bg-dark-200"
+                    on:click={() => handleCopyOrCutWidget(widget, 'cut')}>
+                <Icon
+                        icon={'ion:cut-sharp'}
+                        size="18"
+                />
 
-        </button>
-        <Tooltip placement="left">Cut</Tooltip>
+            </button>
+            <Tooltip placement="left">Cut</Tooltip>
+
+        {/if}
 
 
         <Tooltip placement="left" triggeredBy="#more-actions">More</Tooltip>

@@ -1,0 +1,8 @@
+POST https://api.dev.navigator.mobileinsight.com/api/v1/login
+Accept: application/json
+x-auth-method: BasicAuth
+
+{
+username:"jmendoza1@trocglobal.com"
+password: "12345678"
+}

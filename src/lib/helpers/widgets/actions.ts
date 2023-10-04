@@ -2,7 +2,6 @@
 // import {getData} from "$lib/services/getData";
 // import type {WidgetAction} from "../../../interfaces/widgets/actions";
 
-
 // export async function fetchData(selectedWidget: any, url, method) {
 //     return (selectedWidget?.data) ? selectedWidget.data : getData(url, method);
 // }
@@ -16,7 +15,6 @@
 //         data, widget: widget
 //     });
 // }
-
 
 // export function addWidgetAction(
 //     widgetActions: WidgetAction[],
@@ -35,6 +33,29 @@
 //     return widgetActions;
 // }
 
+export async function insertWidget(token: string, data: object) {
+	const url = 'https://api.dev.navigator.mobileinsight.com/api/v2/widgets'
+	const accessToken = token // Replace with your actual access token
 
+	const headers = {
+		Authorization: `Bearer ${accessToken}`,
+		'Content-Type': 'application/json'
+	}
 
+	const requestOptions = {
+		method: 'PUT',
+		headers: headers,
+		body: JSON.stringify(data)
+	}
 
+	try {
+		const response = await fetch(url, requestOptions)
+		if (!response.ok) {
+			throw new Error('Network response was not ok')
+		}
+		const responseData = await response.json()
+		console.log('Response data:', responseData)
+	} catch (error) {
+		console.error('Error:', error)
+	}
+}
