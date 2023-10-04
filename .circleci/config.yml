@@ -27,6 +27,9 @@ parameters:
     default: "us-east-2"
     type: string
 
+environment:
+  DOCKER_BUILDKIT: 1
+
 jobs:
   build-docker-image:
     machine:
