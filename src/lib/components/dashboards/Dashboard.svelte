@@ -9,7 +9,7 @@
     import {insertWidget} from "$lib/helpers/widgets/actions";
     import {getApiData} from "$lib/services/getData";
 
-
+    const baseUrl = import.meta.env.VITE_API_URL;
     export let dashboard: any;
 
     const cols = 12;
@@ -189,7 +189,7 @@
         try {
             // 4.1 Make API request to insert the widget
             console.log($storeWidgets);
-            getApiData("https://api.dev.navigator.mobileinsight.com/api/v2/widgets", "PUT", payload).then((w) => {
+            getApiData(`${baseUrl}/api/v2/widgets`, "PUT", payload).then((w) => {
                 console.log($storeWidgets);
                 // 4.2 Insert the widget into widgets store
                 $storeWidgets.push(w.data);
@@ -203,16 +203,12 @@
         const behavior = sessionStorage.getItem("behavior");
         if (behavior === "cut") {
             try {
-                getApiData(`https://api.dev.navigator.mobileinsight.com/api/v2/widgets/${copiedWidget.uid}`, "DELETE");
+                getApiData(`${baseUrl}/api/v2/widgets/${copiedWidget.uid}`, "DELETE");
             } catch (e) {
                 console.log(e.message);
-
             }
 
-
         }
-
-
     };
 
 
