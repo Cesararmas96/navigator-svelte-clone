@@ -1,12 +1,11 @@
-FROM node:18-alpine AS external-website
+FROM node:18-alpine AS navigator-svelte
 WORKDIR /app
 COPY . .
-RUN npm install -g pnpm
-RUN pnpm install
-RUN pnpm run build
-RUN rm -f pnpm-lock.yaml
-RUN rm -rf src/ static/ docker-compose.yml
-USER node:node
+RUN npm install -g pnpm && \
+    pnpm install && \
+    pnpm run build && \
+    rm -f pnpm-lock.yaml && \
+    rm -rf src/ static/ docker-compose.yml
 CMD ["node","build/index.js"]
 
 
