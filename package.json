@@ -29,7 +29,6 @@
     "eslint-plugin-svelte": "^2.30.0",
     "iconify-icon": "^1.0.7",
     "jsdom": "^22.1.0",
-    "node ": "link:@types/node ",
     "postcss": "^8.4.24",
     "postcss-load-config": "^4.0.1",
     "prettier": "^2.8.8",

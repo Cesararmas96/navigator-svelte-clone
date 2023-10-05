@@ -1,20 +1,28 @@
-FROM node:18-alpine AS builder
+FROM node:18-alpine AS external-website
 WORKDIR /app
-COPY package*.json .
+COPY . .
 RUN npm install -g pnpm
 RUN pnpm install
-COPY . .
 RUN pnpm run build
+RUN rm -f pnpm-lock.yaml
+RUN rm -rf src/ static/ docker-compose.yml
+USER node:node
+CMD ["node","build/index.js"]
 
-# Cleanup node_modules and other unnecessary files
-#RUN rm -rf node_modules \
-#    && pnpm prune --prod
 
-# Create a smaller production image
-#FROM node:18-alpine
+
+
+
+
+#RUN npm install -g pnpm && \
+#    pnpm install && \
+#    pnpm run build
+#
 #WORKDIR /app
-#RUN npm install -g pnpm
-ENV HOST 0.0.0.0
-EXPOSE 3000
-COPY --from=builder /app .
-CMD ["pnpm", "run","start"]
+#RUN npm install -g pnpm && \
+#    pnpm prune --prod
+#
+#ENV HOST 0.0.0.0
+#EXPOSE 3000
+#COPY . .
+#CMD ["pnpm", "run", "start"]
