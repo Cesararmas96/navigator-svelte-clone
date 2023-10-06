@@ -37,14 +37,20 @@
 			console.log('postRenderModulesProgram', params)
 		},
 		postRenderFormBuilder(params: any) {
-			const { action, data } = params.srcElement.dataset
+			const { action, data, rowId } = params.srcElement.dataset
 			$selectedFormBuilderWidget = $widget
-			$selectedFormBuilderRecord = { action, data, callback: updateItem }
+			$selectedFormBuilderRecord = {
+				action,
+				data,
+				rowId,
+				callbackUpdate: updateItem,
+				callbackNew: newItem
+			}
 			$hideFormBuilderDrawer = false
 		},
 		createModelWithFormBuilder() {
 			$selectedFormBuilderWidget = $widget
-			$selectedFormBuilderRecord = { action: 'new', data: null }
+			$selectedFormBuilderRecord = { action: 'new', data: null, callbackNew: newItem }
 			$hideFormBuilderDrawer = false
 		}
 	}
@@ -135,10 +141,13 @@
 	}
 
 	const updateItem = (obj: any) => {
-		const rowNode = gridOptions.api!.getRowNode('row-1')
-		// rowNode.setDataValue('age', 25)
-		// const item = gridOptions.api!.getDisplayedRowAtIndex(obj.rowIndex)
-		// item.setDataValue(obj.colDef.field, obj.newValue)
+		const rowNode = gridOptions.api!.getRowNode(obj.rowId)
+		rowNode!.setData(obj.dataModel)
+	}
+
+	const newItem = (obj: any) => {
+		gridOptions.api!.applyTransaction({ add: [obj.dataModel] })
+		gridOptions.api!.refreshCells({ force: true })
 	}
 </script>
 

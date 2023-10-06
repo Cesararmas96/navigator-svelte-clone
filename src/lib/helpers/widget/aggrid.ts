@@ -13,7 +13,6 @@ export const colAction = (widget: any, callbacks: any) => {
     headerClass: 'header-center',
     maxWidth: 100,
     cellRenderer: (params: ValueGetterParams) => {
-      console.log('params', params)
       return gridCellBuildFunctionsMap['actions']({
         data: params.data,
         tableParams: params,
@@ -137,7 +136,7 @@ export const headerClass = (formatDefinition: any): string => {
 export const gridHeight = (uid: string, formatDefinition: any): any => {
 	const widgetHeight = document.getElementById(`widget-${uid}`)!.offsetHeight
 	const headerHeight = document.getElementById(`widget-header-${uid}`)!.offsetHeight
-	const footerHeight = document.getElementById(`widget-footer-${uid}`)!.offsetHeight
+	// const footerHeight = document.getElementById(`widget-footer-${uid}`)!.offsetHeight
 	const contentHeight = widgetHeight - headerHeight 
 	return contentHeight && contentHeight > 200 ? `${contentHeight}px` : '200px'
 }

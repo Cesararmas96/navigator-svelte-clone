@@ -43,7 +43,6 @@
 		const slug = $selectedFormBuilderWidget.query_slug.slug
 		const conditions = $selectedFormBuilderWidget.conditions
 		const record = $selectedFormBuilderRecord
-
 		getDataModel(record, slug, conditions)
 	}
 
@@ -128,16 +127,22 @@
 		let url = `${urlBase}/${$selectedFormBuilderWidget.params?.model?.meta}`
 		let method = 'PUT'
 		let message = 'Successfully created'
+		let callback = $selectedFormBuilderRecord.callbackNew
 
 		if (type === 'update') {
 			url = `${url}/${$selectedFormBuilderRecord.data}`
 			method = 'POST'
 			message = 'Successfully updated'
+			callback = $selectedFormBuilderRecord.callbackUpdate
 		}
 
 		const dataModel = await getApiData(url, method, payload)
 
 		if (dataModel) {
+			callback({
+				rowId: $selectedFormBuilderRecord?.rowId,
+				dataModel
+			})
 			sendSuccessNotification(message)
 			close()
 		} else {
