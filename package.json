@@ -41,8 +41,8 @@
 	"type": "module",
 	"dependencies": {
 		"@floating-ui/dom": "^1.4.5",
-		"@mixoo/form": "^1.2.1",
-		"@mixoo/ui": "^1.0.6",
+		"@mixoo/form": "^1.2.3",
+		"@mixoo/ui": "^1.0.7",
 		"@popperjs/core": "^2.11.8",
 		"@types/accounting": "0.4.2",
 		"accounting": "0.4.1",

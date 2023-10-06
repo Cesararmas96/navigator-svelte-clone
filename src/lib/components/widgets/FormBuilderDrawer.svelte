@@ -88,6 +88,11 @@
 						}
 					}
 				}
+
+				if (jsonSchema.properties[property]?.type === 'text') {
+					jsonSchema.properties[property].type = 'string'
+					jsonSchema.properties[property]['format'] = 'textarea'
+				}
 			})
 
 			if (record?.data) {
@@ -163,7 +168,7 @@
 	id="sidebarSettings"
 	class="w-[350px] p-0"
 >
-	<div class="sticky top-0 flex w-full flex-col bg-inherit bg-white p-2 dark:bg-gray-800">
+	<div class="sticky top-0 z-10 flex w-full flex-col bg-inherit bg-white p-2 dark:bg-gray-800">
 		<div class="mb-2 flex items-center">
 			<h5
 				id="drawer-label"
@@ -174,12 +179,12 @@
 			</h5>
 			<CloseButton on:click={() => close()} class="dark:text-white" />
 		</div>
-		<!-- <Button class="mb-2 mt-3 w-full rounded p-2 text-sm" type="submit" on:click={update}
-				><Icon
-					icon="streamline:interface-edit-write-2-change-document-edit-modify-paper-pencil-write-writing"
-					classes="mr-2"
-				/>{btnText}</Button
-			> -->
+		<!-- <Button class="mb-2 mt-3 w-full rounded p-2 text-sm" type="submit"
+			><Icon
+				icon="streamline:interface-edit-write-2-change-document-edit-modify-paper-pencil-write-writing"
+				classes="mr-2"
+			/>test</Button
+		> -->
 	</div>
 
 	{#if schema}
