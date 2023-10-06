@@ -1,13 +1,15 @@
 lockfileVersion: '6.0'
 
-settings:
-  autoInstallPeers: true
-  excludeLinksFromLockfile: false
-
 dependencies:
   '@floating-ui/dom':
     specifier: ^1.4.5
     version: 1.4.5
+  '@mixoo/form':
+    specifier: ^1.2.3
+    version: 1.2.3(@mixoo/ui@1.0.7)(svelte@4.1.1)
+  '@mixoo/ui':
+    specifier: ^1.0.7
+    version: 1.0.7(monaco-editor@0.43.0)(svelte@4.1.1)
   '@popperjs/core':
     specifier: ^2.11.8
     version: 2.11.8
@@ -47,6 +49,9 @@ dependencies:
   jsvectormap:
     specifier: ^1.5.3
     version: 1.5.3
+  lodash-es:
+    specifier: ^4.17.21
+    version: 4.17.21
   material-symbols:
     specifier: ^0.9.0
     version: 0.9.0
@@ -468,10 +473,27 @@ packages:
     resolution: {integrity: sha512-Bu+AMaXNjrpjh41znzHqaz3r2Nr8hHuHZT6V2LBKMhyMl0FgKA62PNYbqnfgmzOhoWZj70Zecisbo4H1rotP5g==}
     dev: false
 
+  /@floating-ui/core@1.5.0:
+    resolution: {integrity: sha512-kK1h4m36DQ0UHGj5Ah4db7R0rHemTqqO0QLvUqi1/mUUp3LuAWbWxdxSIf/XsnH9VS6rRVPLJCncjRzUvyCLXg==}
+    dependencies:
+      '@floating-ui/utils': 0.1.6
+    dev: false
+
   /@floating-ui/dom@1.4.5:
     resolution: {integrity: sha512-96KnRWkRnuBSSFbj0sFGwwOUd8EkiecINVl0O9wiZlZ64EkpyAOG3Xc2vKKNJmru0Z7RqWNymA+6b8OZqjgyyw==}
     dependencies:
       '@floating-ui/core': 1.3.1
+    dev: false
+
+  /@floating-ui/dom@1.5.3:
+    resolution: {integrity: sha512-ClAbQnEqJAKCJOEbbLo5IUlZHkNszqhuxS4fHAVxRPXPya6Ysf2G8KypnYcOTpx6I8xcgF9bbHb6g/2KpbV8qA==}
+    dependencies:
+      '@floating-ui/core': 1.5.0
+      '@floating-ui/utils': 0.1.6
+    dev: false
+
+  /@floating-ui/utils@0.1.6:
+    resolution: {integrity: sha512-OfX7E2oUDYxtBvsuS4e/jSn4Q9Qb6DzgeYtsAdkPZ47znpoNsMgZw0+tVijiv3uGNR6dgNlty6r9rzIzHjtd/A==}
     dev: false
 
   /@humanwhocodes/config-array@0.11.10:
@@ -552,6 +574,174 @@ packages:
       - supports-color
     dev: false
     optional: true
+
+  /@melt-ui/svelte@0.50.0(svelte@4.1.1):
+    resolution: {integrity: sha512-NcWwxwStXq77/yOuBfnGkuJdUta3M4SwqZECdaRpAQ61BHI3qz7WW2ZM42JmDvGSs9W6ww2kZFNF8XNTO92CdA==}
+    peerDependencies:
+      svelte: '>=3 <5'
+    dependencies:
+      '@floating-ui/core': 1.5.0
+      '@floating-ui/dom': 1.5.3
+      dequal: 2.0.3
+      focus-trap: 7.5.3
+      nanoid: 4.0.2
+      svelte: 4.1.1
+    dev: false
+
+  /@mixoo-ui/button@1.0.6(svelte@4.1.1):
+    resolution: {integrity: sha512-4h/Q2qvBgs6ssRe7CpTBeuT77ugIyEm0sWPwLX8CmUQKX3uAdimKdbrx+Os7OHJbSpvvYcTWOuTyHz9mryLM/Q==}
+    peerDependencies:
+      svelte: ^4
+    dependencies:
+      '@mixoo-ui/core': 1.0.5
+      svelte: 4.1.1
+    dev: false
+
+  /@mixoo-ui/checkbox@1.0.5(svelte@4.1.1):
+    resolution: {integrity: sha512-IhfHyngmrDdQmTLR7hlBFExv0m2qapnbASbAze3atuTwz0ai73NQZ75fexYbA+tmESiEjEZqAlBaxk5c+G2d8Q==}
+    peerDependencies:
+      svelte: ^4
+    dependencies:
+      '@mixoo-ui/core': 1.0.5
+      svelte: 4.1.1
+    dev: false
+
+  /@mixoo-ui/core@1.0.5:
+    resolution: {integrity: sha512-1a62IkrcMBrQdlx/2gl1iCs+DExW8TU4TLAiDUuhNAyUxTKAhLSi187lH9aI1kuZZ1oyDcJ4kE1XWxw/PSv7Gg==}
+    dependencies:
+      cva: /class-variance-authority@0.7.0
+    dev: false
+
+  /@mixoo-ui/editor@1.0.6(monaco-editor@0.43.0)(svelte@4.1.1):
+    resolution: {integrity: sha512-7O++QBDlHzj8IwyxVQI2e9AqRZiANwYWl/35wawwrSDN2RAh5HWK/pljy4tG9pELnRo4EgYy6ldbFNkCOj0B7A==}
+    peerDependencies:
+      svelte: ^4
+    dependencies:
+      '@mixoo-ui/core': 1.0.5
+      '@monaco-editor/loader': 1.4.0(monaco-editor@0.43.0)
+      lodash-es: 4.17.21
+      svelte: 4.1.1
+    transitivePeerDependencies:
+      - monaco-editor
+    dev: false
+
+  /@mixoo-ui/input@1.0.6(svelte@4.1.1):
+    resolution: {integrity: sha512-VjyE1xvp9wEJDFF40X2sq92cvCu16kOhkr5KMiY6bW3eeQ+91/EUTxG62jbHsZF1vfOvmg8L61f14PsJTFEFzQ==}
+    peerDependencies:
+      svelte: ^4
+    dependencies:
+      '@floating-ui/dom': 1.5.3
+      '@mixoo-ui/core': 1.0.5
+      svelte: 4.1.1
+    dev: false
+
+  /@mixoo-ui/number@1.0.5(svelte@4.1.1):
+    resolution: {integrity: sha512-SS7EPWpq6ZJ5XZQJi4PH6EAfisVuS+QzxeeIUA0CZ/7jXVs/3OocQLmj5N0OPf9f1s+mveRmIkoS30fhLfN8gg==}
+    peerDependencies:
+      svelte: ^4
+    dependencies:
+      '@mixoo-ui/core': 1.0.5
+      '@mixoo-ui/input': 1.0.6(svelte@4.1.1)
+      svelte: 4.1.1
+    dev: false
+
+  /@mixoo-ui/radio@1.0.5(svelte@4.1.1):
+    resolution: {integrity: sha512-HwvH0En6WwC8V6Oy+18m+W8zrQYCPkdv20FpWNHRbePXh1bPbuHACZ0nK5Jp6eAZPSAVORd46ooMC6kpaVuEWg==}
+    peerDependencies:
+      svelte: ^4
+    dependencies:
+      '@mixoo-ui/core': 1.0.5
+      svelte: 4.1.1
+    dev: false
+
+  /@mixoo-ui/select@1.0.6(svelte@4.1.1):
+    resolution: {integrity: sha512-AB4vMyAZr6/i84LwxmUjsXyIk/e3TNRsR7XJAcNoirc+dGRe/Gm0t2+vzPhUYKHKhlgUKxNZQVK37epYFT+FjQ==}
+    peerDependencies:
+      svelte: ^4
+    dependencies:
+      '@melt-ui/svelte': 0.50.0(svelte@4.1.1)
+      '@mixoo-ui/core': 1.0.5
+      '@mixoo-ui/input': 1.0.6(svelte@4.1.1)
+      '@mixoo/virtual-list': 1.0.4(svelte@4.1.1)
+      svelte: 4.1.1
+    dev: false
+
+  /@mixoo-ui/switch@1.0.6(svelte@4.1.1):
+    resolution: {integrity: sha512-l1PJq9cDJ9PGKv/Kd+G/w37ljQVsMJG3qpk9tcn2k+iygeC9E7e81EJOCptwtlNf6sv8XNDRWpAY0WvpgBT2/Q==}
+    peerDependencies:
+      svelte: ^4
+    dependencies:
+      '@floating-ui/dom': 1.5.3
+      '@melt-ui/svelte': 0.50.0(svelte@4.1.1)
+      '@mixoo-ui/core': 1.0.5
+      svelte: 4.1.1
+    dev: false
+
+  /@mixoo-ui/textarea@1.0.6(svelte@4.1.1):
+    resolution: {integrity: sha512-RUK0/Vvx57RSUNHRs7pZAIiM2lYqLMNvpiIkVhJ/HRpz0xBpEPxdCeFjbdMn/QGiyu0FuAckOD8itSL/nfwR9w==}
+    peerDependencies:
+      svelte: ^4
+    dependencies:
+      '@floating-ui/dom': 1.5.3
+      '@mixoo-ui/core': 1.0.5
+      svelte: 4.1.1
+    dev: false
+
+  /@mixoo/form@1.2.3(@mixoo/ui@1.0.7)(svelte@4.1.1):
+    resolution: {integrity: sha512-qpqHGSYr604Rl2MYWZIcRb9jbS5Mw1HTW15u2XC7CAYjGjsHwy9DEsLqlzfZ2ajCzXsie8xpcpfNEGUTqd95VQ==}
+    peerDependencies:
+      '@mixoo/ui': ^1.0.7
+      svelte: ^4
+    dependencies:
+      '@mixoo-ui/core': 1.0.5
+      '@mixoo/stores': 1.0.2
+      '@mixoo/ui': 1.0.7(monaco-editor@0.43.0)(svelte@4.1.1)
+      jsonschema: 1.4.1
+      svelte: 4.1.1
+      url: 0.11.3
+    dev: false
+
+  /@mixoo/stores@1.0.2:
+    resolution: {integrity: sha512-jZNfak1k/Jn4WJzcUIbNa7+we82NBGBScjanXtplNNnaeP7m7zbmMbM9AWEaJggWf+leD091VxiA0YLOEHIaMQ==}
+    dependencies:
+      nanostores: 0.9.3
+    dev: false
+
+  /@mixoo/ui@1.0.7(monaco-editor@0.43.0)(svelte@4.1.1):
+    resolution: {integrity: sha512-x9pxLUIc5Oz+V77qrf9OLUQyTe5Ie4xzk0yOkcbartd1jzBiiVJCa63k0adkECeu7dmjgnnmjwkpfkltFljNIg==}
+    peerDependencies:
+      svelte: ^4
+    dependencies:
+      '@mixoo-ui/button': 1.0.6(svelte@4.1.1)
+      '@mixoo-ui/checkbox': 1.0.5(svelte@4.1.1)
+      '@mixoo-ui/editor': 1.0.6(monaco-editor@0.43.0)(svelte@4.1.1)
+      '@mixoo-ui/input': 1.0.6(svelte@4.1.1)
+      '@mixoo-ui/number': 1.0.5(svelte@4.1.1)
+      '@mixoo-ui/radio': 1.0.5(svelte@4.1.1)
+      '@mixoo-ui/select': 1.0.6(svelte@4.1.1)
+      '@mixoo-ui/switch': 1.0.6(svelte@4.1.1)
+      '@mixoo-ui/textarea': 1.0.6(svelte@4.1.1)
+      svelte: 4.1.1
+    transitivePeerDependencies:
+      - monaco-editor
+    dev: false
+
+  /@mixoo/virtual-list@1.0.4(svelte@4.1.1):
+    resolution: {integrity: sha512-0pDx65mbJ2p/NYpRwF+I39On378Xz7b6bxdAkgX0KHfY33aDvgh89UqjSlJSXt61JUdhPKji0pglc46xgzQ6Hg==}
+    peerDependencies:
+      svelte: ^4
+    dependencies:
+      svelte: 4.1.1
+    dev: false
+
+  /@monaco-editor/loader@1.4.0(monaco-editor@0.43.0):
+    resolution: {integrity: sha512-00ioBig0x642hytVspPl7DbQyaSWRaolYie/UFNjoTdvoKPzo6xrXLhTk9ixgIKcLH5b5vDOjVNiGyY+uDCUlg==}
+    peerDependencies:
+      monaco-editor: '>= 0.21.0 < 1'
+    dependencies:
+      monaco-editor: 0.43.0
+      state-local: 1.0.7
+    dev: false
 
   /@nodelib/fs.scandir@2.1.5:
     resolution: {integrity: sha512-vq24Bq3ym5HEQm2NKCr3yXDwjc7vTsEThRDnkp2DK9p1uqLR+DHurm/NOTo0KG7HYHU7eppKZj3MyqYuMBf62g==}
@@ -1183,6 +1373,13 @@ packages:
       get-intrinsic: 1.2.1
     dev: true
 
+  /call-bind@1.0.2:
+    resolution: {integrity: sha512-7O+FbCihrB5WGbFYesctwmTKae6rOiIzmz1icreWJ+0aA7LJfuqhEso2T9ncpcFtzMQtzXf2QGGueWJGTYsqrA==}
+    dependencies:
+      function-bind: 1.1.1
+      get-intrinsic: 1.2.1
+    dev: false
+
   /callsites@3.1.0:
     resolution: {integrity: sha512-P8BjAsXvZS+VIDUI11hHCQEv74YT67YUi5JJFNWIqL235sBmjX4+qx9Muvls5ivyNENctx46xQLQ3aTuE7ssaQ==}
     engines: {node: '>=6'}
@@ -1290,6 +1487,17 @@ packages:
 
   /cl-editor@2.3.0:
     resolution: {integrity: sha512-TxTzuL3529Cmnxy4Q9djcKkZUZJLxuFvFomh6pfbAv72nTB4FCZUE7JhEF5PXeAWRstU+u6BD9ZTif9w0hGQfw==}
+    dev: false
+
+  /class-variance-authority@0.7.0:
+    resolution: {integrity: sha512-jFI8IQw4hczaL4ALINxqLEXQbWcNjoSkloa4IaufXCJr6QawJyw7tuRysRsrE8w2p/4gGaxKIt/hX3qz/IbD1A==}
+    dependencies:
+      clsx: 2.0.0
+    dev: false
+
+  /clsx@2.0.0:
+    resolution: {integrity: sha512-rQ1+kcj+ttHG0MKVGBUXwayCCF1oh39BF5COIpRzuCEv8Mwjv0XucrI2ExNTOn9IlLifGClWQcU9BrZORvtw6Q==}
+    engines: {node: '>=6'}
     dev: false
 
   /code-red@1.0.3:
@@ -1943,6 +2151,12 @@ packages:
       mime-types: 2.1.35
     dev: true
 
+  /focus-trap@7.5.3:
+    resolution: {integrity: sha512-7UsT/eSJcTPF0aZp73u7hBRTABz26knRRTJfoTGFCQD5mUImLIIOwWWCrtoQdmWa7dykBi6H+Cp5i3S/kvsMeA==}
+    dependencies:
+      tabbable: 6.2.0
+    dev: false
+
   /fraction.js@4.2.0:
     resolution: {integrity: sha512-MhLuK+2gUcnZe8ZHlaaINnQLl0xRIGRfcGk2yl8xoQAfHrSsL3rYu6FCmBdkdbhc9EPlwyGHewaRsvwRMJtAlA==}
     dev: true
@@ -2004,6 +2218,15 @@ packages:
       has-proto: 1.0.1
       has-symbols: 1.0.3
     dev: true
+
+  /get-intrinsic@1.2.1:
+    resolution: {integrity: sha512-2DcsyfABl+gVHEfCOaTrWgyt+tb6MSEGmKq+kI5HwLbIYgjgmMcV8KQ41uaKz1xxUcn9tJtgFbQUEVcEbd0FYw==}
+    dependencies:
+      function-bind: 1.1.1
+      has: 1.0.3
+      has-proto: 1.0.1
+      has-symbols: 1.0.3
+    dev: false
 
   /glob-parent@5.1.2:
     resolution: {integrity: sha512-AOIgSQCepiJYwP3ARnGx+5VnTu2HBYdzbGP45eLw1vr3zB3vZLeyed1sC9hnbcOc9/SrMyM5RPQrkGz4aS9Zow==}
@@ -2086,6 +2309,16 @@ packages:
     resolution: {integrity: sha512-EykJT/Q1KjTWctppgIAgfSO0tKVuZUjhgMr17kqTumMl6Afv3EISleU7qZUzoXDFTAHTDC4NOoG/ZxU3EvlMPQ==}
     engines: {node: '>=8'}
     dev: true
+
+  /has-proto@1.0.1:
+    resolution: {integrity: sha512-7qE+iP+O+bgF9clE5+UoBFzE65mlBiVj3tKCrlNQ0Ogwm0BjpT/gK4SlLYDMybDh5I3TCTKnPPa0oMG7JDYrhg==}
+    engines: {node: '>= 0.4'}
+    dev: false
+
+  /has-symbols@1.0.3:
+    resolution: {integrity: sha512-l3LCuF6MgDNwTDKkdYGEihYjt5pRPbEg46rtlmnSPlUbgmB8LOIrKJbYYFBSbnPaJexMKtiPO8hmeRjRz2Td+A==}
+    engines: {node: '>= 0.4'}
+    dev: false
 
   /has-property-descriptors@1.0.0:
     resolution: {integrity: sha512-62DVLZGoiEBDHQyqG4w9xCuZ7eJEwNmJRWw2VY84Oedb7WFcA27fiEVe8oUQx9hAUJ4ekurquucTGwsyO1XGdQ==}
@@ -2492,6 +2725,10 @@ packages:
   /jsonc-parser@3.2.0:
     resolution: {integrity: sha512-gfFQZrcTc8CnKXp6Y4/CBT3fTc0OVuDofpre4aEeEpSBPV5X5v4+Vmx+8snU7RLPrNHPKSgLxGo9YuQzz20o+w==}
     dev: true
+
+  /jsonschema@1.4.1:
+    resolution: {integrity: sha512-S6cATIPVv1z0IlxdN+zUk5EPjkGCdnhN4wVSBlvoUO1tOLJootbo9CquNJmbIh4yikWHiUedhRYrNPn1arpEmQ==}
+    dev: false
 
   /jsvectormap@1.5.3:
     resolution: {integrity: sha512-HStTEhZEVr8t3t6juApO603nr1y54K/wjcdOvgGtvpE1etZ9Isg/sLdqh7OX4+RJ8srdP7WiBoTV/93aMqhLhw==}
@@ -3112,6 +3349,10 @@ packages:
     resolution: {integrity: sha512-5LC9SOxjSc2HF6vO2CyuTDNivEdoz2IvyJJGj6X8DJ0eFyfszE0QiEd+iXmBvUP3WHxSjFH/vIsA0EN00cgr8w==}
     dev: false
 
+  /monaco-editor@0.43.0:
+    resolution: {integrity: sha512-cnoqwQi/9fml2Szamv1XbSJieGJ1Dc8tENVMD26Kcfl7xGQWp7OBKMjlwKVGYFJ3/AXJjSOGvcqK7Ry/j9BM1Q==}
+    dev: false
+
   /mri@1.2.0:
     resolution: {integrity: sha512-tzzskb3bG8LvYGFF/mDTpq3jpI6Q9wc3LEmBaghu+DdCssd1FakN7Bc0hVNmEyGq1bq3RgfkCb3cmQLpNPOroA==}
     engines: {node: '>=4'}
@@ -3143,6 +3384,17 @@ packages:
     engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
     hasBin: true
     dev: true
+
+  /nanoid@4.0.2:
+    resolution: {integrity: sha512-7ZtY5KTCNheRGfEFxnedV5zFiORN1+Y1N6zvPTnHQd8ENUvfaDBeuJDZb2bN/oXwXxu3qkTXDzy57W5vAmDTBw==}
+    engines: {node: ^14 || ^16 || >=18}
+    hasBin: true
+    dev: false
+
+  /nanostores@0.9.3:
+    resolution: {integrity: sha512-KobZjcVyNndNrb5DAjfs0WG0lRcZu5Q1BOrfTOxokFLi25zFrWPjg+joXC6kuDqNfSt9fQwppyjUBkRPtsL+8w==}
+    engines: {node: ^16.0.0 || ^18.0.0 || >=20.0.0}
+    dev: false
 
   /natural-compare-lite@1.4.0:
     resolution: {integrity: sha512-Tj+HTDSJJKaZnfiuw+iaF9skdPpTo2GtEly5JHnWV/hfv2Qj/9RKsGISQtLh2ox3l5EAGw487hnBee0sIJ6v2g==}
@@ -3216,7 +3468,7 @@ packages:
 
   /object-inspect@1.12.3:
     resolution: {integrity: sha512-geUvdk7c+eizMNUDkRpW1wJwgfOiOeHbxBR/hLXK1aT6zmVSO0jsQcs7fj6MGw89jC/cjGfLcNOrtMYtGqm81g==}
-    dev: true
+    dev: false
 
   /object-is@1.1.5:
     resolution: {integrity: sha512-3cyDsyHgtmi7I7DfSSI2LDp6SK2lwvtbg0p0R1e0RvTqF5ceGx+K2dfSjm1bKDMVCFEDAQvy+o8c6a7VujOddw==}
@@ -3583,6 +3835,10 @@ packages:
     resolution: {integrity: sha512-E/ZsdU4HLs/68gYzgGTkMicWTLPdAftJLfJFlLUAAKZGkStNU72sZjT66SnMDVOfOWY/YAoiD7Jxa9iHvngcag==}
     dev: true
 
+  /punycode@1.4.1:
+    resolution: {integrity: sha512-jmYNElW7yvO7TV33CjSmvSiE2yco3bV2czu/OzDKdMNVZQWfxCblURLhf+47syQRBntjfLdd/H0egrzIG+oaFQ==}
+    dev: false
+
   /punycode@2.3.0:
     resolution: {integrity: sha512-rRV+zQD8tVFys26lAGR9WUuS4iUAngJScM+ZRSKtvl5tKeZ2t5bvdNFdNHBW9FWR4guGHlgmsZ1G7BSm2wTbuA==}
     engines: {node: '>=6'}
@@ -3591,6 +3847,13 @@ packages:
   /querystringify@2.2.0:
     resolution: {integrity: sha512-FIqgj2EUvTa7R50u0rGsyTftzjYmv/a3hO345bZNrqabNqjtgiDMgmo4mkUjd+nzU5oF3dClKqFIPUKybUyqoQ==}
     dev: true
+
+  /qs@6.11.2:
+    resolution: {integrity: sha512-tDNIz22aBzCDxLtVH++VnTfzxlfeK5CbqohpSqpJgj1Wg/cQbStNAz3NuqCs5vV+pjBsK4x4pN9HlVh7rcYRiA==}
+    engines: {node: '>=0.6'}
+    dependencies:
+      side-channel: 1.0.4
+    dev: false
 
   /queue-microtask@1.2.3:
     resolution: {integrity: sha512-NuaNSa6flKT5JaSYQzJok04JzTL1CA6aGhv5rfLW3PgqA+M2ChpZQnAC8h8i4ZFkBS8X5RqkDBHA7r4hej3K9A==}
@@ -3839,6 +4102,14 @@ packages:
     resolution: {integrity: sha512-ybx0WO1/8bSBLEWXZvEd7gMW3Sn3JFlW3TvX1nREbDLRNQNaeNN8WK0meBwPdAaOI7TtRRRJn/Es1zhrrCHu7g==}
     dev: true
 
+  /side-channel@1.0.4:
+    resolution: {integrity: sha512-q5XPytqFEIKHkGdiMIrY10mvLRvnQh42/+GoBlFW3b2LXLE2xxJpZFdm94we0BaoV3RwJyGqg5wS7epxTv0Zvw==}
+    dependencies:
+      call-bind: 1.0.2
+      get-intrinsic: 1.2.1
+      object-inspect: 1.12.3
+    dev: false
+
   /signal-exit@3.0.7:
     resolution: {integrity: sha512-wnD2ZE+l+SPC/uoS0vXeE9L1+0wuaMqKlfz9AMUo38JsyLSBWSFcHR1Rri62LZc12vLr1gb3jl7iwQhgwpAbGQ==}
     requiresBuild: true
@@ -3919,6 +4190,10 @@ packages:
     dependencies:
       internal-slot: 1.0.5
     dev: true
+
+  /state-local@1.0.7:
+    resolution: {integrity: sha512-HTEHMNieakEnoe33shBYcZ7NX83ACUjCu8c40iOGEZsngj9zRnkqS9j1pqQPXwobB0ZcVTk27REb7COQ0UR59w==}
+    dev: false
 
   /streamsearch@1.1.0:
     resolution: {integrity: sha512-Mcc5wHehp9aXz1ax6bZUyY5afg9u2rv5cqQI3mRrYkGC8rW2hM02jWuwjtL++LS5qinSyhj2QfLyNsuc+VsExg==}
@@ -4178,6 +4453,10 @@ packages:
   /symbol-tree@3.2.4:
     resolution: {integrity: sha512-9QNk5KwDF+Bvz+PyObkmSYjI5ksVUYtjW7AU22r2NKcfLJcXp96hkDWU3+XndOsUb+AQ9QhfzfCT2O+CNWT5Tw==}
     dev: true
+
+  /tabbable@6.2.0:
+    resolution: {integrity: sha512-Cat63mxsVJlzYvN51JmVXIgNoUokrIaT2zLclCXjRd8boZ0004U4KCs/sToJ75C6sdlByWxpYnb5Boif1VSFew==}
+    dev: false
 
   /tabulator-tables@5.5.2:
     resolution: {integrity: sha512-GlzUPXeH9Rw1iPXcl3uBLJk6Sz51xdwscZ5RrsKxDQDQ+t2g31hGq/0xjaj6ea62wHgl8vzVsHuwap0jKzsUNg==}
@@ -4455,6 +4734,13 @@ packages:
       querystringify: 2.2.0
       requires-port: 1.0.0
     dev: true
+
+  /url@0.11.3:
+    resolution: {integrity: sha512-6hxOLGfZASQK/cijlZnZJTq8OXAkt/3YGfQX45vvMYXpZoo8NdWZcY73K108Jf759lS1Bv/8wXnHDTSz17dSRw==}
+    dependencies:
+      punycode: 1.4.1
+      qs: 6.11.2
+    dev: false
 
   /util-deprecate@1.0.2:
     resolution: {integrity: sha512-EPD5q1uXyFxJpCrLnCc1nHnq3gOa6DZBocAIiI2TaSCA7VCJ1UJDMagCzIkXNsUYfD1daK//LTEQ8xiIbrHtcw==}
@@ -4811,3 +5097,7 @@ packages:
   /zwitch@2.0.4:
     resolution: {integrity: sha512-bXE4cR/kVZhKZX/RjPEflHaKVhUVl85noU3v6b8apfQEc1x4A+zBxjZ4lN8LqGd6WZ3dl98pY4o717VFmoPp+A==}
     dev: false
+
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
