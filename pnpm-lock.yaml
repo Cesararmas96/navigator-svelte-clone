@@ -5,8 +5,8 @@ dependencies:
     specifier: ^1.4.5
     version: 1.4.5
   '@mixoo/form':
-    specifier: ^1.2.3
-    version: 1.2.3(@mixoo/ui@1.0.7)(svelte@4.1.1)
+    specifier: ^1.2.4
+    version: 1.2.4(@mixoo/ui@1.0.7)(svelte@4.1.1)
   '@mixoo/ui':
     specifier: ^1.0.7
     version: 1.0.7(monaco-editor@0.43.0)(svelte@4.1.1)
@@ -635,8 +635,8 @@ packages:
       svelte: 4.1.1
     dev: false
 
-  /@mixoo/form@1.2.3(@mixoo/ui@1.0.7)(svelte@4.1.1):
-    resolution: {integrity: sha512-qpqHGSYr604Rl2MYWZIcRb9jbS5Mw1HTW15u2XC7CAYjGjsHwy9DEsLqlzfZ2ajCzXsie8xpcpfNEGUTqd95VQ==}
+  /@mixoo/form@1.2.4(@mixoo/ui@1.0.7)(svelte@4.1.1):
+    resolution: {integrity: sha512-RzYDxwBtQppxL1M70oBFPZc91xwHOwkuCJw3Rb2nZiS1a8lAqZjJsex+guO9YSnzFPW2WDVPQ/ag8nOK/ckJHg==}
     peerDependencies:
       '@mixoo/ui': ^1.0.7
       svelte: ^4
