@@ -80,7 +80,8 @@
 
 
                     <p class="">New password</p>
-                    <input type="password" class="" name="password" bind:value={password} style="min-width: 600px"/>
+                    <input type="password" class="" name="password" placeholder="New password" bind:value={password}
+                           style="min-width: 600px"/>
                     <div class="mb-6">
                         <PasswordStrength {password}/>
                     </div>
