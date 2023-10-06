@@ -1,4 +1,3 @@
-
 // export const handle = async ({ event, resolve }) => {
 //   if (!('theme-mode' in localStorage)) localStorage.set('theme-mode', 'light')
 //   if (!('theme-color' in localStorage)) localStorage.set('theme-color', 'blue')
@@ -9,7 +8,7 @@
 //   event.locals.theme = { mode, color }
 
 //   return resolve(event, {
-//     transformPageChunk: ({html}) => 
+//     transformPageChunk: ({html}) =>
 //       html.replace('%theme-mode%', mode!).replace('%theme-color%', color!).replace('%class-mode%', mode!)
 //   })
 // }

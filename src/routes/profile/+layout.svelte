@@ -1,17 +1,11 @@
-<script lang="ts">
-    import Footer from "$lib/components/layouts/Footer.svelte";
+<script>
     import Header from "$lib/components/layouts/Header.svelte";
-    import {SpeedDial, SpeedDialButton} from "flowbite-svelte";
-    import {copyToken, handleCloseWindow, pasteToken} from "$lib/helpers/auth/session";
-
-    let width: number;
+    import Footer from "$lib/components/layouts/Footer.svelte";
 </script>
-
-<svelte:window bind:innerWidth={width} on:blur={copyToken} on:focus={pasteToken}/>
 
 <Header/>
 
-<div class="mx-auto flex w-full">
+<div class="mx-auto flex-row w-full">
     <div class="mx-auto w-full">
         <div class="flex h-[calc(100vh-4rem)] flex-col justify-between" data-simplebar>
             <main class="pt-10">
