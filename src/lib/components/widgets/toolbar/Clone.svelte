@@ -8,8 +8,9 @@
 	const widget = getContext<Writable<any>>('widget')
 	const instances = getContext<Writable<any>>('widgetInstances')
 	const cloneWidget = () => {
-		const _widget = { ...$widget }
-		addInstance(instances, _widget)
+		$widget.clone = true
+		// const _widget = { ...$widget }
+		// addInstance(instances, _widget)
 	}
 </script>
 

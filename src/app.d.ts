@@ -7,7 +7,8 @@ declare global {
 			theme: {
 				mode: string;
 				color: string;
-			};
+			},
+			module: any, 
 		}
 		// interface Error {}
 		// interface Locals {}

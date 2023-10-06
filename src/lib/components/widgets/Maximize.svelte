@@ -1,15 +1,20 @@
-<script>
+<script lang="ts">
 	import { selectedWidgetMaximize } from '$lib/stores/widgets'
 	import Widget from './Widget.svelte'
 	import WidgetBox from './WidgetBox.svelte'
 
-	$: widget = $selectedWidgetMaximize
+	let widget: any
+	$: if ($selectedWidgetMaximize) {
+		widget = $selectedWidgetMaximize.widget
+		widget.loaded = false
+		console.log(widget)
+	}
 </script>
 
-{#if widget}
+{#if $selectedWidgetMaximize}
 	<div class="widget-maximize">
-		<WidgetBox widget={$widget} let:widget let:fixed let:isOwner let:isToolbarVisible>
-			<Widget {widget} {fixed} {isToolbarVisible} {isOwner} />
+		<WidgetBox {widget} let:fixed let:isOwner let:isToolbarVisible>
+			<Widget {fixed} {isToolbarVisible} {isOwner} />
 		</WidgetBox>
 	</div>
 {/if}

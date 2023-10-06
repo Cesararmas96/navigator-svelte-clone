@@ -7,6 +7,17 @@
     import type {Writable} from "svelte/store";
     import {get} from "svelte/store";
 
+	const widget = getContext<Writable<any>>('widget')
+
+	const handleClick = () => {
+		if ($widget.temp) {
+			$widget.close_instance = true
+		} else {
+			$widget.remove = true
+		}
+	}
+
+
     const widget = getContext<Writable<any>>("widget");
     const urlBase = import.meta.env.VITE_API_URL;
     const endpoint = `${urlBase}/api/v2/widgets/${$widget.uid}`;
@@ -27,7 +38,7 @@
         const widgetsToSet = $widgets.filter(widget => widget.uid !== $widget.uid);
         console.log(widgetsToSet);
         setContext("widgets", widgetsToSet);
-        
+
 
     };
 
@@ -46,11 +57,14 @@
 
 
     }
+
+
+
+
+
 </script>
 
 <button on:click={closeWidget} class="icon btn hover:bg-light-100 dark:hover:bg-dark-200">
     <Icon icon="tabler:x" size="18"/>
 </button>
-<Tooltip>Close</Tooltip>
-
-
+<Tooltip placement="left">Remove</Tooltip>

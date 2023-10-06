@@ -1,3 +1,6 @@
+import { handleError } from '$lib/helpers/common/errors'
+import { sendErrorNotification } from '$lib/stores/toast'
+
 /**
  * Perform an HTTP request using the fetch API.
  *
@@ -43,6 +46,7 @@ export async function getData(
 			options.headers['Content-Type'] =
 				options.headers['Content-Type'] || 'application/json; charset=utf-8'
 
+		options.headers['Origin'] = 'https://navigator.com'
 		// Add the authentication token if authenticated
 		if (loggedIn) options.headers.authorization = options.headers.authorization || null
 
@@ -51,31 +55,32 @@ export async function getData(
 		const configRequest: RequestInit = {
 			method,
 			headers: headers,
-			// mode: 'no-cors',
-			// redirect: 'follow',
 			body: JSON.stringify(payload)
 		}
-
 		if (method === 'GET') delete configRequest.body
-
-		const response = await fetch(`${urlWithParams}`, configRequest)
+		const response = (await fetch(`${urlWithParams}`, configRequest)) || {}
 
 		// const validResponseStatus = [200, 202]
 		// if (validResponseStatus.includes(response?.status)) {
 
-		if (response.ok) {
-			return await response.json()
-		} else {
-			// Handle specific status code errors here
-			console.log(response)
-			throw new Error(`Request error: ${response.status}`)
+		if (response?.status === 204) return null
+
+		if (!response?.ok) {
+			let statusText = response.statusText || 'Request error'
+			statusText = response.statusText.includes('reason')
+				? JSON.parse(response.statusText).reason
+				: statusText
+			throw new Error(`Request error: ${response.status} ${statusText}`)
 		}
+		return await response.json()
 	} catch (error) {
-		// Handle general errors here
-		console.log(error)
-		throw new Error(`Request error: ${error}`)
+		console.log('error', error)
+		throw error
 	}
 }
+
+const token =
+	'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTY3OTI5NzAsImlhdCI6MTY5NjQzMjk3MCwiaXNzIjoiTW9iaWxlaW5zaWdodCIsInVzZXIiOjE1Nzc5LCJ1c2VybmFtZSI6ImptZW5kb3phMUB0cm9jZ2xvYmFsLmNvbSIsInVzZXJfaWQiOjE1Nzc5LCJpZCI6ImptZW5kb3phMUB0cm9jZ2xvYmFsLmNvbSJ9.cw43iQVJkE6zzGiSfrV-8CCxK-MDkv9ZjOJCyIqkDxg'
 
 export async function getApiData(
 	url: string,
@@ -84,13 +89,42 @@ export async function getApiData(
 	queryParams: Record<string, any> = {},
 	options: Record<string, any> = {}
 ) {
-	const token =
-		'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTY1NDg2MzksImlhdCI6MTY5NjE4ODYzOSwiaXNzIjoiTW9iaWxlaW5zaWdodCIsInVzZXJfaWQiOiJqdmlsYUB0cm9jZ2xvYmFsLmNvbSIsInVwbiI6Imp2aWxhQHRyb2NnbG9iYWwuY29tIiwiZW1haWwiOiJqdmlsYUB0cm9jZ2xvYmFsLmNvbSIsImdpdmVuX25hbWUiOiJKdWFuIiwiZmFtaWx5X25hbWUiOiJWaWxhIiwibmFtZSI6Ikp1YW4gVmlsYSIsImRpc3BsYXlfbmFtZSI6Ikp1YW4gVmlsYSIsImlkIjoianZpbGFAdHJvY2dsb2JhbC5jb20iLCJhdXRoX21ldGhvZCI6ImFkZnMiLCJhdXRoX3Rva2VuIjoiZXlKMGVYQWlPaUpLVjFRaUxDSmhiR2NpT2lKU1V6STFOaUlzSW5nMWRDSTZJbU54UW5kdVJrTmlaMjVPZVdrNFNrRlBUekpzZEhWVE56Um9WU0o5LmV5SmhkV1FpT2lKdGFXTnliM052Wm5RNmFXUmxiblJwZEhselpYSjJaWEk2Ym1GMmFXZGhkRzl5WDJSbGRpNWhaR1p6TG1sa1pXNTBhV1pwWlhJaUxDSnBjM01pT2lKb2RIUndjem92TDNOemJ5NTBjbTlqWjJ4dlltRnNMbU52YlM5aFpHWnpMM05sY25acFkyVnpMM1J5ZFhOMElpd2lhV0YwSWpveE5qazJNVGc0TmpNNExDSmxlSEFpT2pFMk9UWXhPVEl5TXpnc0ltVnRZV2xzSWpvaWFuWnBiR0ZBZEhKdlkyZHNiMkpoYkM1amIyMGlMQ0puYVhabGJsOXVZVzFsSWpvaVNuVmhiaUlzSW1aaGJXbHNlVjl1WVcxbElqb2lWbWxzWVNJc0ltZHliM1Z3SWpwYklrUnZiV0ZwYmlCVmMyVnljeUlzSWxaUVRpQlZjMlZ5Y3lJc0lrRlhVeTAyTXpjMk5qQXpNRGN5TkRBdFJHRnphR0p2WVhKa0lsMHNJblZ3YmlJNkltcDJhV3hoUUhSeWIyTm5iRzlpWVd3dVkyOXRJaXdpWVd4MFpYSnVZWFJsUlcxaGFXd2lPaUpxYVhacGJHRkFiM1YwYkc5dmF5NWpiMjBpTENKRWFYTndiR0Y1TFU1aGJXVWlPaUpLZFdGdUlGWnBiR0VpTENKaGNIQjBlWEJsSWpvaVVIVmliR2xqSWl3aVlYQndhV1FpT2lKdVlYWnBaMkYwYjNKZlpHVjJMbUZrWm5NdVkyeHBaVzUwWDJsa0lpd2lZWFYwYUcxbGRHaHZaQ0k2SW5WeWJqcHZZWE5wY3pwdVlXMWxjenAwWXpwVFFVMU1Pakl1TURwaFl6cGpiR0Z6YzJWek9sQmhjM04zYjNKa1VISnZkR1ZqZEdWa1ZISmhibk53YjNKMElpd2lZWFYwYUY5MGFXMWxJam9pTWpBeU15MHhNQzB3TVZReE1qb3dOem8xTlM0d016UmFJaXdpZG1WeUlqb2lNUzR3SWl3aWMyTndJam9pYjNCbGJtbGtJbjAuQkVCUHFFS2xZejB0LXZmZV9jWGtLS0JMd3FWaDFVV3pvNG9MeGI2ZmgzMUpqVVJMb1oyTGFMX3pKVWlEVHBoWnRVNkxxS0tXa2ptSnNGNm11U1A1R183Z1YtdXNESExPYUo5a2ltZzE4RDl4WGZBdnI0cWVnZ2ktMTdmUDV2cWU0dmgwQU9JVGw0ajRlOUFTa3hCVkZNNkNnSzBpbTNqS0hqSWFrWUg2ZkRpSnpzWEhTV0lTaXpvckpITk1OcWtmbUFQZWo3NmNJaFhJNS1SWDdRODIzdlVHeTg0SVJaZ0Qwc1prTUJMMlJaaFNmUUtFazJoaE1JeGtwbVNrVHpXRU0tWlQtcmlha1NsSlVXRlJDNUNfYkdybHJKb1h3ZDRJM3JpM3d2d2wyTjVmcEJ1VHVMV3czcXV2X1RfNnFEODdtYUtWd0t4VE1CLWdhQTlMU1pUQ2JRIiwidG9rZW5fdHlwZSI6IkJlYXJlciIsInVzZXJuYW1lIjoianZpbGFAdHJvY2dsb2JhbC5jb20ifQ.Qaj_egtJY8w9jK5WIBWhan-3Y5lzpNxpzW_SqogkobY'
-
-	const headers = {
-		authorization: `Bearer ${token}`,
-		// origin: 'https://navigator.mobileinsight.com',
-		accept: 'application/json, text/plain, */*'
+	if (!options.authorization) {
+		const headers = { authorization: `Bearer ${token}` }
+		options = { ...options, headers }
 	}
-	return await getData(url, method, payload, queryParams, { ...options, headers })
+	const response = await getData(getQuerySlug(url), method, payload, queryParams, options)
+	return response
+}
+
+export async function patchData(
+	url: string,
+	payload: Record<string, any> = {}
+) {
+	const headers = { authorization: `Bearer ${token}` }
+	console.log('url', getQuerySlug(url), payload)
+	//const response = await getData(getQuerySlug(url), 'PATCH', paload, {}, headers)
+	return {data: 1}
+}
+
+const getQuerySlug = (widgetSlug: any) => {
+	let slugQuery = widgetSlug
+
+	if (Array.isArray(slugQuery)) {
+		slugQuery = Object.values(slugQuery[0])[0]
+		slugQuery = slugQuery.slug || slugQuery
+	}
+
+	let slugNew = null
+	if (slugQuery && slugQuery.includes('{BASE_URL_API}')) {
+		slugNew = slugQuery.replace('{BASE_URL_API}', import.meta.env.VITE_API_URL)
+	} else if (slugQuery && slugQuery.includes('{BASE_URL_DATA}')) {
+		slugNew = slugQuery.replace('{BASE_URL_DATA}', import.meta.env.VITE_DATA_URL)
+	} else {
+		slugNew = slugQuery && (slugQuery.includes('http'))
+			? slugQuery
+			: `${import.meta.env.VITE_API_URL}/api/v2/services/queries/${slugQuery}`
+	}
+
+	return slugNew
 }

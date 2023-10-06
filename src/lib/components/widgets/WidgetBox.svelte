@@ -2,10 +2,9 @@
 	import { isDarkMode, isUrl } from '$lib/helpers/common/common'
 	import { initWidgetActions } from '$lib/helpers/widget/actions'
 	import { initInstances } from '$lib/helpers/widget/instances'
-	import { createEventDispatcher, getContext, onMount, setContext } from 'svelte'
+	import { createEventDispatcher, getContext, onDestroy, setContext } from 'svelte'
 	import { writable, type Writable } from 'svelte/store'
 	import { selectedWidgetSettings } from '$lib/stores/widgets'
-	import { initWidgetData } from '$lib/helpers/widget/data'
 
 	let isToolbarVisible: boolean = false
 	let fixed: boolean
@@ -19,6 +18,7 @@
 	const dispatch = createEventDispatcher()
 
 	export let widget: any
+	export let resized: boolean = false
 
 	const defaultSettings = {
 		title: '',
@@ -78,16 +78,17 @@
 	const bgTypeClass = (bg: string) => {
 		return !isDarkMode() ? (isUrl(bg) ? 'widget-bg-image' : 'widget-bg-color') : ''
 	}
-
-	let widgetStore = writable(widget)
-
-	initWidgetActions()
-	initInstances()
-	initWidgetData()
+	let widgetStore: any
+	let instances: any
 
 	let widgetBase: string
 	$: {
-		if (widget) {
+		if (!widget.loaded) {
+			widgetStore = writable(widget)
+			widget.instances = []
+			initWidgetActions()
+			// initInstances()
+			// instances = getContext<Writable<any[]>>('widgetInstances')
 			if (widget.params && !widget.params?.settings && !widget.temp) {
 				widget.params.settings = Object.assign({}, defaultSettings.params.settings)
 			}
@@ -95,6 +96,8 @@
 				widgetBase = widget.widget_type_id.split('-')[0]
 				widgetBase = widgetBase.charAt(0).toUpperCase() + widgetBase.slice(1)
 			}
+			widget.loaded = true
+			widget.context = 'widget'
 			$widgetStore = widget
 			setContext('widget', widgetStore)
 		}
@@ -127,12 +130,28 @@
 		}
 	}
 
-	$: if ($widgetStore.collapse_action) {
+	$: if ($widgetStore?.collapse_action) {
 		$widgetStore.collapse_action = null
 		setTimeout(() => {
 			dispatch('handleResize')
 		}, 100)
 	}
+
+	$: if ($widgetStore?.clone) {
+		$widgetStore.clone = false
+		dispatch('handleCloning')
+	}
+
+	$: if ($widgetStore?.remove) {
+		$widgetStore.remove = false
+		dispatch('handleRemove')
+	}
+
+	onDestroy(() => {
+		console.log('destroyed')
+	})
+
+	$: if (resized) $widgetStore.resized = true
 </script>
 
 <!-- svelte-ignore a11y-no-static-element-interactions -->
@@ -149,6 +168,7 @@
 	class:border={!isDarkMode() && border}
 	class:border-gray-200={!isDarkMode() && border}
 	class:cursor-default={fixed || !draggable}
+	class:widget-drilldown-open={$widgetStore.instances && $widgetStore.instances.length > 0}
 	class={`card justify-content-between flex h-full w-full flex-col rounded-lg p-1 ${bgTypeClass(
 		background
 	)}`}
@@ -164,7 +184,9 @@
 		event.stopPropagation()
 	}}
 >
-	<slot {isToolbarVisible} {fixed} {isOwner} />
+	{#if widgetStore}
+		<slot widget={widgetStore} {isToolbarVisible} {fixed} {isOwner} />
+	{/if}
 </div>
 
 <style>
@@ -191,5 +213,10 @@
 
 	.widget-bg-color:is([data-theme='dark']) {
 		background-color: inherit;
+	}
+
+	.widget-drilldown-open {
+		box-shadow: rgba(0, 0, 0, 0.35) 0px 0px 15px;
+		z-index: 10;
 	}
 </style>

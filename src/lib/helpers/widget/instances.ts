@@ -7,33 +7,36 @@ export const initInstances = () => {
   setContext('widgetInstances', storeWidgetInstances);
 }
 
-export const addInstance = (instances: Writable<any[]>, newInstance: any) => {
-  const instanceConfig = deepClone(newInstance);
-  instanceConfig.id = `widget-${generateUID()}`;
-  instanceConfig.uid = `widget-${generateUID()}`;
+export const addInstance = (widget: Writable<any>, newInstance: any) => {
+  const instanceConfig = structuredClone(newInstance);
+  const uuid = `widget-${generateUID()}`
+  instanceConfig.id = uuid;
+  instanceConfig.uid = uuid;
   instanceConfig.temp = true;
-  instanceConfig.title = newInstance.title + ' (temp)';
-  instanceConfig.master_filtering = true;
+  instanceConfig.title = newInstance.title;
+  // instanceConfig.master_filtering = true;
+  delete instanceConfig.instance_loaded;
+  delete instanceConfig.loaded;
+  delete instanceConfig.fetch;
 
-  instances.update(instances => [...instances, instanceConfig]);
+  widget.update(w => {
+    w.instances.push(instanceConfig)
+    return w;
+  });
+  return instanceConfig;
 }
 
-export const removeInstance = (instances: Writable<any[]>, instanceId: string) => {
-  instances.update(is => is.filter(instance => instance.id !== instanceId));
+export const removeInstance = (widget: Writable<any>, instanceUId: string) => {
+  widget.update(w => {
+    w.instances = w.instances.filter((instance: any) => instance.uid !== instanceUId)
+    return w;
+  });
 }
 
-const deepClone = (obj: any) => {
-  if (obj === null) return null;
-  let clone = Object.assign({}, obj);
-  Object.keys(clone).forEach(
-    key =>
-      (clone[key] =
-        typeof obj[key] === 'object' ? deepClone(obj[key]) : obj[key])
-  );
-  if (Array.isArray(obj)) {
-    clone.length = obj.length;
-    return Array.from(clone);
-  }
-  return clone;
-};
+export const clearInstances = (widget: Writable<any>) => {
+  widget.update(w => {
+    w.instances = []
+    return w;
+  });
+}
 

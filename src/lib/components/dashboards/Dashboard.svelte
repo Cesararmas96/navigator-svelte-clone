@@ -1,89 +1,71 @@
 <script lang="ts">
 	import Grid, { GridItem, type GridController } from 'svelte-grid-extended'
 	import Widget from '../widgets/Widget.svelte'
-	import { storeWidgets } from '$lib/stores/widgets'
 	import WidgetBox from '../widgets/WidgetBox.svelte'
-	import { writable } from 'svelte/store'
-	import { generateUID } from '$lib/helpers/common/common'
+	import {
+		loadV2Locations,
+		loadV3Locations,
+		resizeItem,
+		cloneItem,
+		removeItem
+	} from '$lib/helpers/dashboard/grid'
+	import { getApiData } from '$lib/services/getData'
 
 	export let dashboard: any
-	let widgets: any[] = []
-
-	let innerWidth: number
-
-	$: dashboard
-
-	widgets = []
-	let x: number = 0
-	let y: number = 0
-	const locations = dashboard.attributes.cols.split(',')
-
-	Object.keys(dashboard.widget_location).forEach(function callback(value: any, index: number) {
-		const id = Object.keys(dashboard.widget_location[value])[0]
-		const data = $storeWidgets.find((item) => item.uid === id) || {}
-		const w = parseInt(locations[index]) * (cols / 12)
-		if (w + x > cols) {
-			x = 0
-			y += 4
-		}
-		widgets.push({ id, x, y, w, h: 4, data })
-		x += w
-	})
 
 	const cols = 12
-	const itemSize = { height: 40 }
+	const itemSize = { height: 10 }
 
-	const gridItems = writable(widgets)
+	let innerWidth: number
+	let gridItems: any[] = []
+	// let gridController: GridController
 
-	let gridController: GridController
-
-	function addNewItem() {
-		const w = 4
-		const h = 4
-		const newPosition = gridController.getFirstAvailablePosition(w, h)
-		$gridItems = newPosition
-			? [...$gridItems, { id: generateUID(), x: newPosition.x, y: newPosition.y, w, h, data: {} }]
-			: $gridItems
+	const isMobile = (): boolean => {
+		return window.innerWidth < 500
 	}
 
-	function resizeItem(item: any) {
-		const header = document.getElementById(`widget-header-${item.id}`)?.clientHeight || 0
-		const content = document.getElementById(`widget-main-content-${item.id}`)?.clientHeight || 0
-		const widgetInstances =
-			document.getElementById(`widget-instances-${item.id}`)?.clientHeight || 0
-		const height = header + content + widgetInstances
-		const prevousHeight = maxHeight(item.y)
-		item.h = Math.ceil(height / 40)
-		reorderAfterResize(item, prevousHeight)
+	const getGridItems = async (dashboardId: string) => {
+		const widgets = await getApiData(
+			`${import.meta.env.VITE_API_URL}/api/v2/widgets?dashboard_id=${dashboardId}`,
+			'GET'
+		)
+		return dashboard.attributes.explorer === 'v3' ||
+			!dashboard.widget_location ||
+			Object.keys(dashboard.widget_location).length === 0
+			? loadV3Locations(dashboard, widgets, cols, false)
+			: loadV2Locations(dashboard, widgets, cols, false)
 	}
 
-	function maxHeight(yPos: number) {
-		const items = $gridItems
-		return Math.max(...items.filter((i) => i.y === yPos).map((i) => i.h))
+	$: handleResizable = (item: any) => {
+		gridItems = resizeItem(item, gridItems)
+	}
+	$: handleCloning = (item: any) => {
+		gridItems = cloneItem(item, gridItems)
+	}
+	$: handleRemove = (item: any) => {
+		// item.data.component.$destroy()
+		gridItems = removeItem(item, gridItems)
+		// gridItems.map((item: any) => {
+		// 	delete item.data.loaded
+		// 	return item
+		// })
 	}
 
-	function reorderAfterResize(item: any, prevousHeight: number) {
-		const items = $gridItems
-		const height = maxHeight(item.y) - prevousHeight
-		items.map((i) => {
-			if (i.y > item.y) i.y += height
-			return i
-		})
-		$gridItems = [...items]
+	let resizedUID = ''
+	$: changeItemSize = (item: any) => {
+		console.log('changeItemSize', item)
+		resizedUID = item.uid
 	}
+
+	$: getGridItems(dashboard.dashboard_id).then((items: any) => {
+		gridItems = items
+	})
 </script>
 
 <svelte:window bind:innerWidth />
 
-<Grid
-	{itemSize}
-	class="grid-container"
-	gap={5}
-	{cols}
-	collision="compress"
-	bind:controller={gridController}
->
-	{#each $gridItems as item}
+<Grid {itemSize} class="grid-container" gap={5} {cols} collision="compress">
+	{#each gridItems as item}
 		<GridItem
 			x={item.x}
 			y={item.y}
@@ -92,29 +74,34 @@
 			class="grid-item"
 			activeClass="grid-item-active"
 			previewClass="bg-red-500 rounded"
-			movable={item.data.params?.settings?.draggable && !item.data.params?.settings?.fixed}
-			resizable={item.data.params?.settings?.resizable && !item.data.params?.settings?.fixed}
+			on:change={(e) => {
+				changeItemSize(item)
+			}}
+			let:active
 		>
 			<WidgetBox
 				widget={item.data}
-				on:handleResizable={(e) => {
-					item.data.params.settings.resizable = e.detail.resizable && !e.detail.fixed
-				}}
+				resized={resizedUID === item.uid && !active}
 				let:fixed
 				let:isOwner
 				let:isToolbarVisible
-				on:handleResize={() => resizeItem(item)}
+				let:widget
+				on:handleResize={() => handleResizable(item)}
+				on:handleCloning={() => handleCloning(item)}
+				on:handleRemove={() => handleRemove(item)}
+				on:handleResizable={(e) => {
+					item.data.params.settings.resizable = e.detail.resizable && !e.detail.fixed
+				}}
 			>
+				<!-- bind:this={item.component} -->
 				<Widget
+					{widget}
 					{fixed}
 					{isToolbarVisible}
 					{isOwner}
-					on:handleInstanceResize={() => resizeItem(item)}
+					on:handleInstanceResize={() => handleResizable(item)}
 				/>
 			</WidgetBox>
 		</GridItem>
 	{/each}
 </Grid>
-
-<!-- movable={item.data.params?.settings?.draggable && !item.data.params?.settings?.fixed}
-resizable={item.data.params?.settings?.resizable && !item.data.params?.settings?.fixed} -->

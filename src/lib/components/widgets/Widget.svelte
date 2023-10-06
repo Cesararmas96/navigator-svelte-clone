@@ -8,6 +8,8 @@
 	import { createEventDispatcher, getContext } from 'svelte'
 	import type { Writable } from 'svelte/store'
 	import Instances from './Instances.svelte'
+	import { addWidgetAction } from '$lib/helpers'
+	import { selectedWidgetMaximize } from '$lib/stores/widgets'
 
 	const dispatch = createEventDispatcher()
 
@@ -20,11 +22,30 @@
 	let header: boolean
 	let footer: boolean
 
-	const widget = getContext<Writable<any>>('widget')
+	export let widget: Writable<any>
 
+	const widgetActions = getContext<Writable<any>>('widgetActions')
 	$: {
 		header = $widget?.params?.settings?.header?.show
 		footer = $widget?.params?.settings?.footer?.show
+		if ($widget?.params?.settings?.toolbar?.max) {
+			if (!$widgetActions.find((action: any) => action.name === 'maximizeWidget')) {
+				addWidgetAction(widgetActions, {
+					name: 'maximizeWidget',
+					action: async () => {
+						console.log('maximizeWidget')
+						$selectedWidgetMaximize = {
+							widget: $widget
+						}
+					}
+				})
+			}
+		}
+	}
+
+	const handleInstanceResize = (event: Event) => {
+		$widget.instance_loading = false
+		dispatch('handleInstanceResize', event)
 	}
 
 	$: scrollable = !$widget.temp ? $widget?.params?.settings?.general?.scrollable : false
@@ -68,14 +89,20 @@
 		}}
 	>
 		<div class="h-full w-full">
-			<ContentTop widget={$widget} />
+			<ContentTop {widget} />
 
-			<Content widget={$widget} />
+			<Content {widget} />
 
-			<ContentBottom widget={$widget} />
+			<ContentBottom {widget} />
 		</div>
 	</div>
-	<Instances widget={$widget} {isToolbarVisible} {fixed} {isOwner} on:handleInstanceResize />
+	<Instances
+		{widget}
+		{isToolbarVisible}
+		{fixed}
+		{isOwner}
+		on:handleInstanceResize={handleInstanceResize}
+	/>
 </div>
 <!-- Widget Footer -->
 {#if !$widget.temp}

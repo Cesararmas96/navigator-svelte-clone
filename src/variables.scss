@@ -40,4 +40,200 @@
 	--text-muted: #627da7;
 }
 
-	
+.number-cell {
+  text-align: right;
+}
+
+.header-right .ag-header-cell-text {
+	width: 100%;
+	text-align: right;
+}
+
+.header-left .ag-header-cell-text {
+	width: 100%;
+	text-align: left;
+}
+
+.header-center .ag-header-cell-text {
+	width: 100%;
+	text-align: center;
+}
+
+.ag-paging-panel {
+	justify-content: flex-start !important;
+}
+
+.cls-green {
+  background-color: #dff0d8;
+  color: #3c763d;
+}
+
+/* TABLE CELL STYLINGS */
+.cls-green {
+  color: #3c763d;
+  background-color: #dff0d8;
+  border-color: #d6e9c6;
+}
+
+.cls-blue {
+  color: #31708f;
+  background-color: #d9edf7;
+  border-color: #bce8f1;
+}
+
+.cls-yellow {
+  color: #8a6d3b;
+  background-color: #fcf8e3;
+  border-color: #faebcc;
+}
+
+.cls-red {
+  color: #a94442;
+  background-color: #f2dede;
+  border-color: #ebccd1;
+}
+
+/* TABLE STYLINGS */
+.cls-company {
+  background-color: #42a5f5 !important;
+  color: rgba(0, 0, 0, 0.87) !important;
+}
+
+.cls-company td:first-child {
+  text-align: left !important;
+}
+
+.cls-division,
+.cls-territory {
+  background-color: #64b5f6 !important;
+  color: rgba(0, 0, 0, 0.87) !important;
+}
+
+.cls-region {
+  background-color: #90caf9 !important;
+  color: rgba(0, 0, 0, 0.87) !important;
+}
+
+.cls-region td:first-child {
+  text-align: left !important;
+}
+
+.cls-district {
+  background-color: #a3d2fa !important;
+  color: rgba(0, 0, 0, 0.87) !important;
+}
+
+.cls-district td:first-child {
+  text-align: left !important;
+}
+
+.cls-market {
+  background-color: #bbdefb !important;
+  color: rgba(0, 0, 0, 0.87) !important;
+}
+
+.cls-market td:first-child {
+  text-align: left !important;
+}
+
+.cls-store {
+  background-color: #e3f2fd !important;
+}
+
+.cls-bold {
+  font-weight: 600;
+}
+
+/* PROPOSAL STATUS LABELS*/
+.badge {
+	display: inline-block;
+	margin: 0 auto;
+	padding: 0.25em 0.4em;
+	line-height: 1;
+	text-align: center;
+	white-space: nowrap;
+	vertical-align: baseline;
+	border-radius: 0.25rem;
+	transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+}
+
+.badge.badge-success {
+  color: #fff;
+  background-color: #28a745;
+}
+
+.badge.badge-warning {
+  color: #212529;
+  background-color: #ffc107;
+}
+
+.badge.badge-primary {
+  color: #fff;
+  background-color: #007bff;
+}
+
+.badge.badge-danger {
+  color: #fff;
+  background-color: #dc3545;
+}
+
+.badge.badge-generated {
+  color: #fff;
+  background-color: #007bff;
+}
+.badge.badge-submitted {
+  color: #343a40;
+  background-color: #fc0;
+}
+.badge.badge-rsevalidated {
+  color: #343a40;
+  background-color: #ff9500;
+}
+.badge.badge-lbavalidated {
+  color: #fff;
+  background-color: #51981e;
+}
+.badge.badge-controlreview {
+  color: #343a40;
+  background-color: #54c7fd;
+}
+.badge.badge-controlapproved {
+  color: #fff;
+  background-color: #5855d6;
+}
+.badge.badge-canceled {
+  color: #fff;
+  background-color: #e15554;
+}
+.controlrejected {
+  color: #e15554;
+  margin-left: 3px;
+}
+.badge.badge-aqua {
+  color: #212529;
+  background-color: #54c7fd;
+}
+.badge.badge-orange {
+  color: #212529;
+  background-color: #ff9500;
+}
+.badge.badge-yellow {
+  color: #212529;
+  background-color: #ffc107;
+}
+.badge.badge-purple {
+  color: #fff;
+  background-color: #9333ea;
+}
+.badge.badge-gray {
+  color: #212529;
+  background-color: #d4d4d8;
+}
+.badge.badge-coffee {
+  color: #fff;
+  background-color: #713f12;
+}
+
+.pull-right {
+  float: right !important;
+}

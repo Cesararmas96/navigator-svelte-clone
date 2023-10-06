@@ -4,6 +4,7 @@
     import {storeModules} from "$lib/stores/modules";
     import {isAuthenticated} from "$lib/stores";
 
+	export let data
     let trocModule: any;
 
     $: {
@@ -17,6 +18,4 @@
 
 </script>
 
-
-<Module {trocModule}/>
-
+<Module trocModule={data.trocModule} />

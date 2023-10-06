@@ -1,4 +1,4 @@
-<script lang="ts">
+<!-- <script lang="ts">
 	import {
 		Table,
 		TableBody,
@@ -7,20 +7,11 @@
 		TableHead,
 		TableHeadCell
 	} from 'flowbite-svelte'
-	import { getContext, onMount } from 'svelte'
-	import type { Writable } from 'svelte/store'
 
 	export let data: any
-
-	const widget = getContext<Writable<any>>('widget')
-
-	onMount(() => {
-		if ($widget.temp) $widget.instance_loaded = true
-	})
 </script>
 
 {#if data}
-	<!-- Widget Content TableWidget -->
 	<Table hoverable={true} divClass="w-full">
 		<TableHead>
 			{#each Object.keys(data[0]) as key}
@@ -37,4 +28,12 @@
 			{/each}
 		</TableBody>
 	</Table>
-{/if}
+{/if} -->
+
+<script lang="ts">
+	import AgGridWidget from './AgGridWidget.svelte'
+
+	export let data: any
+</script>
+
+<AgGridWidget {data} simpleTable={true} />

@@ -28,7 +28,7 @@
 		<Icon icon={types[type].icon} size="20" />
 	</div>
 
-	<div class="ml-2 flex-1">
+	<div class="ml-2 flex-1 flex-wrap">
 		<slot />
 	</div>
 
