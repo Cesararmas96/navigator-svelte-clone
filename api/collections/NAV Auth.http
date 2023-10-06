@@ -3,50 +3,50 @@
 ###
 # group: ABAC Example
 # @name GET Root
-GET http://localhost:5000/
+GET https://api.dev.navigator.mobileinsight.com/
 
 ###
 # group: ABAC Example
 # @name GET Example
-GET http://localhost:5000/api/v1/example/
+GET https://api.dev.navigator.mobileinsight.com/api/v1/example/
 
 ###
 # group: ABAC Example
 # @name GET Example Other
-GET http://localhost:5000/api/v1/example/
+GET https://api.dev.navigator.mobileinsight.com/api/v1/example/
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2ODM1MTQ0MzcsImlhdCI6MTY4MzE1NDQzNywiaXNzIjoidXJuOk5hdmlnYXRvciIsImlkIjoiMmU4NzQzYjdjYWMwNDk3NWE0ODg1NDk5NTZmMTc3YTEiLCJ1c2VyIjpudWxsLCJ1c2VybmFtZSI6IkFub255bW91cyIsInNlc3Npb24iOnsic2Vzc2lvbiI6IjJlODc0M2I3Y2FjMDQ5NzVhNDg4NTQ5OTU2ZjE3N2ExIiwidXNlciI6IjJlODc0M2I3Y2FjMDQ5NzVhNDg4NTQ5OTU2ZjE3N2ExIiwidXNlcm5hbWUiOiJBbm9ueW1vdXMiLCJmaXJzdF9uYW1lIjoiQW5vbnltb3VzIiwibGFzdF9uYW1lIjoiVXNlciJ9fQ.5qif26uR4Ut01N0yrjEl-qFrOl8fxcAldnOd8HuktE8
 
 ###
 # group: ABAC Example
 # @name GET Test View
-GET http://localhost:5000/api/v1/test/
+GET https://api.dev.navigator.mobileinsight.com/api/v1/test/
 
 ###
 # group: ABAC Example
 # @name GET Test View Other
-GET http://localhost:5000/api/v1/test/
+GET https://api.dev.navigator.mobileinsight.com/api/v1/test/
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2ODM1MTQ0MzcsImlhdCI6MTY4MzE1NDQzNywiaXNzIjoidXJuOk5hdmlnYXRvciIsImlkIjoiMmU4NzQzYjdjYWMwNDk3NWE0ODg1NDk5NTZmMTc3YTEiLCJ1c2VyIjpudWxsLCJ1c2VybmFtZSI6IkFub255bW91cyIsInNlc3Npb24iOnsic2Vzc2lvbiI6IjJlODc0M2I3Y2FjMDQ5NzVhNDg4NTQ5OTU2ZjE3N2ExIiwidXNlciI6IjJlODc0M2I3Y2FjMDQ5NzVhNDg4NTQ5OTU2ZjE3N2ExIiwidXNlcm5hbWUiOiJBbm9ueW1vdXMiLCJmaXJzdF9uYW1lIjoiQW5vbnltb3VzIiwibGFzdF9uYW1lIjoiVXNlciJ9fQ.5qif26uR4Ut01N0yrjEl-qFrOl8fxcAldnOd8HuktE8
 
 ###
 # group: ABAC Example
 # @name Private Resource
-GET http://localhost:5000/private/
+GET https://api.dev.navigator.mobileinsight.com/private/
 
 ###
 # group: ABAC Example
 # @name Get Walmart Directories
-GET http://localhost:5000/walmart/
+GET https://api.dev.navigator.mobileinsight.com/walmart/
 
 ###
 # group: ABAC Example
 # @name Get Walmart Dir by Others
-GET http://localhost:5000/walmart/
+GET https://api.dev.navigator.mobileinsight.com/walmart/
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2ODI2NTExMTYsImlhdCI6MTY4MjI5MTExNiwiaXNzIjoidXJuOk5hdmlnYXRvciIsImlkIjoiMmVlOGFhMGJhMWVjNDIwNWI3MDA0ZjAzMDQ3Y2NiNmYiLCJ1c2VyIjpudWxsLCJ1c2VybmFtZSI6IkFub255bW91cyIsInNlc3Npb24iOnsic2Vzc2lvbiI6IjJlZThhYTBiYTFlYzQyMDViNzAwNGYwMzA0N2NjYjZmIiwidXNlciI6IjJlZThhYTBiYTFlYzQyMDViNzAwNGYwMzA0N2NjYjZmIiwidXNlcm5hbWUiOiJBbm9ueW1vdXMiLCJmaXJzdF9uYW1lIjoiQW5vbnltb3VzIiwibGFzdF9uYW1lIjoiVXNlciJ9fQ.ZwdOU6IrasW29TrrusB1osnhFWaaa8iUy4ckTIeF0Hw
 
 ###
 # group: ABAC Example
 # @name ABAC API: is_allowed
-POST http://localhost:5000/api/v1/abac/is_allowed
+POST https://api.dev.navigator.mobileinsight.com/api/v1/abac/is_allowed
 Content-Type: application/json
 
 {
@@ -59,7 +59,7 @@ Content-Type: application/json
 ###
 # group: ABAC Example
 # @name ABAC API: is_allowed Denied
-POST http://localhost:5000/api/v1/abac/is_allowed
+POST https://api.dev.navigator.mobileinsight.com/api/v1/abac/is_allowed
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2ODM1MTQ0MzcsImlhdCI6MTY4MzE1NDQzNywiaXNzIjoidXJuOk5hdmlnYXRvciIsImlkIjoiMmU4NzQzYjdjYWMwNDk3NWE0ODg1NDk5NTZmMTc3YTEiLCJ1c2VyIjpudWxsLCJ1c2VybmFtZSI6IkFub255bW91cyIsInNlc3Npb24iOnsic2Vzc2lvbiI6IjJlODc0M2I3Y2FjMDQ5NzVhNDg4NTQ5OTU2ZjE3N2ExIiwidXNlciI6IjJlODc0M2I3Y2FjMDQ5NzVhNDg4NTQ5OTU2ZjE3N2ExIiwidXNlcm5hbWUiOiJBbm9ueW1vdXMiLCJmaXJzdF9uYW1lIjoiQW5vbnltb3VzIiwibGFzdF9uYW1lIjoiVXNlciJ9fQ.5qif26uR4Ut01N0yrjEl-qFrOl8fxcAldnOd8HuktE8
 Content-Type: application/json
 
@@ -73,7 +73,7 @@ Content-Type: application/json
 ###
 # group: ABAC Example
 # @name ABAC API: Reload Policies
-GET http://localhost:5000/api/v1/abac/reload
+GET https://api.dev.navigator.mobileinsight.com/api/v1/abac/reload
 Content-Type: application/json
 
 {
@@ -89,7 +89,7 @@ Content-Type: application/json
 ###
 # group: ABAC Example
 # @name ABAC API: Clone by Jesus
-POST http://localhost:5000/api/v1/abac/is_allowed
+POST https://api.dev.navigator.mobileinsight.com/api/v1/abac/is_allowed
 Content-Type: application/json
 
 {
@@ -105,7 +105,7 @@ Content-Type: application/json
 ###
 # group: ABAC Example
 # @name ABAC API: Clone by Jesus Copy
-POST http://localhost:5000/api/v1/abac/is_allowed
+POST https://api.dev.navigator.mobileinsight.com/api/v1/abac/is_allowed
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2ODI2NjQxMjcsImlhdCI6MTY4MjMwNDEyNywiaXNzIjoidXJuOk5hdmlnYXRvciIsInVzZXIiOjEzMTQ0LCJ1c2VybmFtZSI6IkdjYW5lbG9uQG1vYmlsZWluc2lnaHQuY29tIiwidXNlcl9pZCI6MTMxNDQsImlkIjoiR2NhbmVsb25AbW9iaWxlaW5zaWdodC5jb20ifQ.utBqamSU4QpHb90CH_eRDeE14RvFtYSC-jwLAXXqk5M
 Content-Type: application/json
 
@@ -122,7 +122,7 @@ Content-Type: application/json
 ###
 # group: ABAC Example
 # @name ABAC API: Clone Other
-POST http://localhost:5000/api/v1/abac/is_allowed
+POST https://api.dev.navigator.mobileinsight.com/api/v1/abac/is_allowed
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2ODI2NjQxMjcsImlhdCI6MTY4MjMwNDEyNywiaXNzIjoidXJuOk5hdmlnYXRvciIsInVzZXIiOjEzMTQ0LCJ1c2VybmFtZSI6IkdjYW5lbG9uQG1vYmlsZWluc2lnaHQuY29tIiwidXNlcl9pZCI6MTMxNDQsImlkIjoiR2NhbmVsb25AbW9iaWxlaW5zaWdodC5jb20ifQ.utBqamSU4QpHb90CH_eRDeE14RvFtYSC-jwLAXXqk5M
 Content-Type: application/json
 
@@ -139,54 +139,54 @@ Content-Type: application/json
 ###
 # group: ABAC Example
 # @name Walmart POST Denied
-POST http://localhost:5000/walmart/
+POST https://api.dev.navigator.mobileinsight.com/walmart/
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2ODI2NTExMTYsImlhdCI6MTY4MjI5MTExNiwiaXNzIjoidXJuOk5hdmlnYXRvciIsImlkIjoiMmVlOGFhMGJhMWVjNDIwNWI3MDA0ZjAzMDQ3Y2NiNmYiLCJ1c2VyIjpudWxsLCJ1c2VybmFtZSI6IkFub255bW91cyIsInNlc3Npb24iOnsic2Vzc2lvbiI6IjJlZThhYTBiYTFlYzQyMDViNzAwNGYwMzA0N2NjYjZmIiwidXNlciI6IjJlZThhYTBiYTFlYzQyMDViNzAwNGYwMzA0N2NjYjZmIiwidXNlcm5hbWUiOiJBbm9ueW1vdXMiLCJmaXJzdF9uYW1lIjoiQW5vbnltb3VzIiwibGFzdF9uYW1lIjoiVXNlciJ9fQ.ZwdOU6IrasW29TrrusB1osnhFWaaa8iUy4ckTIeF0Hw
 
 ###
 # group: ABAC Example
 # @name Walmart POST content
-POST http://localhost:5000/walmart/
+POST https://api.dev.navigator.mobileinsight.com/walmart/
 
 ###
 # group: ABAC Example
 # @name Walmart DELETE
-DELETE http://localhost:5000/walmart/
+DELETE https://api.dev.navigator.mobileinsight.com/walmart/
 
 ###
 # group: ABAC Example
 # @name Walmart DEL DENIED
-DELETE http://localhost:5000/walmart/
+DELETE https://api.dev.navigator.mobileinsight.com/walmart/
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2ODI2NTExMTYsImlhdCI6MTY4MjI5MTExNiwiaXNzIjoidXJuOk5hdmlnYXRvciIsImlkIjoiMmVlOGFhMGJhMWVjNDIwNWI3MDA0ZjAzMDQ3Y2NiNmYiLCJ1c2VyIjpudWxsLCJ1c2VybmFtZSI6IkFub255bW91cyIsInNlc3Npb24iOnsic2Vzc2lvbiI6IjJlZThhYTBiYTFlYzQyMDViNzAwNGYwMzA0N2NjYjZmIiwidXNlciI6IjJlZThhYTBiYTFlYzQyMDViNzAwNGYwMzA0N2NjYjZmIiwidXNlcm5hbWUiOiJBbm9ueW1vdXMiLCJmaXJzdF9uYW1lIjoiQW5vbnltb3VzIiwibGFzdF9uYW1lIjoiVXNlciJ9fQ.ZwdOU6IrasW29TrrusB1osnhFWaaa8iUy4ckTIeF0Hw
 
 ###
 # group: ABAC Example
 # @name POST Test View
-POST http://localhost:5000/api/v1/test/
+POST https://api.dev.navigator.mobileinsight.com/api/v1/test/
 
 ###
 # group: ABAC Example
 # @name POST Example
-POST http://localhost:5000/api/v1/example/
+POST https://api.dev.navigator.mobileinsight.com/api/v1/example/
 
 ###
 # group: ABAC Example
 # @name PUT Method
-PUT http://localhost:5000/api/v1/example/
+PUT https://api.dev.navigator.mobileinsight.com/api/v1/example/
 
 ###
 # group: ABAC Example
 # @name DELETE Method
-DELETE http://localhost:5000/api/v1/example/
+DELETE https://api.dev.navigator.mobileinsight.com/api/v1/example/
 
 ###
 # group: ABAC Example
 # @name DELETE Method Other User
-DELETE http://localhost:5000/api/v1/example/
+DELETE https://api.dev.navigator.mobileinsight.com/api/v1/example/
 
 ###
 # group: ABAC Example
 # @name DELETE Method Anon
-PUT http://localhost:5000/api/v1/example/
+PUT https://api.dev.navigator.mobileinsight.com/api/v1/example/
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2Nzk4NjQ5MTIsImlhdCI6MTY3OTUwNDkxMiwiaXNzIjoidXJuOk5hdmlnYXRvciIsImlkIjoiZGNmYWExYjkyZjlmNDNlNzk2NmYxODg5ODdmZGIyZDEiLCJ1c2VyIjpudWxsLCJ1c2VybmFtZSI6IkFub255bW91cyIsInNlc3Npb24iOnsic2Vzc2lvbiI6ImRjZmFhMWI5MmY5ZjQzZTc5NjZmMTg4OTg3ZmRiMmQxIiwidXNlciI6ImRjZmFhMWI5MmY5ZjQzZTc5NjZmMTg4OTg3ZmRiMmQxIiwidXNlcm5hbWUiOiJBbm9ueW1vdXMiLCJmaXJzdF9uYW1lIjoiQW5vbnltb3VzIiwibGFzdF9uYW1lIjoiVXNlciJ9fQ.1SFPxnnCyoF47TJcECVkZv-X4URSc2aJC0IMeN6S0NY
 
 ###
@@ -218,30 +218,30 @@ Content-Type: application/json
 ###
 # group: ABAC Example
 # @name POST Walmart
-POST http://localhost:5000/walmart/
+POST https://api.dev.navigator.mobileinsight.com/walmart/
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2Nzk4NzAxNjYsImlhdCI6MTY3OTUxMDE2NiwiaXNzIjoidXJuOk5hdmlnYXRvciIsInVzZXIiOjMwNDM1LCJ1c2VybmFtZSI6ImVqb25lc21vb3JlQHRyb2NnbG9iYWwuY29tIiwidXNlcl9pZCI6MzA0MzUsImlkIjoiZWpvbmVzbW9vcmVAdHJvY2dsb2JhbC5jb20ifQ.eF084CfEUf8iE1CqVAG3imHkjUYctvVzVx7F7NwS5nk
 
 ###
 # group: ABAC Example
 # @name POST Walmart Denied
-POST http://localhost:5000/walmart/
+POST https://api.dev.navigator.mobileinsight.com/walmart/
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2Nzk4NzA3ODMsImlhdCI6MTY3OTUxMDc4MywiaXNzIjoidXJuOk5hdmlnYXRvciIsInVzZXIiOjMwNDM1LCJ1c2VybmFtZSI6ImVqb25lc21vb3JlQHRyb2NnbG9iYWwuY29tIiwidXNlcl9pZCI6MzA0MzUsImlkIjoiZWpvbmVzbW9vcmVAdHJvY2dsb2JhbC5jb20ifQ.xk9nRYEAn8HjCt76ag9Z4zsKyzNHxI9hdpVOi8_R-Pk
 
 ###
 # group: ABAC Example
 # @name TM Access
-GET http://localhost:5000/trendmicro/
+GET https://api.dev.navigator.mobileinsight.com/trendmicro/
 
 ###
 # group: ABAC Example
 # @name Epson Access
-GET http://localhost:5000/epson/
+GET https://api.dev.navigator.mobileinsight.com/epson/
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2Nzk4Njk5MzIsImlhdCI6MTY3OTUwOTkzMiwiaXNzIjoidXJuOk5hdmlnYXRvciIsInVzZXIiOjEzMTQ0LCJ1c2VybmFtZSI6IkdjYW5lbG9uQG1vYmlsZWluc2lnaHQuY29tIiwidXNlcl9pZCI6MTMxNDQsImlkIjoiR2NhbmVsb25AbW9iaWxlaW5zaWdodC5jb20ifQ.ddQBUBcuHEeNGl3alk19-graR0OhHkyz7zPnOUp6LoI
 
 ###
 # group: ABAC Example
 # @name TM Access Denied
-GET http://localhost:5000/trendmicro/
+GET https://api.dev.navigator.mobileinsight.com/trendmicro/
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2Nzk4NjQ5MTIsImlhdCI6MTY3OTUwNDkxMiwiaXNzIjoidXJuOk5hdmlnYXRvciIsImlkIjoiZGNmYWExYjkyZjlmNDNlNzk2NmYxODg5ODdmZGIyZDEiLCJ1c2VyIjpudWxsLCJ1c2VybmFtZSI6IkFub255bW91cyIsInNlc3Npb24iOnsic2Vzc2lvbiI6ImRjZmFhMWI5MmY5ZjQzZTc5NjZmMTg4OTg3ZmRiMmQxIiwidXNlciI6ImRjZmFhMWI5MmY5ZjQzZTc5NjZmMTg4OTg3ZmRiMmQxIiwidXNlcm5hbWUiOiJBbm9ueW1vdXMiLCJmaXJzdF9uYW1lIjoiQW5vbnltb3VzIiwibGFzdF9uYW1lIjoiVXNlciJ9fQ.1SFPxnnCyoF47TJcECVkZv-X4URSc2aJC0IMeN6S0NY
 
 ###
@@ -418,7 +418,7 @@ Content-Type: application/json
 ###
 # group: Login
 # @name Okta Login
-GET http://localhost:5000/api/v1/login
+GET https://api.dev.navigator.mobileinsight.com/api/v1/login
 
 ###
 # group: Management / Partner Keys
@@ -610,7 +610,8 @@ X-Auth-Method: TrocToken
 ###
 # @name Session Basic
 GET http://navigator-dev.dev.local:5000/api/v1/user/session
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2ODgyNDA1NzQsImlhdCI6MTY4Nzg4MDU3NCwiaXNzIjoidXJuOk5hdmlnYXRvciIsInVzZXJfaWQiOiI0ZTJhYTBlYS01NmI4LTQ5ZmUtODVjZi0wNWU5N2Q0NzliYTYiLCJAb2RhdGEuY29udGV4dCI6Imh0dHBzOi8vZ3JhcGgubWljcm9zb2Z0LmNvbS92MS4wLyRtZXRhZGF0YSN1c2Vycy8kZW50aXR5IiwiYnVzaW5lc3NQaG9uZXMiOltdLCJkaXNwbGF5TmFtZSI6Ikplc3VzIExhcmEiLCJnaXZlbk5hbWUiOiJKZXN1cyIsImpvYlRpdGxlIjoiQ29uc3VsdGFudCIsIm1haWwiOiJqbGFyYUB0cm9jZ2xvYmFsLmNvbSIsIm1vYmlsZVBob25lIjpudWxsLCJvZmZpY2VMb2NhdGlvbiI6bnVsbCwicHJlZmVycmVkTGFuZ3VhZ2UiOm51bGwsInN1cm5hbWUiOiJMYXJhIiwidXNlclByaW5jaXBhbE5hbWUiOiJqbGFyYUB0cm9jZ2xvYmFsLmNvbSIsImlkIjoiNGUyYWEwZWEtNTZiOC00OWZlLTg1Y2YtMDVlOTdkNDc5YmE2IiwidWlkIjoiNGUyYWEwZWEtNTZiOC00OWZlLTg1Y2YtMDVlOTdkNDc5YmE2IiwidXRpZCI6ImFmMTc2NzkzLWFiYzQtNDIzZS04ZmFiLWRmYzRlMmJmOGI5ZCIsImF1dGhfbWV0aG9kIjoiYXp1cmUiLCJ1c2VyaWQiOiI0ZTJhYTBlYS01NmI4LTQ5ZmUtODVjZi0wNWU5N2Q0NzliYTYiLCJlbWFpbCI6ImpsYXJhQHRyb2NnbG9iYWwuY29tIiwidXNlcm5hbWUiOiJqbGFyYUB0cm9jZ2xvYmFsLmNvbSIsImdpdmVuX25hbWUiOiJKZXN1cyIsImZhbWlseV9uYW1lIjoiTGFyYSIsIm5hbWUiOiJKZXN1cyBMYXJhIiwicGhvbmUiOm51bGwsImlkX3Rva2VuIjoiZXlKMGVYQWlPaUpLVjFRaUxDSmhiR2NpT2lKU1V6STFOaUlzSW10cFpDSTZJaTFMU1ROUk9XNU9VamRpVW05bWVHMWxXbTlZY1dKSVdrZGxkeUo5LmV5SmhkV1FpT2lKaVltTTRabVl3WXkxbU0yWTFMVFF5T1RRdFlUWTVNaTFtT1RCbE1UZG1NemM0TW1FaUxDSnBjM01pT2lKb2RIUndjem92TDJ4dloybHVMbTFwWTNKdmMyOW1kRzl1YkdsdVpTNWpiMjB2WVdZeE56WTNPVE10WVdKak5DMDBNak5sTFRobVlXSXRaR1pqTkdVeVltWTRZamxrTDNZeUxqQWlMQ0pwWVhRaU9qRTJPRGM0T0RBeU56UXNJbTVpWmlJNk1UWTROemc0TURJM05Dd2laWGh3SWpveE5qZzNPRGd3TmpreExDSmhZMk4wSWpvd0xDSmhhVzhpT2lKQlZsRkJjUzg0VkVGQlFVRjZUVmxoTnpsSlFqSlNRbGhyV1dRd2JqWk5abkpWTjA5dVkwbEVjbEJNT1c1MWNURk5UVWN3WmpoNU9ETjNNMWhIV1RaVFEweGxWMEpFWTNsSmNHdHhiSFl3Y3pSdlkydExPV3BLWW5GSkswdFZkWEJGT1VKb01UWlVkVk5xZEVzMlJVbFVlRnBqVUNzNE1EMGlMQ0poZFhSb1gzUnBiV1VpT2pFMk9EYzRPREExTnpFc0ltVnRZV2xzSWpvaWFteGhjbUZBZEhKdlkyZHNiMkpoYkM1amIyMGlMQ0ptWVcxcGJIbGZibUZ0WlNJNklreGhjbUVpTENKbmFYWmxibDl1WVcxbElqb2lTbVZ6ZFhNaUxDSm5jbTkxY0hNaU9sc2laakV3T1dVM01tSXRZV05rWVMwME1HVTJMV0k0TXpFdE5qSTVZVFE1TkdRME1XVm1JaXdpWldSaU1EaGtOR0V0WVRRd015MDBaREl5TFRrNVpqSXRZekJsTXpNek0yVXlaVEJtSWl3aU4yRTNPVFZqTmpJdFl6VXlNeTAwWWpaakxXRmhabVV0Wm1VM1kySTNZakF6WkRkbUlpd2lNamhpTVdSaU5tWXRaR1l5TWkwMFpEbGxMV0ZpTnprdE9UbG1NbUppTkRJMVpUQm1JaXdpTURNM01EWmlPR0V0T1dKaFlpMDBZVEUzTFdJMVpUSXRaV0kwT0dOaE9HSmpNVFV6SWl3aVlUYzNNVE0wT0dRdFl6QXlOUzAwWVdFeExUZ3dPVEV0TlRnMVpHVmxNV1F5WXpobUlpd2lNRFUzWTJJMVltUXRORGt6WWkwMFpqQXlMVGt6WW1JdE9XTXpPV1kxWXpneU5qZzFJaXdpWW1Rek1qbGlZbVl0TW1RM1l5MDBNamMyTFdJM00yRXROV1k1WXpjek5ERTJPVGMwSWl3aU4yRTJZak5tWkRBdFlqaGlNUzAwT1RBMExUZzROV1F0WVRoaE1Ea3hZVEJqTlRFM0lpd2laRFJoT0RSalptRXRaREV5T1MwMFltWTFMVGd5TVdVdFlUbGxaamhpWXpreFpqSXdJbDBzSW01aGJXVWlPaUpLWlhOMWN5Qk1ZWEpoSWl3aWJtOXVZMlVpT2lKak1tRmlOMlJqTURNNU5tRTRaalZsWmpZME9XVTFabU16T1dSak0yTXlOR1JqT1RSalptWXhPVFkxT1RFMllqRXdNalF3TkRNMU5tVTJaREpqT0RFNElpd2liMmxrSWpvaU5HVXlZV0V3WldFdE5UWmlPQzAwT1dabExUZzFZMll0TURWbE9UZGtORGM1WW1FMklpd2ljSEpsWm1WeWNtVmtYM1Z6WlhKdVlXMWxJam9pYW14aGNtRkFkSEp2WTJkc2IySmhiQzVqYjIwaUxDSnlhQ0k2SWpBdVFWWnZRV3N5WTFoeU9GTnlVR3RMVUhFNVgwVTBjaTFNYmxGNlgzbE1kakU0TlZKRGNIQk1OVVJvWm5wbFEzQmhRVTVCTGlJc0luTjFZaUk2SWxCVFVITkVMVzR0UzBaQ1UxTkJhSHBtUzBkT1RVZFVNVTgzVUhSM04yZ3lORVZ5ZDNCV1praFRiR3NpTENKMGFXUWlPaUpoWmpFM05qYzVNeTFoWW1NMExUUXlNMlV0T0daaFlpMWtabU0wWlRKaVpqaGlPV1FpTENKMWRHa2lPaUpFV1MxRFEwVllTVGRGWldKWVJsaEVNR2d3UlVGQklpd2lkbVZ5SWpvaU1pNHdJaXdpZDJsa2N5STZXeUppTnpsbVltWTBaQzB6WldZNUxUUTJPRGt0T0RFME15MDNObUl4T1RSbE9EVTFNRGtpWFgwLmE3S1VSY3YySHQ1azlLZEM2ZDRhR056TGV6WmlIeXgwX2k5bmVYazRoY3dRSGQ4U1cwQkphU0lzQllscTByVDBzNDBKT2Q4NXRrc0dWaVhYZkgxSGd5Vk9kYTFMbTA2ZXdKX05BX2czM2R1dlJQMFpDWTZGOV9lWnJVSDUyaThNdlZTTDBSWWtJNXdrdmRmY2d0VnVKcFVPTTFiWVhHWFFRWnlqbGVGVlJrd1pOWFBfa1pyNEowemxDTGZ5aFItNktQOGw2NWNwV1JDS1dXZ2V1dmtoTkIySE9nNW4yQ1JLcUhYMlZUU09RVXFKV2VHenRsajM0X2N1UHNXRlppemRtdVdhRzJmcC14bXNvMW5mcWtYNDBtOHExRG83ZUFWdWVYUEMzYUZlVmd4X3ZyY3dlbkFNSFdhdTN2OHFMUTFsa01DOEJNcU5NY1B0SDhpWnhRM1FmUSIsImNsYWltcyI6eyJhdWQiOiJiYmM4ZmYwYy1mM2Y1LTQyOTQtYTY5Mi1mOTBlMTdmMzc4MmEiLCJpc3MiOiJodHRwczovL2xvZ2luLm1pY3Jvc29mdG9ubGluZS5jb20vYWYxNzY3OTMtYWJjNC00MjNlLThmYWItZGZjNGUyYmY4YjlkL3YyLjAiLCJpYXQiOjE2ODc4ODAyNzQsIm5iZiI6MTY4Nzg4MDI3NCwiZXhwIjoxNjg3ODgwNjkxLCJhY2N0IjowLCJhaW8iOiJBVlFBcS84VEFBQUF6TVlhNzlJQjJSQlhrWWQwbjZNZnJVN09uY0lEclBMOW51cTFNTUcwZjh5ODN3M1hHWTZTQ0xlV0JEY3lJcGtxbHYwczRvY2tLOWpKYnFJK0tVdXBFOUJoMTZUdVNqdEs2RUlUeFpjUCs4MD0iLCJhdXRoX3RpbWUiOjE2ODc4ODA1NzEsImVtYWlsIjoiamxhcmFAdHJvY2dsb2JhbC5jb20iLCJmYW1pbHlfbmFtZSI6IkxhcmEiLCJnaXZlbl9uYW1lIjoiSmVzdXMiLCJncm91cHMiOlsiZjEwOWU3MmItYWNkYS00MGU2LWI4MzEtNjI5YTQ5NGQ0MWVmIiwiZWRiMDhkNGEtYTQwMy00ZDIyLTk5ZjItYzBlMzMzM2UyZTBmIiwiN2E3OTVjNjItYzUyMy00YjZjLWFhZmUtZmU3Y2I3YjAzZDdmIiwiMjhiMWRiNmYtZGYyMi00ZDllLWFiNzktOTlmMmJiNDI1ZTBmIiwiMDM3MDZiOGEtOWJhYi00YTE3LWI1ZTItZWI0OGNhOGJjMTUzIiwiYTc3MTM0OGQtYzAyNS00YWExLTgwOTEtNTg1ZGVlMWQyYzhmIiwiMDU3Y2I1YmQtNDkzYi00ZjAyLTkzYmItOWMzOWY1YzgyNjg1IiwiYmQzMjliYmYtMmQ3Yy00Mjc2LWI3M2EtNWY5YzczNDE2OTc0IiwiN2E2YjNmZDAtYjhiMS00OTA0LTg4NWQtYThhMDkxYTBjNTE3IiwiZDRhODRjZmEtZDEyOS00YmY1LTgyMWUtYTllZjhiYzkxZjIwIl0sIm5hbWUiOiJKZXN1cyBMYXJhIiwibm9uY2UiOiJjMmFiN2RjMDM5NmE4ZjVlZjY0OWU1ZmMzOWRjM2MyNGRjOTRjZmYxOTY1OTE2YjEwMjQwNDM1NmU2ZDJjODE4Iiwib2lkIjoiNGUyYWEwZWEtNTZiOC00OWZlLTg1Y2YtMDVlOTdkNDc5YmE2IiwicHJlZmVycmVkX3VzZXJuYW1lIjoiamxhcmFAdHJvY2dsb2JhbC5jb20iLCJyaCI6IjAuQVZvQWsyY1hyOFNyUGtLUHE5X0U0ci1MblF6X3lMdjE4NVJDcHBMNURoZnplQ3BhQU5BLiIsInN1YiI6IlBTUHNELW4tS0ZCU1NBaHpmS0dOTUdUMU83UHR3N2gyNEVyd3BWZkhTbGsiLCJ0aWQiOiJhZjE3Njc5My1hYmM0LTQyM2UtOGZhYi1kZmM0ZTJiZjhiOWQiLCJ1dGkiOiJEWS1DQ0VYSTdFZWJYRlhEMGgwRUFBIiwidmVyIjoiMi4wIiwid2lkcyI6WyJiNzlmYmY0ZC0zZWY5LTQ2ODktODE0My03NmIxOTRlODU1MDkiXX19.YBO_WohnELPIn79xHIP3aUrdaETB5x22VzvVa1yNL8A
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTY2MzU4MTUsImlhdCI6MTY5NjI3NTgxNSwiaXNzIjoiTW9iaWxlaW5zaWdodCIsInVzZXIiOjE1Nzc5LCJ1c2VybmFtZSI6ImptZW5kb3phMUB0cm9jZ2xvYmFsLmNvbSIsInVzZXJfaWQiOjE1Nzc5LCJpZCI6ImptZW5kb3phMUB0cm9jZ2xvYmFsLmNvbSJ9.sChSK5KH15IgyQavv9Ex-V4H_nGsho1svIDo-Z9ZZx4
+
 #X-Auth-Method: BasicAuth
 
 ###

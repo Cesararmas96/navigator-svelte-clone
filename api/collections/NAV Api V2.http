@@ -3,25 +3,25 @@
 ###
 # group: Dashboards
 # @name Meta Info dashboards
-GET http://nav-api.dev.local:5000/api/v2/dashboards:meta
+GET https://api.dev.navigator.mobileinsight.com/api/v2/dashboards:meta
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTQ1NDU0ODUsImlhdCI6MTY5NDE4NTQ4NSwiaXNzIjoiTW9iaWxlaW5zaWdodCIsInVzZXIiOjM1LCJ1c2VybmFtZSI6ImpsYXJhQHRyb2NnbG9iYWwuY29tIiwidXNlcl9pZCI6MzUsImlkIjoiamxhcmFAdHJvY2dsb2JhbC5jb20ifQ.foapyL2b1VN6wTv0NDtbo-WLGOB1sikkxZIN7ycVtkU
 
 ###
 # group: Dashboards
 # @name Metadata
-HEAD http://nav-api.dev.local:5000/api/v2/dashboards:meta
+HEAD https://api.dev.navigator.mobileinsight.com/api/v2/dashboards:meta
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTQ1NDU0ODUsImlhdCI6MTY5NDE4NTQ4NSwiaXNzIjoiTW9iaWxlaW5zaWdodCIsInVzZXIiOjM1LCJ1c2VybmFtZSI6ImpsYXJhQHRyb2NnbG9iYWwuY29tIiwidXNlcl9pZCI6MzUsImlkIjoiamxhcmFAdHJvY2dsb2JhbC5jb20ifQ.foapyL2b1VN6wTv0NDtbo-WLGOB1sikkxZIN7ycVtkU
 
 ###
 # group: Dashboards
 # @name Sample Dashboard Data
-GET http://nav-api.dev.local:5000/api/v2/dashboards:sample
+GET https://api.dev.navigator.mobileinsight.com/api/v2/dashboards:sample
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTQ1NDU0ODUsImlhdCI6MTY5NDE4NTQ4NSwiaXNzIjoiTW9iaWxlaW5zaWdodCIsInVzZXIiOjM1LCJ1c2VybmFtZSI6ImpsYXJhQHRyb2NnbG9iYWwuY29tIiwidXNlcl9pZCI6MzUsImlkIjoiamxhcmFAdHJvY2dsb2JhbC5jb20ifQ.foapyL2b1VN6wTv0NDtbo-WLGOB1sikkxZIN7ycVtkU
 
 ###
 # group: Dashboards
 # @name Get one Dashboard
-GET http://nav-api.dev.local:5000/api/v2/dashboards?
+GET https://api.dev.navigator.mobileinsight.com/api/v2/dashboards?
     program_id=19&
     module_id=114&
     explorer=false
@@ -34,19 +34,19 @@ GET https://api.dev.navigator.mobileinsight.com/api/v2/dashboards?
     program_id=19&
     module_id=114&
     explorer=false
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTA3NTIyODQsImlhdCI6MTY5MDM5MjI4NCwiaXNzIjoiTW9iaWxlaW5zaWdodCIsInVzZXIiOjM1LCJ1c2VybmFtZSI6ImpsYXJhQHRyb2NnbG9iYWwuY29tIiwidXNlcl9pZCI6MzUsImlkIjoiZnhkNnppeTU5MnV3OWo0eXllZGJwZDduZWlwZ2o2dnUifQ.ItmvIIc7EEw05d_JPOf1lWnI_re7OOafHiwx6SDIQfs
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTY3MDQ0MTgsImlhdCI6MTY5NjM0NDQxOCwiaXNzIjoiTW9iaWxlaW5zaWdodCIsInVzZXIiOjE1Nzc5LCJ1c2VybmFtZSI6ImptZW5kb3phMUB0cm9jZ2xvYmFsLmNvbSIsInVzZXJfaWQiOjE1Nzc5LCJpZCI6ImptZW5kb3phMUB0cm9jZ2xvYmFsLmNvbSJ9.1gua2Lpngbptjs8YhUgoCf7wmc_FQdEIwy6Z8sFiBDQ
 
 ###
 # group: Dashboards
 # @name Get all Dashboards
-GET http://nav-api.dev.local:5000/api/v2/dashboards?
+GET https://api.dev.navigator.mobileinsight.com/api/v2/dashboards?
     duid=325643c2-dcc6-410e-85a7-af10d98743c2
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTQ1NDU0ODUsImlhdCI6MTY5NDE4NTQ4NSwiaXNzIjoiTW9iaWxlaW5zaWdodCIsInVzZXIiOjM1LCJ1c2VybmFtZSI6ImpsYXJhQHRyb2NnbG9iYWwuY29tIiwidXNlcl9pZCI6MzUsImlkIjoiamxhcmFAdHJvY2dsb2JhbC5jb20ifQ.foapyL2b1VN6wTv0NDtbo-WLGOB1sikkxZIN7ycVtkU
 
 ###
 # group: Dashboards
 # @name Get Dashboards from Module
-GET http://nav-api.dev.local:5000/api/v2/dashboards?
+GET https://api.dev.navigator.mobileinsight.com/api/v2/dashboards?
     program_id=19&
     module_id=122&
     explorer=false
@@ -55,7 +55,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTQ1NDU0O
 ###
 # group: Dashboards
 # @name Dashboard clone
-POST http://nav-api.dev.local:5000/api/v2/dashboard/clone
+POST https://api.dev.navigator.mobileinsight.com/api/v2/dashboard/clone
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTQ1NDU0ODUsImlhdCI6MTY5NDE4NTQ4NSwiaXNzIjoiTW9iaWxlaW5zaWdodCIsInVzZXIiOjM1LCJ1c2VybmFtZSI6ImpsYXJhQHRyb2NnbG9iYWwuY29tIiwidXNlcl9pZCI6MzUsImlkIjoiamxhcmFAdHJvY2dsb2JhbC5jb20ifQ.foapyL2b1VN6wTv0NDtbo-WLGOB1sikkxZIN7ycVtkU
 Content-Type: application/json
 
@@ -67,7 +67,7 @@ Content-Type: application/json
 ###
 # group: Dashboards
 # @name Insert Dashboard
-PUT http://nav-api.dev.local:5000/api/v2/dashboards
+PUT https://api.dev.navigator.mobileinsight.com/api/v2/dashboards
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTQ1NDU0ODUsImlhdCI6MTY5NDE4NTQ4NSwiaXNzIjoiTW9iaWxlaW5zaWdodCIsInVzZXIiOjM1LCJ1c2VybmFtZSI6ImpsYXJhQHRyb2NnbG9iYWwuY29tIiwidXNlcl9pZCI6MzUsImlkIjoiamxhcmFAdHJvY2dsb2JhbC5jb20ifQ.foapyL2b1VN6wTv0NDtbo-WLGOB1sikkxZIN7ycVtkU
 Content-Type: application/json
 
@@ -78,7 +78,7 @@ Content-Type: application/json
 ###
 # group: Dashboards
 # @name Update dashboard
-POST http://nav-api.dev.local:5000/api/v2/dashboards/93e7339a-d11d-4683-abfd-c3fc161f5c6c
+POST https://api.dev.navigator.mobileinsight.com/api/v2/dashboards/93e7339a-d11d-4683-abfd-c3fc161f5c6c
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTQ1NDU0ODUsImlhdCI6MTY5NDE4NTQ4NSwiaXNzIjoiTW9iaWxlaW5zaWdodCIsInVzZXIiOjM1LCJ1c2VybmFtZSI6ImpsYXJhQHRyb2NnbG9iYWwuY29tIiwidXNlcl9pZCI6MzUsImlkIjoiamxhcmFAdHJvY2dsb2JhbC5jb20ifQ.foapyL2b1VN6wTv0NDtbo-WLGOB1sikkxZIN7ycVtkU
 Content-Type: application/json
 
@@ -89,7 +89,7 @@ Content-Type: application/json
 ###
 # group: Dashboards
 # @name Dashboard impersonation
-PATCH http://nav-api.dev.local:5000/api/v2/dashboards
+PATCH https://api.dev.navigator.mobileinsight.com/api/v2/dashboards
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTQ1NDU0ODUsImlhdCI6MTY5NDE4NTQ4NSwiaXNzIjoiTW9iaWxlaW5zaWdodCIsInVzZXIiOjM1LCJ1c2VybmFtZSI6ImpsYXJhQHRyb2NnbG9iYWwuY29tIiwidXNlcl9pZCI6MzUsImlkIjoiamxhcmFAdHJvY2dsb2JhbC5jb20ifQ.foapyL2b1VN6wTv0NDtbo-WLGOB1sikkxZIN7ycVtkU
 Content-Type: application/json
 
@@ -101,7 +101,7 @@ Content-Type: application/json
 ###
 # group: Dashboards
 # @name Delete dashboard and children widgets
-DELETE http://nav-api.dev.local:5000/api/v2/dashboards/63b16d07-6e52-4c36-9bed-f85ff5e32822
+DELETE https://api.dev.navigator.mobileinsight.com/api/v2/dashboards/63b16d07-6e52-4c36-9bed-f85ff5e32822
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTQ1NDU0ODUsImlhdCI6MTY5NDE4NTQ4NSwiaXNzIjoiTW9iaWxlaW5zaWdodCIsInVzZXIiOjM1LCJ1c2VybmFtZSI6ImpsYXJhQHRyb2NnbG9iYWwuY29tIiwidXNlcl9pZCI6MzUsImlkIjoiamxhcmFAdHJvY2dsb2JhbC5jb20ifQ.foapyL2b1VN6wTv0NDtbo-WLGOB1sikkxZIN7ycVtkU
 Content-Type: application/json
 
@@ -112,27 +112,27 @@ Content-Type: application/json
 ###
 # group: Save Filtering
 # @name Filtering by Program
-GET http://nav-api.dev.local:5000/api/v2/save-filtering?
+GET https://api.dev.navigator.mobileinsight.com/api/v2/save-filtering?
     program_slug=walmart
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTQ1NDU0ODUsImlhdCI6MTY5NDE4NTQ4NSwiaXNzIjoiTW9iaWxlaW5zaWdodCIsInVzZXIiOjM1LCJ1c2VybmFtZSI6ImpsYXJhQHRyb2NnbG9iYWwuY29tIiwidXNlcl9pZCI6MzUsImlkIjoiamxhcmFAdHJvY2dsb2JhbC5jb20ifQ.foapyL2b1VN6wTv0NDtbo-WLGOB1sikkxZIN7ycVtkU
 
 ###
 # group: Save Filtering
 # @name Get all Filters by Current User
-GET http://nav-api.dev.local:5000/api/v2/save-filtering
+GET https://api.dev.navigator.mobileinsight.com/api/v2/save-filtering
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTQ1NDU0ODUsImlhdCI6MTY5NDE4NTQ4NSwiaXNzIjoiTW9iaWxlaW5zaWdodCIsInVzZXIiOjM1LCJ1c2VybmFtZSI6ImpsYXJhQHRyb2NnbG9iYWwuY29tIiwidXNlcl9pZCI6MzUsImlkIjoiamxhcmFAdHJvY2dsb2JhbC5jb20ifQ.foapyL2b1VN6wTv0NDtbo-WLGOB1sikkxZIN7ycVtkU
 
 ###
 # group: Save Filtering
 # @name Using Filter in Save Filter
-GET http://nav-api.dev.local:5000/api/v2/save-filtering?
+GET https://api.dev.navigator.mobileinsight.com/api/v2/save-filtering?
     filter_name=Iowa
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTQ1NDU0ODUsImlhdCI6MTY5NDE4NTQ4NSwiaXNzIjoiTW9iaWxlaW5zaWdodCIsInVzZXIiOjM1LCJ1c2VybmFtZSI6ImpsYXJhQHRyb2NnbG9iYWwuY29tIiwidXNlcl9pZCI6MzUsImlkIjoiamxhcmFAdHJvY2dsb2JhbC5jb20ifQ.foapyL2b1VN6wTv0NDtbo-WLGOB1sikkxZIN7ycVtkU
 
 ###
 # group: Save Filtering
 # @name Create a filtering
-PUT http://nav-api.dev.local:5000/api/v2/save-filtering
+PUT https://api.dev.navigator.mobileinsight.com/api/v2/save-filtering
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTQ1NDU0ODUsImlhdCI6MTY5NDE4NTQ4NSwiaXNzIjoiTW9iaWxlaW5zaWdodCIsInVzZXIiOjM1LCJ1c2VybmFtZSI6ImpsYXJhQHRyb2NnbG9iYWwuY29tIiwidXNlcl9pZCI6MzUsImlkIjoiamxhcmFAdHJvY2dsb2JhbC5jb20ifQ.foapyL2b1VN6wTv0NDtbo-WLGOB1sikkxZIN7ycVtkU
 Content-Type: application/json
 
@@ -143,7 +143,7 @@ Content-Type: application/json
 ###
 # group: Save Filtering
 # @name Update a filtering
-POST http://nav-api.dev.local:5000/api/v2/save-filtering/3
+POST https://api.dev.navigator.mobileinsight.com/api/v2/save-filtering/3
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTQ1NDU0ODUsImlhdCI6MTY5NDE4NTQ4NSwiaXNzIjoiTW9iaWxlaW5zaWdodCIsInVzZXIiOjM1LCJ1c2VybmFtZSI6ImpsYXJhQHRyb2NnbG9iYWwuY29tIiwidXNlcl9pZCI6MzUsImlkIjoiamxhcmFAdHJvY2dsb2JhbC5jb20ifQ.foapyL2b1VN6wTv0NDtbo-WLGOB1sikkxZIN7ycVtkU
 Content-Type: application/json
 
@@ -156,7 +156,7 @@ Content-Type: application/json
 ###
 # group: Save Filtering
 # @name Delete a filtering
-DELETE http://nav-api.dev.local:5000/api/v2/save-filtering
+DELETE https://api.dev.navigator.mobileinsight.com/api/v2/save-filtering
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTQ1NDU0ODUsImlhdCI6MTY5NDE4NTQ4NSwiaXNzIjoiTW9iaWxlaW5zaWdodCIsInVzZXIiOjM1LCJ1c2VybmFtZSI6ImpsYXJhQHRyb2NnbG9iYWwuY29tIiwidXNlcl9pZCI6MzUsImlkIjoiamxhcmFAdHJvY2dsb2JhbC5jb20ifQ.foapyL2b1VN6wTv0NDtbo-WLGOB1sikkxZIN7ycVtkU
 Content-Type: application/json
 
@@ -167,32 +167,32 @@ Content-Type: application/json
 ###
 # group: Save Filtering
 # @name Delete a filtering by Key
-DELETE http://nav-api.dev.local:5000/api/v2/save-filtering/33
+DELETE https://api.dev.navigator.mobileinsight.com/api/v2/save-filtering/33
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTQ1NDU0ODUsImlhdCI6MTY5NDE4NTQ4NSwiaXNzIjoiTW9iaWxlaW5zaWdodCIsInVzZXIiOjM1LCJ1c2VybmFtZSI6ImpsYXJhQHRyb2NnbG9iYWwuY29tIiwidXNlcl9pZCI6MzUsImlkIjoiamxhcmFAdHJvY2dsb2JhbC5jb20ifQ.foapyL2b1VN6wTv0NDtbo-WLGOB1sikkxZIN7ycVtkU
 
 ###
 # group: Widgets / Template
 # @name Get all Widget Templates
-GET http://nav-api.dev.local:5000/api/v2/widgets-template
+GET https://api.dev.navigator.mobileinsight.com/api/v2/widgets-template
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTQ1NDU0ODUsImlhdCI6MTY5NDE4NTQ4NSwiaXNzIjoiTW9iaWxlaW5zaWdodCIsInVzZXIiOjM1LCJ1c2VybmFtZSI6ImpsYXJhQHRyb2NnbG9iYWwuY29tIiwidXNlcl9pZCI6MzUsImlkIjoiamxhcmFAdHJvY2dsb2JhbC5jb20ifQ.foapyL2b1VN6wTv0NDtbo-WLGOB1sikkxZIN7ycVtkU
 
 ###
 # group: Widgets / Template
 # @name Widget Templates by Program
-GET http://nav-api.dev.local:5000/api/v2/widgets-template?
+GET https://api.dev.navigator.mobileinsight.com/api/v2/widgets-template?
     program_id=3
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTQ1NDU0ODUsImlhdCI6MTY5NDE4NTQ4NSwiaXNzIjoiTW9iaWxlaW5zaWdodCIsInVzZXIiOjM1LCJ1c2VybmFtZSI6ImpsYXJhQHRyb2NnbG9iYWwuY29tIiwidXNlcl9pZCI6MzUsImlkIjoiamxhcmFAdHJvY2dsb2JhbC5jb20ifQ.foapyL2b1VN6wTv0NDtbo-WLGOB1sikkxZIN7ycVtkU
 
 ###
 # group: Widgets / Template
 # @name Get One Widget Template
-GET http://nav-api.dev.local:5000/api/v2/widgets-template/b13b619a-847e-4734-a3d2-fa198f0531b7
+GET https://api.dev.navigator.mobileinsight.com/api/v2/widgets-template/b13b619a-847e-4734-a3d2-fa198f0531b7
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTQ1NDU0ODUsImlhdCI6MTY5NDE4NTQ4NSwiaXNzIjoiTW9iaWxlaW5zaWdodCIsInVzZXIiOjM1LCJ1c2VybmFtZSI6ImpsYXJhQHRyb2NnbG9iYWwuY29tIiwidXNlcl9pZCI6MzUsImlkIjoiamxhcmFAdHJvY2dsb2JhbC5jb20ifQ.foapyL2b1VN6wTv0NDtbo-WLGOB1sikkxZIN7ycVtkU
 
 ###
 # group: Widgets / Template
 # @name Insert Widget Template
-PUT http://nav-api.dev.local:5000/api/v2/widgets-template
+PUT https://api.dev.navigator.mobileinsight.com/api/v2/widgets-template
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTQ1NDU0ODUsImlhdCI6MTY5NDE4NTQ4NSwiaXNzIjoiTW9iaWxlaW5zaWdodCIsInVzZXIiOjM1LCJ1c2VybmFtZSI6ImpsYXJhQHRyb2NnbG9iYWwuY29tIiwidXNlcl9pZCI6MzUsImlkIjoiamxhcmFAdHJvY2dsb2JhbC5jb20ifQ.foapyL2b1VN6wTv0NDtbo-WLGOB1sikkxZIN7ycVtkU
 Content-Type: application/json
 
@@ -206,7 +206,7 @@ Content-Type: application/json
 ###
 # group: Widgets / Template
 # @name Patch a Widget Template
-PATCH http://nav-api.dev.local:5000/api/v2/widgets-template/b13b619a-847e-4734-a3d2-fa198f0531b7
+PATCH https://api.dev.navigator.mobileinsight.com/api/v2/widgets-template/b13b619a-847e-4734-a3d2-fa198f0531b7
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTQ1NDU0ODUsImlhdCI6MTY5NDE4NTQ4NSwiaXNzIjoiTW9iaWxlaW5zaWdodCIsInVzZXIiOjM1LCJ1c2VybmFtZSI6ImpsYXJhQHRyb2NnbG9iYWwuY29tIiwidXNlcl9pZCI6MzUsImlkIjoiamxhcmFAdHJvY2dsb2JhbC5jb20ifQ.foapyL2b1VN6wTv0NDtbo-WLGOB1sikkxZIN7ycVtkU
 Content-Type: application/json
 
@@ -217,7 +217,7 @@ Content-Type: application/json
 ###
 # group: Widgets / Template
 # @name Edit a Widget Template
-POST http://nav-api.dev.local:5000/api/v2/widgets-template
+POST https://api.dev.navigator.mobileinsight.com/api/v2/widgets-template
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTQ1NDU0ODUsImlhdCI6MTY5NDE4NTQ4NSwiaXNzIjoiTW9iaWxlaW5zaWdodCIsInVzZXIiOjM1LCJ1c2VybmFtZSI6ImpsYXJhQHRyb2NnbG9iYWwuY29tIiwidXNlcl9pZCI6MzUsImlkIjoiamxhcmFAdHJvY2dsb2JhbC5jb20ifQ.foapyL2b1VN6wTv0NDtbo-WLGOB1sikkxZIN7ycVtkU
 Content-Type: application/json
 
@@ -265,7 +265,7 @@ Content-Type: application/json
 ###
 # group: Widgets
 # @name Get all Widgets
-GET http://nav-api.dev.local:5000/api/v2/widgets?
+GET https://api.dev.navigator.mobileinsight.com/api/v2/widgets?
     dashboard_id=25
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTQ1NDU0ODUsImlhdCI6MTY5NDE4NTQ4NSwiaXNzIjoiTW9iaWxlaW5zaWdodCIsInVzZXIiOjM1LCJ1c2VybmFtZSI6ImpsYXJhQHRyb2NnbG9iYWwuY29tIiwidXNlcl9pZCI6MzUsImlkIjoiamxhcmFAdHJvY2dsb2JhbC5jb20ifQ.foapyL2b1VN6wTv0NDtbo-WLGOB1sikkxZIN7ycVtkU
 Content-Type: application/x-www-form-urlencoded
@@ -273,7 +273,7 @@ Content-Type: application/x-www-form-urlencoded
 ###
 # group: Widgets
 # @name Get all Widgets Copy
-GET http://nav-api.dev.local:5000/api/v2/widgets?
+GET https://api.dev.navigator.mobileinsight.com/api/v2/widgets?
     dashboard_id=2977
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTQ1NDU0ODUsImlhdCI6MTY5NDE4NTQ4NSwiaXNzIjoiTW9iaWxlaW5zaWdodCIsInVzZXIiOjM1LCJ1c2VybmFtZSI6ImpsYXJhQHRyb2NnbG9iYWwuY29tIiwidXNlcl9pZCI6MzUsImlkIjoiamxhcmFAdHJvY2dsb2JhbC5jb20ifQ.foapyL2b1VN6wTv0NDtbo-WLGOB1sikkxZIN7ycVtkU
 Content-Type: application/x-www-form-urlencoded
@@ -292,8 +292,8 @@ Content-Type: application/json
 ###
 # group: Widgets
 # @name Insert Widget
-PUT http://nav-api.dev.local:5001/api/v2/widgets
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTQ1NDU0ODUsImlhdCI6MTY5NDE4NTQ4NSwiaXNzIjoiTW9iaWxlaW5zaWdodCIsInVzZXIiOjM1LCJ1c2VybmFtZSI6ImpsYXJhQHRyb2NnbG9iYWwuY29tIiwidXNlcl9pZCI6MzUsImlkIjoiamxhcmFAdHJvY2dsb2JhbC5jb20ifQ.foapyL2b1VN6wTv0NDtbo-WLGOB1sikkxZIN7ycVtkU
+PUT https://api.dev.navigator.mobileinsight.com/api/v2/widgets
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTY1Mjk4MzEsImlhdCI6MTY5NjE2OTgzMSwiaXNzIjoiTW9iaWxlaW5zaWdodCIsInVzZXJfaWQiOiJqdmlsYUB0cm9jZ2xvYmFsLmNvbSIsInVwbiI6Imp2aWxhQHRyb2NnbG9iYWwuY29tIiwiZW1haWwiOiJqdmlsYUB0cm9jZ2xvYmFsLmNvbSIsImdpdmVuX25hbWUiOiJKdWFuIiwiZmFtaWx5X25hbWUiOiJWaWxhIiwibmFtZSI6Ikp1YW4gVmlsYSIsImRpc3BsYXlfbmFtZSI6Ikp1YW4gVmlsYSIsImlkIjoianZpbGFAdHJvY2dsb2JhbC5jb20iLCJhdXRoX21ldGhvZCI6ImFkZnMiLCJhdXRoX3Rva2VuIjoiZXlKMGVYQWlPaUpLVjFRaUxDSmhiR2NpT2lKU1V6STFOaUlzSW5nMWRDSTZJbU54UW5kdVJrTmlaMjVPZVdrNFNrRlBUekpzZEhWVE56Um9WU0o5LmV5SmhkV1FpT2lKdGFXTnliM052Wm5RNmFXUmxiblJwZEhselpYSjJaWEk2Ym1GMmFXZGhkRzl5WDJSbGRpNWhaR1p6TG1sa1pXNTBhV1pwWlhJaUxDSnBjM01pT2lKb2RIUndjem92TDNOemJ5NTBjbTlqWjJ4dlltRnNMbU52YlM5aFpHWnpMM05sY25acFkyVnpMM1J5ZFhOMElpd2lhV0YwSWpveE5qazJNVFk1T0RNd0xDSmxlSEFpT2pFMk9UWXhOek0wTXpBc0ltVnRZV2xzSWpvaWFuWnBiR0ZBZEhKdlkyZHNiMkpoYkM1amIyMGlMQ0puYVhabGJsOXVZVzFsSWpvaVNuVmhiaUlzSW1aaGJXbHNlVjl1WVcxbElqb2lWbWxzWVNJc0ltZHliM1Z3SWpwYklrUnZiV0ZwYmlCVmMyVnljeUlzSWxaUVRpQlZjMlZ5Y3lJc0lrRlhVeTAyTXpjMk5qQXpNRGN5TkRBdFJHRnphR0p2WVhKa0lsMHNJblZ3YmlJNkltcDJhV3hoUUhSeWIyTm5iRzlpWVd3dVkyOXRJaXdpWVd4MFpYSnVZWFJsUlcxaGFXd2lPaUpxYVhacGJHRkFiM1YwYkc5dmF5NWpiMjBpTENKRWFYTndiR0Y1TFU1aGJXVWlPaUpLZFdGdUlGWnBiR0VpTENKaGNIQjBlWEJsSWpvaVVIVmliR2xqSWl3aVlYQndhV1FpT2lKdVlYWnBaMkYwYjNKZlpHVjJMbUZrWm5NdVkyeHBaVzUwWDJsa0lpd2lZWFYwYUcxbGRHaHZaQ0k2SW5WeWJqcHZZWE5wY3pwdVlXMWxjenAwWXpwVFFVMU1Pakl1TURwaFl6cGpiR0Z6YzJWek9sQmhjM04zYjNKa1VISnZkR1ZqZEdWa1ZISmhibk53YjNKMElpd2lZWFYwYUY5MGFXMWxJam9pTWpBeU15MHhNQzB3TVZReE1qb3dOem8xTlM0d016UmFJaXdpZG1WeUlqb2lNUzR3SWl3aWMyTndJam9pYjNCbGJtbGtJbjAubm53NnlUSS1DUkRMYVh6N1dXOUdDZkRfbWJ2b0xxbVZKNW1tOWIxNDBmbG00WjhLNk15RmdMRXkzekFRX1YzblRVMU9zOFJ6clJzUnZVdUlLNDRIRzdDYl83d01aU3VSeElrRDVpUEtvNWRiWHF3WTdFTzFZZTBPWjJHYWpPZ3F4SVRGWUVCYXpGOG5TOFVMUEJMX0ItanJBUWZ6ejdfaXRIZExjSVFHOFpnbThVZXhoYVRBRS1uY1V1bGVMOF9ub3BMbFRvREg4Q3pUejZZMFVrOGxOOHNxNmdJVTdvc1p1VEwxemlrX2IyM3lxMUE4NmpQemNZc0NSejZmc011bm1jaWpOZmV0UjFRc1p2WlpqaGdJbU1aVnFpTjcxN3FVZTBEbkRrczhzVWpNeFBNRmhoTU5EZG1GbGVERVN0VkwxOFd0THlpVExfYjh5MjQ2Y2M3R3JRIiwidG9rZW5fdHlwZSI6IkJlYXJlciIsInVzZXJuYW1lIjoianZpbGFAdHJvY2dsb2JhbC5jb20ifQ.2uuQ0OXBQbHzYhgCap2Xi_gFDmYsHIvg5wxQ5CtGOOc
 Content-Type: application/json
 
 {
@@ -306,7 +306,7 @@ Content-Type: application/json
 ###
 # group: Widgets
 # @name Delete Widget
-DELETE http://nav-api.dev.local:5000/api/v2/widgets/f88ae5b7-2b03-44b0-b8db-bf85b63be0f1
+DELETE https://api.dev.navigator.mobileinsight.com/api/v2/widgets/f88ae5b7-2b03-44b0-b8db-bf85b63be0f1
 Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2NjcwMDU4NDQsImlhdCI6MTY2NjY0NTg0NCwiaXNzIjoidXJuOk5hdmlnYXRvciIsInVzZXIiOjEzMTQ0LCJ1c2VybmFtZSI6IkdjYW5lbG9uQG1vYmlsZWluc2lnaHQuY29tIiwidXNlcl9pZCI6MTMxNDQsImlkIjoiR2NhbmVsb25AbW9iaWxlaW5zaWdodC5jb20ifQ.uHnsuYfDnOLPWWzdUjfs5kZqIBgFZcEfXLQQEVk2S60
 
 ###
@@ -359,13 +359,13 @@ Content-Type: application/json
 ###
 # group: Programs
 # @name Get all Programs with user
-GET http://nav-api.dev.local:5000/api/v1/programs_user
+GET https://api.dev.navigator.mobileinsight.com/api/v1/programs_user
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTQ1NDU0ODUsImlhdCI6MTY5NDE4NTQ4NSwiaXNzIjoiTW9iaWxlaW5zaWdodCIsInVzZXIiOjM1LCJ1c2VybmFtZSI6ImpsYXJhQHRyb2NnbG9iYWwuY29tIiwidXNlcl9pZCI6MzUsImlkIjoiamxhcmFAdHJvY2dsb2JhbC5jb20ifQ.foapyL2b1VN6wTv0NDtbo-WLGOB1sikkxZIN7ycVtkU
 
 ###
 # group: Modules
 # @name Get all modules django
-POST http://nav-api.dev.local:5000/api/v2/modules
+POST https://api.dev.navigator.mobileinsight.com/api/v2/modules
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTQ1NDU0ODUsImlhdCI6MTY5NDE4NTQ4NSwiaXNzIjoiTW9iaWxlaW5zaWdodCIsInVzZXIiOjM1LCJ1c2VybmFtZSI6ImpsYXJhQHRyb2NnbG9iYWwuY29tIiwidXNlcl9pZCI6MzUsImlkIjoiamxhcmFAdHJvY2dsb2JhbC5jb20ifQ.foapyL2b1VN6wTv0NDtbo-WLGOB1sikkxZIN7ycVtkU
 Content-Type: application/json
 
@@ -394,63 +394,63 @@ Content-Type: application/json
 ###
 # group: Modules
 # @name Get all modules
-GET http://nav-api.dev.local:5000/api/v2/modules
+GET https://api.dev.navigator.mobileinsight.com/api/v2/modules
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTQ1NDU0ODUsImlhdCI6MTY5NDE4NTQ4NSwiaXNzIjoiTW9iaWxlaW5zaWdodCIsInVzZXIiOjM1LCJ1c2VybmFtZSI6ImpsYXJhQHRyb2NnbG9iYWwuY29tIiwidXNlcl9pZCI6MzUsImlkIjoiamxhcmFAdHJvY2dsb2JhbC5jb20ifQ.foapyL2b1VN6wTv0NDtbo-WLGOB1sikkxZIN7ycVtkU
 Origin: https://claro-vtr.provectis.mobileinsight.com
 
 ###
 # group: Modules
 # @name All Module Clients
-GET http://nav-api.dev.local:5000/api/v1/module_clients
+GET https://api.dev.navigator.mobileinsight.com/api/v1/module_clients
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTQ1NDU0ODUsImlhdCI6MTY5NDE4NTQ4NSwiaXNzIjoiTW9iaWxlaW5zaWdodCIsInVzZXIiOjM1LCJ1c2VybmFtZSI6ImpsYXJhQHRyb2NnbG9iYWwuY29tIiwidXNlcl9pZCI6MzUsImlkIjoiamxhcmFAdHJvY2dsb2JhbC5jb20ifQ.foapyL2b1VN6wTv0NDtbo-WLGOB1sikkxZIN7ycVtkU
 
 ###
 # group: Groups
 # @name Meta Info
-GET http://nav-api.dev.local:5000/api/v2/groups:meta
+GET https://api.dev.navigator.mobileinsight.com/api/v2/groups:meta
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTQ1NDU0ODUsImlhdCI6MTY5NDE4NTQ4NSwiaXNzIjoiTW9iaWxlaW5zaWdodCIsInVzZXIiOjM1LCJ1c2VybmFtZSI6ImpsYXJhQHRyb2NnbG9iYWwuY29tIiwidXNlcl9pZCI6MzUsImlkIjoiamxhcmFAdHJvY2dsb2JhbC5jb20ifQ.foapyL2b1VN6wTv0NDtbo-WLGOB1sikkxZIN7ycVtkU
 
 ###
 # group: Groups
 # @name Metadata
-HEAD http://nav-api.dev.local:5000/api/v2/groups
+HEAD https://api.dev.navigator.mobileinsight.com/api/v2/groups
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTQ1NDU0ODUsImlhdCI6MTY5NDE4NTQ4NSwiaXNzIjoiTW9iaWxlaW5zaWdodCIsInVzZXIiOjM1LCJ1c2VybmFtZSI6ImpsYXJhQHRyb2NnbG9iYWwuY29tIiwidXNlcl9pZCI6MzUsImlkIjoiamxhcmFAdHJvY2dsb2JhbC5jb20ifQ.foapyL2b1VN6wTv0NDtbo-WLGOB1sikkxZIN7ycVtkU
 
 ###
 # group: Groups
 # @name Sample Group Data
-GET http://nav-api.dev.local:5000/api/v2/groups:sample
+GET https://api.dev.navigator.mobileinsight.com/api/v2/groups:sample
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTQ1NDU0ODUsImlhdCI6MTY5NDE4NTQ4NSwiaXNzIjoiTW9iaWxlaW5zaWdodCIsInVzZXIiOjM1LCJ1c2VybmFtZSI6ImpsYXJhQHRyb2NnbG9iYWwuY29tIiwidXNlcl9pZCI6MzUsImlkIjoiamxhcmFAdHJvY2dsb2JhbC5jb20ifQ.foapyL2b1VN6wTv0NDtbo-WLGOB1sikkxZIN7ycVtkU
 
 ###
 # group: Groups
 # @name Get All Groups
-GET http://nav-api.dev.local:5000/api/v2/groups
+GET https://api.dev.navigator.mobileinsight.com/api/v2/groups
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTQ1NDU0ODUsImlhdCI6MTY5NDE4NTQ4NSwiaXNzIjoiTW9iaWxlaW5zaWdodCIsInVzZXIiOjM1LCJ1c2VybmFtZSI6ImpsYXJhQHRyb2NnbG9iYWwuY29tIiwidXNlcl9pZCI6MzUsImlkIjoiamxhcmFAdHJvY2dsb2JhbC5jb20ifQ.foapyL2b1VN6wTv0NDtbo-WLGOB1sikkxZIN7ycVtkU
 
 ###
 # group: Groups
 # @name Get One Group
-GET http://nav-api.dev.local:5000/api/v2/groups/1
+GET https://api.dev.navigator.mobileinsight.com/api/v2/groups/1
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTQ1NDU0ODUsImlhdCI6MTY5NDE4NTQ4NSwiaXNzIjoiTW9iaWxlaW5zaWdodCIsInVzZXIiOjM1LCJ1c2VybmFtZSI6ImpsYXJhQHRyb2NnbG9iYWwuY29tIiwidXNlcl9pZCI6MzUsImlkIjoiamxhcmFAdHJvY2dsb2JhbC5jb20ifQ.foapyL2b1VN6wTv0NDtbo-WLGOB1sikkxZIN7ycVtkU
 
 ###
 # group: Groups
 # @name Get Multiple Groups
-GET http://nav-api.dev.local:5000/api/v2/groups/1/2/3/4
+GET https://api.dev.navigator.mobileinsight.com/api/v2/groups/1/2/3/4
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTQ1NDU0ODUsImlhdCI6MTY5NDE4NTQ4NSwiaXNzIjoiTW9iaWxlaW5zaWdodCIsInVzZXIiOjM1LCJ1c2VybmFtZSI6ImpsYXJhQHRyb2NnbG9iYWwuY29tIiwidXNlcl9pZCI6MzUsImlkIjoiamxhcmFAdHJvY2dsb2JhbC5jb20ifQ.foapyL2b1VN6wTv0NDtbo-WLGOB1sikkxZIN7ycVtkU
 
 ###
 # group: Groups
 # @name Get Groups by Filter
-GET http://nav-api.dev.local:5000/api/v2/groups/?
+GET https://api.dev.navigator.mobileinsight.com/api/v2/groups/?
     group_name=superuser
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTQ1NDU0ODUsImlhdCI6MTY5NDE4NTQ4NSwiaXNzIjoiTW9iaWxlaW5zaWdodCIsInVzZXIiOjM1LCJ1c2VybmFtZSI6ImpsYXJhQHRyb2NnbG9iYWwuY29tIiwidXNlcl9pZCI6MzUsImlkIjoiamxhcmFAdHJvY2dsb2JhbC5jb20ifQ.foapyL2b1VN6wTv0NDtbo-WLGOB1sikkxZIN7ycVtkU
 
 ###
 # group: Groups
 # @name Patch a Group
-PATCH http://nav-api.dev.local:5000/api/v2/groups/13
+PATCH https://api.dev.navigator.mobileinsight.com/api/v2/groups/13
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTQ1NDU0ODUsImlhdCI6MTY5NDE4NTQ4NSwiaXNzIjoiTW9iaWxlaW5zaWdodCIsInVzZXIiOjM1LCJ1c2VybmFtZSI6ImpsYXJhQHRyb2NnbG9iYWwuY29tIiwidXNlcl9pZCI6MzUsImlkIjoiamxhcmFAdHJvY2dsb2JhbC5jb20ifQ.foapyL2b1VN6wTv0NDtbo-WLGOB1sikkxZIN7ycVtkU
 Content-Type: application/json
 
@@ -461,7 +461,7 @@ Content-Type: application/json
 ###
 # group: Groups
 # @name New Group
-PUT http://nav-api.dev.local:5000/api/v2/groups
+PUT https://api.dev.navigator.mobileinsight.com/api/v2/groups
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTQ1NDU0ODUsImlhdCI6MTY5NDE4NTQ4NSwiaXNzIjoiTW9iaWxlaW5zaWdodCIsInVzZXIiOjM1LCJ1c2VybmFtZSI6ImpsYXJhQHRyb2NnbG9iYWwuY29tIiwidXNlcl9pZCI6MzUsImlkIjoiamxhcmFAdHJvY2dsb2JhbC5jb20ifQ.foapyL2b1VN6wTv0NDtbo-WLGOB1sikkxZIN7ycVtkU
 Content-Type: application/json
 
@@ -474,7 +474,7 @@ Content-Type: application/json
 ###
 # group: Groups
 # @name Error on New Group (failed required)
-PUT http://nav-api.dev.local:5000/api/v2/groups
+PUT https://api.dev.navigator.mobileinsight.com/api/v2/groups
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTQ1NDU0ODUsImlhdCI6MTY5NDE4NTQ4NSwiaXNzIjoiTW9iaWxlaW5zaWdodCIsInVzZXIiOjM1LCJ1c2VybmFtZSI6ImpsYXJhQHRyb2NnbG9iYWwuY29tIiwidXNlcl9pZCI6MzUsImlkIjoiamxhcmFAdHJvY2dsb2JhbC5jb20ifQ.foapyL2b1VN6wTv0NDtbo-WLGOB1sikkxZIN7ycVtkU
 Content-Type: application/json
 
@@ -486,7 +486,7 @@ Content-Type: application/json
 ###
 # group: Groups
 # @name Edit Group
-POST http://nav-api.dev.local:5000/api/v2/groups/106
+POST https://api.dev.navigator.mobileinsight.com/api/v2/groups/106
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTQ1NDU0ODUsImlhdCI6MTY5NDE4NTQ4NSwiaXNzIjoiTW9iaWxlaW5zaWdodCIsInVzZXIiOjM1LCJ1c2VybmFtZSI6ImpsYXJhQHRyb2NnbG9iYWwuY29tIiwidXNlcl9pZCI6MzUsImlkIjoiamxhcmFAdHJvY2dsb2JhbC5jb20ifQ.foapyL2b1VN6wTv0NDtbo-WLGOB1sikkxZIN7ycVtkU
 Content-Type: application/json
 
@@ -502,7 +502,7 @@ Content-Type: application/json
 ###
 # group: Groups
 # @name New Or Update Group
-POST http://nav-api.dev.local:5000/api/v2/groups
+POST https://api.dev.navigator.mobileinsight.com/api/v2/groups
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTQ1NDU0ODUsImlhdCI6MTY5NDE4NTQ4NSwiaXNzIjoiTW9iaWxlaW5zaWdodCIsInVzZXIiOjM1LCJ1c2VybmFtZSI6ImpsYXJhQHRyb2NnbG9iYWwuY29tIiwidXNlcl9pZCI6MzUsImlkIjoiamxhcmFAdHJvY2dsb2JhbC5jb20ifQ.foapyL2b1VN6wTv0NDtbo-WLGOB1sikkxZIN7ycVtkU
 Content-Type: application/json
 
@@ -516,49 +516,49 @@ Content-Type: application/json
 ###
 # group: Groups
 # @name Delete Group
-DELETE http://nav-api.dev.local:5000/api/v2/groups/107
+DELETE https://api.dev.navigator.mobileinsight.com/api/v2/groups/107
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTQ1NDU0ODUsImlhdCI6MTY5NDE4NTQ4NSwiaXNzIjoiTW9iaWxlaW5zaWdodCIsInVzZXIiOjM1LCJ1c2VybmFtZSI6ImpsYXJhQHRyb2NnbG9iYWwuY29tIiwidXNlcl9pZCI6MzUsImlkIjoiamxhcmFAdHJvY2dsb2JhbC5jb20ifQ.foapyL2b1VN6wTv0NDtbo-WLGOB1sikkxZIN7ycVtkU
 
 ###
 # group: Countries
 # @name Meta Info
-GET http://nav-api.dev.local:5000/api/v1/countries:meta
+GET https://api.dev.navigator.mobileinsight.com/api/v1/countries:meta
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTQ1NDU0ODUsImlhdCI6MTY5NDE4NTQ4NSwiaXNzIjoiTW9iaWxlaW5zaWdodCIsInVzZXIiOjM1LCJ1c2VybmFtZSI6ImpsYXJhQHRyb2NnbG9iYWwuY29tIiwidXNlcl9pZCI6MzUsImlkIjoiamxhcmFAdHJvY2dsb2JhbC5jb20ifQ.foapyL2b1VN6wTv0NDtbo-WLGOB1sikkxZIN7ycVtkU
 
 ###
 # group: Countries
 # @name Metadata
-HEAD http://nav-api.dev.local:5000/api/v1/countries
+HEAD https://api.dev.navigator.mobileinsight.com/api/v1/countries
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTQ1NDU0ODUsImlhdCI6MTY5NDE4NTQ4NSwiaXNzIjoiTW9iaWxlaW5zaWdodCIsInVzZXIiOjM1LCJ1c2VybmFtZSI6ImpsYXJhQHRyb2NnbG9iYWwuY29tIiwidXNlcl9pZCI6MzUsImlkIjoiamxhcmFAdHJvY2dsb2JhbC5jb20ifQ.foapyL2b1VN6wTv0NDtbo-WLGOB1sikkxZIN7ycVtkU
 
 ###
 # group: Countries
 # @name Sample Data
-GET http://nav-api.dev.local:5000/api/v1/countries:sample
+GET https://api.dev.navigator.mobileinsight.com/api/v1/countries:sample
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTQ1NDU0ODUsImlhdCI6MTY5NDE4NTQ4NSwiaXNzIjoiTW9iaWxlaW5zaWdodCIsInVzZXIiOjM1LCJ1c2VybmFtZSI6ImpsYXJhQHRyb2NnbG9iYWwuY29tIiwidXNlcl9pZCI6MzUsImlkIjoiamxhcmFAdHJvY2dsb2JhbC5jb20ifQ.foapyL2b1VN6wTv0NDtbo-WLGOB1sikkxZIN7ycVtkU
 
 ###
 # group: Countries
 # @name Get All Countries
-GET http://nav-api.dev.local:5000/api/v1/countries
+GET https://api.dev.navigator.mobileinsight.com/api/v1/countries
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTQ1NDU0ODUsImlhdCI6MTY5NDE4NTQ4NSwiaXNzIjoiTW9iaWxlaW5zaWdodCIsInVzZXIiOjM1LCJ1c2VybmFtZSI6ImpsYXJhQHRyb2NnbG9iYWwuY29tIiwidXNlcl9pZCI6MzUsImlkIjoiamxhcmFAdHJvY2dsb2JhbC5jb20ifQ.foapyL2b1VN6wTv0NDtbo-WLGOB1sikkxZIN7ycVtkU
 
 ###
 # group: Countries
 # @name Get One Country
-GET http://nav-api.dev.local:5000/api/v1/countries/1
+GET https://api.dev.navigator.mobileinsight.com/api/v1/countries/1
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTQ1NDU0ODUsImlhdCI6MTY5NDE4NTQ4NSwiaXNzIjoiTW9iaWxlaW5zaWdodCIsInVzZXIiOjM1LCJ1c2VybmFtZSI6ImpsYXJhQHRyb2NnbG9iYWwuY29tIiwidXNlcl9pZCI6MzUsImlkIjoiamxhcmFAdHJvY2dsb2JhbC5jb20ifQ.foapyL2b1VN6wTv0NDtbo-WLGOB1sikkxZIN7ycVtkU
 
 ###
 # group: Countries
 # @name GET Various Countries
-GET http://nav-api.dev.local:5000/api/v1/countries/1/2/3
+GET https://api.dev.navigator.mobileinsight.com/api/v1/countries/1/2/3
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTQ1NDU0ODUsImlhdCI6MTY5NDE4NTQ4NSwiaXNzIjoiTW9iaWxlaW5zaWdodCIsInVzZXIiOjM1LCJ1c2VybmFtZSI6ImpsYXJhQHRyb2NnbG9iYWwuY29tIiwidXNlcl9pZCI6MzUsImlkIjoiamxhcmFAdHJvY2dsb2JhbC5jb20ifQ.foapyL2b1VN6wTv0NDtbo-WLGOB1sikkxZIN7ycVtkU
 
 ###
 # group: Countries
 # @name Filter
-GET http://nav-api.dev.local:5000/api/v1/countries/?
+GET https://api.dev.navigator.mobileinsight.com/api/v1/countries/?
     country=Brazil
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTQ1NDU0ODUsImlhdCI6MTY5NDE4NTQ4NSwiaXNzIjoiTW9iaWxlaW5zaWdodCIsInVzZXIiOjM1LCJ1c2VybmFtZSI6ImpsYXJhQHRyb2NnbG9iYWwuY29tIiwidXNlcl9pZCI6MzUsImlkIjoiamxhcmFAdHJvY2dsb2JhbC5jb20ifQ.foapyL2b1VN6wTv0NDtbo-WLGOB1sikkxZIN7ycVtkU
 
@@ -612,13 +612,13 @@ Content-Type: application/json
 ###
 # group: Widget Location
 # @name Get Widget Location
-GET http://nav-api.dev.local:5000/api/v2/widgets/location/434
+GET https://api.dev.navigator.mobileinsight.com/api/v2/widgets/location/434
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTQ1NDU0ODUsImlhdCI6MTY5NDE4NTQ4NSwiaXNzIjoiTW9iaWxlaW5zaWdodCIsInVzZXIiOjM1LCJ1c2VybmFtZSI6ImpsYXJhQHRyb2NnbG9iYWwuY29tIiwidXNlcl9pZCI6MzUsImlkIjoiamxhcmFAdHJvY2dsb2JhbC5jb20ifQ.foapyL2b1VN6wTv0NDtbo-WLGOB1sikkxZIN7ycVtkU
 
 ###
 # group: Widget Location
 # @name Update Widget Location
-PATCH http://nav-api.dev.local:5000/api/v2/widgets/location/434
+PATCH https://api.dev.navigator.mobileinsight.com/api/v2/widgets/location/434
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTQ1NDU0ODUsImlhdCI6MTY5NDE4NTQ4NSwiaXNzIjoiTW9iaWxlaW5zaWdodCIsInVzZXIiOjM1LCJ1c2VybmFtZSI6ImpsYXJhQHRyb2NnbG9iYWwuY29tIiwidXNlcl9pZCI6MzUsImlkIjoiamxhcmFAdHJvY2dsb2JhbC5jb20ifQ.foapyL2b1VN6wTv0NDtbo-WLGOB1sikkxZIN7ycVtkU
 Content-Type: application/json
 
@@ -634,7 +634,7 @@ Content-Type: application/json
 ###
 # group: Widget Location
 # @name Update Widget Location POST
-POST http://nav-api.dev.local:5000/api/v2/widgets/location/434
+POST https://api.dev.navigator.mobileinsight.com/api/v2/widgets/location/434
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTQ1NDU0ODUsImlhdCI6MTY5NDE4NTQ4NSwiaXNzIjoiTW9iaWxlaW5zaWdodCIsInVzZXIiOjM1LCJ1c2VybmFtZSI6ImpsYXJhQHRyb2NnbG9iYWwuY29tIiwidXNlcl9pZCI6MzUsImlkIjoiamxhcmFAdHJvY2dsb2JhbC5jb20ifQ.foapyL2b1VN6wTv0NDtbo-WLGOB1sikkxZIN7ycVtkU
 Content-Type: application/json
 

@@ -1,15 +1,19 @@
 <script lang="ts">
     import {Dropdown, Tooltip} from "flowbite-svelte";
+    import ToolbarReload from "./toolbar/Reload.svelte";
     import ToolbarSettings from "./toolbar/Settings.svelte";
+    import ToolbarPin from "./toolbar/Pin.svelte";
     import ToolbarHelp from "./toolbar/Help.svelte";
     import ToolbarScreenshot from "./toolbar/Screenshot.svelte";
     import ToolbarExportData from "./toolbar/ExportData.svelte";
     import Icon from "../common/Icon.svelte";
     import {getContext} from "svelte";
+    import ToolbarFilter from "./toolbar/Filter.svelte";
+    import ToolbarClone from "./toolbar/Clone.svelte";
     import ToolbarMaximize from "./toolbar/Maximize.svelte";
     import ToolbarClose from "./toolbar/Close.svelte";
-    import ToggleToolbarButtons from "$lib/components/widgets/toolbar/ToggleToolbarButtons.svelte";
-    import Pin from "$lib/components/widgets/toolbar/Pin.svelte";
+    import ToolbarCollapse from "./toolbar/Collapse.svelte";
+    import {getData} from "$lib/services/getData";
 
     export let isToolbarVisible: boolean;
 
@@ -24,6 +28,90 @@
     let toolbar: any;
     $: bg = $widget?.params?.settings?.appearance?.background;
     $: toolbar = $widget?.params?.settings?.toolbar;
+
+
+    const cwidget = getContext("widget");
+
+
+    // TODO get session from session storage
+    const session = {
+        "session": {
+            "user_id": 15779,
+            "username": "jmendoza1@trocglobal.com",
+            "first_name": "Jose",
+            "last_name": "Mendoza",
+            "email": "jmendoza1@trocglobal.com",
+            "enabled": true,
+            "superuser": true,
+            "last_login": "2022-11-16T15:01:45.971224Z",
+            "title": null,
+            "associate_id": null,
+            "group_id": [
+                1
+            ],
+            "groups": [
+                "superuser"
+            ],
+            "programs": [
+                "walmart",
+                "mso",
+                "epson",
+                "xfinity",
+                "wm_assembly",
+                "wm_reset",
+                "troc",
+                "trendmicro",
+                "viba",
+                "flexroc",
+                "cricket",
+                "us_cellular",
+                "totalplay",
+                "tcl",
+                "worp",
+                "romeo",
+                "hisense",
+                "tro_charter",
+                "tro_xfinity",
+                "bose",
+                "viba_demo",
+                "wsp_viba",
+                "usc_wm",
+                "tmobile",
+                "usc_viba",
+                "verizon",
+                "mso_viba",
+                "tro_xfinity_viba",
+                "venu",
+                "polestar",
+                "directv",
+                "troc_financial",
+                "samsclub",
+                "monstermex",
+                "smartjobs"
+            ],
+            "user": "jmendoza1",
+            "domain": "trocglobal.com"
+        },
+        "username": "jmendoza1@trocglobal.com",
+        "id": "jmendoza1@trocglobal.com",
+        "expires_in": "2023-10-07T17:46:52.591394Z",
+        "token_type": "Bearer",
+        "created": 1696340812.7020254,
+        "last_visit": 1696340812.7020254,
+        "last_visited": "Last visited: 1696340812.7020254"
+    };
+
+
+    const isSuperuser = session.session.groups.includes("superuser");
+
+
+    const handleCopyOrCutWidget = (widget: any, action: string) => {
+        sessionStorage.setItem("copiedWidget", JSON.stringify($widget));
+        sessionStorage.setItem("behavior", action);
+
+
+    };
+
 </script>
 
 <div
@@ -36,19 +124,47 @@
 >
     <div class="flex flex-row justify-end pl-0">
         {#if toolbar.reload}
-            <ToggleToolbarButtons icon={"tabler:refresh"} tooltipText={"Clear cache and reload"}/>
+            <ToolbarReload/>
         {/if}
         {#if toolbar.filtering}
-            <ToggleToolbarButtons icon={"tabler:filter"} tooltipText={"Filter"}/>
+            <ToolbarFilter/>
         {/if}
         {#if toolbar.clone}
-            <ToggleToolbarButtons icon={"tabler:copy"} tooltipText={"Clone"}/>
+            <ToolbarClone/>
         {/if}
+        <ToolbarCollapse/>
         {#if toolbar.max}
             <ToolbarMaximize/>
         {/if}
         {#if toolbar.pin}
-            <Pin/>
+            <ToolbarPin/>
+        {/if}
+        {#if toolbar.help && $widget.description}
+            <ToolbarHelp helpText={$widget.description}/>
+        {/if}
+        <!--Trying copy widget-->
+        <button class="icon btn hover:bg-light-100 dark:hover:bg-dark-200"
+                on:click={() => handleCopyOrCutWidget(widget, 'copy')}>
+            <Icon
+                    icon={'ph:copy-bold'}
+                    size="18"
+            />
+
+        </button>
+        <Tooltip placement="left">Copy</Tooltip>
+
+
+        {#if (isSuperuser)}
+            <button class="icon btn hover:bg-light-100 dark:hover:bg-dark-200"
+                    on:click={() => handleCopyOrCutWidget(widget, 'cut')}>
+                <Icon
+                        icon={'ion:cut-sharp'}
+                        size="18"
+                />
+
+            </button>
+            <Tooltip placement="left">Cut</Tooltip>
+
         {/if}
 
 
@@ -71,9 +187,6 @@
             {/if}
             {#if isWidgetOwner}
                 <ToolbarSettings on:itemClick={() => (menuOpen = !menuOpen)}/>
-            {/if}
-            {#if toolbar.help}
-                <ToolbarHelp/>
             {/if}
         </Dropdown>
 
