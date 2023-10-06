@@ -146,7 +146,7 @@
         <button class="icon btn hover:bg-light-100 dark:hover:bg-dark-200"
                 on:click={() => handleCopyOrCutWidget(widget, 'copy')}>
             <Icon
-                    icon={'ph:copy-bold'}
+                    icon={'tabler:clipboard-copy'}
                     size="18"
             />
 
