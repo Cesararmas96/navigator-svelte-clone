@@ -1,0 +1,217 @@
+version: 2.1
+
+orbs:
+  telegram: woltsu/telegram@0.0.9
+  aws-ecr: circleci/aws-ecr@8.2.1
+
+
+branch_filters: &branch_filters
+  filters:
+    tags:
+      ignore: /.*/
+    branches:
+      only:
+        - main
+
+parameters:
+  env-tag:
+    default: "dev"
+    type: string
+  service:
+    default: "navigator-svelte"
+    type: string
+  ecr:
+    default: "553449903150.dkr.ecr.us-east-2.amazonaws.com/navigator-svelte-tf"
+    type: string
+  region: 
+    default: "us-east-2"
+    type: string
+
+environment:
+  DOCKER_BUILDKIT: 1
+
+jobs:
+  build-docker-image:
+    machine:
+      image: ubuntu-2004:202201-02
+    parameters:
+      env-tag:
+        type: string
+        default: "dev"
+    steps:
+      - checkout
+      - run: 
+          name: Install dependencies
+          command: | 
+            sudo apt update > /dev/null
+            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+            unzip awscliv2.zip > /dev/null
+            sudo ./aws/install --update
+
+      - run:
+          name: Setup credentials from AWS Secrets
+          command: |
+            mkdir -p $HOME/.ssh/
+            aws secretsmanager get-secret-value --secret-id circleci-mi-jenkins-private-key --region <<pipeline.parameters.region>> --query SecretString --output text > $HOME/.ssh/id_rsa
+            aws secretsmanager get-secret-value --secret-id circleci-mi-jenkins-public-key --region <<pipeline.parameters.region>> --query SecretString --output text > $HOME/.ssh/id_rsa.pub
+            
+            chmod 400 $HOME/.ssh/id_rsa
+            eval $(ssh-agent) && \
+            ssh-add  && \
+            sudo su root -c "ssh-keyscan -H github.com >> /etc/ssh/ssh_known_hosts" 
+
+      - run:
+          name: Build and tag Docker image
+          command: |
+            docker build -t image:latest .
+            docker tag image:latest <<pipeline.parameters.ecr>>:<< pipeline.number >>
+            docker tag image:latest <<pipeline.parameters.ecr>>:<<parameters.env-tag>>
+      - run:
+          name: Login to Amazon ECR
+          command: |
+            aws ecr get-login-password --region <<pipeline.parameters.region>> | docker login --username AWS --password-stdin <<pipeline.parameters.ecr>>
+      - run:
+          name: Push Docker image to Amazon ECR
+          command: |
+            docker push <<pipeline.parameters.ecr>>:<< pipeline.number >>
+            docker push <<pipeline.parameters.ecr>>:<<parameters.env-tag>>
+
+  deploy-kube-service: 
+    machine:
+      image: ubuntu-2004:202201-02
+    parameters:
+      env-tag:
+        type: string
+      kubeconfig-secret:
+        type: string
+    steps:
+      - checkout
+      - run: 
+          name: Install dependencies
+          command: | 
+            sudo apt update > /dev/null
+            sudo apt install -y openvpn openvpn-systemd-resolved > /dev/null
+            curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl && chmod +x kubectl && sudo mv kubectl /usr/local/bin/
+            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+            unzip awscliv2.zip > /dev/null
+            sudo ./aws/install --update
+            mkdir -p $HOME/.kube/
+            aws secretsmanager get-secret-value --secret-id troc-kubeconfig --region <<pipeline.parameters.region>> --query SecretString --output text > $HOME/.kube/config
+
+
+      - run:
+          name: get-openvpn-config
+          command: |
+            aws secretsmanager get-secret-value --secret-id circleci-openvpn --region <<pipeline.parameters.region>> --query SecretString --output text > /tmp/config.ovpn  
+      - run:
+          name: "run-openvpn"
+          background: true
+          command: | 
+            sudo openvpn --dev tun0 --config /tmp/config.ovpn --up /etc/openvpn/update-systemd-resolved --script-security 2 --route 169.254.0.0 255.255.0.0 net_gateway --route 10.0.0.0 255.255.0.0 vpn_gateway 
+      - run:
+          name: rollout-restart-kubernetes-service
+          command: |
+            kubectl -n <<parameters.env-tag>> rollout restart deployment/<<pipeline.parameters.service>>-<<parameters.env-tag>>
+      - telegram/notify:
+          message: Finish Build and Deploy <<pipeline.parameters.service>>-<<parameters.env-tag>>:$CIRCLE_BUILD_NUM
+
+  
+  tag-image:
+    machine:
+      image: ubuntu-2004:202201-02
+    parameters:
+      env-tag:
+        type: string
+    steps:
+      - aws-ecr/tag-image:
+          repo: "navigator-svelte-tf"
+          source-tag: "\"<< pipeline.number >>\""
+          target-tag: <<parameters.env-tag>>    
+        
+workflows:
+  build-and-deploy-navigator-svelte:
+    jobs:
+      - build-docker-image:
+          <<: *branch_filters
+          name: "build-navigator-svelte"
+          env-tag: "dev"
+          context: 
+            - navigator-dev
+      - deploy-kube-service:
+          <<: *branch_filters
+          name: "deploy-navigator-svelte-dev"
+          kubeconfig-secret: "troc-services-kubeconfig"
+          env-tag: "dev"
+          context:
+            - navigator-dev
+          requires: 
+            - build-navigator-svelte
+      - approve-qa:
+          <<: *branch_filters
+          name: "approve-navigator-svelte-qa"
+          type: approval
+          requires: 
+            - deploy-navigator-svelte-dev
+      - tag-image: 
+          <<: *branch_filters
+          name: "tag-image-with-qa"
+          env-tag: "qa"
+          context:
+            - navigator-dev
+          requires: 
+            - approve-navigator-svelte-qa
+      - deploy-kube-service:
+          <<: *branch_filters
+          name: "deploy-navigator-svelte-qa"
+          kubeconfig-secret: "troc-services-kubeconfig"
+          env-tag: "qa"
+          context: 
+            - navigator-dev
+          requires:
+            - tag-image-with-qa
+      - approve-staging:
+          <<: *branch_filters
+          name: "approve-navigator-svelte-staging"
+          type: approval
+          requires: 
+            - deploy-navigator-svelte-qa
+      - tag-image: 
+          <<: *branch_filters
+          name: "tag-image-with-staging"
+          env-tag: "staging"
+          context:
+            - navigator-dev
+          requires: 
+            - approve-navigator-svelte-staging
+      - deploy-kube-service:
+          <<: *branch_filters
+          name: "deploy-navigator-svelte-staging"
+          kubeconfig-secret: "troc-services-kubeconfig"
+          env-tag: "staging"
+          context: 
+            - navigator-dev
+          requires:
+            - tag-image-with-staging
+      - approve-production:
+          <<: *branch_filters
+          name: "approve-navigator-svelte-production"
+          type: approval
+          requires: 
+            - deploy-navigator-svelte-staging
+      - tag-image: 
+          <<: *branch_filters
+          name: "tag-image-with-production"
+          env-tag: "production"
+          context:
+            - navigator-dev
+          requires: 
+            - approve-navigator-svelte-production
+      - deploy-kube-service:
+          <<: *branch_filters
+          name: "deploy-navigator-svelte-production"
+          kubeconfig-secret: "troc-services-kubeconfig"
+          env-tag: "production"
+          context: 
+            - navigator-dev
+          requires:
+            - tag-image-with-production
