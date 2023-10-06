@@ -1,31 +1,25 @@
 <script lang="ts">
     import {Tooltip} from "flowbite-svelte";
     import Icon from "$lib/components/common/Icon.svelte";
-    import {getData} from "$lib/services/getData";
-
     import {getContext, setContext} from "svelte";
     import type {Writable} from "svelte/store";
-    import {get} from "svelte/store";
-
-	const widget = getContext<Writable<any>>('widget')
-
-	const handleClick = () => {
-		if ($widget.temp) {
-			$widget.close_instance = true
-		} else {
-			$widget.remove = true
-		}
-	}
-
 
     const widget = getContext<Writable<any>>("widget");
+    const widgets = getContext<Writable<any>>("widgets");
+
+    const handleClick = () => {
+        if ($widget.temp) {
+            $widget.close_instance = true;
+        } else {
+            $widget.remove = true;
+        }
+    };
+
+
     const urlBase = import.meta.env.VITE_API_URL;
     const endpoint = `${urlBase}/api/v2/widgets/${$widget.uid}`;
     const method = "DELETE";
     export let component;
-
-
-    const widgets = getContext<Writable<any>>("widgets");
 
 
     console.log($widget);
@@ -57,9 +51,6 @@
 
 
     }
-
-
-
 
 
 </script>
