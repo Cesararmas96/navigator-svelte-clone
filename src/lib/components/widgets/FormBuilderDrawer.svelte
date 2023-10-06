@@ -12,18 +12,15 @@
 	import { Form } from '@mixoo/form'
 	import { sendErrorNotification, sendSuccessNotification } from '$lib/stores/toast'
 	import Loading from '$lib/components/common/Loading.svelte'
-	// import { startCase, capitalize, merge, orderBy, map } from 'lodash-es'
+	import { merge } from 'lodash-es'
 
 	import '@mixoo/ui/css/theme/default.css'
 	import '@mixoo/form/css/theme/default.css'
 
 	const baseUrl = import.meta.env.VITE_API_URL
-	// TODO: take for session to merged
-	const token =
-		'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTY3OTI5NzAsImlhdCI6MTY5NjQzMjk3MCwiaXNzIjoiTW9iaWxlaW5zaWdodCIsInVzZXIiOjE1Nzc5LCJ1c2VybmFtZSI6ImptZW5kb3phMUB0cm9jZ2xvYmFsLmNvbSIsInVzZXJfaWQiOjE1Nzc5LCJpZCI6ImptZW5kb3phMUB0cm9jZ2xvYmFsLmNvbSJ9.cw43iQVJkE6zzGiSfrV-8CCxK-MDkv9ZjOJCyIqkDxg'
+	const token = sessionStorage.getItem('token')
 	let title: string = ''
 	let description: string = ''
-	// let btnText: string = ''
 	let schema: any
 	const urlBase = import.meta.env.VITE_API_URL
 
@@ -41,17 +38,6 @@
 		title = ''
 		description = ''
 	}
-
-	// const update = () => {
-	// 	console.log('update')
-	// 	close()
-	// }
-
-	// const btnTextMap: any = {
-	// 	new: 'Save',
-	// 	edit: 'Update',
-	// 	view: 'View'
-	// }
 
 	$: if ($selectedFormBuilderWidget && $selectedFormBuilderRecord) {
 		const slug = $selectedFormBuilderWidget.query_slug.slug
@@ -72,7 +58,6 @@
 			jsonSchema['noHeader'] = true
 			title = `${capitalizeWord(record.action)} ${jsonSchema?.title}`
 			description = jsonSchema?.description
-			// btnText = `${btnTextMap[record.action]} ${jsonSchema.title}`
 
 			Object.keys(jsonSchema.properties).map((property) => {
 				if (
@@ -98,7 +83,7 @@
 			if (record?.data) {
 				getModelByID(jsonSchema, record, slug, conditions)
 			} else {
-				schema = jsonSchema
+				schema = getSchemaComputed(jsonSchema)
 			}
 		} else {
 			sendErrorNotification('The form could not be loaded')
@@ -122,14 +107,12 @@
 			})
 		}
 
-		schema = jsonSchema
+		schema = getSchemaComputed(jsonSchema)
 	}
 
-	// function schemaComputed() {
-	// 	// TODO: Merge jsonchema with jsonchema bd
-	// 	// const a = merge({}, { a: 'a' }, { b: 'b' })
-	// 	// console.log(a)
-	// }
+	function getSchemaComputed(jsonSchema: Record<string, any>) {
+		return merge({}, jsonSchema, $selectedFormBuilderWidget?.params?.model?.schema || {})
+	}
 
 	function handleSubmitForm(handleValidateForm: any, type: string) {
 		const payload = handleValidateForm()
