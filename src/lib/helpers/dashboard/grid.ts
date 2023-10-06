@@ -32,8 +32,8 @@ export const loadV3Locations = (_dashboard: any, _widgets: any[], cols: number, 
     let row = 0
     _dashboard.widget_location = {};
     _widgets.forEach((widget: any) => {
-        _dashboard.widget_location[widget.uid] = { x: 0, y: row, w: cols, h: 4 };
-        row += 4;
+        _dashboard.widget_location[widget.uid] = { x: 0, y: row, w: cols, h: minRowHeight };
+        row += minRowHeight;
     });
   }
 
@@ -59,6 +59,7 @@ export const loadV3Locations = (_dashboard: any, _widgets: any[], cols: number, 
       return { uid: key, ...item, data }
     })
     _dashboard.attributes.explorer = 'v3'
+  
   return items
 }
 

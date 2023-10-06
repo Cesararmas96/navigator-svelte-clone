@@ -148,7 +148,7 @@
 	}
 
 	onDestroy(() => {
-		console.log('destroyed', $widgetStore.title)
+		console.log('destroyed')
 	})
 
 	$: if (resized) $widgetStore.resized = true

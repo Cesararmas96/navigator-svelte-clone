@@ -57,7 +57,6 @@ export async function getData(
 			headers: headers,
 			body: JSON.stringify(payload)
 		}
-
 		if (method === 'GET') delete configRequest.body
 		const response = (await fetch(`${urlWithParams}`, configRequest)) || {}
 
@@ -80,6 +79,9 @@ export async function getData(
 	}
 }
 
+const token =
+	'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTY3OTI5NzAsImlhdCI6MTY5NjQzMjk3MCwiaXNzIjoiTW9iaWxlaW5zaWdodCIsInVzZXIiOjE1Nzc5LCJ1c2VybmFtZSI6ImptZW5kb3phMUB0cm9jZ2xvYmFsLmNvbSIsInVzZXJfaWQiOjE1Nzc5LCJpZCI6ImptZW5kb3phMUB0cm9jZ2xvYmFsLmNvbSJ9.cw43iQVJkE6zzGiSfrV-8CCxK-MDkv9ZjOJCyIqkDxg'
+
 export async function getApiData(
 	url: string,
 	method = 'POST',
@@ -88,13 +90,21 @@ export async function getApiData(
 	options: Record<string, any> = {}
 ) {
 	if (!options.authorization) {
-		const token =
-			'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTYzNTI0NjgsImlhdCI6MTY5NTk5MjQ2OCwiaXNzIjoiTW9iaWxlaW5zaWdodCIsInVzZXIiOjE1Nzc5LCJ1c2VybmFtZSI6ImptZW5kb3phMUB0cm9jZ2xvYmFsLmNvbSIsInVzZXJfaWQiOjE1Nzc5LCJpZCI6ImptZW5kb3phMUB0cm9jZ2xvYmFsLmNvbSJ9.l80MbKgtLyTs1-40iDrGQglMadrra0_8imHkZCWMGs0'
 		const headers = { authorization: `Bearer ${token}` }
 		options = { ...options, headers }
 	}
 	const response = await getData(getQuerySlug(url), method, payload, queryParams, options)
 	return response
+}
+
+export async function patchData(
+	url: string,
+	payload: Record<string, any> = {}
+) {
+	const headers = { authorization: `Bearer ${token}` }
+	console.log('url', getQuerySlug(url), payload)
+	//const response = await getData(getQuerySlug(url), 'PATCH', paload, {}, headers)
+	return {data: 1}
 }
 
 const getQuerySlug = (widgetSlug: any) => {

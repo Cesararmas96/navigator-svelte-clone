@@ -13,8 +13,10 @@ export const colAction = (widget: any, callbacks: any) => {
     headerClass: 'header-center',
     maxWidth: 100,
     cellRenderer: (params: ValueGetterParams) => {
+      console.log('params', params)
       return gridCellBuildFunctionsMap['actions']({
         data: params.data,
+        tableParams: params,
         widget: widget,
         callback: callbacks[widget.params.actions.postRender]
       })
@@ -49,13 +51,11 @@ export const generateColumnDefsByData = (widget: any, simpleTable: boolean) => {
             if (indices.includes(idx)) {          
                 const fn = formats[fnName]; 
                 return fn(value);
-                // console.log(value);
-                // break; 
             }
           }
         } else {
-          return moment(params.value, 'YYYY-MM-DD HH:mm:ss.SSSSSSZ', true).isValid()
-            ? moment(params.value, 'YYYY-MM-DD HH:mm:ss.SSSSSSZ').format(
+          return moment(params.value, 'YYYY-MM-DDTHH:mm:ss.SSSSSSZ', true).isValid()
+            ? moment(params.value, 'YYYY-MM-DDTHH:mm:ss.SSSSSSZ').format(
                 'ddd, MMM DD YYYY, HH:mm:ss'
               )
             : params.value
@@ -85,11 +85,6 @@ export const generateColumnDefsByDefinition = (widget: any, callbacks: any) => {
             cellClass: cellClass(col),
             cellClassRules: cellClassRules(col, widget.params.thresholds),
             headerClass: headerClass(col),
-            // valueFormatter: (params: any) => {
-            // 	return params.colDef.format
-            // 		? formatByPattern(params.value, params.colDef.format)
-            // 		: params.value
-            // },
             cellRenderer: (params: ValueGetterParams) => {
               if (col.render && gridCellBuildFunctionsMap[col.render])
                 return gridCellBuildFunctionsMap[col.render](params)
@@ -114,9 +109,12 @@ export const generateColumnDefsByDefinition = (widget: any, callbacks: any) => {
               // 	// 	: params.data[key]
               // 	return params.data[key]
               // }
-              return col.format ? formatByPattern(params.data[key], col.format) : params.data[key]
+              return col.format ? 
+                formatByPattern(params.data[key], col.format) : 
+                !Array.isArray(params.data[key]) ? 
+                  params.data[key] :
+                  new Array(params.data[key]).join(', ')
 
-              // return params.data[key]
             }
           }
     })
@@ -139,7 +137,8 @@ export const headerClass = (formatDefinition: any): string => {
 export const gridHeight = (uid: string, formatDefinition: any): any => {
 	const widgetHeight = document.getElementById(`widget-${uid}`)!.offsetHeight
 	const headerHeight = document.getElementById(`widget-header-${uid}`)!.offsetHeight
-	const contentHeight = widgetHeight - headerHeight
+	const footerHeight = document.getElementById(`widget-footer-${uid}`)!.offsetHeight
+	const contentHeight = widgetHeight - headerHeight 
 	return contentHeight && contentHeight > 200 ? `${contentHeight}px` : '200px'
 }
 
@@ -171,6 +170,9 @@ export const formatByPattern = (value: number, pattern: string): string => {
 
 	switch (pattern) {
 		case '####':
+			result = value.toString()
+			break
+
 		case '#,###':
 		case '##,###':
 		case '$#,###':
@@ -504,11 +506,12 @@ function createActionBtn(params: any) {
 	const data = params.data
 	const widget = params.widget
 
-	const btn = document.createElement('iconify-icon')
+  const btn = document.createElement('iconify-icon')
 	btn.icon = icons[params.btn]
 	btn.height = '20px'
 	btn.dataset.action = params.btn
 	btn.dataset.data = data[widget.params?.model?.primaryKey]
+  btn.dataset.rowId = params.tableParams.rowIndex
 	btn.classList.add('cursor-pointer')
 	btn.addEventListener('click', params.callback)
 	return btn

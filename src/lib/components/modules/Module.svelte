@@ -3,14 +3,17 @@
 	import Dashboard from '../dashboards/Dashboard.svelte'
 	import { hideDashboardSettings, selectedDashboard, storeDashboards } from '$lib/stores/dashboards'
 	import Icon from '../common/Icon.svelte'
+	import { openConfirmModal, openModal } from '$lib/helpers/common/modal'
+	import { patchData } from '$lib/services/getData'
+	import { page } from '$app/stores'
 
 	export let trocModule: any
 
 	let dashboards: any
-	let openDashboardId: number
+	let currentDashboard: any
 	$: {
 		dashboards = $storeDashboards.filter((item) => item.module_id === trocModule?.module_id)
-		openDashboardId = dashboards[0].dashboard_id
+		currentDashboard = { ...dashboards[0] }
 	}
 
 	let popupRemoveModal = false
@@ -58,6 +61,50 @@
 		dashboards = dashboards.filter((d: any) => d.dashboard_id !== selectedDashboardId)
 		$storeDashboards = dashboards
 	}
+
+	const confirmCustomize = async (impersonation: boolean) => {
+		const { data } = await patchData(`${import.meta.env.VITE_API_URL}/api/v2/dashboards`, {
+			dashboard_id: currentDashboard.dashboard_id,
+			impersonation
+		})
+
+		// if (data.value && data.value.data && data.value.data.dashboard_id) {
+		// 	window.location.reload()
+		// 	// $mitt.emit(`update-dashboards-${module?.module_id}`, {
+		// 	//   duid: data.value.data.duid,
+		// 	// })
+
+		// 	// $mitt.emit(`get-widgets-${props.currentDashboard.duid}`, {})
+
+		// 	sendSuccessNotification(data.value.message)
+		// } else {
+		// 	// useNotify('Could not remove widget.')
+		// }
+	}
+
+	const handleCustomize = async () => {
+		let impersonation = true
+		let description =
+			'Are you sure that you want to customizable this dashboard?\nThis action cannot be undone.'
+
+		if (currentDashboard.user_id) {
+			impersonation = false
+			description =
+				'Are you sure that you want to publish this dashboard?\nThis action cannot be undone.'
+		}
+
+		openConfirmModal({
+			title: '',
+			description,
+			type: 'warning',
+			confirmCallback: () => confirmCustomize(impersonation)
+		})
+	}
+
+	const handleConvertToModule = async () => {
+		openModal('Convert To Module', 'ConvertToModule', { modules: $page.data.menu })
+	}
+	// $: console.log('dashboards', currentDashboard)
 </script>
 
 <Tabs style="pill" contentClass="p-0 mt-2">
@@ -65,32 +112,40 @@
 		<div class="nav-scroll gap-1 overflow-visible font-bold text-heading">
 			{#each dashboards as dashboard}
 				<TabItem
-					open={dashboard.dashboard_id === openDashboardId}
+					open={dashboard.dashboard_id === currentDashboard.dashboard_id}
 					on:mouseover={showRemoveIcon}
 					on:mouseleave={hideRemoveIcon}
 					defaultClass="hover:nav-hover"
-					on:click={() => (openDashboardId = dashboard.dashboard_id)}
+					on:click={() => (currentDashboard = { ...dashboard })}
 				>
 					<div slot="title" class="flex items-center gap-2">
 						<Icon icon={dashboard.attributes.icon} size="20px" />
 						<p title={dashboard?.dashboard_id}>
 							{dashboard.description}
 						</p>
-						<MenuButton
-							class="dots-menu-{dashboard.dashboard_id.toString()} invisible m-0 p-0 hover:bg-gray-100 focus:ring-0 dark:text-white dark:hover:bg-gray-500 dark:focus:ring-0"
-							vertical
-						/>
-						<Dropdown
-							triggeredBy=".dots-menu-{dashboard.dashboard_id.toString()}"
-							id={dashboard.dashboard_id.toString()}
-						>
-							<DropdownItem on:click={($event) => handleDashboardSettings($event, dashboard)}
-								>Settings</DropdownItem
+						<div class:hidden={currentDashboard.dashboard_id !== dashboard.dashboard_id}>
+							<MenuButton
+								class="dots-menu-{dashboard.dashboard_id.toString()} m-0 p-0 hover:bg-gray-100 focus:ring-0 dark:text-white dark:hover:bg-gray-500 dark:focus:ring-0"
+								vertical
+							/>
+							<Dropdown
+								triggeredBy=".dots-menu-{dashboard.dashboard_id.toString()}"
+								id={dashboard.dashboard_id.toString()}
 							>
-							<DropdownItem on:click={() => handleDashboardRemove(dashboard.dashboard_id)}
-								>Remove</DropdownItem
-							>
-						</Dropdown>
+								<DropdownItem on:click={($event) => handleDashboardSettings($event, dashboard)}
+									>Settings</DropdownItem
+								>
+								<DropdownItem on:click={() => handleDashboardRemove(dashboard.dashboard_id)}
+									>Remove</DropdownItem
+								>
+								<!-- {#if user!.superuser && currentDashboard.is_system} -->
+								<DropdownItem on:click={handleCustomize}>
+									{!currentDashboard.user_id ? 'Customize' : 'Publish'}</DropdownItem
+								>
+								<!-- {/if} -->
+								<DropdownItem on:click={handleConvertToModule}>Convert to Module</DropdownItem>
+							</Dropdown>
+						</div>
 					</div>
 					<Dashboard {dashboard} />
 				</TabItem>

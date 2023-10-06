@@ -39,7 +39,7 @@
 		postRenderFormBuilder(params: any) {
 			const { action, data } = params.srcElement.dataset
 			$selectedFormBuilderWidget = $widget
-			$selectedFormBuilderRecord = { action, data }
+			$selectedFormBuilderRecord = { action, data, callback: updateItem }
 			$hideFormBuilderDrawer = false
 		},
 		createModelWithFormBuilder() {
@@ -132,6 +132,13 @@
 		const eGridDiv: HTMLElement = document.querySelector(`#grid-${$widget.uid}`)!
 		eGridDiv.style.height = gridHeight($widget.uid, $widget.params)
 		$widget.resized = false
+	}
+
+	const updateItem = (obj: any) => {
+		const rowNode = gridOptions.api!.getRowNode('row-1')
+		// rowNode.setDataValue('age', 25)
+		// const item = gridOptions.api!.getDisplayedRowAtIndex(obj.rowIndex)
+		// item.setDataValue(obj.colDef.field, obj.newValue)
 	}
 </script>
 

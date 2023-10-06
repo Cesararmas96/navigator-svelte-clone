@@ -1,7 +1,6 @@
 <script lang="ts">
 	import Grid, { GridItem, type GridController } from 'svelte-grid-extended'
 	import Widget from '../widgets/Widget.svelte'
-	import { storeWidgets } from '$lib/stores/widgets'
 	import WidgetBox from '../widgets/WidgetBox.svelte'
 	import {
 		loadV2Locations,
@@ -10,6 +9,7 @@
 		cloneItem,
 		removeItem
 	} from '$lib/helpers/dashboard/grid'
+	import { getApiData } from '$lib/services/getData'
 
 	export let dashboard: any
 
@@ -24,12 +24,17 @@
 		return window.innerWidth < 500
 	}
 
-	gridItems =
-		dashboard.attributes.explorer === 'v3' ||
-		!dashboard.widget_location ||
-		Object.keys(dashboard.widget_location).length === 0
-			? loadV3Locations(dashboard, $storeWidgets, cols, false)
-			: loadV2Locations(dashboard, $storeWidgets, cols, false)
+	const getGridItems = async (dashboardId: string) => {
+		const widgets = await getApiData(
+			`${import.meta.env.VITE_API_URL}/api/v2/widgets?dashboard_id=${dashboardId}`,
+			'GET'
+		)
+		return dashboard.attributes.explorer === 'v3' ||
+			!dashboard.widget_location ||
+			Object.keys(dashboard.widget_location).length === 0
+			? loadV3Locations(dashboard, widgets, cols, false)
+			: loadV2Locations(dashboard, widgets, cols, false)
+	}
 
 	$: handleResizable = (item: any) => {
 		gridItems = resizeItem(item, gridItems)
@@ -51,6 +56,10 @@
 		console.log('changeItemSize', item)
 		resizedUID = item.uid
 	}
+
+	$: getGridItems(dashboard.dashboard_id).then((items: any) => {
+		gridItems = items
+	})
 </script>
 
 <svelte:window bind:innerWidth />
