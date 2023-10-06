@@ -31,7 +31,7 @@
 </script>
 
 <div class={defaultClass}>
-	<Label for="type" class="mb-2 block">{label}</Label>
+	<Label for="type" class="mb-2 block text-left">{label}</Label>
 	<Input
 		id="type"
 		placeholder="Choose option ..."

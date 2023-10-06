@@ -26,7 +26,6 @@
 		clearInstances(widget)
 		let drilldowns: any[] = card.drilldowns && Array.isArray(card.drilldowns) ? card.drilldowns : []
 		drilldowns.forEach((drilldown: any) => {
-			console.log('$widget', $widget)
 			const drilldownConfig = Object.assign(
 				{},
 				{
