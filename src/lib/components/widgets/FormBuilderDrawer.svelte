@@ -131,18 +131,28 @@
 	// 	// console.log(a)
 	// }
 
-	async function handleSubmit(payload: any) {
+	function handleSubmitForm(handleValidateForm: any, type: string) {
+		const payload = handleValidateForm()
+
+		if (!Array.isArray(payload)) {
+			handleSubmit(payload, type)
+		} else {
+			sendErrorNotification('There has been a problem...')
+		}
+	}
+
+	async function handleSubmit(payload: any, type: string) {
 		let url = `${urlBase}/${$selectedFormBuilderWidget.params?.model?.meta}`
 		let method = 'PUT'
 		let message = 'Successfully created'
 
-		if ($selectedFormBuilderRecord?.action === 'edit') {
+		if (type === 'update') {
 			url = `${url}/${$selectedFormBuilderRecord.data}`
 			method = 'POST'
 			message = 'Successfully updated'
 		}
 
-		const dataModel = await getApiData(url, method, payload.detail)
+		const dataModel = await getApiData(url, method, payload)
 
 		if (dataModel) {
 			sendSuccessNotification(message)
@@ -151,11 +161,6 @@
 			console.log('Error here', dataModel)
 			sendErrorNotification('There has been a problem...')
 		}
-	}
-
-	function handleErrors(errors: any) {
-		console.log('errors', errors.detail)
-		sendErrorNotification('There has been a problem...')
 	}
 </script>
 
@@ -179,12 +184,6 @@
 			</h5>
 			<CloseButton on:click={() => close()} class="dark:text-white" />
 		</div>
-		<!-- <Button class="mb-2 mt-3 w-full rounded p-2 text-sm" type="submit"
-			><Icon
-				icon="streamline:interface-edit-write-2-change-document-edit-modify-paper-pencil-write-writing"
-				classes="mr-2"
-			/>test</Button
-		> -->
 	</div>
 
 	{#if schema}
@@ -192,7 +191,40 @@
 			<p class="text-sm text-gray-500 dark:text-gray-400">
 				{description}
 			</p>
-			<Form {schema} on:submit={handleSubmit} on:error={handleErrors} />
+			<Form {schema}>
+				<div slot="buttons-header" let:handleValidateForm>
+					{#if $selectedFormBuilderRecord?.action === 'new'}
+						<Button
+							class="mb-2 mt-3 w-full rounded p-2 text-sm "
+							on:click={() => {
+								handleSubmitForm(handleValidateForm, 'save')
+							}}
+						>
+							<Icon icon="tabler:plus" classes="mr-1" />Save Changes
+						</Button>
+					{:else}
+						<Button
+							class="mb-2 mt-3 w-full rounded p-2 text-sm "
+							on:click={() => {
+								handleSubmitForm(handleValidateForm, 'update')
+							}}
+						>
+							<Icon icon="tabler:edit" classes="mr-1" />Update Changes
+						</Button>
+
+						<Button
+							class="mb-2 w-full rounded p-2 text-sm "
+							outline
+							on:click={() => {
+								handleSubmitForm(handleValidateForm, 'saveAsNew')
+							}}
+						>
+							<Icon icon="tabler:plus" classes="mr-1" />Save as New
+						</Button>
+					{/if}
+				</div>
+				<div slot="buttons-footer" />
+			</Form>
 		</div>
 	{:else}
 		<Loading />
