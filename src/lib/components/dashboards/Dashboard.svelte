@@ -149,7 +149,7 @@
 
 
         const behavior = sessionStorage.get("dashboardBehavior");
-        if (behavior === "cut" && se) {
+        if (behavior === "cut") {
             await getApiData(`${baseUrl}https://api.dev.navigator.mobileinsight.com/api/v2/dashboards/${dashboard.uid}`, "DELETE");
         }
 
