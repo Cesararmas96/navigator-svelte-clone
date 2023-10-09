@@ -2,11 +2,11 @@
     import {Avatar, Dropdown, DropdownItem} from "flowbite-svelte";
     import {goto} from "$app/navigation";
     import type {User} from "../../../interfaces/session";
-    import {handleAuthorization, handleLogout} from "$lib/helpers/auth/session";
+    import {getSession, handleLogout} from "$lib/helpers/auth/session";
     import Icon from "$lib/components/common/Icon.svelte";
 
 
-    const sessionPromise: Promise<User> = handleAuthorization();
+    const sessionPromise: Promise<User> = getSession();
 
 
 </script>

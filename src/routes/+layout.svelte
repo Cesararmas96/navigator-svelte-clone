@@ -16,7 +16,7 @@
     import {
         checkLocalStorageForTokenAndCopy,
         copyToken,
-        handleAuthorization,
+        getSession,
         pasteToken
     } from "$lib/helpers/auth/session";
     import {onMount} from "svelte";
@@ -29,7 +29,7 @@
 <!--{/if}-->
 
 
-{#await handleAuthorization() then _}
+{#await getSession() then _}
     <slot/>
     <Toasts/>
     <Modal/>
