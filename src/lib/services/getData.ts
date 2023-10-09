@@ -80,7 +80,7 @@ export async function getData(
 }
 
 const token =
-	'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTY3OTI5NzAsImlhdCI6MTY5NjQzMjk3MCwiaXNzIjoiTW9iaWxlaW5zaWdodCIsInVzZXIiOjE1Nzc5LCJ1c2VybmFtZSI6ImptZW5kb3phMUB0cm9jZ2xvYmFsLmNvbSIsInVzZXJfaWQiOjE1Nzc5LCJpZCI6ImptZW5kb3phMUB0cm9jZ2xvYmFsLmNvbSJ9.cw43iQVJkE6zzGiSfrV-8CCxK-MDkv9ZjOJCyIqkDxg'
+	'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTY5NzI0MjQsImlhdCI6MTY5NjYxMjQyNCwiaXNzIjoiTW9iaWxlaW5zaWdodCIsInVzZXIiOjE1Nzc5LCJ1c2VybmFtZSI6ImptZW5kb3phMUB0cm9jZ2xvYmFsLmNvbSIsInVzZXJfaWQiOjE1Nzc5LCJpZCI6ImptZW5kb3phMUB0cm9jZ2xvYmFsLmNvbSJ9.gRS3837D5E8dYqeBqr_l22vhvM2bIN9kROK_PyYQOMw'
 
 export async function getApiData(
 	url: string,
@@ -97,14 +97,11 @@ export async function getApiData(
 	return response
 }
 
-export async function patchData(
-	url: string,
-	payload: Record<string, any> = {}
-) {
+export async function patchData(url: string, payload: Record<string, any> = {}) {
 	const headers = { authorization: `Bearer ${token}` }
 	console.log('url', getQuerySlug(url), payload)
 	//const response = await getData(getQuerySlug(url), 'PATCH', paload, {}, headers)
-	return {data: 1}
+	return { data: 1 }
 }
 
 const getQuerySlug = (widgetSlug: any) => {
@@ -121,9 +118,10 @@ const getQuerySlug = (widgetSlug: any) => {
 	} else if (slugQuery && slugQuery.includes('{BASE_URL_DATA}')) {
 		slugNew = slugQuery.replace('{BASE_URL_DATA}', import.meta.env.VITE_DATA_URL)
 	} else {
-		slugNew = slugQuery && (slugQuery.includes('http'))
-			? slugQuery
-			: `${import.meta.env.VITE_API_URL}/api/v2/services/queries/${slugQuery}`
+		slugNew =
+			slugQuery && slugQuery.includes('http')
+				? slugQuery
+				: `${import.meta.env.VITE_API_URL}/api/v2/services/queries/${slugQuery}`
 	}
 
 	return slugNew

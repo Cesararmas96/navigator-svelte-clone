@@ -105,7 +105,7 @@
     const isSuperuser = session.session.groups.includes("superuser");
 
 
-    const handleCopyOrCutWidget = (widget: any, action: string) => {
+    const handleWidgetCopyorCut = (widget: any, action: string) => {
         sessionStorage.setItem("copiedWidget", JSON.stringify($widget));
         sessionStorage.setItem("behavior", action);
 
@@ -144,7 +144,7 @@
         {/if}
         <!--Trying copy widget-->
         <button class="icon btn hover:bg-light-100 dark:hover:bg-dark-200"
-                on:click={() => handleCopyOrCutWidget(widget, 'copy')}>
+                on:click={() => handleWidgetCopyorCut(widget, 'copy')}>
             <Icon
                     icon={'ph:copy-bold'}
                     size="18"
@@ -156,7 +156,7 @@
 
         {#if (isSuperuser)}
             <button class="icon btn hover:bg-light-100 dark:hover:bg-dark-200"
-                    on:click={() => handleCopyOrCutWidget(widget, 'cut')}>
+                    on:click={() => handleWidgetCopyorCut(widget, 'cut')}>
                 <Icon
                         icon={'ion:cut-sharp'}
                         size="18"
