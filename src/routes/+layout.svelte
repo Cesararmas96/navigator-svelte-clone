@@ -1,38 +1,38 @@
 <script>
-	import '../app.scss'
-	import '../app.postcss'
-	import 'iconify-icon'
-	import 'simplebar'
-	import 'simplebar/dist/simplebar.min.css'
-	import Toasts from '$lib/components/common/Toasts.svelte'
-	import Modal from '$lib/components/common/Modal.svelte'
-	import { initModal } from '$lib/helpers/common/modal'
-	import WidgetSettings from '$lib/components/widgets/Settings.svelte'
-	import { page, navigating } from '$app/stores'
-	import WidgetMaximize from '$lib/components/widgets/Maximize.svelte'
-	import WidgetFormBuilderDrawer from '$lib/components/widgets/FormBuilderDrawer.svelte'
-	import Spinner from '$lib/components/common/Spinner.svelte'
-	import { goto } from '$app/navigation'
-	import {
-		checkLocalStorageForTokenAndCopy,
-		copyToken,
-		handleAuthorization,
-		pasteToken
-	} from '$lib/helpers/auth/session'
-	import { onMount } from 'svelte'
+    import '../app.scss'
+    import '../app.postcss'
+    import 'iconify-icon'
+    import 'simplebar'
+    import 'simplebar/dist/simplebar.min.css'
+    import Toasts from '$lib/components/common/Toasts.svelte'
+    import Modal from '$lib/components/common/Modal.svelte'
+    import {initModal} from '$lib/helpers/common/modal'
+    import WidgetSettings from '$lib/components/widgets/Settings.svelte'
+    import {page, navigating} from '$app/stores'
+    import WidgetMaximize from '$lib/components/widgets/Maximize.svelte'
+    import WidgetFormBuilderDrawer from '$lib/components/widgets/FormBuilderDrawer.svelte'
+    import Spinner from '$lib/components/common/Spinner.svelte'
+    import {goto} from '$app/navigation'
+    import {
+        checkLocalStorageForTokenAndCopy,
+        copyToken,
+        getSession,
+        pasteToken
+    } from '$lib/helpers/auth/session'
+    import {onMount} from 'svelte'
 
-	initModal()
+    initModal()
 </script>
 
 {#if $navigating}
-	<Spinner fullScreen={true} />
+    <Spinner fullScreen={true}/>
 {/if}
 
-{#await handleAuthorization() then _}
-	<slot />
-	<Toasts />
-	<Modal />
-	<WidgetSettings />
-	<WidgetFormBuilderDrawer />
-	<WidgetMaximize />
+{#await getSession() then _}
+    <slot/>
+    <Toasts/>
+    <Modal/>
+    <WidgetSettings/>
+    <WidgetFormBuilderDrawer/>
+    <WidgetMaximize/>
 {/await}
