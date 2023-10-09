@@ -14,6 +14,7 @@
     import ToolbarClose from "./toolbar/Close.svelte";
     import ToolbarCollapse from "./toolbar/Collapse.svelte";
     import {getData} from "$lib/services/getData";
+    import {getSession} from "$lib/helpers/auth/session";
 
     export let isToolbarVisible: boolean;
 
@@ -34,82 +35,10 @@
 
 
     // TODO get session from session storage
-    const session = {
-        "session": {
-            "user_id": 15779,
-            "username": "jmendoza1@trocglobal.com",
-            "first_name": "Jose",
-            "last_name": "Mendoza",
-            "email": "jmendoza1@trocglobal.com",
-            "enabled": true,
-            "superuser": true,
-            "last_login": "2022-11-16T15:01:45.971224Z",
-            "title": null,
-            "associate_id": null,
-            "group_id": [
-                1
-            ],
-            "groups": [
-                "superuser"
-            ],
-            "programs": [
-                "walmart",
-                "mso",
-                "epson",
-                "xfinity",
-                "wm_assembly",
-                "wm_reset",
-                "troc",
-                "trendmicro",
-                "viba",
-                "flexroc",
-                "cricket",
-                "us_cellular",
-                "totalplay",
-                "tcl",
-                "worp",
-                "romeo",
-                "hisense",
-                "tro_charter",
-                "tro_xfinity",
-                "bose",
-                "viba_demo",
-                "wsp_viba",
-                "usc_wm",
-                "tmobile",
-                "usc_viba",
-                "verizon",
-                "mso_viba",
-                "tro_xfinity_viba",
-                "venu",
-                "polestar",
-                "directv",
-                "troc_financial",
-                "samsclub",
-                "monstermex",
-                "smartjobs"
-            ],
-            "user": "jmendoza1",
-            "domain": "trocglobal.com"
-        },
-        "username": "jmendoza1@trocglobal.com",
-        "id": "jmendoza1@trocglobal.com",
-        "expires_in": "2023-10-07T17:46:52.591394Z",
-        "token_type": "Bearer",
-        "created": 1696340812.7020254,
-        "last_visit": 1696340812.7020254,
-        "last_visited": "Last visited: 1696340812.7020254"
-    };
-
-
-    const isSuperuser = session.session.groups.includes("superuser");
-
 
     const handleWidgetCopyorCut = (widget: any, action: string) => {
         sessionStorage.setItem("copiedWidget", JSON.stringify($widget));
         sessionStorage.setItem("behavior", action);
-
-
     };
 
 </script>
@@ -153,19 +82,20 @@
         </button>
         <Tooltip placement="left">Copy</Tooltip>
 
+        {#await getSession() then session}
+            {#if (session.session.groups.includes("superuser"))}
+                <button class="icon btn hover:bg-light-100 dark:hover:bg-dark-200"
+                        on:click={() => handleWidgetCopyorCut(widget, 'cut')}>
+                    <Icon
+                            icon={'ion:cut-sharp'}
+                            size="18"
+                    />
 
-        {#if (isSuperuser)}
-            <button class="icon btn hover:bg-light-100 dark:hover:bg-dark-200"
-                    on:click={() => handleWidgetCopyorCut(widget, 'cut')}>
-                <Icon
-                        icon={'ion:cut-sharp'}
-                        size="18"
-                />
+                </button>
+                <Tooltip placement="left">Cut</Tooltip>
 
-            </button>
-            <Tooltip placement="left">Cut</Tooltip>
-
-        {/if}
+            {/if}
+        {/await}
 
 
         <Tooltip placement="left" triggeredBy="#more-actions">More</Tooltip>
