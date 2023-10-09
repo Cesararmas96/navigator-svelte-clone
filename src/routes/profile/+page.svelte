@@ -1,6 +1,6 @@
 <script>
 
-    import {handleAuthorization} from "$lib/helpers/auth/session";
+    import {getSession} from "$lib/helpers/auth/session";
     import {goto} from "$app/navigation";
 
     import Icon from "$lib/components/common/Icon.svelte";
@@ -14,7 +14,7 @@
     let rawSession
 
     try {
-        rawSession = handleAuthorization()
+        rawSession = getSession()
     } catch (e) {
         goto('/login')
     }
