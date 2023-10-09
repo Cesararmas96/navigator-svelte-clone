@@ -8,6 +8,7 @@
     import {TabItem, Tabs} from 'flowbite-svelte';
     import Profile from "$lib/components/profile/Profile.svelte";
     import PasswordStrength from "$lib/components/forms/PasswordStrength.svelte";
+    import PasswordInput from "$lib/components/forms/PasswordInput.svelte";
 
 
     let rawSession
@@ -19,6 +20,7 @@
     }
     console.log(rawSession)
     let password = ''
+
 
 </script>
 
@@ -63,37 +65,30 @@
 
 
         <TabItem open>
-
             <div slot="title" class="flex items-center gap-2">
                 <Icon icon="mdi:lock" size="20px"/>
                 Security
             </div>
-
-
             <div class="flex flex-row">
                 <Profile session={session}/>
                 <div class="flex-col ml-10">
 
-
-                    <p class="w-40">Current password</p>
-                    <input type="password" class=" mb-6 " placeholder="Password" style="min-width: 600px"/>
-
+                    <div class="mb-6">
+                        <p>Current password</p>
+                        <PasswordInput/>
+                    </div>
 
                     <p class="">New password</p>
-                    <input type="password" class="" name="password" placeholder="New password" bind:value={password}
-                           style="min-width: 600px"/>
+
                     <div class="mb-6">
+                        <PasswordInput/>
                         <PasswordStrength {password}/>
                     </div>
 
-
                     <p>Confirm new password</p>
-                    <input type="password" class=" mb-6" placeholder="Password" style="min-width: 600px"/>
+                    <PasswordInput/>
                 </div>
-
             </div>
-
-
         </TabItem>
     </Tabs>
 
