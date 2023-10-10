@@ -1,0 +1,11 @@
+{
+  "title": "Welcome to card component. 🎉",
+  "description": "Coming soon!",
+  "src": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS3KkiEmeKqIjaVioMosR7tTYOkYi8zKvGTQbSsCmKwDJ_1TE8VKvb3j8G9-4Pn0kwxfSs&usqp=CAU",
+  "btn": {
+    "to": "/",
+    "external": false,
+    "btnText": "Welcome!",
+    "backgroundColor": "green"
+  }
+}
