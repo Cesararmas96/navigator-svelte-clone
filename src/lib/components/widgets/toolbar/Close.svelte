@@ -22,9 +22,6 @@
     export let component;
 
 
-    console.log($widget);
-
-
     // Temporal variable
     const isClonedWidget = false;
     const removeWidgetFromDOM = () => {

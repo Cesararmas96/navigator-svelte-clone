@@ -1,19 +1,16 @@
 <script lang="ts">
-    import Grid, {GridItem, type GridController} from "svelte-grid-extended";
+    import {Grid, GridItem} from "svelte-grid-extended";
     import Widget from "../widgets/Widget.svelte";
     import WidgetBox from "../widgets/WidgetBox.svelte";
-    import {
-        loadV2Locations,
-        loadV3Locations,
-        resizeItem,
-        cloneItem,
-        removeItem
-    } from "$lib/helpers/dashboard/grid";
+    import {cloneItem, loadV2Locations, loadV3Locations, removeItem, resizeItem} from "$lib/helpers/dashboard/grid";
     import {getApiData} from "$lib/services/getData";
     import {storeWidgets} from "$lib/stores/widgets";
     import {storeDashboards} from "$lib/stores/dashboards";
     import Icon from "$lib/components/common/Icon.svelte";
     import {getSession} from "$lib/helpers/auth/session";
+    import {Button, Modal, Table, TableBodyCell, TableBodyRow, TableHeadCell} from "flowbite-svelte";
+    import Spinner from "$lib/components/common/Spinner.svelte";
+
 
     export let dashboard: any;
     const baseUrl = import.meta.env.VITE_API_URL;
@@ -156,9 +153,80 @@
     };
 
 
+    let displayModal = false;
+
+    const handleWidgetInsert = async () => {
+        displayModal = true;
+
+        try {
+            // Extract program id
+            const {program_id} = dashboard;
+
+            const token = sessionStorage.getItem("token");
+            const resp = await fetch(`https://api.dev.navigator.mobileinsight.com/api/v2/widgets-template?program_id=${program_id}`,
+
+                {
+                    method: "GET",
+                    headers: {
+                        "Authorization": `Bearer ${token}`
+                    }
+                }
+            );
+            // getApiData(`https://api.dev.navigator.mobileinsight.com/api/v2/widgets-template`, "GET", "");
+
+            if (!resp.ok) {
+                const errorMessage = `Failed to fetch data: ${resp.status} - ${resp.statusText}`;
+                throw new Error(errorMessage);
+            }
+
+
+            const data = await resp.json();
+            console.log(data);
+
+            return data;
+        } catch (error) {
+            console.error("An error occurred:", error.message);
+            // Handle the error as needed, e.g., display an error message or log it.
+        }
+    };
+
+
 </script>
 
 <svelte:window bind:innerWidth/>
+
+{#if displayModal}
+    {#await handleWidgetInsert()}
+        <Spinner fullScreen={false}/>
+
+    {:then widgets}
+        <Modal title="Insert Widget" bind:open={displayModal} autoclose>
+
+
+            <Table hoverable={true}>
+
+                <TableHeadCell>All Widgets</TableHeadCell>
+
+                {#each widgets as widget}
+                    <TableBodyRow>
+                        <TableBodyCell>
+                            <Button>
+                                {widget.widget_name}
+                            </Button>
+                        </TableBodyCell>
+                    </TableBodyRow>
+                {/each}
+
+            </Table>
+
+
+        </Modal>
+
+    {/await}
+{/if}
+
+
+<button on:click={handleWidgetInsert}>Insert Widget</button>
 
 {#await getSession() then session}
 
