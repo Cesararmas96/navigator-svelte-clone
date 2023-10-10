@@ -155,7 +155,7 @@
 
     let displayModal = false;
 
-    const handleWidgetInsert = async () => {
+    const getWidgetTemplates = async () => {
         displayModal = true;
 
         try {
@@ -191,16 +191,44 @@
     };
 
 
+    const handleWidgetInsert = async (widgetUid: string) => {
+        const token = sessionStorage.getItem("token");
+        try {
+
+            const resp = await fetch(`https://api.dev.navigator.mobileinsight.com/api/v2/widgets-template/${widgetUid}`,
+
+                {
+                    method: "PATCH",
+                    headers: {
+                        "Authorization": `Bearer ${token}`
+                    }
+                }
+            );
+
+            if (!resp.ok) {
+                const errorMessage = `Failed to fetch data: ${resp.status} - ${resp.statusText}`;
+                throw new Error(errorMessage);
+            }
+            const data = await resp.json();
+            console.log(data);
+            return data;
+        } catch (error) {
+            console.error("An error occurred:", error.message);
+            // Handle the error as needed, e.g., display an error message or log it.
+        }
+
+    };
+
 </script>
 
 <svelte:window bind:innerWidth/>
 
 {#if displayModal}
-    {#await handleWidgetInsert()}
+    {#await getWidgetTemplates()}
         <Spinner fullScreen={false}/>
 
     {:then widgets}
-        <Modal title="Insert Widget" bind:open={displayModal} autoclose>
+        <Modal title="Insert Widget" bind:open={displayModal} style="padding-top:50px">
 
 
             <Table hoverable={true}>
@@ -210,7 +238,7 @@
                 {#each widgets as widget}
                     <TableBodyRow>
                         <TableBodyCell>
-                            <Button>
+                            <Button on:click={() => handleWidgetInsert(widget.uid)}>
                                 {widget.widget_name}
                             </Button>
                         </TableBodyCell>
@@ -226,7 +254,7 @@
 {/if}
 
 
-<button on:click={handleWidgetInsert}>Insert Widget</button>
+<button on:click={getWidgetTemplates}>Insert Widget</button>
 
 {#await getSession() then session}
 
