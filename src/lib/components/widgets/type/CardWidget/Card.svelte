@@ -8,6 +8,7 @@
 	import type { Writable } from 'svelte/store'
 
 	export let card: any
+
 	const widget: Writable<any> = getContext('widget')
 	let activeDrilldown: any
 

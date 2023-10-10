@@ -118,15 +118,22 @@
 					defaultClass="hover:nav-hover"
 					on:click={() => (currentDashboard = { ...dashboard })}
 				>
-					<div slot="title" class="flex items-center gap-2">
+					<div slot="title" class="flex flex-row items-center gap-2">
 						<Icon icon={dashboard.attributes.icon} size="20px" />
 						<p title={dashboard?.dashboard_id}>
 							{dashboard.description}
 						</p>
-						<div class:hidden={currentDashboard.dashboard_id !== dashboard.dashboard_id}>
-							<MenuButton
+						<div
+							class:hidden={currentDashboard.dashboard_id !== dashboard.dashboard_id}
+							class="flex items-center"
+						>
+							<!-- <Button
 								class="dots-menu-{dashboard.dashboard_id.toString()} m-0 p-0 hover:bg-gray-100 focus:ring-0 dark:text-white dark:hover:bg-gray-500 dark:focus:ring-0"
-								vertical
+							/> -->
+							<Icon
+								icon="tabler:chevron-down"
+								size="20px"
+								classes="dots-menu-{dashboard.dashboard_id.toString()}"
 							/>
 							<Dropdown
 								triggeredBy=".dots-menu-{dashboard.dashboard_id.toString()}"

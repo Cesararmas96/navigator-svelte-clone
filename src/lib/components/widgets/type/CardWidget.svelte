@@ -53,7 +53,6 @@
 </script>
 
 {#if data}
-
 	<div class="grid grid-cols-12 gap-3">
 		{#each cards as card}
 			<div style:grid-column={`span ${card.col} / span ${card.col}`} class="my-2">

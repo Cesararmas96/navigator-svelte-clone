@@ -1,19 +1,24 @@
 <script lang="ts">
-	import { Button, ButtonGroup } from 'flowbite-svelte'
+	import { Button, ButtonGroup, Input, Toggle, Select } from 'flowbite-svelte'
 	import Icon from '../common/Icon.svelte'
 	import { modal } from '$lib/helpers/common/modal'
-
-	export let data: any
-	console.log(data)
+	import Dropdown from '../common/Dropdown.svelte'
 
 	export let props: {
 		title?: string
 		modules?: any
 	}
 
-	// let newOrExisting = false
-	// const selectedModule: any
+	const modules = props.modules.map((module: any) => {
+		return {
+			value: module.module_id,
+			name: module.description
+		}
+	})
 
+	let newOrExisting = false
+	let selectedModule: any
+	$: console.log(selectedModule)
 	// const program = programs.find((element: any) => {
 	//   return element?.program_id === module?.program_id
 	// })
@@ -126,42 +131,45 @@
 
 	//   loading.value = false
 	// }
-	let newModule = false
-	const handleClick = (e: Event, action: string) => {
-		e.preventDefault()
-		newModule = action === 'new'
+
+	const moduleText = {
+		new: 'New Module',
+		existing: 'Existing Module'
 	}
 </script>
 
 <div class="text-center">
-	<ButtonGroup divClass="flex flex-row justify-center mb-2">
-		<Button on:click={(e) => handleClick(e, 'existing')}>Existing Module</Button>
-		<Button on:click={(e) => handleClick(e, 'new')}>New Module</Button>
-	</ButtonGroup>
-	{#if newModule}
+	<div class="flex flex-row justify-between">
+		{moduleText[newOrExisting ? 'new' : 'existing']}
+		<Toggle
+			bind:checked={newOrExisting}
+			class="mb-2"
+			off-label="Existing Module"
+			on-label="New Module"
+		/>
+	</div>
+	{#if newOrExisting}
 		<div class="flex flex-col">
-			<div class="flex flex-row justify-center">
-				<div class="flex flex-col">
-					<!-- svelte-ignore a11y-label-has-associated-control -->
-					<label class="text-left">Module Name</label>
-					<input type="text" class="input" />
-				</div>
-			</div>
+			<!-- svelte-ignore a11y-label-has-associated-control -->
+			<label class="text-left">Module Name</label>
+			<Input
+				class="mb-3 w-full !rounded rounded-lg border-gray-300 bg-gray-50 px-2 py-1 pr-9 text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-500 dark:bg-gray-600 dark:text-white dark:placeholder-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500 sm:text-xs"
+				name=""
+				type="text"
+			/>
 		</div>
 	{:else}
 		<div class="flex flex-col">
-			<div class="flex flex-row justify-center">
-				<div class="flex flex-col">
-					<!-- svelte-ignore a11y-label-has-associated-control -->
-					<label class="text-left">Module Name</label>
-					<select class="input">
-						<option value="0">Select Module</option>
-						{#each props.modules as module}
-							<option value={module.module_id}>{module.module_name}</option>
-						{/each}
-					</select>
-				</div>
-			</div>
+			<!-- svelte-ignore a11y-label-has-associated-control -->
+			<label class="text-left">Module</label>
+			<!-- svelte-ignore missing-declaration -->
+			<Select
+				id="select-sm"
+				size="sm"
+				items={modules}
+				bind:selectedValue={selectedModule}
+				class="mb-3 w-full !rounded rounded-lg border-gray-300 bg-gray-50 px-2 py-1 pr-9 text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-500 dark:bg-gray-600 dark:text-white dark:placeholder-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500 sm:text-xs"
+			/>
 		</div>
 	{/if}
 	<Button color="red" class="mr-2">Save</Button>

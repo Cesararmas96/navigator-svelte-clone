@@ -12,7 +12,6 @@
 
 	$storeModules = data.menu
 	$storeDashboards = data.dashboards
-	$storeWidgets = data.widgets
 
 	let width: number
 </script>

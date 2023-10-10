@@ -5,6 +5,7 @@
 </script>
 
 <div
+	id="spinner"
 	class="z-50 flex flex-col items-center justify-center gap-2 rounded-md bg-black bg-opacity-40 px-10 py-5"
 	class:fixed={fullScreen}
 	class:left-[calc(50%-2rem)]={fullScreen}

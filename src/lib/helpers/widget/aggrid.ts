@@ -136,9 +136,14 @@ export const headerClass = (formatDefinition: any): string => {
 export const gridHeight = (uid: string, formatDefinition: any): any => {
 	const widgetHeight = document.getElementById(`widget-${uid}`)!.offsetHeight
 	const headerHeight = document.getElementById(`widget-header-${uid}`)!.offsetHeight
-	// const footerHeight = document.getElementById(`widget-footer-${uid}`)!.offsetHeight
-	const contentHeight = widgetHeight - headerHeight 
-	return contentHeight && contentHeight > 200 ? `${contentHeight}px` : '200px'
+	const toolbarTopEL = document.getElementById(`aggrid-toolbar-${uid}-top`)
+  const toolbarTop = toolbarTopEL ? toolbarTopEL.offsetHeight : 0
+	const toolbarBottomEL = document.getElementById(`aggrid-toolbar-${uid}-bottom`)
+  const toolbarBottom = toolbarBottomEL ? toolbarBottomEL.offsetHeight : 0
+
+  // const footerHeight = document.getElementById(`widget-footer-${uid}`)!.offsetHeight
+	const contentHeight = widgetHeight - headerHeight - toolbarTop - toolbarBottom
+	return `${contentHeight}px` //&& contentHeight > 200 ? `${contentHeight}px` : '200px'
 }
 
 export const recordsPerPage = (formatDefinition: any): any => {
@@ -169,7 +174,7 @@ export const formatByPattern = (value: number, pattern: string): string => {
 
 	switch (pattern) {
 		case '####':
-			result = value.toString()
+			result = (value) ? value.toString() : '0'
 			break
 
 		case '#,###':
