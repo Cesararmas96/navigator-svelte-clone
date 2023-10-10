@@ -21,7 +21,7 @@
 
 <div
 	id={`aggrid-toolbar-${widgetUID}-${position}`}
-	class={'flex w-full flex-row justify-end px-3 py-3'}
+	class={'widget-toolbar flex w-full flex-row justify-end px-3 py-3'}
 	class:hidden={buttons.length === 0}
 >
 	{#each buttons as btn}
