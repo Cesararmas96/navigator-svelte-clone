@@ -19,7 +19,7 @@ export const dismissAlert = (id: string) => {
   alerts.update((all) => all.filter((t: AlertMessage) => t.id !== id));
 };
 
-export const sendSuccessAlert = (id: string, title: string, message?: string, callback1Btn?: string, callback1?: () => void, callback2Btn?: string, callback2?: () => void) => {
+export const sendSuccessAlert = (title: string, message?: string, callback1Btn?: string, callback1?: () => void, callback2Btn?: string, callback2?: () => void) => {
   sendAlert({
     id: generateId(),
     type: AlertType.SUCCESS,

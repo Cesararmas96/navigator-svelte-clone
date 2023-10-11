@@ -1,4 +1,4 @@
-import { getContext, setContext } from "svelte"
+import { setContext } from "svelte"
 import { writable, type Writable } from 'svelte/store';
 
 export const initWidgetActions = () => {

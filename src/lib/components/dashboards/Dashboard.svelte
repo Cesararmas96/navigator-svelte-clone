@@ -139,9 +139,9 @@
 		const behavior = sessionStorage.getItem('behavior')
 		const alert: AlertMessage = {
 			id: 'widget-copied',
-			title: `Widget ${behavior === 'copy' ? 'copied' : 'cutted'}`,
+			title: `Widget ${behavior === 'copy' ? 'copied' : 'cut'}`,
 			message: `You have a widget ${
-				behavior === 'copy' ? 'copied' : 'cutted'
+				behavior === 'copy' ? 'copied' : 'cut'
 			} in clipboard. Use Paste Widget button to paste it`,
 			type: AlertType.WARNING,
 			callback1Btn: 'Paste Widget',
