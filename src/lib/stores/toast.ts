@@ -4,7 +4,6 @@ import { writable } from "svelte/store";
 export const toasts = writable<Toast[]>([]);
 
 export const sendNotification = (toast: Toast) => {
-  console.log(toast)
   toast.dismissable = false
   toasts.update((all) => [{...toast }, ...all]);
   if (toast.timeout) setTimeout(() => dismissNotification(toast.id), toast.timeout);

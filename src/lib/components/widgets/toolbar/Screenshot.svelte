@@ -22,7 +22,6 @@
 			mainContent.querySelector(`#widget-toolbar-${$widget.uid}`)!.classList.add('hidden')
 			const spinner = mainContent.querySelector(`#spinner`)
 			if (spinner) spinner.classList.add('hidden')
-			console.log('spinner', spinner)
 
 			mainContent.querySelectorAll('.animate__animated').forEach((element) => {
 				element.classList.remove('animate__animated')

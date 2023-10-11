@@ -1,7 +1,11 @@
 <script lang="ts">
 	import Card from '$lib/components/home/Card.svelte'
+	import { storePrograms } from '$lib/stores/programs'
 
 	export let data
+
+	$storePrograms = data.programs
+
 	const allPrograms = data.programs.sort(function (program: any, program2: any) {
 		return program.program_name.localeCompare(program2.program_name)
 	})
