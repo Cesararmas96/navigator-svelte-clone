@@ -45,6 +45,7 @@
 					format: 'fnFormatNumberOne',
 					frontMask: '',
 					backMask: '',
+					values: values,
 					...configExtend
 				})
 			}

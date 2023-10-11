@@ -115,7 +115,7 @@
 
 	function handleSubmitForm(handleValidateForm: any, type: string) {
 		const payload = handleValidateForm()
-
+		console.log(payload)
 		if (!Array.isArray(payload)) {
 			handleSubmit(payload, type)
 		} else {

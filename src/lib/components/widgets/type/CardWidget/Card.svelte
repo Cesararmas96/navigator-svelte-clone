@@ -68,12 +68,16 @@
 	}
 
 	$: isLoading = $widget.instance_loading && drilldownOpen
+
+	const cardClass = `apiCard-content animate__animated animate__zoomIn card navigator-blue  ${
+		card.class || 'navigator-blue'
+	} h-full overflow-hidden rounded-md border border-light-200 p-6 py-3 hover:-translate-y-0.5 hover:scale-100 hover:shadow-lg dark:border-dark-200 dark:bg-[#22313a]`
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <div
-	class="apiCard-content animate__animated animate__zoomIn card navigator-blue h-full overflow-hidden rounded-md border border-light-200 p-6 py-3 hover:-translate-y-0.5 hover:scale-100 hover:shadow-lg dark:border-dark-200 dark:bg-[#22313a]"
+	class={cardClass}
 	class:cursor-pointer={card.drilldowns && !drilldownOpen}
 	class:drilldown-open={drilldownOpen}
 	on:click={handleClick}
@@ -87,6 +91,13 @@
 				{card.frontMask}
 				{fnFormats(card.data, card.format)}
 				{card.backMask}
+
+				{#if card?.value && card?.value[1] && card?.values[card?.value[1]]}
+					&nbsp; / &nbsp;
+					{card.frontMask}
+					{fnFormats(card?.values[card?.value[1]], card.format)}
+					{card.backMask}
+				{/if}
 			</div>
 			<Icon icon="tabler:chart-bar" size="28" />
 		</div>
