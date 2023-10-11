@@ -49,7 +49,7 @@ export const getSession = async () => {
 				}
 			})
 			const session = await rawSession.json()
-			console.log(session)
+			// console.log(session)
 			return session
 		} catch (error) {
 			sessionStorage.clear()

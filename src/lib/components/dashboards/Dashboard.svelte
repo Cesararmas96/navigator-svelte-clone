@@ -11,9 +11,10 @@
 	} from '$lib/helpers/dashboard/grid'
 	import { getApiData } from '$lib/services/getData'
 	import { storeWidgets } from '$lib/stores/widgets'
-	import { storeDashboards } from '$lib/stores/dashboards'
-	import Icon from '$lib/components/common/Icon.svelte'
 	import { getSession } from '$lib/helpers/auth/session'
+	import Alerts from '../common/Alerts.svelte'
+	import { sendAlert } from '$lib/helpers/common/alerts'
+	import { AlertType, type AlertMessage } from '$lib/interfaces/Alert'
 
 	export let dashboard: any
 	const baseUrl = import.meta.env.VITE_API_URL
@@ -99,48 +100,62 @@
 			// TODO: Handle error and display an appropriate message to the user if needed.
 		}
 	}
-	const handleDashboardCopy = (behavior: string) => {
-		sessionStorage.setItem('copiedDashboard', JSON.stringify(dashboard))
-		sessionStorage.setItem('dashboardBehavior', behavior)
-	}
-	const handleDashboardPaste = async () => {
-		// 1. Get dashboard from session storage
-		let copiedDashboard: any = sessionStorage.getItem('copiedDashboard')
-		// TODO if widget does not exist, a modal should appear telling the user nothing was copied
-		if (!copiedDashboard) return
-		console.log(copiedDashboard)
-		copiedDashboard = JSON.parse(copiedDashboard)
-		// TODO get session from session storage
-		// 2. Extract data
-		const { duid, module_id } = copiedDashboard
-		// 3. Build the payload
-		const payload = { duid, module_id }
-		console.log(payload)
-		// 4. Clone the dashboard
-		try {
-			// 4.1 Make API request to insert the widget
-			console.log($storeDashboards)
-			getApiData(`${baseUrl}/api/v2/dashboard/clone`, 'POST', payload).then((d) => {
-				// 4.2 Insert the widget into widgets store
-				$storeDashboards.push(d.data)
-				console.log($storeDashboards)
-			})
-		} catch (e: any) {
-			console.log(`There was an error: ${e.message}`)
+	// const handleDashboardCopy = (behavior: string) => {
+	// 	sessionStorage.setItem('copiedDashboard', JSON.stringify(dashboard))
+	// 	sessionStorage.setItem('dashboardBehavior', behavior)
+	// }
+	// const handleDashboardPaste = async () => {
+	// 	// 1. Get dashboard from session storage
+	// 	let copiedDashboard: any = sessionStorage.getItem('copiedDashboard')
+	// 	// TODO if widget does not exist, a modal should appear telling the user nothing was copied
+	// 	if (!copiedDashboard) return
+	// 	console.log(copiedDashboard)
+	// 	copiedDashboard = JSON.parse(copiedDashboard)
+	// 	// TODO get session from session storage
+	// 	// 2. Extract data
+	// 	const { duid, module_id } = copiedDashboard
+	// 	// 3. Build the payload
+	// 	const payload = { duid, module_id }
+	// 	console.log(payload)
+	// 	// 4. Clone the dashboard
+	// 	try {
+	// 		// 4.1 Make API request to insert the widget
+	// 		console.log($storeDashboards)
+	// 		getApiData(`${baseUrl}/api/v2/dashboard/clone`, 'POST', payload).then((d) => {
+	// 			// 4.2 Insert the widget into widgets store
+	// 			$storeDashboards.push(d.data)
+	// 			console.log($storeDashboards)
+	// 		})
+	// 	} catch (e: any) {
+	// 		console.log(`There was an error: ${e.message}`)
+	// 	}
+	// 	const behavior = sessionStorage.get('dashboardBehavior')
+	// 	if (behavior === 'cut') {
+	// 		await getApiData(`${baseUrl}/api/v2/dashboards/${dashboard.uid}`, 'DELETE')
+	// 	}
+	// }
+
+	const addWidgetCopyAlert = () => {
+		const behavior = sessionStorage.getItem('behavior')
+		const alert: AlertMessage = {
+			id: 'widget-copied',
+			title: `Widget ${behavior === 'copy' ? 'copied' : 'cutted'}`,
+			message: `You have a widget ${
+				behavior === 'copy' ? 'copied' : 'cutted'
+			} in clipboard. Use Paste Widget button to paste it`,
+			type: AlertType.WARNING,
+			callback1Btn: 'Paste Widget',
+			callback1: handleWidgetPaste
 		}
-		const behavior = sessionStorage.get('dashboardBehavior')
-		if (behavior === 'cut') {
-			await getApiData(
-				`${baseUrl}https://api.dev.navigator.mobileinsight.com/api/v2/dashboards/${dashboard.uid}`,
-				'DELETE'
-			)
-		}
+		sendAlert(alert)
 	}
+
+	$: if (sessionStorage.getItem('copiedWidget')) addWidgetCopyAlert()
 </script>
 
 <svelte:window bind:innerWidth />
 
-{#await getSession() then session}
+<!-- {#await getSession() then session}
 	<button on:click={handleWidgetPaste} class="mx-4">
 		<Icon icon={'ic:round-content-paste'} />
 		<span>Paste widget</span>
@@ -160,7 +175,9 @@
 		<Icon icon={'ic:round-content-paste'} />
 		<span>Paste Dashboard</span>
 	</button>
-{/await}
+{/await} -->
+
+<Alerts />
 
 <Grid {itemSize} class="grid-container" gap={5} {cols} collision="compress">
 	{#each gridItems as item}

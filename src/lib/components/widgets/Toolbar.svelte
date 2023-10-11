@@ -15,6 +15,8 @@
 	import ToolbarCollapse from './toolbar/Collapse.svelte'
 	import { getData } from '$lib/services/getData'
 	import { getSession } from '$lib/helpers/auth/session'
+	import { AlertType, type AlertMessage } from '$lib/interfaces/Alert'
+	import { sendAlert } from '$lib/helpers/common/alerts'
 
 	export let isToolbarVisible: boolean
 
@@ -37,7 +39,23 @@
 	const handleWidgetCopyorCut = (widget: any, action: string) => {
 		sessionStorage.setItem('copiedWidget', JSON.stringify($widget))
 		sessionStorage.setItem('behavior', action)
+		// addWidgetCopyAlert()
 	}
+
+	// const addWidgetCopyAlert = () => {
+	// 	const behavior = sessionStorage.getItem('behavior')
+	// 	const alert: AlertMessage = {
+	// 		id: 'widget-copied',
+	// 		title: `Widget ${behavior === 'copy' ? 'copied' : 'cutted'}`,
+	// 		message: `You have a widget ${
+	// 			behavior === 'copy' ? 'copied' : 'cutted'
+	// 		} in clipboard. Use Paste Widget button to paste it`,
+	// 		type: AlertType.WARNING,
+	// 		callbackBtn: 'Paste Widget',
+	// 		callback: handleWidgetPaste
+	// 	}
+	// 	sendAlert(alert)
+	// }
 </script>
 
 <div

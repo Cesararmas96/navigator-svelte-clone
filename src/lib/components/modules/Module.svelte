@@ -4,17 +4,38 @@
 	import { hideDashboardSettings, selectedDashboard, storeDashboards } from '$lib/stores/dashboards'
 	import Icon from '../common/Icon.svelte'
 	import { openConfirmModal, openModal } from '$lib/helpers/common/modal'
-	import { patchData } from '$lib/services/getData'
+	import { getApiData, patchData } from '$lib/services/getData'
 	import { page } from '$app/stores'
+	import { sendErrorNotification, sendSuccessNotification } from '$lib/stores/toast'
+	import { clearAlerts, sendAlert, sendInfoAlert } from '$lib/helpers/common/alerts'
+	import Alerts from '../common/Alerts.svelte'
+	import { AlertType, type AlertMessage } from '$lib/interfaces/Alert'
 
 	export let trocModule: any
+	export let dashboards: any
 
-	let dashboards: any
-	let currentDashboard: any
-	$: {
-		dashboards = $storeDashboards.filter((item) => item.module_id === trocModule?.module_id)
-		currentDashboard = { ...dashboards[0] }
+	const baseUrl = import.meta.env.VITE_API_URL
+
+	let pastedDashboard: any
+
+	clearAlerts()
+
+	$: currentDashboard = dashboards && dashboards.length > 0 ? { ...dashboards[0] } : {}
+	$: if (!dashboards || dashboards?.length === 0)
+		sendInfoAlert(
+			'There are no dashboards here yet. But you can start to add them by clicking on the "New tab" buttom above'
+		)
+
+	$: userId = currentDashboard?.user_id
+
+	$: if (pastedDashboard) {
+		dashboards = [...dashboards, pastedDashboard]
 	}
+
+	// $: {
+	// 	dashboards = $storeDashboards.filter((item) => item.module_id === trocModule?.module_id)
+	// 	currentDashboard = { ...dashboards[0] }
+	// }
 
 	let popupRemoveModal = false
 	let selectedDashboardId: number
@@ -63,23 +84,26 @@
 	}
 
 	const confirmCustomize = async (impersonation: boolean) => {
-		const { data } = await patchData(`${import.meta.env.VITE_API_URL}/api/v2/dashboards`, {
-			dashboard_id: currentDashboard.dashboard_id,
-			impersonation
-		})
-
-		// if (data.value && data.value.data && data.value.data.dashboard_id) {
-		// 	window.location.reload()
-		// 	// $mitt.emit(`update-dashboards-${module?.module_id}`, {
-		// 	//   duid: data.value.data.duid,
-		// 	// })
-
-		// 	// $mitt.emit(`get-widgets-${props.currentDashboard.duid}`, {})
-
-		// 	sendSuccessNotification(data.value.message)
-		// } else {
-		// 	// useNotify('Could not remove widget.')
-		// }
+		try {
+			const resp = await patchData(`${import.meta.env.VITE_API_URL}/api/v2/dashboards`, {
+				dashboard_id: currentDashboard.dashboard_id,
+				impersonation
+			})
+			if (resp.data && resp.data.dashboard_id) {
+				currentDashboard = { ...resp.data }
+				dashboards = dashboards.map((item) => {
+					if (item.dashboard_id === currentDashboard.dashboard_id) {
+						return currentDashboard
+					}
+					return item
+				})
+				sendSuccessNotification(resp.message)
+			} else {
+				// useNotify('Could not remove widget.')
+			}
+		} catch (e: any) {
+			sendErrorNotification(e.message)
+		}
 	}
 
 	const handleCustomize = async () => {
@@ -102,67 +126,175 @@
 	}
 
 	const handleConvertToModule = async () => {
-		openModal('Convert To Module', 'ConvertToModule', { modules: $page.data.menu })
+		openModal('Convert To Module', 'ConvertToModule', {
+			modules: $page.data.menu,
+			dashboard: currentDashboard
+		})
 	}
-	// $: console.log('dashboards', currentDashboard)
+
+	const handleDashboardCopy = (behavior: string) => {
+		sessionStorage.setItem('copiedDashboard', JSON.stringify(currentDashboard))
+		sessionStorage.setItem('dashboardBehavior', behavior)
+		addDashboardCopyAlert()
+	}
+
+	const handleDashboardPaste = async () => {
+		// 1. Get dashboard from session storage
+		let copiedDashboard: any = sessionStorage.getItem('copiedDashboard')
+		// TODO if widget does not exist, a modal should appear telling the user nothing was copied
+		if (!copiedDashboard) return
+		console.log(copiedDashboard)
+		copiedDashboard = JSON.parse(copiedDashboard)
+		// TODO get session from session storage
+		// 2. Extract data
+		const { duid, module_id } = copiedDashboard
+		// 3. Build the payload
+		const payload = { duid, module_id }
+		console.log(payload)
+		// 4. Clone the dashboard
+		try {
+			// 4.1 Make API request to insert the widget
+			console.log($storeDashboards)
+			pastedDashboard = copiedDashboard
+			clearCopyDashboard()
+
+			await getApiData(`${baseUrl}/api/v2/dashboard/clone`, 'POST', payload).then((d) => {
+				// 4.2 Insert the widget into widgets store
+				clearCopyDashboard()
+				$storeDashboards.push(d.data)
+				console.log($storeDashboards)
+			})
+		} catch (e: any) {
+			console.log(`There was an error: ${e.message}`)
+		}
+		const behavior = sessionStorage.get('dashboardBehavior')
+		if (behavior === 'cut') {
+			await getApiData(`${baseUrl}/api/v2/dashboards/${currentDashboard.uid}`, 'DELETE')
+		}
+	}
+
+	const clearCopyDashboard = () => {
+		sessionStorage.removeItem('copiedDashboard')
+		sessionStorage.removeItem('dashboardBehavior')
+	}
+
+	const addDashboardCopyAlert = () => {
+		const behavior = sessionStorage.getItem('dashboardBehavior')
+		const alert: AlertMessage = {
+			id: 'top-dashboard-copied',
+			title: `Dashboard ${behavior === 'copy' ? 'copied' : 'cutted'}`,
+			message: `You have a dashboard ${
+				behavior === 'copy' ? 'copied' : 'cutted'
+			} in clipboard. Use Paste Dashboard button to paste it`,
+			type: AlertType.INFO,
+			callback1Btn: 'Paste Dashboard',
+			callback1: handleDashboardPaste,
+			callback2Btn: 'Clear',
+			callback2: clearCopyDashboard
+		}
+		sendAlert(alert)
+	}
+
+	$: if (sessionStorage.getItem('copiedDashboard')) addDashboardCopyAlert()
 </script>
+
+<Alerts position="top" />
 
 <Tabs style="pill" contentClass="p-0 mt-2">
 	<div class="card ml-[5px] mr-[10px] w-full p-1">
 		<div class="nav-scroll gap-1 overflow-visible font-bold text-heading">
-			{#each dashboards as dashboard}
-				<TabItem
-					open={dashboard.dashboard_id === currentDashboard.dashboard_id}
-					on:mouseover={showRemoveIcon}
-					on:mouseleave={hideRemoveIcon}
-					defaultClass="hover:nav-hover"
-					on:click={() => (currentDashboard = { ...dashboard })}
-				>
-					<div slot="title" class="flex flex-row items-center gap-2">
-						<Icon icon={dashboard.attributes.icon} size="20px" />
-						<p title={dashboard?.dashboard_id}>
-							{dashboard.description}
-						</p>
-						<div
-							class:hidden={currentDashboard.dashboard_id !== dashboard.dashboard_id}
-							class="flex items-center"
-						>
-							<!-- <Button
+			{#if dashboards}
+				{#each dashboards as dashboard}
+					<TabItem
+						open={dashboard.dashboard_id === currentDashboard.dashboard_id}
+						on:mouseover={showRemoveIcon}
+						on:mouseleave={hideRemoveIcon}
+						defaultClass="hover:nav-hover"
+						on:click={() => (currentDashboard = { ...dashboard })}
+					>
+						<div slot="title" class="flex flex-row items-center gap-2">
+							<Icon icon={dashboard.attributes.icon} size="20px" />
+							<p title={dashboard?.dashboard_id}>
+								{dashboard.description}
+								{dashboard.attributes.icon}
+							</p>
+							<div
+								class:hidden={currentDashboard.dashboard_id !== dashboard.dashboard_id}
+								class="flex items-center"
+							>
+								<!-- <Button
 								class="dots-menu-{dashboard.dashboard_id.toString()} m-0 p-0 hover:bg-gray-100 focus:ring-0 dark:text-white dark:hover:bg-gray-500 dark:focus:ring-0"
 							/> -->
-							<Icon
-								icon="tabler:chevron-down"
-								size="20px"
-								classes="dots-menu-{dashboard.dashboard_id.toString()}"
-							/>
-							<Dropdown
-								triggeredBy=".dots-menu-{dashboard.dashboard_id.toString()}"
-								id={dashboard.dashboard_id.toString()}
-							>
-								<DropdownItem on:click={($event) => handleDashboardSettings($event, dashboard)}
-									>Settings</DropdownItem
+								<Icon
+									icon="tabler:chevron-down"
+									size="20px"
+									classes="dots-menu-{dashboard.dashboard_id.toString()}"
+								/>
+								<Dropdown
+									triggeredBy=".dots-menu-{dashboard.dashboard_id.toString()}"
+									id={dashboard.dashboard_id.toString()}
 								>
-								<DropdownItem on:click={() => handleDashboardRemove(dashboard.dashboard_id)}
-									>Remove</DropdownItem
-								>
-								<!-- {#if user!.superuser && currentDashboard.is_system} -->
-								<DropdownItem on:click={handleCustomize}>
-									{!currentDashboard.user_id ? 'Customize' : 'Publish'}</DropdownItem
-								>
-								<!-- {/if} -->
-								<DropdownItem on:click={handleConvertToModule}>Convert to Module</DropdownItem>
-							</Dropdown>
+									<DropdownItem
+										on:click={($event) => handleDashboardSettings($event, dashboard)}
+										defaultClass="flex flex-row font-medium py-2 pl-2 pr-4 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"
+									>
+										<Icon icon="tabler:settings" size="18" classes="mr-1" />
+										Settings</DropdownItem
+									>
+									<DropdownItem
+										on:click={() => handleDashboardCopy('copy')}
+										defaultClass="flex flex-row font-medium py-2 pl-2 pr-4 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"
+									>
+										<Icon icon="mdi:content-copy" size="18" classes="mr-1" />
+										Copy dashboard</DropdownItem
+									>
+									<DropdownItem
+										on:click={() => handleDashboardCopy('cut')}
+										defaultClass="flex flex-row font-medium py-2 pl-2 pr-4 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"
+									>
+										<Icon icon="mdi:content-cut" size="18" classes="mr-1" />
+										Cut dashboard</DropdownItem
+									>
+									<!-- {#if user!.superuser && currentDashboard.is_system} -->
+									<DropdownItem
+										on:click={handleCustomize}
+										defaultClass="flex flex-row font-medium py-2 pl-2 pr-4 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"
+									>
+										<Icon
+											icon={!userId ? 'mdi:file-edit-outline' : 'mdi:publish'}
+											size="18"
+											classes="mr-1"
+										/>
+										{!userId ? 'Customize' : 'Publish'}</DropdownItem
+									>
+									<!-- {/if} -->
+									<DropdownItem
+										on:click={handleConvertToModule}
+										defaultClass="flex flex-row font-medium py-2 pl-2 pr-4 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"
+									>
+										<Icon icon="fluent:convert-range-20-regular" size="18" classes="mr-1" />
+										Convert to Module</DropdownItem
+									>
+									<DropdownItem
+										on:click={() => handleDashboardRemove(dashboard.dashboard_id)}
+										defaultClass="flex flex-row text-red-500 font-medium py-2 pl-2 pr-4 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"
+									>
+										<Icon icon="tabler:trash" size="18" classes="mr-1" />
+										Remove</DropdownItem
+									>
+								</Dropdown>
+							</div>
 						</div>
-					</div>
-					<Dashboard {dashboard} />
-				</TabItem>
-			{/each}
-			<TabItem on:click={handleNewDashboard} open={dashboards.length === 0}>
+						<Dashboard {dashboard} />
+					</TabItem>
+				{/each}
+			{/if}
+			<TabItem on:click={handleNewDashboard} open={!dashboards}>
 				<div slot="title" class="flex items-center gap-2">
 					<Icon icon="gala:add" size="20px" />
 					New tab
 				</div>
-				<div>.</div>
+				<div><Alerts /></div>
 			</TabItem>
 		</div>
 	</div>

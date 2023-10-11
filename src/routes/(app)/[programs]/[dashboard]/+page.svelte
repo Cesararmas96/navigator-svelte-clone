@@ -2,13 +2,9 @@
 	import Module from '$lib/components/modules/Module.svelte'
 
 	import { storeDashboards } from '$lib/stores/dashboards.js'
-	import { storeWidgets } from '$lib/stores/widgets.js'
 
 	export let data
-	$: {
-		$storeDashboards = data.dashboards
-		$storeWidgets = data.widgets
-	}
+	$: $storeDashboards = data.dashboards
 </script>
 
-<Module trocModule={data.trocModule} />
+<Module trocModule={data.trocModule} dashboards={$storeDashboards} />
