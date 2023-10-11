@@ -6,6 +6,7 @@
 	const dispatch = createEventDispatcher()
 
 	export let position: string
+	export let widgetUID: string
 	export let btnsActions: any
 
 	const buttons =
@@ -18,7 +19,11 @@
 	}
 </script>
 
-<div class={'flex w-full flex-row justify-end px-3 py-3'} class:hidden={buttons.length === 0}>
+<div
+	id={`aggrid-toolbar-${widgetUID}-${position}`}
+	class={'widget-toolbar flex w-full flex-row justify-end px-3 py-3'}
+	class:hidden={buttons.length === 0}
+>
 	{#each buttons as btn}
 		<Button class={btn.class} variant="primary" size="sm" on:click={() => handleClick(btn.method)}>
 			<Icon icon={btn.icon} />

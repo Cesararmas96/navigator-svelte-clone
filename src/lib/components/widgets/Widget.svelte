@@ -10,6 +10,7 @@
 	import Instances from './Instances.svelte'
 	import { addWidgetAction } from '$lib/helpers'
 	import { selectedWidgetMaximize } from '$lib/stores/widgets'
+	import Spinner from '../common/Spinner.svelte'
 
 	const dispatch = createEventDispatcher()
 
@@ -61,8 +62,11 @@
 	class:p-1={!$widget.temp && !$widget.collapse}
 	class="w-full"
 >
+	{#if $widget.loading}
+		<Spinner fullScreen={false} />
+	{/if}
 	<!-- Widget Header -->
-	<div id={`widget-header-${$widget.uid}`} class:mt-5={$widget.temp} class="h-8">
+	<div id={`widget-header-${$widget.uid}`} class:mt-1={$widget.temp} class="h-8">
 		{#if !fixed && header}
 			<WidgetHeader {isToolbarVisible} />
 		{:else if isToolbarVisible && isOwner}
@@ -82,7 +86,7 @@
 	<div
 		id={`widget-main-content-${$widget.uid}`}
 		class:hidden={$widget.collapse}
-		class="widget-content relative flex w-full cursor-auto space-y-4 rounded-md text-sm"
+		class="widget-content relative flex w-full cursor-auto flex-col space-y-4 rounded-md text-sm"
 		on:pointerdown={(event) => {
 			event.preventDefault()
 			event.stopPropagation()
@@ -95,14 +99,15 @@
 
 			<ContentBottom {widget} />
 		</div>
+
+		<Instances
+			{widget}
+			{isToolbarVisible}
+			{fixed}
+			{isOwner}
+			on:handleInstanceResize={handleInstanceResize}
+		/>
 	</div>
-	<Instances
-		{widget}
-		{isToolbarVisible}
-		{fixed}
-		{isOwner}
-		on:handleInstanceResize={handleInstanceResize}
-	/>
 </div>
 <!-- Widget Footer -->
 {#if !$widget.temp}

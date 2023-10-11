@@ -102,9 +102,9 @@ export const cloneItem = (item: any, items: any[]) => {
 export const resizeItem = (item: any, items: any[]) => {
   const header = document.getElementById(`widget-header-${item.uid}`)?.clientHeight || 0
   const content = document.getElementById(`widget-main-content-${item.uid}`)?.clientHeight || 0
-  const widgetInstances =
-    document.getElementById(`widget-instances-${item.uid}`)?.clientHeight || 0
-  const height = header + content + widgetInstances
+  // const widgetInstances =
+  //   document.getElementById(`widget-instances-${item.uid}`)?.clientHeight || 0
+  const height = header + content //+ widgetInstances
   const prevousHeight = maxHeight(item.y, items)
   item.h = Math.ceil(height / rowHeight)
   return reorderAfterResize(item, prevousHeight, items)

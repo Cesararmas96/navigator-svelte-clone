@@ -153,6 +153,7 @@
 
 <Toolbar
 	position="top"
+	widgetUID={$widget.uid}
 	btnsActions={$widget.params.btnsActions}
 	on:click={(e) => actionBtnMap[e.detail](e)}
 />
@@ -162,7 +163,7 @@
 	class:ag-theme-balham={!isDark}
 	class:ag-theme-balham-dark={isDark}
 />
-<Toolbar position="bottom" btnsActions={$widget.params.btnsActions} />
+<Toolbar position="bottom" widgetUID={$widget.uid} btnsActions={$widget.params.btnsActions} />
 
 <style>
 	.ag-theme-balham {
