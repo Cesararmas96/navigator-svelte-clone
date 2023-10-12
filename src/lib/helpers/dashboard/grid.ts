@@ -99,6 +99,29 @@ export const cloneItem = (item: any, items: any[]) => {
   return [...items, newItem]
 }
 
+export const pasteItem = (item: any, items: any[]) => {
+  const widget = item.data
+
+  const w = item.w
+  const h = item.h
+  const x = item.x
+  const y = item.y
+
+
+  widget.id = `widget-ccp-${generateUID()}`
+  widget.uid = widget.id
+  widget.title = widget.title + ' Copy'
+  widget.master_filtering = true
+  delete widget.clone
+  delete widget.temp
+  delete widget.instance_loaded
+  delete widget.loaded
+  delete widget.fetch
+  const newItem = { uid: widget.uid, x, y, w, h, data: { ...widget } }
+
+  return [...items, newItem]
+}
+
 export const resizeItem = (item: any, items: any[]) => {
   const header = document.getElementById(`widget-header-${item.uid}`)?.clientHeight || 0
   const content = document.getElementById(`widget-main-content-${item.uid}`)?.clientHeight || 0
@@ -161,11 +184,9 @@ const reorderAfterDelete = (item: any, items: any[]) => {
   })
   return [...items]
 }
-// function addNewItem() {
-//   const w = 4
-//   const h = 4
-//   const newPosition = gridController.getFirstAvailablePosition(w, h)
-//   gridItems = newPosition
-//     ? [...gridItems, { uid: generateUID(), x: newPosition.x, y: newPosition.y, w, h, data: {} }]
-//     : gridItems
-// }
+
+export const addNewItem = (item, gridController: any) => {
+  const w = item.w
+  const h = item.h
+  return gridController.getFirstAvailablePosition(w, h)
+}

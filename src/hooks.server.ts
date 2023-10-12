@@ -1,24 +1,31 @@
+import type { Handle } from '@sveltejs/kit'
 
-// export const handle = async ({ event, resolve }) => {
-//   if (!('theme-mode' in localStorage)) localStorage.set('theme-mode', 'light')
-//   if (!('theme-color' in localStorage)) localStorage.set('theme-color', 'blue')
+export const handle: Handle = async ({ event, resolve }) => {
+  const token = event.cookies.get('session')
 
-// import { sendErrorNotification } from '$lib/stores/toast'
+  if (!token) {
+    return await resolve(event)
+  }
 
-//   const mode = event.cookies.get('theme-mode')!
-//   const color = event.cookies.get('theme-color')!
+  try {
+    const rawSession = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/user/session`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`
+      }
+    })
+    const session = await rawSession.json()
+    console.log('hooks', session.session)
 
-//   event.locals.theme = { mode, color }
+    if (session) {
+      event.locals.user = session.session
+    }
+  } catch (error) {
+    return await resolve(event)
+  }
 
-//   return resolve(event, {
-//     transformPageChunk: ({html}) => 
-//       html.replace('%theme-mode%', mode!).replace('%theme-color%', color!).replace('%class-mode%', mode!)
-//   })
-// }
 
-// export async function handleError({ error, event })  {
-//   const message = error instanceof Error ? error.message : 'Unknown error';
-//   return {
-//     message,
-//   }
-// }
+  // load page as normal
+  return await resolve(event)
+}

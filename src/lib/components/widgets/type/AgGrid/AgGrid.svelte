@@ -18,7 +18,7 @@
 		selectedFormBuilderRecord,
 		selectedFormBuilderWidget
 	} from '$lib/stores/widgets'
-	import Toolbar from './AgGridWidget/Toolbar.svelte'
+	import Toolbar from './Toolbar.svelte'
 
 	export let data: any
 	export let simpleTable: boolean = false

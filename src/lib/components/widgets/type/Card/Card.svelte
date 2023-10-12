@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Card from './CardWidget/Card.svelte'
+	import SimpleCard from './SimpleCard.svelte'
 	import { fnFormats } from '$lib/utils/formats'
 	import { getContext } from 'svelte'
 
@@ -57,7 +57,7 @@
 	<div class="grid grid-cols-12 gap-3">
 		{#each cards as card}
 			<div style:grid-column={`span ${card.col} / span ${card.col}`} class="my-2">
-				<Card {card} />
+				<SimpleCard {card} />
 			</div>
 		{/each}
 	</div>
