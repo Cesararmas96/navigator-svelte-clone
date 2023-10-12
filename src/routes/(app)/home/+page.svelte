@@ -1,6 +1,7 @@
 <script>
     import CardWidgetTemp from "$lib/components/widgets/CardWidgetTemp.svelte";
     import LinkWidgetTemp from "$lib/components/widgets/LinkWidgetTemp.svelte";
+    import ListOfLinksWidgetTemp from "$lib/components/widgets/ListOfLinksWidgetTemp.svelte";
 </script>
 
 <!--<script lang="ts">-->
@@ -26,4 +27,5 @@
 <!--    </ul>-->
 <!--{/if}-->
 
-<LinkWidgetTemp/>
+<ListOfLinksWidgetTemp/>
+
