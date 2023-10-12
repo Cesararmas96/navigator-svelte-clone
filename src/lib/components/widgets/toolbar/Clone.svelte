@@ -6,11 +6,8 @@
 	import { addInstance } from '$lib/helpers/widget/instances'
 
 	const widget = getContext<Writable<any>>('widget')
-	const instances = getContext<Writable<any>>('widgetInstances')
 	const cloneWidget = () => {
 		$widget.clone = true
-		// const _widget = { ...$widget }
-		// addInstance(instances, _widget)
 	}
 </script>
 

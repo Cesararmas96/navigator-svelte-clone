@@ -1,14 +1,20 @@
 <script lang="ts">
 	import { Tabs, TabItem, Modal, Button, Dropdown, DropdownItem, MenuButton } from 'flowbite-svelte'
 	import Dashboard from '../dashboards/Dashboard.svelte'
-	import { hideDashboardSettings, selectedDashboard, storeDashboards } from '$lib/stores/dashboards'
+	import {
+		hideDashboardSettings,
+		selectedDashboard,
+		storeCCPDashboard,
+		storeCCPDashboardBehavior,
+		storeDashboards
+	} from '$lib/stores/dashboards'
 	import Icon from '../common/Icon.svelte'
 	import { openConfirmModal, openModal } from '$lib/helpers/common/modal'
 	import { getApiData, patchData } from '$lib/services/getData'
 	import { page } from '$app/stores'
 	import { sendErrorNotification, sendSuccessNotification } from '$lib/stores/toast'
 	import { clearAlerts, sendAlert, sendInfoAlert } from '$lib/helpers/common/alerts'
-	import Alerts from '../common/Alerts.svelte'
+	import Alerts from '../widgets/type/Alert/Alerts.svelte'
 	import { AlertType, type AlertMessage } from '$lib/interfaces/Alert'
 
 	export let trocModule: any
@@ -17,6 +23,8 @@
 	const baseUrl = import.meta.env.VITE_API_URL
 
 	let pastedDashboard: any
+
+	let dropdownOpen = false
 
 	clearAlerts()
 
@@ -133,18 +141,17 @@
 	}
 
 	const handleDashboardCopy = (behavior: string) => {
-		sessionStorage.setItem('copiedDashboard', JSON.stringify(currentDashboard))
-		sessionStorage.setItem('dashboardBehavior', behavior)
+		storeCCPDashboard.set(currentDashboard)
+		storeCCPDashboardBehavior.set(behavior)
 		addDashboardCopyAlert()
+		dropdownOpen = false
 	}
 
 	const handleDashboardPaste = async () => {
 		// 1. Get dashboard from session storage
-		let copiedDashboard: any = sessionStorage.getItem('copiedDashboard')
+		let copiedDashboard: any = $storeCCPDashboard
 		// TODO if widget does not exist, a modal should appear telling the user nothing was copied
 		if (!copiedDashboard) return
-		console.log(copiedDashboard)
-		copiedDashboard = JSON.parse(copiedDashboard)
 		// TODO get session from session storage
 		// 2. Extract data
 		const { duid, module_id } = copiedDashboard
@@ -174,17 +181,17 @@
 	}
 
 	const clearCopyDashboard = () => {
-		sessionStorage.removeItem('copiedDashboard')
-		sessionStorage.removeItem('dashboardBehavior')
+		storeCCPDashboard.set(null)
+		storeCCPDashboardBehavior.set(null)
 	}
 
 	const addDashboardCopyAlert = () => {
-		const behavior = sessionStorage.getItem('dashboardBehavior')
+		const behavior = $storeCCPDashboardBehavior
 		const alert: AlertMessage = {
 			id: 'top-dashboard-copied',
-			title: `Dashboard ${behavior === 'copy' ? 'copied' : 'cutted'}`,
+			title: `Dashboard ${behavior === 'copy' ? 'copied' : 'cut'}`,
 			message: `You have a dashboard ${
-				behavior === 'copy' ? 'copied' : 'cutted'
+				behavior === 'copy' ? 'copied' : 'cut'
 			} in clipboard. Use Paste Dashboard button to paste it`,
 			type: AlertType.INFO,
 			callback1Btn: 'Paste Dashboard',
@@ -195,7 +202,7 @@
 		sendAlert(alert)
 	}
 
-	$: if (sessionStorage.getItem('copiedDashboard')) addDashboardCopyAlert()
+	$: if ($storeCCPDashboard) addDashboardCopyAlert()
 </script>
 
 <Alerts position="top" />
@@ -215,32 +222,25 @@
 						<div slot="title" class="flex flex-row items-center gap-2">
 							<Icon icon={dashboard.attributes.icon} size="20px" />
 							<p title={dashboard?.dashboard_id}>
-								{dashboard.description}
-								{dashboard.attributes.icon}
+								{dashboard.name}
 							</p>
 							<div
 								class:hidden={currentDashboard.dashboard_id !== dashboard.dashboard_id}
 								class="flex items-center"
 							>
-								<!-- <Button
-								class="dots-menu-{dashboard.dashboard_id.toString()} m-0 p-0 hover:bg-gray-100 focus:ring-0 dark:text-white dark:hover:bg-gray-500 dark:focus:ring-0"
-							/> -->
 								<Icon
 									icon="tabler:chevron-down"
 									size="20px"
-									classes="dots-menu-{dashboard.dashboard_id.toString()}"
+									on:click={() => (dropdownOpen = !dropdownOpen)}
 								/>
-								<Dropdown
-									triggeredBy=".dots-menu-{dashboard.dashboard_id.toString()}"
-									id={dashboard.dashboard_id.toString()}
-								>
-									<DropdownItem
+								<Dropdown bind:open={dropdownOpen} id={dashboard.dashboard_id.toString()}>
+									<!-- <DropdownItem
 										on:click={($event) => handleDashboardSettings($event, dashboard)}
 										defaultClass="flex flex-row font-medium py-2 pl-2 pr-4 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"
 									>
 										<Icon icon="tabler:settings" size="18" classes="mr-1" />
 										Settings</DropdownItem
-									>
+									> -->
 									<DropdownItem
 										on:click={() => handleDashboardCopy('copy')}
 										defaultClass="flex flex-row font-medium py-2 pl-2 pr-4 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"

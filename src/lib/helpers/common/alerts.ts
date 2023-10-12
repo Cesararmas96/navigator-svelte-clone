@@ -5,11 +5,9 @@ export const alerts = writable<AlertMessage[]>([]);
 
 export const sendAlert = (alert: AlertMessage) => {
   if (!alert.id) alert.id = generateId()
-  console.log(alert)
   alerts.update((all) => {
-    const exists = all.some(a => a.id === alert.id);
-    if (exists) return all;
-    return [{...alert}, ...all];
+    const allAlerts: AlertMessage[] = all.filter(a => a.id !== alert.id);
+    return [{...alert}, ...allAlerts];
   });
 };
 

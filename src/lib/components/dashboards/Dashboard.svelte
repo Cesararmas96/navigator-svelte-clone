@@ -7,14 +7,17 @@
 		loadV3Locations,
 		resizeItem,
 		cloneItem,
-		removeItem
+		removeItem,
+		addNewItem,
+		pasteItem
 	} from '$lib/helpers/dashboard/grid'
 	import { getApiData } from '$lib/services/getData'
 	import { storeWidgets } from '$lib/stores/widgets'
 	import { getSession } from '$lib/helpers/auth/session'
-	import Alerts from '../common/Alerts.svelte'
+	import Alerts from '../widgets/type/Alert/Alerts.svelte'
 	import { sendAlert } from '$lib/helpers/common/alerts'
 	import { AlertType, type AlertMessage } from '$lib/interfaces/Alert'
+	import { storeCCPWidget, storeCCPWidgetBehavior } from '$lib/stores/dashboards'
 
 	export let dashboard: any
 	const baseUrl = import.meta.env.VITE_API_URL
@@ -24,7 +27,7 @@
 
 	let innerWidth: number
 	let gridItems: any[] = []
-	// let gridController: GridController
+	let gridController: GridController
 
 	const isMobile = (): boolean => {
 		return window.innerWidth < 500
@@ -72,114 +75,84 @@
 	const handleWidgetPaste = async () => {
 		try {
 			// 1. Get copied widget from session storage
-			const copiedWidget = JSON.parse(sessionStorage.getItem('copiedWidget')!)
+			const copiedWidget = $storeCCPWidget
 			// Check if widget exists
 			if (!copiedWidget) return
 			// TODO: Display a modal to inform the user that nothing was copied.
 			// 2. Get session
 			const session = await getSession()
 			const { program_id, dashboard_id } = dashboard // Assuming dashboard is defined somewhere
-			const widget_id = 278
+			const widget_id = copiedWidget.widget_id // TODO: Check if widget_id is defined
 			const tempTitle = 'Temp Title'
 			const userId = session.session.user_id
+
+			const item = gridItems.find((item: any) => item.uid === copiedWidget.uid)
+			const newItem = structuredClone(item)
+			const position = addNewItem(newItem, gridController)
+			newItem.data = copiedWidget
+			newItem.x = position.x
+			newItem.y = position.y
+			console.log('position', position)
+
+			gridItems = pasteItem(newItem, gridItems)
+			console.log('gridItems', gridItems)
+
 			// 3. Build the payload
 			const payload = { program_id, dashboard_id, title: tempTitle, widget_id, user_id: userId }
 			// 4. Insert the widget
-			const response = await getApiData(`${baseUrl}/api/v2/widgets`, 'PUT', payload)
+			// const response = await getApiData(`${baseUrl}/api/v2/widgets`, 'PUT', payload)
 			// 4.2 Insert the widget into widgets store
-			console.log($storeWidgets)
-			$storeWidgets.push(response.data)
-			console.log($storeWidgets)
+			// console.log($storeWidgets)
+			// $storeWidgets.push(response.data)
+			// console.log($storeWidgets)
 			// 5. Check if behavior was "cut" to remove the widget
-			const behavior = sessionStorage.getItem('behavior')
-			if (behavior === 'cut') {
-				await getApiData(`${baseUrl}/api/v2/widgets/${copiedWidget.uid}`, 'DELETE')
-			}
+			const behavior = $storeCCPWidgetBehavior
+			// if (behavior === 'cut') {
+			// 	await getApiData(`${baseUrl}/api/v2/widgets/${copiedWidget.uid}`, 'DELETE')
+			// }
 		} catch (error: any) {
 			console.error(`An error occurred: ${error.message}`)
 			// TODO: Handle error and display an appropriate message to the user if needed.
 		}
 	}
-	// const handleDashboardCopy = (behavior: string) => {
-	// 	sessionStorage.setItem('copiedDashboard', JSON.stringify(dashboard))
-	// 	sessionStorage.setItem('dashboardBehavior', behavior)
-	// }
-	// const handleDashboardPaste = async () => {
-	// 	// 1. Get dashboard from session storage
-	// 	let copiedDashboard: any = sessionStorage.getItem('copiedDashboard')
-	// 	// TODO if widget does not exist, a modal should appear telling the user nothing was copied
-	// 	if (!copiedDashboard) return
-	// 	console.log(copiedDashboard)
-	// 	copiedDashboard = JSON.parse(copiedDashboard)
-	// 	// TODO get session from session storage
-	// 	// 2. Extract data
-	// 	const { duid, module_id } = copiedDashboard
-	// 	// 3. Build the payload
-	// 	const payload = { duid, module_id }
-	// 	console.log(payload)
-	// 	// 4. Clone the dashboard
-	// 	try {
-	// 		// 4.1 Make API request to insert the widget
-	// 		console.log($storeDashboards)
-	// 		getApiData(`${baseUrl}/api/v2/dashboard/clone`, 'POST', payload).then((d) => {
-	// 			// 4.2 Insert the widget into widgets store
-	// 			$storeDashboards.push(d.data)
-	// 			console.log($storeDashboards)
-	// 		})
-	// 	} catch (e: any) {
-	// 		console.log(`There was an error: ${e.message}`)
-	// 	}
-	// 	const behavior = sessionStorage.get('dashboardBehavior')
-	// 	if (behavior === 'cut') {
-	// 		await getApiData(`${baseUrl}/api/v2/dashboards/${dashboard.uid}`, 'DELETE')
-	// 	}
-	// }
 
 	const addWidgetCopyAlert = () => {
-		const behavior = sessionStorage.getItem('behavior')
+		const behavior = $storeCCPWidgetBehavior
 		const alert: AlertMessage = {
 			id: 'widget-copied',
 			title: `Widget ${behavior === 'copy' ? 'copied' : 'cut'}`,
 			message: `You have a widget ${
 				behavior === 'copy' ? 'copied' : 'cut'
 			} in clipboard. Use Paste Widget button to paste it`,
-			type: AlertType.WARNING,
+			type: AlertType.INFO,
 			callback1Btn: 'Paste Widget',
-			callback1: handleWidgetPaste
+			callback1: handleWidgetPaste,
+			callback2Btn: 'Clear',
+			callback2: clearCopyWidget
 		}
 		sendAlert(alert)
 	}
 
-	$: if (sessionStorage.getItem('copiedWidget')) addWidgetCopyAlert()
+	const clearCopyWidget = () => {
+		storeCCPWidget.set(null)
+		storeCCPWidgetBehavior.set(null)
+	}
+
+	$: if ($storeCCPWidget) addWidgetCopyAlert()
 </script>
 
 <svelte:window bind:innerWidth />
 
-<!-- {#await getSession() then session}
-	<button on:click={handleWidgetPaste} class="mx-4">
-		<Icon icon={'ic:round-content-paste'} />
-		<span>Paste widget</span>
-	</button>
-
-	<button on:click={() => handleDashboardCopy('copy')} class="mx-4">
-		<Icon icon={'pixelarticons:copy'} />
-		<span>Copy Dashboard</span>
-	</button>
-	{#if session.session.groups.includes('superuser')}
-		<button on:click={() => handleDashboardCopy('cut')} class="mx-4">
-			<Icon icon={'pixelarticons:cut'} />
-			<span>Cut Dashboard</span>
-		</button>
-	{/if}
-	<button on:click={handleDashboardPaste} class="mx-4">
-		<Icon icon={'ic:round-content-paste'} />
-		<span>Paste Dashboard</span>
-	</button>
-{/await} -->
-
 <Alerts />
 
-<Grid {itemSize} class="grid-container" gap={5} {cols} collision="compress">
+<Grid
+	{itemSize}
+	class="grid-container"
+	gap={5}
+	{cols}
+	collision="compress"
+	bind:controller={gridController}
+>
 	{#each gridItems as item}
 		<GridItem
 			x={item.x}
