@@ -74,12 +74,8 @@
 
 	const handleWidgetPaste = async () => {
 		try {
-			// 1. Get copied widget from session storage
 			const copiedWidget = $storeCCPWidget
-			// Check if widget exists
-			if (!copiedWidget) return
-			// TODO: Display a modal to inform the user that nothing was copied.
-			// 2. Get session
+
 			const session = await getSession()
 			const { program_id, dashboard_id } = dashboard // Assuming dashboard is defined somewhere
 			const widget_id = copiedWidget.widget_id // TODO: Check if widget_id is defined

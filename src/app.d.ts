@@ -9,6 +9,7 @@ declare global {
 				color: string;
 			},
 			module: any, 
+			user: any
 		}
 		// interface Error {}
 		// interface Locals {}

@@ -35,6 +35,7 @@ export function validateUser(user) {
 }
 
 export const getSession = async () => {
+	return null
 	const sessionEndpoint = 'https://api.dev.navigator.mobileinsight.com/api/v1/user/session'
 	// TODO | DONE obtener tipo de token segun respuesta de sesion
 	const token = sessionStorage.getItem('token') || localStorage.getItem('token')
