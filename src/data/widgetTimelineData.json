@@ -1,38 +1,38 @@
 [
   {
-    "title": "Timeline Title",
-    "date": "February 2022",
-    "description": "Get started with dozens of web components and interactive elements built on top of Tailwind CSS.",
-    "icon": "material-symbols:wifi-sharp"
-  },
-  {
-    "title": "Product Launch",
-    "date": "October 2022",
-    "description": "Introducing our latest innovation that will revolutionize the industry.",
-    "icon": "material-symbols:wifi-calling-1-rounded"
-  },
-  {
-    "title": "Workshop Announcement",
-    "date": "April 2023",
-    "description": "Join us for an interactive workshop on advanced data analysis techniques.",
-    "icon": "material-symbols:where-to-vote"
-  },
-  {
-    "title": "Company Picnic",
-    "date": "July 2023",
-    "description": "Celebrate summer with your colleagues at our annual company picnic event.",
-    "icon": "material-symbols:wifi-channel-rounded"
-  },
-  {
     "title": "Tech Conference",
-    "date": "July 2023",
+    "date": "Jul 5, 2023",
     "description": "Explore the latest trends in technology and network with industry experts.",
     "icon": "material-symbols:water-medium-rounded"
   },
   {
+    "title": "Company Picnic",
+    "date": "Jul 1, 2023",
+    "description": "Celebrate summer with your colleagues at our annual company picnic event.",
+    "icon": "material-symbols:wifi-channel-rounded"
+  },
+  {
     "title": "Community Meetup",
-    "date": "October 2023",
+    "date": "Oct 1, 2023",
     "description": "Connect with like-minded individuals and discuss shared interests.",
     "icon": "material-symbols:wb-incandescent-rounded"
+  },
+  {
+    "title": "Workshop Announcement",
+    "date": "Apr 1, 2023",
+    "description": "Join us for an interactive workshop on advanced data analysis techniques.",
+    "icon": "material-symbols:where-to-vote"
+  },
+  {
+    "title": "Product Launch",
+    "date": "Oct 1, 2022",
+    "description": "Introducing our latest innovation that will revolutionize the industry.",
+    "icon": "material-symbols:wifi-calling-1-rounded"
+  },
+  {
+    "title": "Timeline Title",
+    "date": "Feb 1, 2022",
+    "description": "Get started with dozens of web components and interactive elements built on top of Tailwind CSS.",
+    "icon": "material-symbols:wifi-sharp"
   }
 ]

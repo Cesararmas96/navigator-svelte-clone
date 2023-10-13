@@ -3,6 +3,7 @@
     import LinkWidgetTemp from "$lib/components/widgets/LinkWidgetTemp.svelte";
     import ListOfLinksWidgetTemp from "$lib/components/widgets/ListOfLinksWidgetTemp.svelte";
     import ListOfDocumentsWidget from "$lib/components/widgets/ListOfDocumentsWidget.svelte";
+    import TimelineWidgetTemp from "$lib/components/widgets/TimelineWidgetTemp.svelte";
 </script>
 
 <!--<script lang="ts">-->
@@ -28,5 +29,6 @@
 <!--    </ul>-->
 <!--{/if}-->
 
-<ListOfDocumentsWidget/>
-<ListOfLinksWidgetTemp/>
+<!--<ListOfDocumentsWidget/>-->
+<!--<ListOfLinksWidgetTemp/>-->
+<TimelineWidgetTemp/>

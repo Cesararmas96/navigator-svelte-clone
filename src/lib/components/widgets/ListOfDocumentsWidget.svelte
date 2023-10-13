@@ -26,7 +26,8 @@
                         <TableHeadCell>
                             <div class="flex flex-row text-primary space-x-4" style="font-size: 14px">
                                 <Icon icon={`ph:file-${el.filetype}`} size="20px"/>
-                                <A class="font-medium hover:underline">{el.title}</A>
+
+                                <p class="font-medium">{el.title}</p>
 
                                 <span class="space-x-1.5" style="margin-left: auto" href="#">
 
