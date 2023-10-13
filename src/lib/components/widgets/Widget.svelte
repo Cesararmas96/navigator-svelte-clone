@@ -29,19 +29,18 @@
 	$: {
 		header = $widget?.params?.settings?.header?.show
 		footer = $widget?.params?.settings?.footer?.show
-		if ($widget?.params?.settings?.toolbar?.max) {
-			if (!$widgetActions.find((action: any) => action.name === 'maximizeWidget')) {
-				addWidgetAction(widgetActions, {
-					name: 'maximizeWidget',
-					action: async () => {
-						console.log('maximizeWidget')
-						$selectedWidgetMaximize = {
-							widget: $widget
-						}
-					}
-				})
-			}
-		}
+		// if ($widget?.params?.settings?.toolbar?.max) {
+		// 	if (!$widgetActions.find((action: any) => action.name === 'maximizeWidget')) {
+		// 		addWidgetAction(widgetActions, {
+		// 			name: 'maximizeWidget',
+		// 			action: async () => {
+		// 				$selectedWidgetMaximize = {
+		// 					widget: $widget
+		// 				}
+		// 			}
+		// 		})
+		// 	}
+		// }
 	}
 
 	const handleInstanceResize = (event: Event) => {

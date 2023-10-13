@@ -16,9 +16,10 @@
 
 	import '@mixoo/ui/css/theme/default.css'
 	import '@mixoo/form/css/theme/default.css'
+	import { storeUser } from '$lib/stores'
 
 	const baseUrl = import.meta.env.VITE_API_URL
-	const token = sessionStorage.getItem('token')
+	const token = $storeUser?.token
 	let title: string = ''
 	let description: string = ''
 	let schema: any

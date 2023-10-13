@@ -64,14 +64,14 @@
 	<div id="date" class="hidden text-md text-muted lg:block">
 		<span>{format(new Date(), 'EEEE, LLLL d, yyyy')}</span>
 	</div>
-	<nav class="ml-3 hidden items-center text-heading md:flex">
+	<!-- <nav class="ml-3 hidden items-center text-heading md:flex">
 		<button class="btn icon hidden hover:bg-light-200 dark:hover:bg-dark-100 sm:flex">
 			<iconify-icon icon="tabler:info-circle" height="14px" />
 		</button>
 		<button class="btn icon hidden hover:bg-light-200 dark:hover:bg-dark-100 sm:flex">
 			<iconify-icon icon="tabler:brand-mixpanel" height="14px" />
 		</button>
-	</nav>
+	</nav> -->
 </div>
 
 <!-- <div class="my-2 flex flex-row">

@@ -12,12 +12,12 @@
 		pasteItem
 	} from '$lib/helpers/dashboard/grid'
 	import { getApiData } from '$lib/services/getData'
-	import { storeWidgets } from '$lib/stores/widgets'
-	import { getSession } from '$lib/helpers/auth/session'
 	import Alerts from '../widgets/type/Alert/Alerts.svelte'
 	import { sendAlert } from '$lib/helpers/common/alerts'
 	import { AlertType, type AlertMessage } from '$lib/interfaces/Alert'
 	import { storeCCPWidget, storeCCPWidgetBehavior } from '$lib/stores/dashboards'
+	import { storeUser } from '$lib/stores'
+	import { onMount } from 'svelte'
 
 	export let dashboard: any
 	const baseUrl = import.meta.env.VITE_API_URL
@@ -76,11 +76,9 @@
 		try {
 			const copiedWidget = $storeCCPWidget
 
-			const session = await getSession()
 			const { program_id, dashboard_id } = dashboard // Assuming dashboard is defined somewhere
 			const widget_id = copiedWidget.widget_id // TODO: Check if widget_id is defined
 			const tempTitle = 'Temp Title'
-			const userId = session.session.user_id
 
 			const item = gridItems.find((item: any) => item.uid === copiedWidget.uid)
 			const newItem = structuredClone(item)
@@ -88,13 +86,17 @@
 			newItem.data = copiedWidget
 			newItem.x = position.x
 			newItem.y = position.y
-			console.log('position', position)
 
 			gridItems = pasteItem(newItem, gridItems)
-			console.log('gridItems', gridItems)
 
 			// 3. Build the payload
-			const payload = { program_id, dashboard_id, title: tempTitle, widget_id, user_id: userId }
+			const payload = {
+				program_id,
+				dashboard_id,
+				title: tempTitle,
+				widget_id,
+				user_id: $storeUser.user_id
+			}
 			// 4. Insert the widget
 			// const response = await getApiData(`${baseUrl}/api/v2/widgets`, 'PUT', payload)
 			// 4.2 Insert the widget into widgets store

@@ -1,5 +1,5 @@
-import { handleError } from '$lib/helpers/common/errors'
-import { sendErrorNotification } from '$lib/stores/toast'
+import { storeUser } from '$lib/stores';
+import { onDestroy } from 'svelte';
 
 /**
  * Perform an HTTP request using the fetch API.
@@ -20,6 +20,7 @@ export async function getData(
 	options: Record<string, any> = {},
 	myFetch?: any
 ) {
+
 	try {
 		// Validate that 'url' is a non-empty string
 		if (typeof url !== 'string' || url.trim() === '') {
@@ -86,11 +87,6 @@ export async function getData(
 	}
 }
 
-const token =
-	'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTczMjE1NDMsImlhdCI6MTY5Njk2MTU0MywiaXNzIjoiTW9iaWxlaW5zaWdodCIsInVzZXIiOjE1Nzc5LCJ1c2VybmFtZSI6ImptZW5kb3phMUB0cm9jZ2xvYmFsLmNvbSIsInVzZXJfaWQiOjE1Nzc5LCJpZCI6ImptZW5kb3phMUB0cm9jZ2xvYmFsLmNvbSJ9.TCCGflJabGeYWeFxQlho0XUWEjRnquJeAPt387onwto'
-	// 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTcyMzU1MTYsImlhdCI6MTY5Njg3NTUxNiwiaXNzIjoiTW9iaWxlaW5zaWdodCIsInVzZXJfaWQiOiJyZ2lhbm5vdHRpQHRyb2NnbG9iYWwuY29tIiwidXBuIjoicmdpYW5ub3R0aUB0cm9jZ2xvYmFsLmNvbSIsImVtYWlsIjoicmdpYW5ub3R0aUB0cm9jZ2xvYmFsLmNvbSIsImdpdmVuX25hbWUiOiJSaWNhcmRvIiwiZmFtaWx5X25hbWUiOiJHaWFubm90dGkiLCJuYW1lIjoiUmljYXJkbyBHaWFubm90dGkiLCJkaXNwbGF5X25hbWUiOiJSaWNhcmRvIEdpYW5ub3R0aSIsImlkIjoicmdpYW5ub3R0aUB0cm9jZ2xvYmFsLmNvbSIsImF1dGhfbWV0aG9kIjoiYWRmcyIsImF1dGhfdG9rZW4iOiJleUowZVhBaU9pSktWMVFpTENKaGJHY2lPaUpTVXpJMU5pSXNJbmcxZENJNkltTnhRbmR1UmtOaVoyNU9lV2s0U2tGUFR6SnNkSFZUTnpSb1ZTSjkuZXlKaGRXUWlPaUp0YVdOeWIzTnZablE2YVdSbGJuUnBkSGx6WlhKMlpYSTZibUYyYVdkaGRHOXlYMlJsZGk1aFpHWnpMbWxrWlc1MGFXWnBaWElpTENKcGMzTWlPaUpvZEhSd2N6b3ZMM056Ynk1MGNtOWpaMnh2WW1Gc0xtTnZiUzloWkdaekwzTmxjblpwWTJWekwzUnlkWE4wSWl3aWFXRjBJam94TmprMk9EYzFOVEUxTENKbGVIQWlPakUyT1RZNE56a3hNVFVzSW1WdFlXbHNJam9pY21kcFlXNXViM1IwYVVCMGNtOWpaMnh2WW1Gc0xtTnZiU0lzSW1kcGRtVnVYMjVoYldVaU9pSlNhV05oY21Sdklpd2labUZ0YVd4NVgyNWhiV1VpT2lKSGFXRnVibTkwZEdraUxDSm5jbTkxY0NJNld5SkViMjFoYVc0Z1ZYTmxjbk1pTENKV1VFNGdWWE5sY25NaUxDSkJWMU10TmpNM05qWXdNekEzTWpRd0xVUmhjMmhpYjJGeVpDSmRMQ0oxY0c0aU9pSnlaMmxoYm01dmRIUnBRSFJ5YjJObmJHOWlZV3d1WTI5dElpd2lZV3gwWlhKdVlYUmxSVzFoYVd3aU9pSm5hV0Z1YjJ0QVoyMWhhV3d1WTI5dElpd2lSR2x6Y0d4aGVTMU9ZVzFsSWpvaVVtbGpZWEprYnlCSGFXRnVibTkwZEdraUxDSmhjSEIwZVhCbElqb2lVSFZpYkdsaklpd2lZWEJ3YVdRaU9pSnVZWFpwWjJGMGIzSmZaR1YyTG1Ga1puTXVZMnhwWlc1MFgybGtJaXdpWVhWMGFHMWxkR2h2WkNJNkluVnlianB2WVhOcGN6cHVZVzFsY3pwMFl6cFRRVTFNT2pJdU1EcGhZenBqYkdGemMyVnpPbEJoYzNOM2IzSmtVSEp2ZEdWamRHVmtWSEpoYm5Od2IzSjBJaXdpWVhWMGFGOTBhVzFsSWpvaU1qQXlNeTB4TUMwd09WUXhPRG94T0Rvek5TNDBNVEZhSWl3aWRtVnlJam9pTVM0d0lpd2ljMk53SWpvaWIzQmxibWxrSW4wLnMxU0ZTdEN6Y19BTXB1V1pjYmVoVjNSRll2V3JtNWpJR180Sl9NN242bVlqYmxTVWtrVURLbVlKOXNkVTd2ZDZ6c2FNNG9mTXlTTWs4MjJKUHV1cWhSYjVTdGQtN295TTdpLThZcUN3U3V5LVlaaW5Fc0R3YUZUVTc5bjFwX2VzdkE4dWZzQnJYcTFHQzFDRVFFSjdOZWNKckVuc2hnMkV6M01BbkFJUzhyV3R3RUNycTBZT1pCNWhBVld4Qkw4RUk0SWN4TzZCenNCeDg3MmtYQ0VfUkotWlFhWDFyVUdWb3IyTS1QREQxcWVfYklfWHFsVGNpQTl3Z0Z6UThGWDJ5WXVXdWktY3ppRGlwU01wSDVZS2F6WFB5YnBkV1Z1RHZDZjdsSzZydUxMOG1ndzJDUjZ2SWVFQ1RWeS04QjJ1ZDVqLTZXU0M5d3NlUFFQSF96TkZ2ZyIsInRva2VuX3R5cGUiOiJCZWFyZXIiLCJ1c2VybmFtZSI6InJnaWFubm90dGlAdHJvY2dsb2JhbC5jb20ifQ.aNJLWWoC2iy-GOdAW3kdJv4bL8d35pyRX6kSDBxXavo'
-	// 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTcyMTc4NzIsImlhdCI6MTY5Njg1Nzg3MiwiaXNzIjoiTW9iaWxlaW5zaWdodCIsInVzZXJfaWQiOiJyZ2lhbm5vdHRpQHRyb2NnbG9iYWwuY29tIiwidXBuIjoicmdpYW5ub3R0aUB0cm9jZ2xvYmFsLmNvbSIsImVtYWlsIjoicmdpYW5ub3R0aUB0cm9jZ2xvYmFsLmNvbSIsImdpdmVuX25hbWUiOiJSaWNhcmRvIiwiZmFtaWx5X25hbWUiOiJHaWFubm90dGkiLCJuYW1lIjoiUmljYXJkbyBHaWFubm90dGkiLCJkaXNwbGF5X25hbWUiOiJSaWNhcmRvIEdpYW5ub3R0aSIsImlkIjoicmdpYW5ub3R0aUB0cm9jZ2xvYmFsLmNvbSIsImF1dGhfbWV0aG9kIjoiYWRmcyIsImF1dGhfdG9rZW4iOiJleUowZVhBaU9pSktWMVFpTENKaGJHY2lPaUpTVXpJMU5pSXNJbmcxZENJNkltTnhRbmR1UmtOaVoyNU9lV2s0U2tGUFR6SnNkSFZUTnpSb1ZTSjkuZXlKaGRXUWlPaUp0YVdOeWIzTnZablE2YVdSbGJuUnBkSGx6WlhKMlpYSTZibUYyYVdkaGRHOXlYMlJsZGk1aFpHWnpMbWxrWlc1MGFXWnBaWElpTENKcGMzTWlPaUpvZEhSd2N6b3ZMM056Ynk1MGNtOWpaMnh2WW1Gc0xtTnZiUzloWkdaekwzTmxjblpwWTJWekwzUnlkWE4wSWl3aWFXRjBJam94TmprMk9EVTNPRGN3TENKbGVIQWlPakUyT1RZNE5qRTBOekFzSW1WdFlXbHNJam9pY21kcFlXNXViM1IwYVVCMGNtOWpaMnh2WW1Gc0xtTnZiU0lzSW1kcGRtVnVYMjVoYldVaU9pSlNhV05oY21Sdklpd2labUZ0YVd4NVgyNWhiV1VpT2lKSGFXRnVibTkwZEdraUxDSm5jbTkxY0NJNld5SkViMjFoYVc0Z1ZYTmxjbk1pTENKV1VFNGdWWE5sY25NaUxDSkJWMU10TmpNM05qWXdNekEzTWpRd0xVUmhjMmhpYjJGeVpDSmRMQ0oxY0c0aU9pSnlaMmxoYm01dmRIUnBRSFJ5YjJObmJHOWlZV3d1WTI5dElpd2lZV3gwWlhKdVlYUmxSVzFoYVd3aU9pSm5hV0Z1YjJ0QVoyMWhhV3d1WTI5dElpd2lSR2x6Y0d4aGVTMU9ZVzFsSWpvaVVtbGpZWEprYnlCSGFXRnVibTkwZEdraUxDSmhjSEIwZVhCbElqb2lVSFZpYkdsaklpd2lZWEJ3YVdRaU9pSnVZWFpwWjJGMGIzSmZaR1YyTG1Ga1puTXVZMnhwWlc1MFgybGtJaXdpWVhWMGFHMWxkR2h2WkNJNkluVnlianB2WVhOcGN6cHVZVzFsY3pwMFl6cFRRVTFNT2pJdU1EcGhZenBqYkdGemMyVnpPbEJoYzNOM2IzSmtVSEp2ZEdWamRHVmtWSEpoYm5Od2IzSjBJaXdpWVhWMGFGOTBhVzFsSWpvaU1qQXlNeTB4TUMwd09WUXhNem95TkRvek1DNDFPVEZhSWl3aWRtVnlJam9pTVM0d0lpd2ljMk53SWpvaWIzQmxibWxrSW4wLnJRS1VXT2RocktabERvYWY1d21laFhCLWx3aG1ua0FrTS1CT0NsSkxCRE1SMjNwR1FoaWlRekhRaFNNaE51VFhtNy1pckpyQVNWTFFFM2xNVmR1VmJQQmFJeUlqMUItR0p4amptc1RPVGJKWmpGcC1CMVp0Z1M4SnR0RFI2VF9FbEhqNlJ1SUFnS292NUVyOWhuQXdSYUNQZkJzTXRhemtoa09kS3ZPUXVoR2NoQ0tScW9sM2VubGdsOWUwa1ZQWTJIREdxVUFKVzhqT2tZcFlTY3pxaTJZcGhJS3ROTENhQ2YxY3k3cDBPZUx0a0RJRTdWYkhNd3p3NUtkbG5XdUptYVQ3T0l6bE40Wm9iNzJQMU5Hd0R2Vm5PcHNLX002cWwtbXhGQTRoZHAtSkVKaHo3RDdmS2dpcGxUU0hINGxiOFpBS244S3FRLTNTa2VSU3hZZUEtZyIsInRva2VuX3R5cGUiOiJCZWFyZXIiLCJ1c2VybmFtZSI6InJnaWFubm90dGlAdHJvY2dsb2JhbC5jb20ifQ.caIMl_6jvc2LRvCm2yhRELqHFpfsIUt3s63FneRm14E'
-
 export async function getApiData(
 	url: string,
 	method = 'POST',
@@ -99,26 +95,40 @@ export async function getApiData(
 	options: Record<string, any> = {},
 	myFetch?: any
 ) {
-	if (!options.authorization) {
-		// const token = sessionStorage.getItem('token') || localStorage.getItem('token')
-		const headers = { authorization: `Bearer ${token}` }
-		options = { ...options, headers }
+	if (!options.headers?.authorization) {
+		const a = storeUser.subscribe((user: any) => {
+			if (user?.token) {
+				const headers = { authorization: `Bearer ${user?.token}` }
+				options = { ...options, headers }
+			}
+		})
+		onDestroy(a)
 	}
 	const response = await getData(getQuerySlug(url), method, payload, queryParams, options, myFetch)
 	return response
 }
 
 export async function patchData(url: string, payload: Record<string, any> = {}) {
-	const headers = { authorization: `Bearer ${token}` }
-	const options = { headers }
+	let options	
+	storeUser.subscribe((user: any) => {
+		if (user?.token) {
+			const headers = { authorization: `Bearer ${user.token}` }
+			options = { ...options, headers }
+		}
+	})
+
 	const response = await getData(getQuerySlug(url), 'PATCH', payload, {}, options)
 	return { ...response }
 }
 
 export async function postData(url: string, payload: Record<string, any> = {}) {
-	const headers = { authorization: `Bearer ${token}` }
-	const options = { headers }
-	console.log('url', url, payload)
+	let options	
+	storeUser.subscribe((user: any) => {
+		if (user?.token) {
+			const headers = { authorization: `Bearer ${user.token}` }
+			options = { ...options, headers }
+		}
+	})
 	const response = await getData(getQuerySlug(url), 'POST', payload, {}, options)
 	return { ...response }
 }

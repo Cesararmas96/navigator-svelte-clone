@@ -1,9 +1,13 @@
+import { decrypt } from '$lib/helpers/auth/auth';
 import type { Handle } from '@sveltejs/kit'
 
 export const handle: Handle = async ({ event, resolve }) => {
-  const token = event.cookies.get('session')
-
-  if (!token) {
+  let token = ''
+  try {
+    const decoded = decrypt(event.cookies.get('_session'));
+    if (!decoded) return await resolve(event)
+    token = decoded
+  } catch (error) {
     return await resolve(event)
   }
 
@@ -16,16 +20,17 @@ export const handle: Handle = async ({ event, resolve }) => {
       }
     })
     const session = await rawSession.json()
-    console.log('hooks', session.session)
 
     if (session) {
       event.locals.user = session.session
+      event.locals.user.token = token
     }
   } catch (error) {
+
+    console.log('hooks', error)
     return await resolve(event)
   }
 
-
-  // load page as normal
   return await resolve(event)
 }
+

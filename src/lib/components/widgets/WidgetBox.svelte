@@ -147,10 +147,6 @@
 		dispatch('handleRemove')
 	}
 
-	onDestroy(() => {
-		console.log('destroyed')
-	})
-
 	$: if (resized) $widgetStore.resized = true
 </script>
 

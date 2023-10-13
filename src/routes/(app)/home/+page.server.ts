@@ -1,12 +1,10 @@
 import { getApiData } from "$lib/services/getData"
 import { redirect } from "@sveltejs/kit"
 
-export const load = async ({cookies, locals, fetch}) => {
-  console.log('cookies', cookies)
-  if (!locals.user) {
-    throw redirect(302, '/')
-  }
+export const load = async ({locals, fetch}) => {
+  if (!locals.user) throw redirect(302, '/')
 
-  const programs = await getApiData(`programs`, 'GET', {}, {}, {}, fetch) 
-  return { programs }
+  const headers = { authorization: `Bearer ${locals.user.token}` }
+  const programs = await getApiData(`programs`, 'GET', {}, {}, { headers }, fetch) 
+  return { programs, user: locals.user }
 }

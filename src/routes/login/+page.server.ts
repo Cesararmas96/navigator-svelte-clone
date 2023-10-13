@@ -1,11 +1,9 @@
 import { fail, redirect } from '@sveltejs/kit'
 import type { Action, Actions, PageServerLoad } from './$types'
-
+import { encrypt } from '$lib/helpers/auth/auth';
 
 export const load: PageServerLoad = async ({ locals }) => {
-  if (locals.user) {
-    throw redirect(302, '/')
-  }
+  if (locals.user) throw redirect(302, '/')
 }
 
 const login: Action = async ({ cookies, request }) => {
@@ -31,11 +29,12 @@ const login: Action = async ({ cookies, request }) => {
     body: JSON.stringify({username, password})
   });
 
+
   if (response.ok) {
     const data = await response.json();
-    console.log('login', data);
+    const token = encrypt(data.token);
 
-    cookies.set('session', data.token, {
+    cookies.set('_session', token, {
       // send cookie for every page
       path: '/',
       // server side only cookie so you can't use `document.cookie`
@@ -52,5 +51,6 @@ const login: Action = async ({ cookies, request }) => {
   // redirect the user
   throw redirect(302, '/')
 }
+
 
 export const actions: Actions = { login }

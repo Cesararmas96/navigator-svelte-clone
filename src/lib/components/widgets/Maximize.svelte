@@ -7,14 +7,13 @@
 	$: if ($selectedWidgetMaximize) {
 		widget = $selectedWidgetMaximize.widget
 		widget.loaded = false
-		console.log(widget)
 	}
 </script>
 
 {#if $selectedWidgetMaximize}
 	<div class="widget-maximize">
-		<WidgetBox {widget} let:fixed let:isOwner let:isToolbarVisible>
-			<Widget {fixed} {isToolbarVisible} {isOwner} />
+		<WidgetBox {widget} let:fixed let:isOwner let:isToolbarVisible let:widget>
+			<Widget {widget} {fixed} {isToolbarVisible} {isOwner} />
 		</WidgetBox>
 	</div>
 {/if}

@@ -140,10 +140,9 @@ export const gridHeight = (uid: string, formatDefinition: any): any => {
   const toolbarTop = toolbarTopEL ? toolbarTopEL.offsetHeight : 0
 	const toolbarBottomEL = document.getElementById(`aggrid-toolbar-${uid}-bottom`)
   const toolbarBottom = toolbarBottomEL ? toolbarBottomEL.offsetHeight : 0
-
   // const footerHeight = document.getElementById(`widget-footer-${uid}`)!.offsetHeight
 	const contentHeight = widgetHeight - headerHeight - toolbarTop - toolbarBottom
-	return `${contentHeight}px` //&& contentHeight > 200 ? `${contentHeight}px` : '200px'
+	return contentHeight > 350 ? `${contentHeight}px` : '350px'
 }
 
 export const recordsPerPage = (formatDefinition: any): any => {

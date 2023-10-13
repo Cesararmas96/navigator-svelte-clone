@@ -9,7 +9,6 @@
 	import { sendErrorNotification } from '$lib/stores/toast'
 
 	export let widget: Writable<any>
-
 	let widgetActions: any = getContext('widgetActions')
 
 	const slug = $widget.query_slug?.slug || $widget.params.query?.slug
@@ -18,9 +17,7 @@
 	let data: any
 
 	async function fetchData() {
-		// console.log('SLUG', slug)
 		const conditions = buildConditions()
-		// console.log('CONDITIONS TOTAL', conditions)
 		try {
 			data = getApiData(slug, method, conditions)
 		} catch (error) {
@@ -217,26 +214,14 @@
 
 	addWidgetAction(widgetActions, {
 		name: 'reloadFetchData',
-		action: () => fetchData()
+		action: () => fetchRefreshData()
 	})
 
-	// if (!$widgetActions.find((action: any) => action.name === 'exportData')) {
-	// 	const actions = $widgetActions
-	// 	actions.push({
-	// 		name: 'exportData'
-	// 		// action: () => fetchData()
-	// 	})
-	// 	$widgetActions = actions
-	// }
+	const fetchRefreshData = () => {
+		$widget.data = null
+		$widget.fetch = false
+	}
 
-	// if (!$widgetActions.find((action: any) => action.name === 'filterData')) {
-	// 	const actions = $widgetActions
-	// 	actions.push({
-	// 		name: 'filterData'
-	// 		// action: () => fetchData()
-	// 	})
-	// 	$widgetActions = actions
-	// }
 	$: if (!$widget.fetch) {
 		if (!$widget.data) {
 			fetchData()

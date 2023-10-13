@@ -1,42 +1,36 @@
 <script lang="ts">
-    import {Avatar, Dropdown, DropdownItem} from "flowbite-svelte";
-    import {goto} from "$app/navigation";
-    import type {User} from "../../../interfaces/session";
-    import {getSession, handleLogout} from "$lib/helpers/auth/session";
-    import Icon from "$lib/components/common/Icon.svelte";
+	import { Avatar, Dropdown, DropdownItem } from 'flowbite-svelte'
+	import Icon from '$lib/components/common/Icon.svelte'
+	import { enhance } from '$app/forms'
 
-
-    const sessionPromise: Promise<User> = getSession();
-
-
+	const handleLogout = () => {}
 </script>
 
 <Avatar
-        src="/images/troc.png"
-        class="avatarProfile dark:bg-gray-0 bg-white/0 hover:bg-white/10 dark:hover:bg-gray-600"
-        rounded
-        border={false}
-        size={'sm'}
+	src="/images/troc.png"
+	class="avatarProfile dark:bg-gray-0 cursor-pointer bg-white/0 hover:bg-white/10 dark:hover:bg-gray-600"
+	rounded
+	border={false}
+	size={'sm'}
 />
-{#await sessionPromise then session}
 
-    <Dropdown triggeredBy=".avatarProfile" containerClass="">
-
-        <div>
-            <DropdownItem>
-                <div class="flex">
-
-                    <Icon icon="iconamoon:profile" size="20px"/>
-                    <a href="/profile" class="mx-2">
-                        Profile
-
-                    </a>
-                </div>
-            </DropdownItem>
-        </div>
-        <DropdownItem>Dashboard</DropdownItem>
-        <DropdownItem>Settings</DropdownItem>
-        <!--        <DropdownItem>Earnings</DropdownItem>-->
-        <DropdownItem slot="footer" on:click={handleLogout}>Sign out</DropdownItem>
-    </Dropdown>
-{/await}
+<Dropdown triggeredBy=".avatarProfile" containerClass="min-w-[150px]">
+	<div>
+		<DropdownItem>
+			<div class="flex cursor-pointer flex-row items-center">
+				<Icon icon="mdi:account-outline" size="20px" />
+				<a href="/profile" class="mx-2"> Profile </a>
+			</div>
+		</DropdownItem>
+		<DropdownItem slot="footer">
+			<div class="flex cursor-pointer">
+				<form action="/logout" method="POST" use:enhance>
+					<button type="submit" class="flex flex-row items-center">
+						<Icon icon="mdi:power" size="20px" />
+						<span class="mx-2">Log out</span>
+					</button>
+				</form>
+			</div>
+		</DropdownItem>
+	</div>
+</Dropdown>
