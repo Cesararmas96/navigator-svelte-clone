@@ -137,9 +137,115 @@
 	}
 
 	$: if ($storeCCPWidget) addWidgetCopyAlert()
+
+     let displayModal = false;
+
+    const getWidgetTemplates = async () => {
+        displayModal = true;
+
+        try {
+            // Extract program id
+            const {program_id} = dashboard;
+
+            const token = sessionStorage.getItem("token");
+            const resp = await fetch(`https://api.dev.navigator.mobileinsight.com/api/v2/widgets-template?program_id=${program_id}`,
+
+                {
+                    method: "PATCH",
+                    headers: {
+                        "Authorization": `Bearer ${token}`
+                    }
+                }
+            );
+            // getApiData(`https://api.dev.navigator.mobileinsight.com/api/v2/widgets-template`, "GET", "");
+
+            if (!resp.ok) {
+                const errorMessage = `Failed to fetch data: ${resp.status} - ${resp.statusText}`;
+                throw new Error(errorMessage);
+            }
+
+
+            const data = await resp.json();
+            console.log(data);
+
+            return data;
+        } catch (error) {
+            console.error("An error occurred:", error.message);
+            // Handle the error as needed, e.g., display an error message or log it.
+        }
+    };
+
+
+    const handleWidgetInsert = async (widgetUid: string) => {
+        const token = sessionStorage.getItem("token");
+        try {
+
+            const resp = await fetch(`https://api.dev.navigator.mobileinsight.com/api/v2/widgets-template/${widgetUid}`,
+
+                {
+                    method: "PATCH",
+                    headers: {
+                        "Authorization": `Bearer ${token}`
+                    }
+                }
+            );
+
+            if (!resp.ok) {
+                const errorMessage = `Failed to fetch data: ${resp.status} - ${resp.statusText}`;
+                throw new Error(errorMessage);
+            }
+            const data = await resp.json();
+            console.log(data);
+            return data;
+        } catch (error) {
+            console.error("An error occurred:", error.message);
+            // Handle the error as needed, e.g., display an error message or log it.
+        }
+
+    };
+
+
+
+
+
+
+
+
+
+
+
 </script>
 
 <svelte:window bind:innerWidth />
+{#if displayModal}
+    {#await getWidgetTemplates()}
+        <Spinner fullScreen={false}/>
+
+    {:then widgets}
+        <Modal title="Insert Widget" bind:open={displayModal} style="padding-top:50px">
+
+
+            <Table hoverable={true}>
+
+                <TableHeadCell>All Widgets</TableHeadCell>
+
+                {#each widgets as widget}
+                    <TableBodyRow>
+                        <TableBodyCell>
+                            <Button on:click={() => handleWidgetInsert(widget.uid)}>
+                                {widget.widget_name}
+                            </Button>
+                        </TableBodyCell>
+                    </TableBodyRow>
+                {/each}
+
+            </Table>
+
+
+        </Modal>
+
+    {/await}
+{/if}
 
 <Alerts />
 
