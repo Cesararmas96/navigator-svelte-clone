@@ -4,6 +4,7 @@
     import ListOfLinksWidgetTemp from "$lib/components/widgets/ListOfLinksWidgetTemp.svelte";
     import ListOfDocumentsWidget from "$lib/components/widgets/ListOfDocumentsWidget.svelte";
     import TimelineWidgetTemp from "$lib/components/widgets/TimelineWidgetTemp.svelte";
+    import CarouselWidgetTemp from "$lib/components/widgets/CarouselWidgetTemp.svelte";
 </script>
 
 <!--<script lang="ts">-->
@@ -31,4 +32,4 @@
 
 <!--<ListOfDocumentsWidget/>-->
 <!--<ListOfLinksWidgetTemp/>-->
-<TimelineWidgetTemp/>
+<CarouselWidgetTemp/>

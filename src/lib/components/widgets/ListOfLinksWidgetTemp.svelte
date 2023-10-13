@@ -29,13 +29,17 @@
                                 <p class="mr-2 font-medium" style="font-size: 14px">{index + 1}</p>
 
 
-                                <A class="font-medium hover:underline flex ml-auto mr-auto"
+                                <A class="font-medium hover:underline"
                                    href={el.href}>
 
                                     <span style="font-size: 13px">
                                     {el.title}
                                     </span>
 
+
+                                    <span style="font-size: 13px" class="pl-0.5 -pb-1">
+                                        <Icon icon={"gg:external"} size="20px"/>
+                                    </span>
                                 </A>
 
                             </div>

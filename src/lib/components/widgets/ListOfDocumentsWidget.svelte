@@ -31,11 +31,12 @@
 
                                 <span class="space-x-1.5" style="margin-left: auto" href="#">
 
-                                    <a href="href={el.href}">
+                                    <a href="{el.source}" target="_blank" rel="noopener noreferrer">
                                     <Icon icon='ph:eye' size="18px"/>
                                     </a>
 
-                                    <a href="#">
+
+                                    <a href={el.source} download={el.source}>
                                     <Icon icon='material-symbols:download' size="20px"/>
                                     </a>
                                 </span>
