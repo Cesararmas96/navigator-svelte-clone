@@ -2,6 +2,7 @@
     import CardWidgetTemp from "$lib/components/widgets/CardWidgetTemp.svelte";
     import LinkWidgetTemp from "$lib/components/widgets/LinkWidgetTemp.svelte";
     import ListOfLinksWidgetTemp from "$lib/components/widgets/ListOfLinksWidgetTemp.svelte";
+    import ListOfDocumentsWidget from "$lib/components/widgets/ListOfDocumentsWidget.svelte";
 </script>
 
 <!--<script lang="ts">-->
@@ -27,5 +28,4 @@
 <!--    </ul>-->
 <!--{/if}-->
 
-<ListOfLinksWidgetTemp/>
-
+<ListOfDocumentsWidget/>
