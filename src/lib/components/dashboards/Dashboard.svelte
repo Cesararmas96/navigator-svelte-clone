@@ -166,7 +166,7 @@
             const resp = await fetch(`https://api.dev.navigator.mobileinsight.com/api/v2/widgets-template?program_id=${program_id}`,
 
                 {
-                    method: "GET",
+                    method: "PATCH",
                     headers: {
                         "Authorization": `Bearer ${token}`
                     }
