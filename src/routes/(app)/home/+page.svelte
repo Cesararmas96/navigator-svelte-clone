@@ -29,3 +29,4 @@
 <!--{/if}-->
 
 <ListOfDocumentsWidget/>
+<ListOfLinksWidgetTemp/>

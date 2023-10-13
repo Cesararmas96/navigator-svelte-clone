@@ -25,9 +25,19 @@
                 {#each data as el, index}
                     <TableBodyRow>
                         <TableHeadCell>
-                            <div class="flex flex-row">
-                                <p class="mr-2">{index + 1}</p>
-                                <A class="font-medium hover:underline" href={el.href}>{el.title}</A>
+                            <div class="flex flex-row text-primary">
+                                <p class="mr-2 font-medium" style="font-size: 14px">{index + 1}</p>
+
+
+                                <A class="font-medium hover:underline flex ml-auto mr-auto"
+                                   href={el.href}>
+
+                                    <span style="font-size: 13px">
+                                    {el.title}
+                                    </span>
+
+                                </A>
+
                             </div>
                         </TableHeadCell>
                     </TableBodyRow>
