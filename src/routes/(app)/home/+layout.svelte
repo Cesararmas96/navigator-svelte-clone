@@ -1,12 +1,11 @@
 <script lang="ts">
 	import Footer from '$lib/components/layouts/Footer.svelte'
 	import Header from '$lib/components/layouts/Header.svelte'
-	import { copyToken, pasteToken } from '$lib/helpers/auth/session'
 
 	let width: number
 </script>
 
-<svelte:window bind:innerWidth={width} on:blur={copyToken} on:focus={pasteToken} />
+<svelte:window bind:innerWidth={width} />
 
 <Header />
 

@@ -1,5 +1,9 @@
-import { sendErrorNotification } from "$lib/stores/toast";
-import type { Actions } from "@sveltejs/kit";
+import { redirect, type Actions } from "@sveltejs/kit";
+import type { PageServerLoad } from "../$types";
+
+export const load: PageServerLoad = async ({ locals }) => {
+  if (!locals.user)  throw redirect(302, '/login')
+}
 
 export const actions: Actions = {
 	create: async ({request}) => {

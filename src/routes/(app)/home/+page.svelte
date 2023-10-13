@@ -1,10 +1,12 @@
 <script lang="ts">
 	import Card from '$lib/components/home/Card.svelte'
 	import { storePrograms } from '$lib/stores/programs'
+	import { storeUser } from '$lib/stores/session.js'
 
 	export let data
 
 	$storePrograms = data.programs
+	$storeUser = data.user
 
 	const allPrograms = data.programs.sort(function (program: any, program2: any) {
 		return program.program_name.localeCompare(program2.program_name)

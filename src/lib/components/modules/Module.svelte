@@ -174,8 +174,7 @@
 		} catch (e: any) {
 			console.log(`There was an error: ${e.message}`)
 		}
-		const behavior = sessionStorage.get('dashboardBehavior')
-		if (behavior === 'cut') {
+		if ($storeCCPDashboardBehavior === 'cut') {
 			await getApiData(`${baseUrl}/api/v2/dashboards/${currentDashboard.uid}`, 'DELETE')
 		}
 	}

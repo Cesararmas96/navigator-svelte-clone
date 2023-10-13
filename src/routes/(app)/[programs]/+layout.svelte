@@ -7,6 +7,7 @@
 	import { storeDashboards } from '$lib/stores/dashboards.js'
 	import { storeModule, storeModules } from '$lib/stores/modules'
 	import { storePrograms } from '$lib/stores/programs.js'
+	import { storeUser } from '$lib/stores/session.js'
 
 	export let data
 
@@ -14,6 +15,7 @@
 	$storeModule = data.trocModule
 	$storeDashboards = data.dashboards
 	$storePrograms = data.programs
+	$storeUser = data.user
 
 	let width: number
 </script>

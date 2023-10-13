@@ -4,17 +4,12 @@
 	import { getContext } from 'svelte'
 	import { selectedWidgetMaximize } from '$lib/stores/widgets'
 
-	let widgetActions: any = getContext('widgetActions')
+	let widget: any = getContext('widget')
 
 	$: isMaximize = Boolean($selectedWidgetMaximize)
-	$: maximize = $widgetActions.find((action: any) => action.name === 'maximizeWidget')
 	const handleMaximize = () => {
 		isMaximize = !isMaximize
-		if (!isMaximize) {
-			$selectedWidgetMaximize = null
-		} else {
-			maximize.action()
-		}
+		$selectedWidgetMaximize = !isMaximize ? null : { widget: { ...$widget } }
 	}
 </script>
 

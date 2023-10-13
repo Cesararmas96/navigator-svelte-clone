@@ -13,11 +13,8 @@
 	import ToolbarMaximize from './toolbar/Maximize.svelte'
 	import ToolbarClose from './toolbar/Close.svelte'
 	import ToolbarCollapse from './toolbar/Collapse.svelte'
-	import { getData } from '$lib/services/getData'
-	import { getSession } from '$lib/helpers/auth/session'
-	import { AlertType, type AlertMessage } from '$lib/interfaces/Alert'
-	import { sendAlert } from '$lib/helpers/common/alerts'
 	import { storeCCPWidget, storeCCPWidgetBehavior } from '$lib/stores/dashboards'
+	import { storeUser } from '$lib/stores'
 
 	export let isToolbarVisible: boolean
 
@@ -36,11 +33,8 @@
 	// TODO get session from session storage
 
 	const handleWidgetCopyorCut = (widget: any, action: string) => {
-		// sessionStorage.setItem('copiedWidget', JSON.stringify($widget))
-		// sessionStorage.setItem('behavior', action)
 		storeCCPWidget.set($widget)
 		storeCCPWidgetBehavior.set(action)
-		// addWidgetCopyAlert()
 	}
 </script>
 
@@ -84,17 +78,15 @@
 		</button>
 		<Tooltip placement="left">Copy</Tooltip>
 
-		{#await getSession() then session}
-			{#if session.session.groups.includes('superuser')}
-				<button
-					class="icon btn hover:bg-light-100 dark:hover:bg-dark-200"
-					on:click={() => handleWidgetCopyorCut(widget, 'cut')}
-				>
-					<Icon icon={'ion:cut-sharp'} size="18" />
-				</button>
-				<Tooltip placement="left">Cut</Tooltip>
-			{/if}
-		{/await}
+		{#if $storeUser.groups.includes('superuser')}
+			<button
+				class="icon btn hover:bg-light-100 dark:hover:bg-dark-200"
+				on:click={() => handleWidgetCopyorCut(widget, 'cut')}
+			>
+				<Icon icon={'ion:cut-sharp'} size="18" />
+			</button>
+			<Tooltip placement="left">Cut</Tooltip>
+		{/if}
 
 		<Tooltip placement="left" triggeredBy="#more-actions">More</Tooltip>
 		<button

@@ -1,96 +1,73 @@
-<script>
+<script lang="ts">
+	import { storeUser } from '$lib/stores'
+	import Icon from '$lib/components/common/Icon.svelte'
+	import { TabItem, Tabs } from 'flowbite-svelte'
+	import Profile from '$lib/components/profile/Profile.svelte'
+	import PasswordStrength from '$lib/components/forms/PasswordStrength.svelte'
+	import PasswordInput from '$lib/components/forms/PasswordInput.svelte'
 
-    import {getSession} from "$lib/helpers/auth/session";
-    import {goto} from "$app/navigation";
+	export let data: any
 
-    import Icon from "$lib/components/common/Icon.svelte";
+	const session = data.user ? data.user : $storeUser
 
-    import {TabItem, Tabs} from 'flowbite-svelte';
-    import Profile from "$lib/components/profile/Profile.svelte";
-    import PasswordStrength from "$lib/components/forms/PasswordStrength.svelte";
-    import PasswordInput from "$lib/components/forms/PasswordInput.svelte";
-
-
-    let rawSession
-
-    try {
-        rawSession = getSession()
-    } catch (e) {
-        goto('/login')
-    }
-    console.log(rawSession)
-    let password = ''
-
-
+	let password = ''
 </script>
 
+<Tabs>
+	<TabItem>
+		<div slot="title" class="flex items-center gap-2">
+			<Icon icon="mdi:user" size="20px" />
+			Identities
+		</div>
+		<div class="flex flex-row">
+			<Profile {session} />
+			<p>
+				<b>Profile:</b>
+				Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
+				labore et dolore magna aliqua.
+			</p>
+		</div>
+	</TabItem>
+	<TabItem>
+		<div slot="title" class="flex items-center gap-2">
+			<Icon icon="mdi:world" size="20px" />
+			Accounts
+		</div>
 
-{#await rawSession then session}
+		<div class="flex flex-row">
+			<Profile {session} />
 
-    <Tabs>
-        <TabItem>
-            <div slot="title" class="items-center gap-2 flex">
-                <Icon icon="mdi:user" size="20px"/>
-                Identities
-            </div>
-            <div class="flex flex-row">
+			<p class="text-sm text-gray-500 dark:text-gray-400">
+				<b>Settings:</b>
+				Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
+				labore et dolore magna aliqua.
+			</p>
+		</div>
+	</TabItem>
 
-                <Profile session={session}/>
-                <p>
-                    <b>Profile:</b>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore
-                    et
-                    dolore magna aliqua.
-                </p>
-            </div>
-        </TabItem>
-        <TabItem>
+	<TabItem open>
+		<div slot="title" class="flex items-center gap-2">
+			<Icon icon="mdi:lock" size="20px" />
+			Security
+		</div>
+		<div class="flex flex-row">
+			<Profile {session} />
+			<div class="ml-10 flex-col">
+				<div class="mb-6">
+					<p>Current password</p>
+					<PasswordInput />
+				</div>
 
-            <div slot="title" class="flex items-center gap-2">
-                <Icon icon="mdi:world" size="20px"/>
-                Accounts
-            </div>
+				<p class="">New password</p>
 
-            <div class="flex flex-row">
-                <Profile session={session}/>
+				<div class="mb-6">
+					<PasswordInput />
+					<PasswordStrength {password} />
+				</div>
 
-                <p class="text-sm text-gray-500 dark:text-gray-400">
-                    <b>Settings:</b>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore
-                    et
-                    dolore magna aliqua.
-                </p>
-            </div>
-        </TabItem>
-
-
-        <TabItem open>
-            <div slot="title" class="flex items-center gap-2">
-                <Icon icon="mdi:lock" size="20px"/>
-                Security
-            </div>
-            <div class="flex flex-row">
-                <Profile session={session}/>
-                <div class="flex-col ml-10">
-
-                    <div class="mb-6">
-                        <p>Current password</p>
-                        <PasswordInput/>
-                    </div>
-
-                    <p class="">New password</p>
-
-                    <div class="mb-6">
-                        <PasswordInput/>
-                        <PasswordStrength {password}/>
-                    </div>
-
-                    <p>Confirm new password</p>
-                    <PasswordInput/>
-                </div>
-            </div>
-        </TabItem>
-    </Tabs>
-
-
-{/await}
+				<p>Confirm new password</p>
+				<PasswordInput />
+			</div>
+		</div>
+	</TabItem>
+</Tabs>

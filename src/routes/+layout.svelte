@@ -12,7 +12,6 @@
 	import WidgetMaximize from '$lib/components/widgets/Maximize.svelte'
 	import WidgetFormBuilderDrawer from '$lib/components/widgets/FormBuilderDrawer.svelte'
 	import Spinner from '$lib/components/common/Spinner.svelte'
-	import { getSession } from '$lib/helpers/auth/session'
 	import { loading } from '$lib/stores/preferences'
 
 	initModal()
@@ -22,11 +21,9 @@
 	<Spinner fullScreen={true} />
 {/if}
 
-{#await getSession() then _}
-	<slot />
-	<Toasts />
-	<Modal />
-	<WidgetSettings />
-	<WidgetFormBuilderDrawer />
-	<WidgetMaximize />
-{/await}
+<slot />
+<Toasts />
+<Modal />
+<WidgetSettings />
+<WidgetFormBuilderDrawer />
+<WidgetMaximize />

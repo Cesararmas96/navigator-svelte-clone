@@ -10,7 +10,7 @@
 	let Thing: any
 
 	onMount(async () => {
-		$widget.data = data
+		if (!$widget.data) $widget.data = data
 		Thing = (await import(`./type/${classbase}/${classbase}.svelte`)).default
 		if ($widget.temp) {
 			$widget.instance_loading = true
@@ -18,4 +18,4 @@
 	})
 </script>
 
-<svelte:component this={Thing} {data} />
+<svelte:component this={Thing} data={$widget.data} />

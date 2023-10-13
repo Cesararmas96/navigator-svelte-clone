@@ -9,7 +9,8 @@ declare global {
 				color: string;
 			},
 			module: any, 
-			user: any
+			user: any,
+			token: string
 		}
 		// interface Error {}
 		// interface Locals {}
