@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Widget from '$lib/components/widgets/Widget.svelte'
 	import WidgetBox from '$lib/components/widgets/WidgetBox.svelte'
-	import { storeUser } from '$lib/stores/session.js'
+	import { storeUser } from '$lib/stores/session'
 
 	export let data
 

@@ -201,6 +201,15 @@
 		sendAlert(alert)
 	}
 
+	const handleShareDashboard = () => {
+		console.log('handleShareDashboard', currentDashboard)
+		const url = `/share/dashboard/${currentDashboard.program_id}/${currentDashboard.module_id}/${currentDashboard.duid}`
+		const link = document.createElement('a')
+		link.href = url
+		link.setAttribute('target', '_blank')
+		link.click()
+		dropdownOpen = false
+	}
 	$: if ($storeCCPDashboard) addDashboardCopyAlert()
 </script>
 
@@ -273,6 +282,13 @@
 									>
 										<Icon icon="fluent:convert-range-20-regular" size="18" classes="mr-1" />
 										Convert to Module</DropdownItem
+									>
+									<DropdownItem
+										on:click={handleShareDashboard}
+										defaultClass="flex flex-row font-medium py-2 pl-2 pr-4 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"
+									>
+										<Icon icon="mdi:share-variant" size="18" classes="mr-1" />
+										Share Dashboard</DropdownItem
 									>
 									<DropdownItem
 										on:click={() => handleDashboardRemove(dashboard.dashboard_id)}

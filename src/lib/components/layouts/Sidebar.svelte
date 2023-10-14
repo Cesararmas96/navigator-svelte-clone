@@ -10,6 +10,7 @@
 	import { page } from '$app/stores'
 	import Icon from '../common/Icon.svelte'
 	import { menuHidden, sidebarMin } from '$lib/stores/sidebar'
+	import { onMount } from 'svelte'
 
 	interface menuItem {
 		type: string
@@ -71,13 +72,26 @@
 			event.preventDefault()
 		}
 	}
+
+	onMount(() => {
+		const closeSidebarOnClickOutside = (event) => {
+			if ($menuHidden || event.target.classList.contains('btn-sidebar-toggle')) return
+			const sidebarElement = document.getElementById('sidebar')
+			if (sidebarElement && !sidebarElement.contains(event.target)) {
+				$menuHidden = true
+			}
+		}
+		document.addEventListener('click', closeSidebarOnClickOutside)
+		return () => {
+			document.removeEventListener('click', closeSidebarOnClickOutside)
+		}
+	})
 </script>
 
 <Sidebar
 	id="sidebar"
-	asideClass="max-w-[240px] max-h-[calc(100vh)] max-xl:can-toggle {$sidebarMin
-		? 'sidebar-min'
-		: ''} 
+	asideClass="max-w-[240px] max-h-[calc(100vh)] max-xl:can-toggle 
+		{$sidebarMin ? 'sidebar-min' : ''} 
 		{$menuHidden ? '' : 'sidebar-toggled'}"
 >
 	<SidebarWrapper divClass="px-3 py-4" data-simplebar>

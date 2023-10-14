@@ -9,9 +9,10 @@
 		cloneItem,
 		removeItem,
 		addNewItem,
-		pasteItem
+		pasteItem,
+		getAllWidgetLocations
 	} from '$lib/helpers/dashboard/grid'
-	import { getApiData } from '$lib/services/getData'
+	import { getApiData, postData } from '$lib/services/getData'
 	import Alerts from '../widgets/type/Alert/Alerts.svelte'
 	import { sendAlert } from '$lib/helpers/common/alerts'
 	import { AlertType, type AlertMessage } from '$lib/interfaces/Alert'
@@ -45,6 +46,17 @@
 			: loadV2Locations(dashboard, widgets, cols, false)
 	}
 
+	const updateLocations = async (e: any) => {
+		// console.log(e)
+		// const locations = getAllWidgetLocations(gridItems)
+		// const payload = { widget_location: { ...locations } }
+		// console.log(payload)
+		// postData(
+		// 	`${import.meta.env.VITE_API_URL}/api/v2/widgets/location/${dashboard.dashboard_id}`,
+		// 	payload
+		// )
+	}
+
 	$: handleResizable = (item: any) => {
 		gridItems = resizeItem(item, gridItems)
 	}
@@ -62,7 +74,9 @@
 
 	let resizedUID = ''
 	$: changeItemSize = (item: any) => {
-		resizedUID = item.uid
+		console.log(item)
+		gridItems
+		resizedUID = item.id
 	}
 
 	$: {
@@ -150,6 +164,7 @@
 	{cols}
 	collision="compress"
 	bind:controller={gridController}
+	on:change={updateLocations}
 >
 	{#each gridItems as item}
 		<GridItem
@@ -161,7 +176,7 @@
 			activeClass="grid-item-active"
 			previewClass="bg-red-500 rounded"
 			on:change={(e) => {
-				changeItemSize(item)
+				changeItemSize(e.detail.item)
 			}}
 			let:active
 		>

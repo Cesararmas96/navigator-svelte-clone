@@ -63,6 +63,14 @@ export const loadV3Locations = (_dashboard: any, _widgets: any[], cols: number, 
   return items
 }
 
+export const getAllWidgetLocations = (item: any[]) => {
+  const locations = {}
+  item.forEach((widget) => {
+    locations[widget.uid] = { x: widget.x, y: widget.y, w: widget.w, h: widget.h }
+  })
+  return locations
+}
+
 export const cloneItem = (item: any, items: any[]) => {
   const clones = items
     .filter((i) => i.data.parent?.uid === item.uid)
