@@ -19,6 +19,7 @@
 		selectedFormBuilderWidget
 	} from '$lib/stores/widgets'
 	import Toolbar from './Toolbar.svelte'
+	import { getWidgetAction } from '$lib/helpers'
 
 	export let data: any
 	export let simpleTable: boolean = false
@@ -122,11 +123,18 @@
 		}
 	}
 
+	const widgetActions = getContext<Writable<any[]>>('widgetActions')
+	const resizeAction = getWidgetAction($widgetActions, 'resize')
+
 	onMount(() => {
 		const eGridDiv: HTMLElement = document.querySelector(`#grid-${$widget.uid}`)!
 		new Grid(eGridDiv, gridOptions)
 		eGridDiv.style.height = gridHeight($widget.uid, $widget.params)
 		if ($widget.temp) $widget.instance_loaded = true
+		if ($widget.resize_on_load) resizeAction.action()
+		setTimeout(() => {
+			eGridDiv.style.height = gridHeight($widget.uid, $widget.params)
+		}, 100)
 	})
 
 	$: isDark = $themeMode === 'dark'

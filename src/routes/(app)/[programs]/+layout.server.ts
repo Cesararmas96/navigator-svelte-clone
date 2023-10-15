@@ -16,5 +16,6 @@ export const load = async ({params, fetch, locals}) => {
   const trocModule = modules.find((item: any) => item.module_name === moduleName || item.module_slug === moduleName);
   const menu = modules.filter((item: any) => item.program_id === trocModule?.program_id);
   const dashboards = await getApiData(`${urlBase}/api/v2/dashboards?program_id=${trocModule?.program_id}&module_id=${trocModule?.module_id}`, 'GET', {}, {}, {headers}, fetch)
+
   return { programs, trocModule, dashboards, menu, user: locals.user }
 }

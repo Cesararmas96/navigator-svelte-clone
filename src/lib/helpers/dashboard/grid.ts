@@ -12,6 +12,7 @@ export const loadV2Locations = (_dashboard: any, _widgets: any[], cols: number, 
     Object.keys(_dashboard.widget_location).forEach(function callback(value: any, index: number) {
       const uid = Object.keys(_dashboard.widget_location[value])[0]
       const data = _widgets.find((item) => item.uid === uid) || {}
+      data.resize_on_load = true
       const w = parseInt(locations[index]) * (cols / 12)
       if (w + x > cols) {
         x = 0
@@ -32,8 +33,9 @@ export const loadV3Locations = (_dashboard: any, _widgets: any[], cols: number, 
     let row = 0
     _dashboard.widget_location = {};
     _widgets.forEach((widget: any) => {
-        _dashboard.widget_location[widget.uid] = { x: 0, y: row, w: cols, h: minRowHeight };
-        row += minRowHeight;
+      widget.resize_on_load = true
+      _dashboard.widget_location[widget.uid] = { x: 0, y: row, w: cols, h: minRowHeight };
+      row += minRowHeight;
     });
   }
 
@@ -58,17 +60,9 @@ export const loadV3Locations = (_dashboard: any, _widgets: any[], cols: number, 
       const data = _widgets.find((item) => item.uid === key) || {}
       return { uid: key, ...item, data }
     })
-    _dashboard.attributes.explorer = 'v3'
+  // _dashboard.attributes.explorer = 'v3'
   
   return items
-}
-
-export const getAllWidgetLocations = (item: any[]) => {
-  const locations = {}
-  item.forEach((widget) => {
-    locations[widget.uid] = { x: widget.x, y: widget.y, w: widget.w, h: widget.h }
-  })
-  return locations
 }
 
 export const cloneItem = (item: any, items: any[]) => {

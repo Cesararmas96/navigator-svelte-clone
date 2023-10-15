@@ -1,11 +1,15 @@
 <script lang="ts">
-	import { onMount } from 'svelte'
+	import { getWidgetAction } from '$lib/helpers'
+	import { getContext, onMount } from 'svelte'
 	import type { Writable } from 'svelte/store'
+	import NoDataFound from './NoDataFound.svelte'
 
 	export let widget: Writable<any>
 	export let data: any
 
+	const widgetActions = getContext<Writable<any[]>>('widgetActions')
 	const classbase = $widget.classbase.replace('Widget', '')
+	const resizeAction = getWidgetAction($widgetActions, 'resize')
 
 	let Thing: any
 
@@ -18,4 +22,8 @@
 	})
 </script>
 
-<svelte:component this={Thing} data={$widget.data} />
+{#if $widget.data}
+	<svelte:component this={Thing} data={$widget.data} />
+{:else}
+	<NoDataFound />
+{/if}

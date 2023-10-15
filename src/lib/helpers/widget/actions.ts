@@ -1,12 +1,18 @@
 import { setContext } from "svelte"
 import { writable, type Writable } from 'svelte/store';
 
-export const initWidgetActions = () => {
-  const widgetActions = writable([])
-  setContext('widgetActions', widgetActions)
+type Action = {
+  name: string,
+  action: () => void
 }
 
-export const addWidgetAction = (widgetActions: Writable<any>, action: any) => {
+export const initWidgetActions = (): Writable<any[]> => {
+  const widgetActions = writable([])
+  setContext('widgetActions', widgetActions)
+  return widgetActions
+}
+
+export const addWidgetAction = (widgetActions: Writable<any>, action: Action) => {
   widgetActions.update((actions: any) => {
     if (!actions.find((a: any) => a.name === action.name))
       actions.push(action)

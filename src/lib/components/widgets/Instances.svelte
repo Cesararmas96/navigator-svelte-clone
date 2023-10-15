@@ -22,7 +22,10 @@
 	}
 </script>
 
-<div id={`widget-instances-${$widget.uid}`}>
+<div
+	id={`widget-instances-${$widget.uid}`}
+	class:hidden={!$widget.instances || $widget.instances.length === 0}
+>
 	{#if $widget.instances}
 		{#each $widget.instances as instance}
 			<WidgetInstence

@@ -9,8 +9,7 @@
 		cloneItem,
 		removeItem,
 		addNewItem,
-		pasteItem,
-		getAllWidgetLocations
+		pasteItem
 	} from '$lib/helpers/dashboard/grid'
 	import { getApiData, postData } from '$lib/services/getData'
 	import Alerts from '../widgets/type/Alert/Alerts.svelte'
@@ -35,26 +34,31 @@
 	}
 
 	const getGridItems = async (dashboardId: string) => {
-		const widgets = await getApiData(
-			`${import.meta.env.VITE_API_URL}/api/v2/widgets?dashboard_id=${dashboardId}`,
-			'GET'
-		)
-		return dashboard.attributes.explorer === 'v3' ||
-			!dashboard.widget_location ||
-			Object.keys(dashboard.widget_location).length === 0
-			? loadV3Locations(dashboard, widgets, cols, false)
-			: loadV2Locations(dashboard, widgets, cols, false)
+		const widgets = await getApiData(`${baseUrl}/api/v2/widgets?dashboard_id=${dashboardId}`, 'GET')
+		const setNewLocations =
+			!dashboard.widget_location || Object.keys(dashboard.widget_location).length === 0
+		const items =
+			dashboard.attributes.explorer === 'v3' || setNewLocations
+				? loadV3Locations(dashboard, widgets, cols, false)
+				: loadV2Locations(dashboard, widgets, cols, false)
+		return items
 	}
 
-	const updateLocations = async (e: any) => {
-		// console.log(e)
-		// const locations = getAllWidgetLocations(gridItems)
-		// const payload = { widget_location: { ...locations } }
-		// console.log(payload)
-		// postData(
-		// 	`${import.meta.env.VITE_API_URL}/api/v2/widgets/location/${dashboard.dashboard_id}`,
-		// 	payload
-		// )
+	let isChanging = false
+
+	const updateLocations = async () => {
+		if (isChanging) return
+		isChanging = true
+		setTimeout(async () => {
+			isChanging = false
+			const payload = { widget_location: { ...gridController.gridParams.items } }
+			// postData(`${baseUrl}/api/v2/widgets/location/${dashboard.dashboard_id}`, payload)
+			// if (dashboard.attributes.explorer !== 'v3') {
+			// 	postData(`${baseUrl}/api/v2/dashboards/${dashboard.duid}`, {
+			// 		dashboard: { attributes: { explorer: 'v3' } }
+			// 	})
+			// }
+		}, 2000)
 	}
 
 	$: handleResizable = (item: any) => {
@@ -74,9 +78,7 @@
 
 	let resizedUID = ''
 	$: changeItemSize = (item: any) => {
-		console.log(item)
-		gridItems
-		resizedUID = item.id
+		resizedUID = item.uid
 	}
 
 	$: {
@@ -114,9 +116,7 @@
 			// 4. Insert the widget
 			// const response = await getApiData(`${baseUrl}/api/v2/widgets`, 'PUT', payload)
 			// 4.2 Insert the widget into widgets store
-			// console.log($storeWidgets)
 			// $storeWidgets.push(response.data)
-			// console.log($storeWidgets)
 			// 5. Check if behavior was "cut" to remove the widget
 			const behavior = $storeCCPWidgetBehavior
 			// if (behavior === 'cut') {
@@ -176,7 +176,7 @@
 			activeClass="grid-item-active"
 			previewClass="bg-red-500 rounded"
 			on:change={(e) => {
-				changeItemSize(e.detail.item)
+				changeItemSize(item)
 			}}
 			let:active
 		>

@@ -1,10 +1,16 @@
 <script lang="ts">
 	import SimpleCard from './SimpleCard.svelte'
 	import { fnFormats } from '$lib/utils/formats'
-	import { getContext } from 'svelte'
+	import { getContext, onMount } from 'svelte'
+	import { getWidgetAction } from '$lib/helpers'
+	import type { Writable } from 'svelte/store'
 
-	let widget: any = getContext('widget')
 	export let data: any
+
+	const widget: any = getContext('widget')
+	const widgetActions = getContext<Writable<any[]>>('widgetActions')
+	const resizeAction = getWidgetAction($widgetActions, 'resize')
+
 	$: {
 		buildCards()
 	}
@@ -51,6 +57,10 @@
 			}
 		})
 	}
+
+	onMount(() => {
+		if ($widget.resize_on_load) resizeAction.action()
+	})
 </script>
 
 {#if data}

@@ -1,8 +1,7 @@
 <script lang="ts">
 	import { isDarkMode, isUrl } from '$lib/helpers/common/common'
-	import { initWidgetActions } from '$lib/helpers/widget/actions'
-	import { initInstances } from '$lib/helpers/widget/instances'
-	import { createEventDispatcher, getContext, onDestroy, setContext } from 'svelte'
+	import { addWidgetAction, initWidgetActions } from '$lib/helpers/widget/actions'
+	import { createEventDispatcher, setContext } from 'svelte'
 	import { writable, type Writable } from 'svelte/store'
 	import { selectedWidgetSettings } from '$lib/stores/widgets'
 
@@ -80,15 +79,22 @@
 	}
 	let widgetStore: any
 	let instances: any
+	let widgetActions: Writable<any[]>
 
 	let widgetBase: string
+
+	const dispatchResize = () => {
+		setTimeout(() => {
+			dispatch('handleResize')
+		}, 100)
+	}
+
 	$: {
 		if (!widget.loaded) {
 			widgetStore = writable(widget)
 			widget.instances = []
-			initWidgetActions()
-			// initInstances()
-			// instances = getContext<Writable<any[]>>('widgetInstances')
+			widgetActions = initWidgetActions()
+
 			if (widget.params && !widget.params?.settings && !widget.temp) {
 				widget.params.settings = Object.assign({}, defaultSettings.params.settings)
 			}
@@ -100,6 +106,11 @@
 			widget.context = 'widget'
 			$widgetStore = widget
 			setContext('widget', widgetStore)
+
+			addWidgetAction(widgetActions, {
+				name: 'resize',
+				action: dispatchResize
+			})
 		}
 	}
 
@@ -132,9 +143,7 @@
 
 	$: if ($widgetStore?.collapse_action) {
 		$widgetStore.collapse_action = null
-		setTimeout(() => {
-			dispatch('handleResize')
-		}, 100)
+		dispatchResize()
 	}
 
 	$: if ($widgetStore?.clone) {
@@ -164,7 +173,7 @@
 	class:border={!isDarkMode() && border}
 	class:border-gray-200={!isDarkMode() && border}
 	class:cursor-default={fixed || !draggable}
-	class:widget-drilldown-open={$widgetStore.instances && $widgetStore.instances.length > 0}
+	class:widget-drilldown-open={$widgetStore?.instances && $widgetStore?.instances?.length > 0}
 	class={`card justify-content-between flex h-full w-full flex-col rounded-lg p-1 ${bgTypeClass(
 		background
 	)}`}
