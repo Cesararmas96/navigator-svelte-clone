@@ -9,7 +9,8 @@
 		cloneItem,
 		removeItem,
 		addNewItem,
-		pasteItem
+		pasteItem,
+		reloadLocations
 	} from '$lib/helpers/dashboard/grid'
 	import { getApiData, postData } from '$lib/services/getData'
 	import Alerts from '../widgets/type/Alert/Alerts.svelte'
@@ -17,7 +18,6 @@
 	import { AlertType, type AlertMessage } from '$lib/interfaces/Alert'
 	import { storeCCPWidget, storeCCPWidgetBehavior } from '$lib/stores/dashboards'
 	import { storeUser } from '$lib/stores'
-	import { onMount } from 'svelte'
 
 	export let dashboard: any
 	const baseUrl = import.meta.env.VITE_API_URL
@@ -28,19 +28,20 @@
 	let innerWidth: number
 	let gridItems: any[] = []
 	let gridController: GridController
+	let widgets: any[] = []
 
 	const isMobile = (): boolean => {
-		return window.innerWidth < 500
+		return innerWidth < 500
 	}
 
 	const getGridItems = async (dashboardId: string) => {
-		const widgets = await getApiData(`${baseUrl}/api/v2/widgets?dashboard_id=${dashboardId}`, 'GET')
+		widgets = await getApiData(`${baseUrl}/api/v2/widgets?dashboard_id=${dashboardId}`, 'GET')
 		const setNewLocations =
 			!dashboard.widget_location || Object.keys(dashboard.widget_location).length === 0
 		const items =
 			dashboard.attributes.explorer === 'v3' || setNewLocations
-				? loadV3Locations(dashboard, widgets, cols, false)
-				: loadV2Locations(dashboard, widgets, cols, false)
+				? loadV3Locations(dashboard, widgets, cols, isMobile())
+				: loadV2Locations(dashboard, widgets, cols, isMobile())
 		return items
 	}
 
@@ -52,7 +53,8 @@
 		setTimeout(async () => {
 			isChanging = false
 			const payload = { widget_location: { ...gridController.gridParams.items } }
-			// postData(`${baseUrl}/api/v2/widgets/location/${dashboard.dashboard_id}`, payload)
+			console.log(`${baseUrl}/api/v2/widgets/location/${dashboard.dashboard_id}`)
+			postData(`${baseUrl}/api/v2/widgets/location/${dashboard.dashboard_id}`, payload)
 			// if (dashboard.attributes.explorer !== 'v3') {
 			// 	postData(`${baseUrl}/api/v2/dashboards/${dashboard.duid}`, {
 			// 		dashboard: { attributes: { explorer: 'v3' } }
@@ -153,7 +155,16 @@
 	$: if ($storeCCPWidget) addWidgetCopyAlert()
 </script>
 
-<svelte:window bind:innerWidth />
+<svelte:window
+	bind:innerWidth
+	on:resize={() => {
+		setTimeout(() => {
+			console.log('resize', gridController.gridParams.items)
+			gridController.gridParams.updateGrid()
+			gridItems = reloadLocations(dashboard, gridController.gridParams, isMobile())
+		}, 100)
+	}}
+/>
 
 <Alerts />
 

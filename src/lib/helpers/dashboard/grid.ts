@@ -1,19 +1,22 @@
+import type { GridParams } from "svelte-grid-extended/types"
 import { generateUID } from "../common/common"
 
 const rowHeight = 12
 const minRowHeight = 14
 
 export const loadV2Locations = (_dashboard: any, _widgets: any[], cols: number, isMobile: boolean) => {
+  console.log('loadV2Locations')
   let widgets: any[] = []
   let x: number = 0
   let y: number = 0
+  console.log(isMobile)
   if (_dashboard.widget_location) {
     const locations = _dashboard.attributes.cols.split(',') || [_dashboard.attributes.cols]
     Object.keys(_dashboard.widget_location).forEach(function callback(value: any, index: number) {
       const uid = Object.keys(_dashboard.widget_location[value])[0]
       const data = _widgets.find((item) => item.uid === uid) || {}
       data.resize_on_load = true
-      const w = parseInt(locations[index]) * (cols / 12)
+      const w = !isMobile ? parseInt(locations[index]) * (cols / 12) : cols
       if (w + x > cols) {
         x = 0
         y += minRowHeight
@@ -29,6 +32,7 @@ export const loadV2Locations = (_dashboard: any, _widgets: any[], cols: number, 
 }
 
 export const loadV3Locations = (_dashboard: any, _widgets: any[], cols: number, isMobile: boolean) => {
+  console.log('loadV3Locations', isMobile)
   if (!_dashboard.widget_location || Object.keys(_dashboard.widget_location).length === 0) {
     let row = 0
     _dashboard.widget_location = {};
@@ -39,30 +43,51 @@ export const loadV3Locations = (_dashboard: any, _widgets: any[], cols: number, 
     });
   }
 
-  // if (isMobile) {
-
-  //   return Object.entries(_dashboard.widget_location)
-  // 		.map(([key, col]: [string, any]) => {
-  //       console.log(key, col)
-  //     })
-
-  //   // return _dashboard.widget_location.map((widget: any) => {
-  //   //   const data = _widgets.find((item) => item.uid === widget.uid) || {}
-  //   //   widget.x = 0
-  //   //   widget.y = row
-  //   //   widget.w = cols
-  //   //   row += widget.h
-  //   //   return { ...widget, ...data }
-  //   // })
-  // }
-  const items = Object.entries(_dashboard.widget_location)
-    .map(([key, item]: [string, any]) => {
-      const data = _widgets.find((item) => item.uid === key) || {}
-      return { uid: key, ...item, data }
-    })
+  if (isMobile) {
+    let y = 0
+    return Object.entries(_dashboard.widget_location)
+  		.map(([key, item]: [string, any]) => {
+        const data = _widgets.find((i) => i.uid === key) || {}
+        
+        return { uid: key, x: 0, w: cols, h: item.h, y: ++y, data }
+      })
+  } else {
+    return Object.entries(_dashboard.widget_location)
+      .map(([key, item]: [string, any]) => {
+        const data = _widgets.find((item) => item.uid === key) || {}
+        return { uid: key, ...item, data }
+      })
+  }
   // _dashboard.attributes.explorer = 'v3'
   
-  return items
+}
+
+export const reloadLocations = (_dashboard: any, gridParams: GridParams, isMobile: boolean) => {
+  let y = 0
+  // gridParams.itemSize = {height: 10, width: 300}
+  // gridParams.cols = 1
+  gridParams.updateGrid()
+  if (!isMobile) {
+    return Object.entries(_dashboard.widget_location)
+  		.map(([key, item]: [string, any]) => {
+        gridParams.items[key].y = item.y
+        gridParams.items[key].h = item.h
+        gridParams.items[key].w = item.w
+        gridParams.items[key].x = item.x
+        return gridParams.items[key]
+      })
+  } else {
+    return Object.entries(gridParams.items)
+      .map(([key, item]: [string, any]) => {
+        gridParams.items[key].y = y
+        gridParams.items[key].h = item.h
+        gridParams.items[key].w = 12
+        gridParams.items[key].x = 0
+        y = y + item.h
+        return gridParams.items[key]
+      })
+  }
+  
 }
 
 export const cloneItem = (item: any, items: any[]) => {
