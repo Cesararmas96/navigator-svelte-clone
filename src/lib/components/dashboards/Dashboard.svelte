@@ -21,6 +21,7 @@
     import Spinner from "$lib/components/common/Spinner.svelte";
 
     import {Button, Card, Table, TableBodyCell, TableBodyRow, TableHeadCell, Modal, P} from "flowbite-svelte";
+    import Icon from "$lib/components/common/Icon.svelte";
 
     export let dashboard: any;
     const baseUrl = import.meta.env.VITE_API_URL;
@@ -238,11 +239,26 @@
     };
 
 
+const getTemplateIcon = async(widget) => {
+    let rawIcon = widget.attributes && widget.attributes.icon
+
+
+    if (rawIcon.includes(' ')){
+        rawIcon = rawIcon.split(' ')[1]
+
+    }
+
+
+return rawIcon
+}
+
+
+
 </script>
 
 <svelte:window bind:innerWidth/>
 
-<button on:click={() => displayModal = true}>Insert Widget</button>
+<button on:click={() => displayModal = true}><Icon icon={"material-symbols:add"} size="18"></Icon>Add Widget</button>
 
 
 {#if (displayModal)}
@@ -252,23 +268,32 @@
     {:then widgets}
 
 
-        <Modal bind:open={displayModal}>
 
+<div class="z-30">
 
-<div class="mt-12">
+        <Modal bind:open={displayModal} placement={"bottom-center"}>
             <P size={"3xl"}>All Widgets</P>
-</div>
             <ul class="my-4 space-y-3">
                 {#each widgets as widget}
+                    {#if (widget.title)}
                     <div
                        class="flex items-center p-3 text-base font-bold text-gray-900 bg-gray-50 rounded-lg hover:bg-gray-100 group hover:shadow dark:bg-gray-600 dark:hover:bg-gray-500 dark:text-white">
-                        <button class="flex-1 ml-3 whitespace-nowrap" on:click={() => handleWidgetInsert(widget.uid)} >{widget.widget_name}</button>
+                        {#await getTemplateIcon(widget) then icon}
+                            <span style="color:{widget.attributes.fg_color}">
+
+                        <Icon icon={icon} size="25px"/>
+                            </span>
+                            {/await}
+                        <button class="flex-1 ml-3 whitespace-nowrap" on:click={() => handleWidgetInsert(widget.uid)}>{widget.title}</button>
+
                     </div>
+                    {/if}
                 {/each}
             </ul>
 
         </Modal>
 
+</div>
 
     {/await}
 
