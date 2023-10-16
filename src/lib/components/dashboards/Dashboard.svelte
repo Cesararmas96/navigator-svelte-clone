@@ -19,6 +19,10 @@
 	import { storeCCPWidget, storeCCPWidgetBehavior } from '$lib/stores/dashboards'
 	import { storeUser } from '$lib/stores'
 	import { onMount } from 'svelte'
+	import Spinner from '../common/Spinner.svelte'
+	import { Button, Modal, Table, TableBodyCell, TableBodyRow, TableHeadCell } from 'flowbite-svelte'
+	import { generateSlug } from '$lib/helpers/common/common'
+	import { sendErrorNotification } from '$lib/stores/toast'
 
 	export let dashboard: any
 	const baseUrl = import.meta.env.VITE_API_URL
@@ -204,7 +208,7 @@
 			console.log(data)
 
 			return data
-		} catch (error) {
+		} catch (error: any) {
 			console.error('An error occurred:', error.message)
 			// Handle the error as needed, e.g., display an error message or log it.
 		}
@@ -231,7 +235,7 @@
 			const data = await resp.json()
 			console.log(data)
 			return data
-		} catch (error) {
+		} catch (error: any) {
 			console.error('An error occurred:', error.message)
 			// Handle the error as needed, e.g., display an error message or log it.
 		}
