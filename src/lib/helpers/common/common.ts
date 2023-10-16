@@ -39,3 +39,12 @@ export const deepClone = (obj: any) => {
   }
   return clone;
 };
+
+export const generateSlug = (str: string): string => {
+  return str
+      .trim()  
+      .toLowerCase()  
+      .replace(/[^\w\s-]/g, '') 
+      .replace(/[\s_-]+/g, '-') 
+      .replace(/^-+|-+$/g, ''); 
+}

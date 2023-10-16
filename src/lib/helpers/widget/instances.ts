@@ -14,6 +14,7 @@ export const addInstance = (widget: Writable<any>, newInstance: any) => {
   instanceConfig.uid = uuid;
   instanceConfig.temp = true;
   instanceConfig.title = newInstance.title;
+  instanceConfig.widget_slug = uuid;
   // instanceConfig.master_filtering = true;
   delete instanceConfig.instance_loaded;
   delete instanceConfig.loaded;
@@ -26,9 +27,9 @@ export const addInstance = (widget: Writable<any>, newInstance: any) => {
   return instanceConfig;
 }
 
-export const removeInstance = (widget: Writable<any>, instanceUId: string) => {
+export const removeInstance = (widget: Writable<any>, instanceSlug: string) => {
   widget.update(w => {
-    w.instances = w.instances.filter((instance: any) => instance.uid !== instanceUId)
+    w.instances = w.instances.filter((instance: any) => instance.widget_slug !== instanceSlug)
     return w;
   });
 }

@@ -130,7 +130,10 @@
 		const eGridDiv: HTMLElement = document.querySelector(`#grid-${$widget.uid}`)!
 		new Grid(eGridDiv, gridOptions)
 		eGridDiv.style.height = gridHeight($widget.uid, $widget.params)
-		if ($widget.temp) $widget.instance_loaded = true
+		if ($widget.temp) {
+			const instanceLoadedAction = getWidgetAction($widgetActions, 'instanceLoaded')
+			instanceLoadedAction.action()
+		}
 		if ($widget.resize_on_load) resizeAction.action()
 		setTimeout(() => {
 			eGridDiv.style.height = gridHeight($widget.uid, $widget.params)

@@ -14,10 +14,12 @@
 	} from '$lib/helpers/dashboard/grid'
 	import { getApiData, postData } from '$lib/services/getData'
 	import Alerts from '../widgets/type/Alert/Alerts.svelte'
-	import { sendAlert } from '$lib/helpers/common/alerts'
+	import { clearAlerts, sendAlert, sendErrorAlert } from '$lib/helpers/common/alerts'
 	import { AlertType, type AlertMessage } from '$lib/interfaces/Alert'
 	import { storeCCPWidget, storeCCPWidgetBehavior } from '$lib/stores/dashboards'
 	import { storeUser } from '$lib/stores'
+	import { generateSlug } from '$lib/helpers/common/common'
+	import { sendErrorNotification } from '$lib/stores/toast'
 
 	export let dashboard: any
 	const baseUrl = import.meta.env.VITE_API_URL
@@ -35,14 +37,31 @@
 	}
 
 	const getGridItems = async (dashboardId: string) => {
-		widgets = await getApiData(`${baseUrl}/api/v2/widgets?dashboard_id=${dashboardId}`, 'GET')
-		const setNewLocations =
-			!dashboard.widget_location || Object.keys(dashboard.widget_location).length === 0
-		const items =
-			dashboard.attributes.explorer === 'v3' || setNewLocations
-				? loadV3Locations(dashboard, widgets, cols, isMobile())
-				: loadV2Locations(dashboard, widgets, cols, isMobile())
-		return items
+		clearAlerts()
+
+		try {
+			widgets = await getApiData(`${baseUrl}/api/v2/widgets?dashboard_id=${dashboardId}`, 'GET')
+
+			widgets = widgets.map((widget: any) => {
+				widget.widget_slug = generateSlug(widget.title)
+				return widget
+			})
+
+			const setNewLocations =
+				!dashboard.widget_location || Object.keys(dashboard.widget_location).length === 0
+			const items =
+				dashboard.attributes.explorer === 'v3' || setNewLocations
+					? loadV3Locations(dashboard, widgets, cols, isMobile())
+					: loadV2Locations(dashboard, widgets, cols, isMobile())
+			return items
+		} catch (error: any) {
+			sendErrorNotification(error)
+			sendErrorAlert(
+				'Error loading the widgets',
+				`There was a problem with the server. Please try again later or contact technical support if the issue persists. (${error.message})`
+			)
+			return []
+		}
 	}
 
 	let isChanging = false
@@ -53,8 +72,8 @@
 		setTimeout(async () => {
 			isChanging = false
 			const payload = { widget_location: { ...gridController.gridParams.items } }
-			console.log(`${baseUrl}/api/v2/widgets/location/${dashboard.dashboard_id}`)
-			postData(`${baseUrl}/api/v2/widgets/location/${dashboard.dashboard_id}`, payload)
+			// console.log(`${baseUrl}/api/v2/widgets/location/${dashboard.dashboard_id}`)
+			// postData(`${baseUrl}/api/v2/widgets/location/${dashboard.dashboard_id}`, payload)
 			// if (dashboard.attributes.explorer !== 'v3') {
 			// 	postData(`${baseUrl}/api/v2/dashboards/${dashboard.duid}`, {
 			// 		dashboard: { attributes: { explorer: 'v3' } }
@@ -67,7 +86,8 @@
 		gridItems = resizeItem(item, gridItems)
 	}
 	$: handleCloning = (item: any) => {
-		gridItems = cloneItem(item, gridItems)
+		const clonedItem = cloneItem(item, gridItems)
+		gridItems = [...gridItems, clonedItem]
 	}
 	$: handleRemove = (item: any) => {
 		// item.data.component.$destroy()
@@ -78,9 +98,9 @@
 		// })
 	}
 
-	let resizedUID = ''
+	let resizedSlug = ''
 	$: changeItemSize = (item: any) => {
-		resizedUID = item.uid
+		resizedSlug = item.slug
 	}
 
 	$: {
@@ -98,7 +118,7 @@
 			const widget_id = copiedWidget.widget_id // TODO: Check if widget_id is defined
 			const tempTitle = 'Temp Title'
 
-			const item = gridItems.find((item: any) => item.uid === copiedWidget.uid)
+			const item = gridItems.find((item: any) => item.slug === copiedWidget.widget_slug)
 			const newItem = structuredClone(item)
 			const position = addNewItem(newItem, gridController)
 			newItem.data = copiedWidget
@@ -193,7 +213,7 @@
 		>
 			<WidgetBox
 				widget={item.data}
-				resized={resizedUID === item.uid && !active}
+				resized={resizedSlug === item.slug && !active}
 				let:fixed
 				let:isOwner
 				let:isToolbarVisible
