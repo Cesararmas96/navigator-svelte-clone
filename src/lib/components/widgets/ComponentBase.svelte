@@ -9,7 +9,11 @@
 	let widgetBase: string
 
 	$: if ($widget && $widget.widget_type_id) {
-		widgetBase = capitalizeWord($widget.widget_type_id.split('-')[0])
+		widgetBase = $widget.widget_type_id.includes("-") ? capitalizeWord($widget.widget_type_id.split('-')[0]) : capitalizeWord($widget.widget_type_id)
+
+		widgetBase = widgetBase === "Api" || widgetBase === 'Rest' ? widgetBase : 'Media'
+
+
 		import(`./base/${widgetBase}.svelte`).then((value: any) => {
 			Thing = value.default
 		})

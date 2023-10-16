@@ -190,8 +190,8 @@
         try {
 
             const payload = {widget_name: 'New widget'}
-            // const resp = await fetch(`https://api.dev.navigator.mobileinsight.com/api/v2/widgets-template/${widgetUid}`,
-            const resp = await fetch(`https://api.dev.navigator.mobileinsight.com/api/v2/widgets-template/b13b619a-847e-4734-a3d2-fa198f0531b7`,
+            const resp = await fetch(`https://api.dev.navigator.mobileinsight.com/api/v2/widgets-template/${widgetUid}`,
+            // const resp = await fetch(`https://api.dev.navigator.mobileinsight.com/api/v2/widgets-template/b13b619a-847e-4734-a3d2-fa198f0531b7`,
                 {
                     method: "PATCH",
                     headers: {
@@ -207,22 +207,23 @@
                 throw new Error(errorMessage);
             }
             const widget = await resp.json();
-             const {program_id, dashboard_id} = dashboard
-               const widget_id = widget.widget_id
-            // const item = gridItems.find((item: any) => item.uid === widget.uid);
-            console.log(gridItems);
-            console.log(gridItems.find((item: any) => item.uid === widget.uid))
 
-            // const tempTitle = "Temp Title";
-            // const newItem = structuredClone(item);
-            // const position = addNewItem(newItem, gridController);
-            //
-            // gridItems = pasteItem(newItem, gridItems);
+            widget.resize_load = true
+            const newItem = Object.create({})
+            newItem.data = widget;
+            newItem.w = 6
+            newItem.h = 12
+            const position = addNewItem(newItem, gridController);
+            newItem.x = position.x;
+            newItem.y = position.y;
 
 
-            const position = addNewItem(widget, gridController);
+            console.log(newItem)
 
-            gridItems = pasteItem(widget, gridItems);
+           gridItems = pasteItem(newItem, gridItems);
+
+
+
 
 
 
