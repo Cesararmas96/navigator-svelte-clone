@@ -25,7 +25,6 @@
 		e.preventDefault()
 		dropdownOpen = false
 		selected = item.label
-		console.log(item)
 		dispatch('change', item)
 	}
 </script>

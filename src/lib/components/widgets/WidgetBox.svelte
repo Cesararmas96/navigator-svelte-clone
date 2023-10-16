@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { isDarkMode, isUrl } from '$lib/helpers/common/common'
-	import { initWidgetActions } from '$lib/helpers/widget/actions'
-	import { initInstances } from '$lib/helpers/widget/instances'
-	import { createEventDispatcher, getContext, onDestroy, setContext } from 'svelte'
+	import { addWidgetAction, initWidgetActions } from '$lib/helpers/widget/actions'
+	import { createEventDispatcher, onMount, setContext } from 'svelte'
 	import { writable, type Writable } from 'svelte/store'
 	import { selectedWidgetSettings } from '$lib/stores/widgets'
+	import { storeUser } from '$lib/stores'
 
 	let isToolbarVisible: boolean = false
 	let fixed: boolean
@@ -72,51 +72,69 @@
 		}
 	}
 
-	const isOwner: boolean = true // TODO: check if user is owner of widget
+	$: isOwner = widget.user_id === $storeUser.user_id
 	setContext('isWidgetOwner', isOwner)
 
-	const bgTypeClass = (bg: string) => {
-		return !isDarkMode() ? (isUrl(bg) ? 'widget-bg-image' : 'widget-bg-color') : ''
-	}
-	let widgetStore: any
-	let instances: any
+	let widgetStore: any = writable(widget)
+	setContext('widget', widgetStore)
 
-	let widgetBase: string
-	$: {
-		if (!widget.loaded) {
-			widgetStore = writable(widget)
-			widget.instances = []
-			initWidgetActions()
-			// initInstances()
-			// instances = getContext<Writable<any[]>>('widgetInstances')
-			if (widget.params && !widget.params?.settings && !widget.temp) {
-				widget.params.settings = Object.assign({}, defaultSettings.params.settings)
-			}
-			if (widget.widget_type_id) {
-				widgetBase = widget.widget_type_id.split('-')[0]
-				widgetBase = widgetBase.charAt(0).toUpperCase() + widgetBase.slice(1)
-			}
-			widget.loaded = true
-			widget.context = 'widget'
-			$widgetStore = widget
-			setContext('widget', widgetStore)
-		}
+	const dispatchResize = () => {
+		setTimeout(() => {
+			dispatch('handleResize')
+		}, 100)
 	}
 
-	$: {
-		if (
-			$selectedWidgetSettings?.state === 'saved' &&
-			$selectedWidgetSettings?.widget?.uid === widget?.uid
-		) {
-			dispatch('handleResizable', {
-				resizable: $selectedWidgetSettings.widget.params.settings.general.resizable,
-				fixed: $selectedWidgetSettings.widget.params.settings.general.fixed
-			})
-			widget = $selectedWidgetSettings.widget
-			$widgetStore = widget
-			$selectedWidgetSettings = null
-		}
+	const initActions = () => {
+		const widgetActions: Writable<any[]> = initWidgetActions()
+
+		addWidgetAction(widgetActions, {
+			name: 'resize',
+			action: dispatchResize
+		})
+
+		addWidgetAction(widgetActions, {
+			name: 'remove',
+			action: () => {
+				dispatch('handleRemove')
+			}
+		})
+
+		addWidgetAction(widgetActions, {
+			name: 'clone',
+			action: () => {
+				dispatch('handleCloning')
+			}
+		})
+
+		addWidgetAction(widgetActions, {
+			name: 'collapse',
+			action: () => {
+				dispatchResize()
+			}
+		})
+
+		addWidgetAction(widgetActions, {
+			name: 'saveSettings',
+			action: () => {
+				dispatch('handleResizable', {
+					resizable: $selectedWidgetSettings.widget.params.settings.general.resizable,
+					fixed: $selectedWidgetSettings.widget.params.settings.general.fixed
+				})
+				$widgetStore = $selectedWidgetSettings.widget
+				$selectedWidgetSettings = null
+			}
+		})
 	}
+
+	initActions()
+
+	onMount(() => {
+		$widgetStore.instances = []
+		if ($widgetStore.params && !$widgetStore.params?.settings && !$widgetStore.temp) {
+			$widgetStore.params.settings = Object.assign({}, defaultSettings.params.settings)
+		}
+		$widgetStore.context = 'widget'
+	})
 
 	$: {
 		fixed = widget?.params?.settings?.general?.fixed
@@ -130,24 +148,11 @@
 		}
 	}
 
-	$: if ($widgetStore?.collapse_action) {
-		$widgetStore.collapse_action = null
-		setTimeout(() => {
-			dispatch('handleResize')
-		}, 100)
-	}
-
-	$: if ($widgetStore?.clone) {
-		$widgetStore.clone = false
-		dispatch('handleCloning')
-	}
-
-	$: if ($widgetStore?.remove) {
-		$widgetStore.remove = false
-		dispatch('handleRemove')
-	}
-
 	$: if (resized) $widgetStore.resized = true
+
+	const bgTypeClass = (bg: string) => {
+		return !isDarkMode() ? (isUrl(bg) ? 'widget-bg-image' : 'widget-bg-color') : ''
+	}
 </script>
 
 <!-- svelte-ignore a11y-no-static-element-interactions -->
@@ -164,7 +169,7 @@
 	class:border={!isDarkMode() && border}
 	class:border-gray-200={!isDarkMode() && border}
 	class:cursor-default={fixed || !draggable}
-	class:widget-drilldown-open={$widgetStore.instances && $widgetStore.instances.length > 0}
+	class:widget-drilldown-open={$widgetStore?.instances && $widgetStore?.instances?.length > 0}
 	class={`card justify-content-between flex h-full w-full flex-col rounded-lg p-1 ${bgTypeClass(
 		background
 	)}`}

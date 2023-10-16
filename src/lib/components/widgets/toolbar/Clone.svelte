@@ -3,11 +3,13 @@
 	import Icon from '$lib/components/common/Icon.svelte'
 	import { getContext } from 'svelte'
 	import type { Writable } from 'svelte/store'
-	import { addInstance } from '$lib/helpers/widget/instances'
+	import { getWidgetAction } from '$lib/helpers'
 
-	const widget = getContext<Writable<any>>('widget')
+	const widgetActions = getContext<Writable<any[]>>('widgetActions')
+
 	const cloneWidget = () => {
-		$widget.clone = true
+		const cloneAction = getWidgetAction($widgetActions, 'clone')
+		cloneAction.action()
 	}
 </script>
 

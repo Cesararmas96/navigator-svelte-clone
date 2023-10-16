@@ -13,8 +13,13 @@ export const load = async ({params, fetch, locals}) => {
   const programs = await getApiData(`programs`, 'GET', {}, {}, {headers}, fetch) 
   const modules = await getApiData(`${urlBase}/api/v2/modules?program_slug=${params.programs}`, 'GET', {}, {}, {headers}, fetch) 
   const moduleName = (params.dashboard) ? params.dashboard : params.programs;
-  const trocModule = modules.find((item: any) => item.module_name === moduleName || item.module_slug === moduleName);
-  const menu = modules.filter((item: any) => item.program_id === trocModule?.program_id);
-  const dashboards = await getApiData(`${urlBase}/api/v2/dashboards?program_id=${trocModule?.program_id}&module_id=${trocModule?.module_id}`, 'GET', {}, {}, {headers}, fetch)
+  const trocModule = (modules && modules.length > 0) ? 
+    modules.find((item: any) => item.module_name === moduleName || item.module_slug === moduleName) : null;
+  const menu = (trocModule) ? modules.filter((item: any) => item.program_id === trocModule?.program_id) : [];
+  const dashboards = (trocModule) ? 
+    await getApiData(`${urlBase}/api/v2/dashboards?program_id=${trocModule?.program_id}&module_id=${trocModule?.module_id}`, 'GET', {}, {}, {headers}, fetch):
+    [];
+
   return { programs, trocModule, dashboards, menu, user: locals.user }
+
 }

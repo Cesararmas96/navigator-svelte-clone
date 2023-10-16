@@ -21,7 +21,7 @@
 		try {
 			data = getApiData(slug, method, conditions)
 		} catch (error) {
-			console.log(error)
+			sendErrorNotification(error)
 		}
 	}
 

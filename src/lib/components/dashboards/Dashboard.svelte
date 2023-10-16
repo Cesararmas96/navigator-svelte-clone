@@ -9,11 +9,12 @@
 		cloneItem,
 		removeItem,
 		addNewItem,
-		pasteItem
+		pasteItem,
+		reloadLocations
 	} from '$lib/helpers/dashboard/grid'
-	import { getApiData } from '$lib/services/getData'
+	import { getApiData, postData } from '$lib/services/getData'
 	import Alerts from '../widgets/type/Alert/Alerts.svelte'
-	import { sendAlert } from '$lib/helpers/common/alerts'
+	import { clearAlerts, sendAlert, sendErrorAlert } from '$lib/helpers/common/alerts'
 	import { AlertType, type AlertMessage } from '$lib/interfaces/Alert'
 	import { storeCCPWidget, storeCCPWidgetBehavior } from '$lib/stores/dashboards'
 	import { storeUser } from '$lib/stores'
@@ -28,28 +29,64 @@
 	let innerWidth: number
 	let gridItems: any[] = []
 	let gridController: GridController
+	let widgets: any[] = []
 
 	const isMobile = (): boolean => {
-		return window.innerWidth < 500
+		return innerWidth < 500
 	}
 
 	const getGridItems = async (dashboardId: string) => {
-		const widgets = await getApiData(
-			`${import.meta.env.VITE_API_URL}/api/v2/widgets?dashboard_id=${dashboardId}`,
-			'GET'
-		)
-		return dashboard.attributes.explorer === 'v3' ||
-			!dashboard.widget_location ||
-			Object.keys(dashboard.widget_location).length === 0
-			? loadV3Locations(dashboard, widgets, cols, false)
-			: loadV2Locations(dashboard, widgets, cols, false)
+		clearAlerts()
+
+		try {
+			widgets = await getApiData(`${baseUrl}/api/v2/widgets?dashboard_id=${dashboardId}`, 'GET')
+
+			widgets = widgets.map((widget: any) => {
+				widget.widget_slug = generateSlug(widget.title)
+				return widget
+			})
+
+			const setNewLocations =
+				!dashboard.widget_location || Object.keys(dashboard.widget_location).length === 0
+			const items =
+				dashboard.attributes.explorer === 'v3' || setNewLocations
+					? loadV3Locations(dashboard, widgets, cols, isMobile())
+					: loadV2Locations(dashboard, widgets, cols, isMobile())
+			return items
+		} catch (error: any) {
+			sendErrorNotification(error)
+			sendErrorAlert(
+				'Error loading the widgets',
+				`There was a problem with the server. Please try again later or contact technical support if the issue persists. (${error.message})`
+			)
+			return []
+		}
+	}
+
+	let isChanging = false
+
+	const updateLocations = async () => {
+		if (isChanging) return
+		isChanging = true
+		setTimeout(async () => {
+			isChanging = false
+			const payload = { widget_location: { ...gridController.gridParams.items } }
+			// console.log(`${baseUrl}/api/v2/widgets/location/${dashboard.dashboard_id}`)
+			// postData(`${baseUrl}/api/v2/widgets/location/${dashboard.dashboard_id}`, payload)
+			// if (dashboard.attributes.explorer !== 'v3') {
+			// 	postData(`${baseUrl}/api/v2/dashboards/${dashboard.duid}`, {
+			// 		dashboard: { attributes: { explorer: 'v3' } }
+			// 	})
+			// }
+		}, 2000)
 	}
 
 	$: handleResizable = (item: any) => {
 		gridItems = resizeItem(item, gridItems)
 	}
 	$: handleCloning = (item: any) => {
-		gridItems = cloneItem(item, gridItems)
+		const clonedItem = cloneItem(item, gridItems)
+		gridItems = [...gridItems, clonedItem]
 	}
 	$: handleRemove = (item: any) => {
 		// item.data.component.$destroy()
@@ -60,9 +97,9 @@
 		// })
 	}
 
-	let resizedUID = ''
+	let resizedSlug = ''
 	$: changeItemSize = (item: any) => {
-		resizedUID = item.uid
+		resizedSlug = item.slug
 	}
 
 	$: {
@@ -80,7 +117,7 @@
 			const widget_id = copiedWidget.widget_id // TODO: Check if widget_id is defined
 			const tempTitle = 'Temp Title'
 
-			const item = gridItems.find((item: any) => item.uid === copiedWidget.uid)
+			const item = gridItems.find((item: any) => item.slug === copiedWidget.widget_slug)
 			const newItem = structuredClone(item)
 			const position = addNewItem(newItem, gridController)
 			newItem.data = copiedWidget
@@ -100,9 +137,7 @@
 			// 4. Insert the widget
 			// const response = await getApiData(`${baseUrl}/api/v2/widgets`, 'PUT', payload)
 			// 4.2 Insert the widget into widgets store
-			// console.log($storeWidgets)
 			// $storeWidgets.push(response.data)
-			// console.log($storeWidgets)
 			// 5. Check if behavior was "cut" to remove the widget
 			const behavior = $storeCCPWidgetBehavior
 			// if (behavior === 'cut') {
@@ -138,113 +173,101 @@
 
 	$: if ($storeCCPWidget) addWidgetCopyAlert()
 
-     let displayModal = false;
+	let displayModal = false
 
-    const getWidgetTemplates = async () => {
-        displayModal = true;
+	const getWidgetTemplates = async () => {
+		displayModal = true
 
-        try {
-            // Extract program id
-            const {program_id} = dashboard;
+		try {
+			// Extract program id
+			const { program_id } = dashboard
 
-            const token = sessionStorage.getItem("token");
-            const resp = await fetch(`https://api.dev.navigator.mobileinsight.com/api/v2/widgets-template?program_id=${program_id}`,
+			const token = sessionStorage.getItem('token')
+			const resp = await fetch(
+				`https://api.dev.navigator.mobileinsight.com/api/v2/widgets-template?program_id=${program_id}`,
 
-                {
-                    method: "PATCH",
-                    headers: {
-                        "Authorization": `Bearer ${token}`
-                    }
-                }
-            );
-            // getApiData(`https://api.dev.navigator.mobileinsight.com/api/v2/widgets-template`, "GET", "");
+				{
+					method: 'PATCH',
+					headers: {
+						Authorization: `Bearer ${token}`
+					}
+				}
+			)
+			// getApiData(`https://api.dev.navigator.mobileinsight.com/api/v2/widgets-template`, "GET", "");
 
-            if (!resp.ok) {
-                const errorMessage = `Failed to fetch data: ${resp.status} - ${resp.statusText}`;
-                throw new Error(errorMessage);
-            }
+			if (!resp.ok) {
+				const errorMessage = `Failed to fetch data: ${resp.status} - ${resp.statusText}`
+				throw new Error(errorMessage)
+			}
 
+			const data = await resp.json()
+			console.log(data)
 
-            const data = await resp.json();
-            console.log(data);
+			return data
+		} catch (error) {
+			console.error('An error occurred:', error.message)
+			// Handle the error as needed, e.g., display an error message or log it.
+		}
+	}
 
-            return data;
-        } catch (error) {
-            console.error("An error occurred:", error.message);
-            // Handle the error as needed, e.g., display an error message or log it.
-        }
-    };
+	const handleWidgetInsert = async (widgetUid: string) => {
+		const token = sessionStorage.getItem('token')
+		try {
+			const resp = await fetch(
+				`https://api.dev.navigator.mobileinsight.com/api/v2/widgets-template/${widgetUid}`,
 
+				{
+					method: 'PATCH',
+					headers: {
+						Authorization: `Bearer ${token}`
+					}
+				}
+			)
 
-    const handleWidgetInsert = async (widgetUid: string) => {
-        const token = sessionStorage.getItem("token");
-        try {
-
-            const resp = await fetch(`https://api.dev.navigator.mobileinsight.com/api/v2/widgets-template/${widgetUid}`,
-
-                {
-                    method: "PATCH",
-                    headers: {
-                        "Authorization": `Bearer ${token}`
-                    }
-                }
-            );
-
-            if (!resp.ok) {
-                const errorMessage = `Failed to fetch data: ${resp.status} - ${resp.statusText}`;
-                throw new Error(errorMessage);
-            }
-            const data = await resp.json();
-            console.log(data);
-            return data;
-        } catch (error) {
-            console.error("An error occurred:", error.message);
-            // Handle the error as needed, e.g., display an error message or log it.
-        }
-
-    };
-
-
-
-
-
-
-
-
-
-
-
+			if (!resp.ok) {
+				const errorMessage = `Failed to fetch data: ${resp.status} - ${resp.statusText}`
+				throw new Error(errorMessage)
+			}
+			const data = await resp.json()
+			console.log(data)
+			return data
+		} catch (error) {
+			console.error('An error occurred:', error.message)
+			// Handle the error as needed, e.g., display an error message or log it.
+		}
+	}
 </script>
 
-<svelte:window bind:innerWidth />
+<svelte:window
+	bind:innerWidth
+	on:resize={() => {
+		setTimeout(() => {
+			console.log('resize', gridController.gridParams.items)
+			gridController.gridParams.updateGrid()
+			gridItems = reloadLocations(dashboard, gridController.gridParams, isMobile())
+		}, 100)
+	}}
+/>
 {#if displayModal}
-    {#await getWidgetTemplates()}
-        <Spinner fullScreen={false}/>
+	{#await getWidgetTemplates()}
+		<Spinner fullScreen={false} />
+	{:then widgets}
+		<Modal title="Insert Widget" bind:open={displayModal} style="padding-top:50px">
+			<Table hoverable={true}>
+				<TableHeadCell>All Widgets</TableHeadCell>
 
-    {:then widgets}
-        <Modal title="Insert Widget" bind:open={displayModal} style="padding-top:50px">
-
-
-            <Table hoverable={true}>
-
-                <TableHeadCell>All Widgets</TableHeadCell>
-
-                {#each widgets as widget}
-                    <TableBodyRow>
-                        <TableBodyCell>
-                            <Button on:click={() => handleWidgetInsert(widget.uid)}>
-                                {widget.widget_name}
-                            </Button>
-                        </TableBodyCell>
-                    </TableBodyRow>
-                {/each}
-
-            </Table>
-
-
-        </Modal>
-
-    {/await}
+				{#each widgets as widget}
+					<TableBodyRow>
+						<TableBodyCell>
+							<Button on:click={() => handleWidgetInsert(widget.uid)}>
+								{widget.widget_name}
+							</Button>
+						</TableBodyCell>
+					</TableBodyRow>
+				{/each}
+			</Table>
+		</Modal>
+	{/await}
 {/if}
 
 <Alerts />
@@ -256,6 +279,7 @@
 	{cols}
 	collision="compress"
 	bind:controller={gridController}
+	on:change={updateLocations}
 >
 	{#each gridItems as item}
 		<GridItem
@@ -273,7 +297,7 @@
 		>
 			<WidgetBox
 				widget={item.data}
-				resized={resizedUID === item.uid && !active}
+				resized={resizedSlug === item.slug && !active}
 				let:fixed
 				let:isOwner
 				let:isToolbarVisible

@@ -133,6 +133,18 @@ export async function postData(url: string, payload: Record<string, any> = {}) {
 	return { ...response }
 }
 
+export async function putData(url: string, payload: Record<string, any> = {}) {
+	let options	
+	storeUser.subscribe((user: any) => {
+		if (user?.token) {
+			const headers = { authorization: `Bearer ${user.token}` }
+			options = { ...options, headers }
+		}
+	})
+	const response = await getData(getQuerySlug(url), 'PUT', payload, {}, options)
+	return { ...response }
+}
+
 const getQuerySlug = (widgetSlug: any) => {
 	let slugQuery = widgetSlug
 

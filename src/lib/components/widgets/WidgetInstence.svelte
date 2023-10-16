@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { initWidgetActions } from '$lib/helpers/widget/actions'
+	import { addWidgetAction, initWidgetActions } from '$lib/helpers/widget/actions'
 	import { initInstances } from '$lib/helpers/widget/instances'
-	import { createEventDispatcher, setContext } from 'svelte'
-	import { writable } from 'svelte/store'
+	import { createEventDispatcher, onMount, setContext } from 'svelte'
+	import { writable, type Writable } from 'svelte/store'
 
 	export let widget: any
 	export let isToolbarVisible: boolean
@@ -12,42 +12,52 @@
 	const dispatch = createEventDispatcher()
 
 	let widgetStore = writable(widget)
+	setContext('widget', widgetStore)
 
 	let widgetBase: string
-	$: {
-		if (!widget.loaded) {
-			initWidgetActions()
-			initInstances()
+	let widgetActions: Writable<any[]>
 
-			widget.params.settings.toolbar.clone = false
+	const initActions = () => {
+		widgetActions = initWidgetActions()
 
-			if (widget.widget_type_id) {
-				widgetBase = widget.widget_type_id.split('-')[0]
-				widgetBase = widgetBase.charAt(0).toUpperCase() + widgetBase.slice(1)
+		addWidgetAction(widgetActions, {
+			name: 'closeInstance',
+			action: () => {
+				dispatch('handleCloseInstance', $widgetStore.widget_slug)
 			}
-			$widgetStore = widget
-			widget.loaded = true
-			setContext('widget', widgetStore)
+		})
+
+		addWidgetAction(widgetActions, {
+			name: 'instanceLoaded',
+			action: () => {
+				$widgetStore.instance_loading = null
+				$widgetStore.instance_loaded = null
+				dispatch('handleInstanceResize')
+			}
+		})
+
+		addWidgetAction(widgetActions, {
+			name: 'collapse',
+			action: () => {
+				setTimeout(() => {
+					dispatch('handleInstanceResize')
+				}, 100)
+			}
+		})
+	}
+
+	initActions()
+	initInstances()
+
+	onMount(() => {
+		widget.params.settings.toolbar.clone = false
+
+		if (widget.widget_type_id) {
+			widgetBase = widget.widget_type_id.split('-')[0]
+			widgetBase = widgetBase.charAt(0).toUpperCase() + widgetBase.slice(1)
 		}
-	}
-
-	$: if ($widgetStore.instance_loaded) {
-		$widgetStore.instance_loading = null
-		$widgetStore.instance_loaded = null
-		dispatch('handleInstanceResize')
-	}
-
-	$: if ($widgetStore.close_instance) {
-		$widgetStore.instance_loaded = null
-		dispatch('handleCloseInstance', $widgetStore.uid)
-	}
-
-	$: if ($widgetStore.collapse_action) {
-		$widgetStore.collapse_action = null
-		setTimeout(() => {
-			dispatch('handleInstanceResize')
-		}, 100)
-	}
+		$widgetStore = widget
+	})
 </script>
 
 <slot widget={widgetStore} {isToolbarVisible} {fixed} {isOwner} />

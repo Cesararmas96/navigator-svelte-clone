@@ -2,16 +2,21 @@
 	import { Tooltip } from 'flowbite-svelte'
 	import Icon from '$lib/components/common/Icon.svelte'
 	import { getContext } from 'svelte'
+	import { getWidgetAction } from '$lib/helpers'
+	import type { Writable } from 'svelte/store'
 
-	let widget: any = getContext('widget')
-	$widget.collapse_action = null
+	const widget: any = getContext('widget')
+	const widgetActions = getContext<Writable<any[]>>('widgetActions')
+
+	// $widget.collapse_action = null
 	$widget.collapse = false
 </script>
 
 <button
 	class="icon btn hover:bg-light-100 dark:hover:bg-dark-200"
 	on:click={(event) => {
-		$widget.collapse_action = 'collapse'
+		const collapseAction = getWidgetAction($widgetActions, 'collapse')
+		collapseAction.action()
 		$widget.collapse = !$widget.collapse
 	}}
 >

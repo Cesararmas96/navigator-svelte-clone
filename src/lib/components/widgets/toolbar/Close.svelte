@@ -1,37 +1,35 @@
 <script lang="ts">
 	import { Tooltip } from 'flowbite-svelte'
 	import Icon from '$lib/components/common/Icon.svelte'
-	import { getContext, setContext } from 'svelte'
+	import { getContext } from 'svelte'
 	import type { Writable } from 'svelte/store'
+	import { getWidgetAction } from '$lib/helpers'
 
 	const widget = getContext<Writable<any>>('widget')
-	const widgets = getContext<Writable<any>>('widgets')
 
-	const urlBase = import.meta.env.VITE_API_URL
-	const endpoint = `${urlBase}/api/v2/widgets/${$widget.uid}`
-	const method = 'DELETE'
-
-	// Temporal variable
-	const isClonedWidget = false
-	const removeWidgetFromDOM = () => {
-		const widgetsToSet = $widgets.filter((widget) => widget.uid !== $widget.uid)
-		console.log(widgetsToSet)
-		setContext('widgets', widgetsToSet)
-	}
+	const widgetActions = getContext<Writable<any[]>>('widgetActions')
 
 	async function closeWidget() {
+		const removeAction = getWidgetAction($widgetActions, 'remove')
 		if ($widget.temp) {
-			$widget.close_instance = true
+			const closeInstanceAction = getWidgetAction($widgetActions, 'closeInstance')
+			closeInstanceAction.action()
+		} else if ($widget.cloned) {
+			removeAction.action()
 		} else {
+			const urlBase = import.meta.env.VITE_API_URL
+			const endpoint = `${urlBase}/api/v2/widgets/${$widget.uid}`
+			const method = 'DELETE'
+
 			// Removes DOM element and DELETE request if not cloned
-			if (!isClonedWidget) {
-				try {
-					// const response = await getData(endpoint, method);
-					removeWidgetFromDOM()
-				} catch (e: any) {
-					console.log(e.message)
-				}
-			} else removeWidgetFromDOM()
+			// if (!isClonedWidget) {
+			// 	try {
+			// 		// const response = await getData(endpoint, method);
+			// 		removeWidgetFromDOM()
+			// 	} catch (e: any) {
+			// 		console.log(e.message)
+			// 	}
+			// } else removeWidgetFromDOM()
 		}
 	}
 </script>

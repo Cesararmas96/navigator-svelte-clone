@@ -21,10 +21,10 @@
 		<button
 			id="sidebar-toggle"
 			type="button"
-			class="-ml-2 mr-2 grid h-9 w-9 place-content-center rounded font-light hover:bg-white/10 dark:hover:bg-dark-100 xl:hidden"
+			class="btn-sidebar-toggle -ml-2 mr-2 grid h-9 w-9 place-content-center rounded font-light hover:bg-white/10 dark:hover:bg-dark-100 xl:hidden"
 			on:click={toggleDrawer}
 		>
-			<Icon icon="tabler:layout-sidebar" size="20px" />
+			<Icon icon="tabler:layout-sidebar" size="20px" classes="btn-sidebar-toggle" />
 		</button>
 		<NavBrand href="/home" class="">
 			<span class="ml-4 self-center whitespace-nowrap text-xl font-semibold dark:text-white">

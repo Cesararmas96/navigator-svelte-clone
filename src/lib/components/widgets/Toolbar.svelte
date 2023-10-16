@@ -110,7 +110,7 @@
 			{/if}
 		</Dropdown>
 
-		{#if isWidgetOwner}
+		{#if isWidgetOwner || $widget.temp || $widget.cloned}
 			<ToolbarClose />
 		{/if}
 	</div>

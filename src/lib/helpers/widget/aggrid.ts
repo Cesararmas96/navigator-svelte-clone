@@ -142,7 +142,7 @@ export const gridHeight = (uid: string, formatDefinition: any): any => {
   const toolbarBottom = toolbarBottomEL ? toolbarBottomEL.offsetHeight : 0
   // const footerHeight = document.getElementById(`widget-footer-${uid}`)!.offsetHeight
 	const contentHeight = widgetHeight - headerHeight - toolbarTop - toolbarBottom
-	return contentHeight > 350 ? `${contentHeight}px` : '350px'
+	return contentHeight > 200 ? `${contentHeight}px` : '200px'
 }
 
 export const recordsPerPage = (formatDefinition: any): any => {
