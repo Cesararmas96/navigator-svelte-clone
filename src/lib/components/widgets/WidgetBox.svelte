@@ -5,6 +5,7 @@
 	import { writable, type Writable } from 'svelte/store'
 	import { selectedWidgetSettings } from '$lib/stores/widgets'
 	import { storeUser } from '$lib/stores'
+	import { themeMode } from '$lib/stores/preferences'
 
 	let isToolbarVisible: boolean = false
 	let fixed: boolean
@@ -137,15 +138,23 @@
 	})
 
 	$: {
-		fixed = widget?.params?.settings?.general?.fixed
-		draggable = fixed ? false : widget?.params?.settings?.general?.draggable
-		if (!isDarkMode()) {
-			opacity = widget?.params?.settings?.appearance?.opacity
-			background = widget?.params?.settings?.appearance?.background || '#ffffff'
-			backgroundRGB = widget?.params?.settings?.appearance?.backgroundRGB || '255, 255, 255'
-			color = widget?.params?.settings?.appearance?.color || '#37507f'
-			border = widget?.params?.settings?.appearance?.border
-		}
+		fixed = $widgetStore?.params?.settings?.general?.fixed
+		draggable = fixed ? false : $widgetStore?.params?.settings?.general?.draggable
+	}
+
+	$: if ($themeMode !== 'dark') {
+		console.log('not dark')
+		opacity = $widgetStore?.params?.settings?.appearance?.opacity
+		background = $widgetStore?.params?.settings?.appearance?.background || '#ffffff'
+		backgroundRGB = $widgetStore?.params?.settings?.appearance?.backgroundRGB || '255, 255, 255'
+		color = $widgetStore?.params?.settings?.appearance?.color || '#37507f'
+		border = $widgetStore?.params?.settings?.appearance?.border
+	} else {
+		opacity = 100
+		background = ''
+		backgroundRGB = ''
+		color = ''
+		border = false
 	}
 
 	$: if (resized) $widgetStore.resized = true
@@ -165,9 +174,9 @@
 	style:--widget-bg-color={backgroundRGB}
 	style:--widget-bg-opacity={opacity / 100}
 	style:--widget-fixed={fixed ? 'fixed' : ''}
-	style:border-color={fixed || isDarkMode() ? '' : '#E5E7EB'}
-	class:border={!isDarkMode() && border}
-	class:border-gray-200={!isDarkMode() && border}
+	style:border-color={fixed || $themeMode === 'dark' ? '' : '#E5E7EB'}
+	class:border={$themeMode !== 'dark' && border}
+	class:border-gray-200={$themeMode !== 'dark' && border}
 	class:cursor-default={fixed || !draggable}
 	class:widget-drilldown-open={$widgetStore?.instances && $widgetStore?.instances?.length > 0}
 	class={`card justify-content-between flex h-full w-full flex-col rounded-lg p-1 ${bgTypeClass(

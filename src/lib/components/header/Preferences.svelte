@@ -64,5 +64,7 @@
 		on:click={handleDarkMode}
 	/>
 	<PreferenceItem name="Adjust Page Zoom" icon="fluent-mdl2:zoom-to-fit" id="adjust-page-zoom" />
-	<ThemeColorPicker />
+	{#if $themeMode !== 'dark'}
+		<ThemeColorPicker />
+	{/if}
 </Dropdown>
