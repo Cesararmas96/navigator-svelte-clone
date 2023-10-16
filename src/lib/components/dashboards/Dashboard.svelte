@@ -10,7 +10,9 @@
 		removeItem,
 		addNewItem,
 		pasteItem,
-		reloadLocations
+		reloadLocations,
+		saveLocations,
+		loadLocalStoredLocations
 	} from '$lib/helpers/dashboard/grid'
 	import { getApiData, postData } from '$lib/services/getData'
 	import Alerts from '../widgets/type/Alert/Alerts.svelte'
@@ -18,10 +20,9 @@
 	import { AlertType, type AlertMessage } from '$lib/interfaces/Alert'
 	import { storeCCPWidget, storeCCPWidgetBehavior } from '$lib/stores/dashboards'
 	import { storeUser } from '$lib/stores'
-	import { onMount } from 'svelte'
 	import Spinner from '../common/Spinner.svelte'
 	import { Button, Modal, Table, TableBodyCell, TableBodyRow, TableHeadCell } from 'flowbite-svelte'
-	import { generateSlug } from '$lib/helpers/common/common'
+	import { generateUniqueSlug } from '$lib/helpers/common/common'
 	import { sendErrorNotification } from '$lib/stores/toast'
 
 	export let dashboard: any
@@ -46,13 +47,19 @@
 			widgets = await getApiData(`${baseUrl}/api/v2/widgets?dashboard_id=${dashboardId}`, 'GET')
 
 			widgets = widgets.map((widget: any) => {
-				widget.widget_slug = generateSlug(widget.title)
+				widget.widget_slug = generateUniqueSlug(widget.title, widgets)
 				return widget
 			})
 
+			let items: any[] = []
+
+			items = loadLocalStoredLocations(dashboard, widgets, isMobile())
+			if (items.length > 0) return items
+
 			const setNewLocations =
 				!dashboard.widget_location || Object.keys(dashboard.widget_location).length === 0
-			const items =
+
+			items =
 				dashboard.attributes.explorer === 'v3' || setNewLocations
 					? loadV3Locations(dashboard, widgets, cols, isMobile())
 					: loadV2Locations(dashboard, widgets, cols, isMobile())
@@ -70,10 +77,11 @@
 	let isChanging = false
 
 	const updateLocations = async () => {
-		if (isChanging) return
+		if (isChanging || isMobile()) return
 		isChanging = true
 		setTimeout(async () => {
 			isChanging = false
+			saveLocations(dashboard, gridItems, gridController.gridParams)
 			const payload = { widget_location: { ...gridController.gridParams.items } }
 			// console.log(`${baseUrl}/api/v2/widgets/location/${dashboard.dashboard_id}`)
 			// postData(`${baseUrl}/api/v2/widgets/location/${dashboard.dashboard_id}`, payload)
@@ -276,52 +284,56 @@
 
 <Alerts />
 
-<Grid
-	{itemSize}
-	class="grid-container"
-	gap={5}
-	{cols}
-	collision="compress"
-	bind:controller={gridController}
-	on:change={updateLocations}
->
-	{#each gridItems as item}
-		<GridItem
-			x={item.x}
-			y={item.y}
-			w={item.w}
-			h={item.h}
-			class="grid-item"
-			activeClass="grid-item-active"
-			previewClass="bg-red-500 rounded"
-			on:change={(e) => {
-				changeItemSize(item)
-			}}
-			let:active
-		>
-			<WidgetBox
-				widget={item.data}
-				resized={resizedSlug === item.slug && !active}
-				let:fixed
-				let:isOwner
-				let:isToolbarVisible
-				let:widget
-				on:handleResize={() => handleResizable(item)}
-				on:handleCloning={() => handleCloning(item)}
-				on:handleRemove={() => handleRemove(item)}
-				on:handleResizable={(e) => {
-					item.data.params.settings.resizable = e.detail.resizable && !e.detail.fixed
+<div id="grid">
+	<Grid
+		breakpoints={{ xs: 320, sm: 640, md: 768, lg: 1024, xl: 1280, xxl: 1536 }}
+		{itemSize}
+		class="grid-container"
+		gap={5}
+		{cols}
+		collision="compress"
+		bind:controller={gridController}
+		on:change={updateLocations}
+	>
+		{#each gridItems as item}
+			<GridItem
+				x={item.x}
+				y={item.y}
+				w={item.w}
+				h={item.h}
+				class="grid-item"
+				activeClass="grid-item-active"
+				previewClass="bg-red-500 rounded"
+				on:change={(e) => {
+					changeItemSize(item)
 				}}
+				let:active
+				bind:id={item.slug}
 			>
-				<!-- bind:this={item.component} -->
-				<Widget
-					{widget}
-					{fixed}
-					{isToolbarVisible}
-					{isOwner}
-					on:handleInstanceResize={() => handleResizable(item)}
-				/>
-			</WidgetBox>
-		</GridItem>
-	{/each}
-</Grid>
+				<WidgetBox
+					widget={item.data}
+					resized={resizedSlug === item.slug && !active}
+					let:fixed
+					let:isOwner
+					let:isToolbarVisible
+					let:widget
+					on:handleResize={() => handleResizable(item)}
+					on:handleCloning={() => handleCloning(item)}
+					on:handleRemove={() => handleRemove(item)}
+					on:handleResizable={(e) => {
+						item.data.params.settings.resizable = e.detail.resizable && !e.detail.fixed
+					}}
+				>
+					<!-- bind:this={item.component} -->
+					<Widget
+						{widget}
+						{fixed}
+						{isToolbarVisible}
+						{isOwner}
+						on:handleInstanceResize={() => handleResizable(item)}
+					/>
+				</WidgetBox>
+			</GridItem>
+		{/each}
+	</Grid>
+</div>

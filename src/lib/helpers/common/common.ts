@@ -40,11 +40,21 @@ export const deepClone = (obj: any) => {
   return clone;
 };
 
-export const generateSlug = (str: string): string => {
-  return str
+export const generateUniqueSlug = (str: string, widgets: any[]): string => {
+  let baseSlug = str
       .trim()  
       .toLowerCase()  
       .replace(/[^\w\s-]/g, '') 
       .replace(/[\s_-]+/g, '-') 
-      .replace(/^-+|-+$/g, ''); 
+      .replace(/^-+|-+$/g, '');
+
+  let uniqueSlug = baseSlug;
+  let suffix = 1;
+
+  while (widgets.some(e => e.widget_slug === uniqueSlug)) {
+      uniqueSlug = `${baseSlug}-${suffix}`;
+      suffix++;
+  }
+
+  return uniqueSlug;
 }

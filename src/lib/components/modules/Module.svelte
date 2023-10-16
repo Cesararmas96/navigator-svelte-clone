@@ -16,6 +16,8 @@
 	import { clearAlerts, sendAlert, sendInfoAlert } from '$lib/helpers/common/alerts'
 	import Alerts from '../widgets/type/Alert/Alerts.svelte'
 	import { AlertType, type AlertMessage } from '$lib/interfaces/Alert'
+	import html2canvas from 'html2canvas'
+	import { loading } from '$lib/stores/preferences'
 
 	export let trocModule: any
 	export let dashboards: any
@@ -210,6 +212,30 @@
 		link.click()
 		dropdownOpen = false
 	}
+
+	const handleScreenshot = async () => {
+		loading.set(true)
+		sendSuccessNotification('Generating the screenshot, please wait...')
+		setTimeout(async () => {
+			const mainContent = document.getElementById(`grid`)!
+			// mainContent.querySelector(`#widget-toolbar-${currentDashboard.uid}`)!.classList.add('hidden')
+			const spinner = mainContent.querySelector(`#spinner`)
+			if (spinner) spinner.classList.add('hidden')
+
+			mainContent.querySelectorAll('.animate__animated').forEach((element) => {
+				element.classList.remove('animate__animated')
+			})
+
+			const canvas = await html2canvas(mainContent)
+			sendSuccessNotification('Preparing to download...')
+			const link = document.createElement('a')
+			link.href = canvas.toDataURL('image/png')
+			link.download = `${currentDashboard.name}.png`
+			link.click()
+			loading.set(false)
+			dropdownOpen = false
+		}, 700)
+	}
 	$: if ($storeCCPDashboard) addDashboardCopyAlert()
 </script>
 
@@ -289,6 +315,13 @@
 									>
 										<Icon icon="mdi:share-variant" size="18" classes="mr-1" />
 										Share Dashboard</DropdownItem
+									>
+									<DropdownItem
+										on:click={handleScreenshot}
+										defaultClass="flex flex-row font-medium py-2 pl-2 pr-4 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"
+									>
+										<Icon icon="tabler:camera" size="18" classes="mr-1" />
+										Screenshot</DropdownItem
 									>
 									<DropdownItem
 										on:click={() => handleDashboardRemove(dashboard.dashboard_id)}
