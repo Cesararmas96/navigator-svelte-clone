@@ -19,8 +19,8 @@
     import {storeUser} from "$lib/stores";
     import {onMount} from "svelte";
     import Spinner from "$lib/components/common/Spinner.svelte";
-    import Modal from "$lib/components/common/Modal.svelte";
-    import {Button, Table, TableBodyCell, TableBodyRow, TableHeadCell} from "flowbite-svelte";
+
+    import {Button, Card, Table, TableBodyCell, TableBodyRow, TableHeadCell, Modal, P} from "flowbite-svelte";
 
     export let dashboard: any;
     const baseUrl = import.meta.env.VITE_API_URL;
@@ -141,11 +141,7 @@
     $: if ($storeCCPWidget) addWidgetCopyAlert();
 
 
-
-
-
-
-    $:displayModal = false
+    let displayModal = false;
 
     const getWidgetTemplates = async () => {
         displayModal = true;
@@ -154,7 +150,7 @@
             // Extract program id
             const {program_id} = dashboard;
 
-            const token = $storeUser.token
+            const token = $storeUser.token;
             const resp = await fetch(`https://api.dev.navigator.mobileinsight.com/api/v2/widgets-template?program_id=${program_id}`,
 
                 {
@@ -174,6 +170,11 @@
             const data = await resp.json();
             console.log(data);
 
+
+
+
+
+
             return data;
         } catch (error) {
             console.error("An error occurred:", error.message);
@@ -182,30 +183,52 @@
     };
 
 
-
     const handleWidgetInsert = async (widgetUid: string) => {
         const token = $storeUser.token
+
+
         try {
 
-        const resp = await fetch(`${baseUrl}/api/v2/widgets-template/${widgetUid}`, {
-                method: "PATCH",
-                headers: {
-        "Authorization": `Bearer ${token}`,
-        "Content-Type": "application/json", // Set the content type for JSON
-    },
-        body: JSON.stringify({
-        "widget_name": "New Browser Widget"
-        // Add any other properties you want to update here
-            })
-        });
+            const payload = {widget_name: 'New widget'}
+            // const resp = await fetch(`https://api.dev.navigator.mobileinsight.com/api/v2/widgets-template/${widgetUid}`,
+            const resp = await fetch(`https://api.dev.navigator.mobileinsight.com/api/v2/widgets-template/b13b619a-847e-4734-a3d2-fa198f0531b7`,
+                {
+                    method: "PATCH",
+                    headers: {
+                        "Authorization": `Bearer ${token}`,
+                        "Content-Type": "application/json",
+                    },
+                  body: JSON.stringify(payload)
+                }
+            )
 
             if (!resp.ok) {
                 const errorMessage = `Failed to fetch data: ${resp.status} - ${resp.statusText}`;
                 throw new Error(errorMessage);
             }
-            const data = await resp.json();
-            console.log(data);
-            return data;
+            const widget = await resp.json();
+             const {program_id, dashboard_id} = dashboard
+               const widget_id = widget.widget_id
+            // const item = gridItems.find((item: any) => item.uid === widget.uid);
+            console.log(gridItems);
+            console.log(gridItems.find((item: any) => item.uid === widget.uid))
+
+            // const tempTitle = "Temp Title";
+            // const newItem = structuredClone(item);
+            // const position = addNewItem(newItem, gridController);
+            //
+            // gridItems = pasteItem(newItem, gridItems);
+
+
+            const position = addNewItem(widget, gridController);
+
+            gridItems = pasteItem(widget, gridItems);
+
+
+
+
+            displayModal = false
+            return widget;
         } catch (error) {
             console.error("An error occurred:", error.message);
             // Handle the error as needed, e.g., display an error message or log it.
@@ -218,78 +241,85 @@
 
 <svelte:window bind:innerWidth/>
 
+<button on:click={() => displayModal = true}>Insert Widget</button>
 
-<!--<button on:click={getWidgetTemplates}>Insert Widget</button>-->
 
-
+{#if (displayModal)}
     {#await getWidgetTemplates()}
         <Spinner fullScreen={false}/>
 
     {:then widgets}
-            <Table hoverable={true}>
-                <TableHeadCell>All Widgets</TableHeadCell>
+
+
+        <Modal bind:open={displayModal}>
+
+
+<div class="mt-12">
+            <P size={"3xl"}>All Widgets</P>
+</div>
+            <ul class="my-4 space-y-3">
                 {#each widgets as widget}
-                    <TableBodyRow>
-                        <TableBodyCell>
-                            <Button on:click={() => handleWidgetInsert(widget.uid)}>
-                                {widget.widget_name}
-                            </Button>
-                        </TableBodyCell>
-                    </TableBodyRow>
+                    <div
+                       class="flex items-center p-3 text-base font-bold text-gray-900 bg-gray-50 rounded-lg hover:bg-gray-100 group hover:shadow dark:bg-gray-600 dark:hover:bg-gray-500 dark:text-white">
+                        <button class="flex-1 ml-3 whitespace-nowrap" on:click={() => handleWidgetInsert(widget.uid)} >{widget.widget_name}</button>
+                    </div>
                 {/each}
-            </Table>
+            </ul>
+
+        </Modal>
+
+
     {/await}
 
-
-
+{/if}
 
 <Alerts/>
 
-<!--<Grid-->
-<!--        {itemSize}-->
-<!--        class="grid-container"-->
-<!--        gap={5}-->
-<!--        {cols}-->
-<!--        collision="compress"-->
-<!--        bind:controller={gridController}-->
-<!--&gt;-->
-<!--    {#each gridItems as item}-->
-<!--        <GridItem-->
-<!--                x={item.x}-->
-<!--                y={item.y}-->
-<!--                w={item.w}-->
-<!--                h={item.h}-->
-<!--                class="grid-item"-->
-<!--                activeClass="grid-item-active"-->
-<!--                previewClass="bg-red-500 rounded"-->
-<!--                on:change={(e) => {-->
-<!--				changeItemSize(item)-->
-<!--			}}-->
-<!--                let:active-->
-<!--        >-->
-<!--            <WidgetBox-->
-<!--                    widget={item.data}-->
-<!--                    resized={resizedUID === item.uid && !active}-->
-<!--                    let:fixed-->
-<!--                    let:isOwner-->
-<!--                    let:isToolbarVisible-->
-<!--                    let:widget-->
-<!--                    on:handleResize={() => handleResizable(item)}-->
-<!--                    on:handleCloning={() => handleCloning(item)}-->
-<!--                    on:handleRemove={() => handleRemove(item)}-->
-<!--                    on:handleResizable={(e) => {-->
-<!--					item.data.params.settings.resizable = e.detail.resizable && !e.detail.fixed-->
-<!--				}}-->
-<!--            >-->
-<!--                &lt;!&ndash; bind:this={item.component} &ndash;&gt;-->
-<!--                <Widget-->
-<!--                        {widget}-->
-<!--                        {fixed}-->
-<!--                        {isToolbarVisible}-->
-<!--                        {isOwner}-->
-<!--                        on:handleInstanceResize={() => handleResizable(item)}-->
-<!--                />-->
-<!--            </WidgetBox>-->
-<!--        </GridItem>-->
-<!--    {/each}-->
-<!--</Grid>-->
+<Grid
+        {itemSize}
+        class="grid-container"
+        gap={5}
+        {cols}
+        collision="compress"
+        bind:controller={gridController}
+>
+    {#each gridItems as item}
+        <GridItem
+                x={item.x}
+                y={item.y}
+                w={item.w}
+                h={item.h}
+                class="grid-item"
+                activeClass="grid-item-active"
+                previewClass="bg-red-500 rounded"
+                on:change={(e) => {
+				changeItemSize(item)
+			}}
+                let:active
+        >
+            <WidgetBox
+                    widget={item.data}
+                    resized={resizedUID === item.uid && !active}
+                    let:fixed
+                    let:isOwner
+                    let:isToolbarVisible
+                    let:widget
+                    on:handleResize={() => handleResizable(item)}
+                    on:handleCloning={() => handleCloning(item)}
+                    on:handleRemove={() => handleRemove(item)}
+                    on:handleResizable={(e) => {
+					item.data.params.settings.resizable = e.detail.resizable && !e.detail.fixed
+				}}
+            >
+                <!-- bind:this={item.component} -->
+                <Widget
+                        {widget}
+                        {fixed}
+                        {isToolbarVisible}
+                        {isOwner}
+                        on:handleInstanceResize={() => handleResizable(item)}
+                />
+            </WidgetBox>
+        </GridItem>
+    {/each}
+</Grid>
