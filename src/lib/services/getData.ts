@@ -143,6 +143,18 @@ export async function putData(url: string, payload: Record<string, any> = {}) {
 	return { ...response }
 }
 
+export async function deleteData(url: string) {
+	let options	
+	const user = get(storeUser)
+	if (user?.token) {
+		const headers = { authorization: `Bearer ${user?.token}` }
+		options = { ...options, headers }
+	}
+	
+	const response = await getData(getQuerySlug(url), 'DELETE', {}, {}, options)
+	return { ...response }
+}
+
 const getQuerySlug = (widgetSlug: any) => {
 	let slugQuery = widgetSlug
 

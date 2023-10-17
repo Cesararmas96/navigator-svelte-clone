@@ -12,26 +12,31 @@ export const loadV2Locations = (_dashboard: any, _widgets: any[], cols: number, 
   if (_dashboard.widget_location) {
     const locations = _dashboard.attributes.cols.split(',') || [_dashboard.attributes.cols]
     Object.keys(_dashboard.widget_location).forEach(function callback(value: any, index: number) {
-      const uid = Object.keys(_dashboard.widget_location[value])[0]
-      const data = _widgets.find((item) => item.uid === uid) || {}
-      const slug = data.widget_slug
-      data.resize_on_load = true
-      const w = !isMobile ? parseInt(locations[index]) * (cols / 12) : cols
-      if (w + x > cols) {
-        x = 0
-        y += minRowHeight
-      }
-      widgets.push({ uid, slug, x, y, w, h: minRowHeight, data })
-      x += w
+      Object.entries(_dashboard.widget_location[value]).map(([key, item]: [string, any]) => {
+        const uid = key
+        const data = _widgets.find((item) => item.uid === uid) || {}
+        const slug = data.widget_slug
+        data.resize_on_load = true
+        let w = !isMobile ? parseInt(locations[index]) * (cols / 12) : cols
+        w = Number(w)? w : cols
+        if (w + x > cols) {
+          x = 0
+          y += minRowHeight
+        }
+        widgets.push({ uid, slug, x, y, w, h: minRowHeight, data })
+        x += w
+      })
     })
   } else {
     const data = _widgets[0]
     widgets.push({ slug: data.widget_slug, x: 0, y: 0, w: cols, h: minRowHeight, data })
   }
+console.log('loadV2Locations', widgets)
   return widgets
 }
 
 export const loadV3Locations = (_dashboard: any, _widgets: any[], cols: number, isMobile: boolean) => {
+  console.log('loadV3Locations', _dashboard.widget_location)
   if (!_dashboard.widget_location || Object.keys(_dashboard.widget_location).length === 0) {
     let row = 0
     _dashboard.widget_location = {};

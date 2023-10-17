@@ -21,7 +21,10 @@
 
 	export let trocModule: any
 	export let dashboards: any
-
+	dashboards.map((item: any) => {
+		item.loaded = false
+		return item
+	})
 	const baseUrl = import.meta.env.VITE_API_URL
 
 	let pastedDashboard: any
@@ -251,7 +254,10 @@
 						on:mouseover={showRemoveIcon}
 						on:mouseleave={hideRemoveIcon}
 						defaultClass="hover:nav-hover"
-						on:click={() => (currentDashboard = { ...dashboard })}
+						on:click={() => {
+							dashboard.loaded = false
+							currentDashboard = { ...dashboard }
+						}}
 					>
 						<div slot="title" class="flex flex-row items-center gap-2">
 							<Icon icon={dashboard.attributes.icon} size="20px" />

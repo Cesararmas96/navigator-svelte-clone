@@ -114,11 +114,12 @@
 		resizedSlug = item.slug
 	}
 
-	$: {
+	$: if (!dashboard.loaded) {
 		gridItems = []
 		getGridItems(dashboard.dashboard_id).then((items: any) => {
 			gridItems = items
 		})
+		dashboard.loaded = true
 	}
 
 	const handleWidgetPaste = async () => {
@@ -251,33 +252,11 @@
 </script>
 
 <svelte:window bind:innerWidth />
-{#if displayModal}
-	{#await getWidgetTemplates()}
-		<Spinner fullScreen={false} />
-	{:then widgets}
-		<Modal title="Insert Widget" bind:open={displayModal} style="padding-top:50px">
-			<Table hoverable={true}>
-				<TableHeadCell>All Widgets</TableHeadCell>
-
-				{#each widgets as widget}
-					<TableBodyRow>
-						<TableBodyCell>
-							<Button on:click={() => handleWidgetInsert(widget.uid)}>
-								{widget.widget_name}
-							</Button>
-						</TableBodyCell>
-					</TableBodyRow>
-				{/each}
-			</Table>
-		</Modal>
-	{/await}
-{/if}
 
 <Alerts />
 
 <div id="grid">
 	<Grid
-		breakpoints={{ xs: 320, sm: 640, md: 768, lg: 1024, xl: 1280, xxl: 1536 }}
 		{itemSize}
 		class="grid-container"
 		gap={5}

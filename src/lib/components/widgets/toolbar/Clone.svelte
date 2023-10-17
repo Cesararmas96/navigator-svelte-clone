@@ -16,4 +16,4 @@
 <button class="icon btn hover:bg-light-100 dark:hover:bg-dark-200" on:click={() => cloneWidget()}>
 	<Icon icon="tabler:copy" size="18" />
 </button>
-<Tooltip placement="left">Clone</Tooltip>
+<Tooltip placement="bottom" class="z-10">Clone</Tooltip>

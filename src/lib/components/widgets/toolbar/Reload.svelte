@@ -15,5 +15,5 @@
 	>
 		<Icon icon="tabler:refresh" size="18" />
 	</button>
-	<Tooltip placement="left">Clear cache and reload</Tooltip>
+	<Tooltip placement="bottom" class="z-10">Clear cache and reload</Tooltip>
 {/if}

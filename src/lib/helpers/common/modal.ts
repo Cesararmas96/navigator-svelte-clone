@@ -31,7 +31,7 @@ export const openConfirmModal = (
 		title?: string, 
 		description: string,
 		type: string, 
-		confirmCallback: () => void,
+		confirmCallback: (props?: any) => void,
 		confirmButtonText?: string,
 		cancelButtonText?: string,
 	}

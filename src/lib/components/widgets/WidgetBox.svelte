@@ -143,7 +143,6 @@
 	}
 
 	$: if ($themeMode !== 'dark') {
-		console.log('not dark')
 		opacity = $widgetStore?.params?.settings?.appearance?.opacity
 		background = $widgetStore?.params?.settings?.appearance?.background || '#ffffff'
 		backgroundRGB = $widgetStore?.params?.settings?.appearance?.backgroundRGB || '255, 255, 255'

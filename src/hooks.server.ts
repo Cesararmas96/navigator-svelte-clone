@@ -3,7 +3,9 @@ import type { Handle } from '@sveltejs/kit'
 
 export const handle: Handle = async ({ event, resolve }) => {
   let token = ''
+
   try {
+    if (!event.cookies.get('_session')) return await resolve(event)
     const decoded = decrypt(event.cookies.get('_session'));
     if (!decoded) return await resolve(event)
     token = decoded

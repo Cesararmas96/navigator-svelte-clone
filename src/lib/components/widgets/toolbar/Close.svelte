@@ -37,4 +37,4 @@
 <button on:click={closeWidget} class="icon btn hover:bg-light-100 dark:hover:bg-dark-200">
 	<Icon icon="tabler:x" size="18" />
 </button>
-<Tooltip placement="left">Remove</Tooltip>
+<Tooltip placement="bottom" class="z-10">Remove</Tooltip>

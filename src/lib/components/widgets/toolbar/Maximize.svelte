@@ -19,4 +19,4 @@
 		size="18"
 	/>
 </button>
-<Tooltip placement="left">{isMaximize ? 'Restore' : 'Fullscreen'}</Tooltip>
+<Tooltip placement="bottom" class="z-10">{isMaximize ? 'Restore' : 'Fullscreen'}</Tooltip>
