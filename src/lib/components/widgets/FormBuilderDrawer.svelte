@@ -19,6 +19,7 @@
 	import { storeUser } from '$lib/stores'
 
 	const baseUrl = import.meta.env.VITE_API_URL
+	let primaryKey: string = ''
 	const token = $storeUser?.token
 	let title: string = ''
 	let description: string = ''
@@ -38,13 +39,26 @@
 		schema = null
 		title = ''
 		description = ''
+		primaryKey = ''
 	}
 
 	$: if ($selectedFormBuilderWidget && $selectedFormBuilderRecord) {
 		const slug = $selectedFormBuilderWidget.query_slug.slug
 		const conditions = $selectedFormBuilderWidget.conditions
-		const record = $selectedFormBuilderRecord
-		getDataModel(record, slug, conditions)
+		const keys = $selectedFormBuilderWidget?.params?.model?.keys || []
+		const data = $selectedFormBuilderRecord?.data
+
+		if ($selectedFormBuilderWidget?.params?.model?.primaryKey) {
+			keys.unshift($selectedFormBuilderWidget.params.model.primaryKey)
+		}
+
+		keys.map((key) => {
+			if (data[key]) {
+				primaryKey = primaryKey.concat('/', data[key])
+			}
+		})
+
+		getDataModel($selectedFormBuilderRecord, slug, conditions)
 	}
 
 	async function getDataModel(
@@ -80,7 +94,7 @@
 				}
 			})
 
-			if (record?.data) {
+			if (primaryKey) {
 				getModelByID(jsonSchema, record, slug, conditions)
 			} else {
 				schema = getSchemaComputed(jsonSchema)
@@ -97,9 +111,9 @@
 		slug: string,
 		conditions: Record<string, any>
 	) {
-		const dataSchema = await getApiData(`${slug}/${record.data}`, 'GET', conditions)
+		const dataSchema = await getApiData(`${slug}/${primaryKey}`, 'GET', conditions)
 
-		title = `${capitalizeWord(record.action)} ${jsonSchema?.title} #${record.data}`
+		title = `${capitalizeWord(record.action)} ${jsonSchema?.title} #${primaryKey}`
 
 		if (dataSchema) {
 			Object.keys(jsonSchema.properties).map((property) => {
@@ -131,7 +145,7 @@
 		let callback = $selectedFormBuilderRecord.callbackNew
 
 		if (type === 'update') {
-			url = `${url}/${$selectedFormBuilderRecord.data}`
+			url = `${url}/${primaryKey}`
 			method = 'POST'
 			message = 'Successfully updated'
 			callback = $selectedFormBuilderRecord.callbackUpdate
