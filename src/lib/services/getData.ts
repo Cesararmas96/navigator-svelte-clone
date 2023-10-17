@@ -60,7 +60,7 @@ export async function getData(
 			headers: headers,
 			body: JSON.stringify(payload)
 		}
-		if (method === 'GET') delete configRequest.body
+		if (method === 'GET' || method === 'DELETE') delete configRequest.body
 
 		let response: any
 		if (myFetch) {

@@ -55,6 +55,7 @@
 						callbackNew: newItem
 					}
 					$hideFormBuilderDrawer = false
+					break
 				case 'delete':
 					openConfirmModal({
 						title: '',
@@ -125,7 +126,6 @@
 
 	async function confirmDelete(data: any, keys: string[], rowId: string) {
 		const slugKeys: string = keys.map((key) => `/${data[key]}`).join('')
-		console.log(`${import.meta.env.VITE_API_URL}/api/v1/user${slugKeys}`)
 		const response = await deleteData(`${import.meta.env.VITE_API_URL}/api/v1/user${slugKeys}`)
 		if (response) {
 			deleteItem(rowId)
@@ -164,8 +164,7 @@
 	 * @description Genera la columna de acciones
 	 */
 	if ($widget.params.actions && !formatDefinitionKeys.includes('actions')) {
-		console.log('ENTRO A GENRAR LA COLUMNA DE ACCIONES')
-		// columnDefs.push(colAction($widget, actionBtnMap))
+		columnDefs.push(colAction($widget, actionBtnMap))
 	}
 
 	columnDefs = columnDefs.sort((a: any, b: any) => a.order - b.order)
@@ -239,7 +238,7 @@
 	const updateItem = (obj: any) => {
 		const rowNode = gridOptions.api!.getRowNode(obj.rowId)
 		if (rowNode) {
-			rowNode.setData({ id: obj.rowId, ...obj.dataModel })
+			rowNode.setData({ ...obj.dataModel })
 			gridOptions.api!.redrawRows({ rowNodes: [rowNode] })
 		}
 		gridOptions.api!.refreshCells({ force: true })

@@ -23,7 +23,8 @@
 		/(https:\/\/www\.|http:\/\/www\.|https:\/\/|http:\/\/)?[a-zA-Z]{2,}(\.[a-zA-Z]{2,})(\.[a-zA-Z]{2,})?\/[a-zA-Z0-9]{2,}|((https:\/\/www\.|http:\/\/www\.|https:\/\/|http:\/\/)?[a-zA-Z]{2,}(\.[a-zA-Z]{2,})(\.[a-zA-Z]{2,})?)|(https:\/\/www\.|http:\/\/www\.|https:\/\/|http:\/\/)?[a-zA-Z0-9]{2,}\.[a-zA-Z0-9]{2,}\.[a-zA-Z0-9]{2,}(\.[a-zA-Z0-9]{2,})?/
 
 	const widget: any = getContext('widget')
-	let isWidgetOwner: boolean = getContext('isWidgetOwner')
+	const dashboard: any = getContext('dashboard')
+	let isWidgetOwner: boolean = $dashboard.user_id === $storeUser.user_id
 	let menuOpen = false
 
 	let bg: string
@@ -83,7 +84,7 @@
 		</button>
 		<Tooltip placement="bottom" class="z-10">Copy</Tooltip>
 
-		{#if $storeUser.groups.includes('superuser')}
+		{#if isWidgetOwner || $widget.temp || $widget.cloned}
 			<button
 				class="icon btn hover:bg-light-100 dark:hover:bg-dark-200"
 				on:click={() => handleWidgetCopyorCut(widget, 'cut')}
@@ -110,7 +111,7 @@
 			{#if toolbar.export}
 				<ToolbarExportData on:itemClick={() => (menuOpen = !menuOpen)} />
 			{/if}
-			{#if isWidgetOwner}
+			{#if isWidgetOwner && !($widget.temp || $widget.cloned)}
 				<ToolbarSettings on:itemClick={() => (menuOpen = !menuOpen)} />
 			{/if}
 		</Dropdown>

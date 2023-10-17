@@ -31,12 +31,10 @@ export const loadV2Locations = (_dashboard: any, _widgets: any[], cols: number, 
     const data = _widgets[0]
     widgets.push({ slug: data.widget_slug, x: 0, y: 0, w: cols, h: minRowHeight, data })
   }
-console.log('loadV2Locations', widgets)
   return widgets
 }
 
 export const loadV3Locations = (_dashboard: any, _widgets: any[], cols: number, isMobile: boolean) => {
-  console.log('loadV3Locations', _dashboard.widget_location)
   if (!_dashboard.widget_location || Object.keys(_dashboard.widget_location).length === 0) {
     let row = 0
     _dashboard.widget_location = {};

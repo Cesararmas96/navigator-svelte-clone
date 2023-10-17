@@ -13,23 +13,26 @@
 	import { getApiData, patchData } from '$lib/services/getData'
 	import { page } from '$app/stores'
 	import { sendErrorNotification, sendSuccessNotification } from '$lib/stores/toast'
-	import { clearAlerts, sendAlert, sendInfoAlert } from '$lib/helpers/common/alerts'
+	import {
+		clearAlerts,
+		dismissAlert,
+		sendAlert,
+		sendInfoAlert,
+		sendWarningAlert
+	} from '$lib/helpers/common/alerts'
 	import Alerts from '../widgets/type/Alert/Alerts.svelte'
 	import { AlertType, type AlertMessage } from '$lib/interfaces/Alert'
 	import html2canvas from 'html2canvas'
 	import { loading } from '$lib/stores/preferences'
+	import { storeUser } from '$lib/stores'
 
 	export let trocModule: any
 	export let dashboards: any
-	dashboards.map((item: any) => {
-		item.loaded = false
-		return item
-	})
+
 	const baseUrl = import.meta.env.VITE_API_URL
-
 	let pastedDashboard: any
-
 	let dropdownOpen = false
+	const user = $storeUser
 
 	clearAlerts()
 
@@ -44,11 +47,6 @@
 	$: if (pastedDashboard) {
 		dashboards = [...dashboards, pastedDashboard]
 	}
-
-	// $: {
-	// 	dashboards = $storeDashboards.filter((item) => item.module_id === trocModule?.module_id)
-	// 	currentDashboard = { ...dashboards[0] }
-	// }
 
 	let popupRemoveModal = false
 	let selectedDashboardId: number
@@ -255,7 +253,7 @@
 						on:mouseleave={hideRemoveIcon}
 						defaultClass="hover:nav-hover"
 						on:click={() => {
-							dashboard.loaded = false
+							// dashboard.loaded = false
 							currentDashboard = { ...dashboard }
 						}}
 					>
@@ -288,33 +286,37 @@
 										<Icon icon="mdi:content-copy" size="18" classes="mr-1" />
 										Copy dashboard</DropdownItem
 									>
-									<DropdownItem
-										on:click={() => handleDashboardCopy('cut')}
-										defaultClass="flex flex-row font-medium py-2 pl-2 pr-4 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"
-									>
-										<Icon icon="mdi:content-cut" size="18" classes="mr-1" />
-										Cut dashboard</DropdownItem
-									>
-									<!-- {#if user!.superuser && currentDashboard.is_system} -->
-									<DropdownItem
-										on:click={handleCustomize}
-										defaultClass="flex flex-row font-medium py-2 pl-2 pr-4 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"
-									>
-										<Icon
-											icon={!userId ? 'mdi:file-edit-outline' : 'mdi:publish'}
-											size="18"
-											classes="mr-1"
-										/>
-										{!userId ? 'Customize' : 'Publish'}</DropdownItem
-									>
-									<!-- {/if} -->
-									<DropdownItem
-										on:click={handleConvertToModule}
-										defaultClass="flex flex-row font-medium py-2 pl-2 pr-4 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"
-									>
-										<Icon icon="fluent:convert-range-20-regular" size="18" classes="mr-1" />
-										Convert to Module</DropdownItem
-									>
+									{#if user.user_id === userId}
+										<DropdownItem
+											on:click={() => handleDashboardCopy('cut')}
+											defaultClass="flex flex-row font-medium py-2 pl-2 pr-4 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"
+										>
+											<Icon icon="mdi:content-cut" size="18" classes="mr-1" />
+											Cut dashboard</DropdownItem
+										>
+									{/if}
+									{#if user.superuser}
+										<DropdownItem
+											on:click={handleCustomize}
+											defaultClass="flex flex-row font-medium py-2 pl-2 pr-4 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"
+										>
+											<Icon
+												icon={!userId ? 'mdi:file-edit-outline' : 'mdi:publish'}
+												size="18"
+												classes="mr-1"
+											/>
+											{!userId ? 'Customize' : 'Publish'}</DropdownItem
+										>
+									{/if}
+									{#if user.user_id === userId}
+										<DropdownItem
+											on:click={handleConvertToModule}
+											defaultClass="flex flex-row font-medium py-2 pl-2 pr-4 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"
+										>
+											<Icon icon="fluent:convert-range-20-regular" size="18" classes="mr-1" />
+											Convert to Module</DropdownItem
+										>
+									{/if}
 									<DropdownItem
 										on:click={handleShareDashboard}
 										defaultClass="flex flex-row font-medium py-2 pl-2 pr-4 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"
@@ -329,17 +331,19 @@
 										<Icon icon="tabler:camera" size="18" classes="mr-1" />
 										Screenshot</DropdownItem
 									>
-									<DropdownItem
-										on:click={() => handleDashboardRemove(dashboard.dashboard_id)}
-										defaultClass="flex flex-row text-red-500 font-medium py-2 pl-2 pr-4 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"
-									>
-										<Icon icon="tabler:trash" size="18" classes="mr-1" />
-										Remove</DropdownItem
-									>
+									{#if user.user_id === userId}
+										<DropdownItem
+											on:click={() => handleDashboardRemove(dashboard.dashboard_id)}
+											defaultClass="flex flex-row text-red-500 font-medium py-2 pl-2 pr-4 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"
+										>
+											<Icon icon="tabler:trash" size="18" classes="mr-1" />
+											Remove</DropdownItem
+										>
+									{/if}
 								</Dropdown>
 							</div>
 						</div>
-						<Dashboard {dashboard} />
+						<Dashboard {dashboard} on:handleCustomize={(e) => confirmCustomize(e.detail)} />
 					</TabItem>
 				{/each}
 			{/if}

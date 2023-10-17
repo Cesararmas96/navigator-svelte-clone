@@ -1,5 +1,5 @@
 import { AlertType, type AlertMessage } from "$lib/interfaces/Alert";
-import { writable } from "svelte/store";
+import { get, writable } from "svelte/store";
 
 export const alerts = writable<AlertMessage[]>([]);
 
@@ -70,6 +70,7 @@ export const sendInfoAlert = (title: string, message?: string, callback1Btn?: st
   });
 }
 
-export const clearAlerts = () => {
-  alerts.set([]);
+export const clearAlerts = (exclude: string[] = []) => {
+  if (exclude.length === 0) return alerts.set([])
+  alerts.update((all) => all.filter((t: AlertMessage) => exclude?.includes(t.id!)));
 }
