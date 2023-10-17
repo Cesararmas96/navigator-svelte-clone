@@ -160,7 +160,7 @@
 		try {
 			const payload = { widget_name: 'New widget' }
 			const resp = await fetch(
-				`https://api.dev.navigator.mobileinsight.com/api/v2/widgets-template/${widgetUid}`,
+				`${baseUrl}/api/v2/widgets-template/${widgetUid}`,
 				// const resp = await fetch(`https://api.dev.navigator.mobileinsight.com/api/v2/widgets-template/b13b619a-847e-4734-a3d2-fa198f0531b7`,
 				{
 					method: 'PATCH',

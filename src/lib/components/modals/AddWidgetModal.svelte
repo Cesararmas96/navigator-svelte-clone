@@ -11,6 +11,8 @@
     export let props;
 
 
+    const baseUrl = import.meta.env.VITE_API_URL
+
     const getTemplateIcon = async (widget) => {
         let rawIcon = widget.attributes && widget.attributes.icon;
         if (rawIcon.includes(" ")) {
@@ -31,7 +33,7 @@
             const {program_id} = props.dashboard;
 
             const token = $storeUser.token;
-            const resp = await fetch(`https://api.dev.navigator.mobileinsight.com/api/v2/widgets-template?program_id=${program_id}`,
+            const resp = await fetch(`${baseUrl}/api/v2/widgets-template?program_id=${program_id}`,
 
                 {
                     method: "GET",

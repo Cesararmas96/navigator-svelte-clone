@@ -33,8 +33,10 @@
 //     return widgetActions;
 // }
 
+const baseUrl = import.meta.env.VITE_API_URL
+
 export async function insertWidget(token: string, data: object) {
-	const url = 'https://api.dev.navigator.mobileinsight.com/api/v2/widgets'
+	const url = `${baseUrl}/api/v2/widgets`
 	const accessToken = token // Replace with your actual access token
 
 	const headers = {
