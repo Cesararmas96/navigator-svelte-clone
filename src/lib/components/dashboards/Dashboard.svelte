@@ -17,7 +17,7 @@
     import {AlertType, type AlertMessage} from "$lib/interfaces/Alert";
     import {storeCCPWidget, storeCCPWidgetBehavior} from "$lib/stores/dashboards";
     import {storeUser} from "$lib/stores";
-    import {onMount} from "svelte";
+    import {createEventDispatcher, onMount} from "svelte";
     import Spinner from "$lib/components/common/Spinner.svelte";
 
     import {Button, Card, Table, TableBodyCell, TableBodyRow, TableHeadCell, Modal, P} from "flowbite-svelte";
@@ -147,8 +147,6 @@
     let displayModal = false;
 
 
-
-
 const handleWidgetInsert = async (widgetUid: string) => {
         const token = $storeUser.token
 
@@ -196,6 +194,23 @@ const handleWidgetInsert = async (widgetUid: string) => {
         }
 
     };
+
+
+
+    const dispatch = createEventDispatcher()
+
+onMount(() => {
+    dispatch('handleWidgetInsert', handleWidgetInsert)
+
+    console.log(dispatch);
+
+
+
+})
+
+
+
+
 
 
 
