@@ -274,7 +274,6 @@
 		}
 	}
 
-	const dispatch = createEventDispatcher()
 
 	onMount(() => {
 		dispatch('handleWidgetInsert', insertWidget)
