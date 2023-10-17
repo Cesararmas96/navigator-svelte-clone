@@ -1,5 +1,5 @@
-import { storeUser } from '$lib/stores';
-import { onDestroy } from 'svelte';
+import { storeUser } from '$lib/stores'
+import { get } from 'svelte/store'
 
 /**
  * Perform an HTTP request using the fetch API.
@@ -20,7 +20,6 @@ export async function getData(
 	options: Record<string, any> = {},
 	myFetch?: any
 ) {
-
 	try {
 		// Validate that 'url' is a non-empty string
 		if (typeof url !== 'string' || url.trim() === '') {
@@ -66,7 +65,7 @@ export async function getData(
 			response = await myFetch(`${urlWithParams}`, configRequest)
 		} else {
 			response = (await fetch(`${urlWithParams}`, configRequest)) || {}
-		} 
+		}
 
 		// const validResponseStatus = [200, 202]
 		// if (validResponseStatus.includes(response?.status)) {
@@ -95,21 +94,20 @@ export async function getApiData(
 	options: Record<string, any> = {},
 	myFetch?: any
 ) {
-	if (!options.headers?.authorization) {
-		const a = storeUser.subscribe((user: any) => {
-			if (user?.token) {
-				const headers = { authorization: `Bearer ${user?.token}` }
-				options = { ...options, headers }
-			}
-		})
-		onDestroy(a)
+	if (!options?.headers?.authorization) {
+		const user = get(storeUser)
+
+		if (user?.token) {
+			const headers = { authorization: `Bearer ${user?.token}` }
+			options = { ...options, headers }
+		}
 	}
 	const response = await getData(getQuerySlug(url), method, payload, queryParams, options, myFetch)
 	return response
 }
 
 export async function patchData(url: string, payload: Record<string, any> = {}) {
-	let options	
+	let options
 	storeUser.subscribe((user: any) => {
 		if (user?.token) {
 			const headers = { authorization: `Bearer ${user.token}` }
@@ -122,7 +120,7 @@ export async function patchData(url: string, payload: Record<string, any> = {}) 
 }
 
 export async function postData(url: string, payload: Record<string, any> = {}) {
-	let options	
+	let options
 	storeUser.subscribe((user: any) => {
 		if (user?.token) {
 			const headers = { authorization: `Bearer ${user.token}` }
@@ -134,7 +132,7 @@ export async function postData(url: string, payload: Record<string, any> = {}) {
 }
 
 export async function putData(url: string, payload: Record<string, any> = {}) {
-	let options	
+	let options
 	storeUser.subscribe((user: any) => {
 		if (user?.token) {
 			const headers = { authorization: `Bearer ${user.token}` }

@@ -250,16 +250,7 @@
 	}
 </script>
 
-<svelte:window
-	bind:innerWidth
-	on:resize={() => {
-		setTimeout(() => {
-			console.log('resize', gridController.gridParams.items)
-			gridController.gridParams.updateGrid()
-			gridItems = reloadLocations(dashboard, gridController.gridParams, isMobile())
-		}, 100)
-	}}
-/>
+<svelte:window bind:innerWidth />
 {#if displayModal}
 	{#await getWidgetTemplates()}
 		<Spinner fullScreen={false} />
