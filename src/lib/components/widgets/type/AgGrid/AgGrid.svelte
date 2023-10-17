@@ -20,12 +20,15 @@
 	} from '$lib/stores/widgets'
 	import Toolbar from './Toolbar.svelte'
 	import { getWidgetAction } from '$lib/helpers'
+	import { openConfirmModal } from '$lib/helpers/common/modal'
+	import Modal from '$lib/components/common/Modal.svelte'
+	import { deleteData, postData } from '$lib/services/getData'
+	import { sendErrorNotification, sendSuccessNotification } from '$lib/stores/toast'
 
 	export let data: any
 	export let simpleTable: boolean = false
 
 	const widget = getContext<Writable<any>>('widget')
-
 	const formatDefinitionKeys = $widget.format_definition
 		? Object.keys($widget.format_definition).map((key: string) => key)
 		: []
@@ -38,21 +41,97 @@
 			console.log('postRenderModulesProgram', params)
 		},
 		postRenderFormBuilder(params: any) {
-			const { action, data, rowId } = params.srcElement.dataset
-			$selectedFormBuilderWidget = $widget
-			$selectedFormBuilderRecord = {
-				action,
-				data,
-				rowId,
-				callbackUpdate: updateItem,
-				callbackNew: newItem
+			const { action, data, colDef, keys, rowId } = params.srcElement.dataset
+			switch (action) {
+				case 'edit':
+				case 'new':
+					$selectedFormBuilderWidget = $widget
+					$selectedFormBuilderRecord = {
+						action,
+						data: JSON.parse(data),
+						keys: JSON.parse(keys),
+						rowId,
+						callbackUpdate: updateItem,
+						callbackNew: newItem
+					}
+					$hideFormBuilderDrawer = false
+				case 'delete':
+					openConfirmModal({
+						title: '',
+						description: `You're about to permanently delete this. This process is irreversible.`,
+						type: 'warning',
+						confirmCallback: () => confirmDelete(JSON.parse(data), JSON.parse(keys), rowId)
+					})
+					break
 			}
-			$hideFormBuilderDrawer = false
 		},
 		createModelWithFormBuilder() {
 			$selectedFormBuilderWidget = $widget
 			$selectedFormBuilderRecord = { action: 'new', data: null, callbackNew: newItem }
 			$hideFormBuilderDrawer = false
+		},
+		postRenderCreateUser(params: any) {
+			const { action, data, colDef, keys, rowId } = params.srcElement.dataset
+			switch (action) {
+				case 'edit':
+				case 'new':
+					$selectedFormBuilderWidget = $widget
+					$selectedFormBuilderRecord = {
+						action,
+						data: JSON.parse(data),
+						keys: JSON.parse(keys),
+						rowId,
+						callbackUpdate: updateItem,
+						callbackNew: newItem
+					}
+					$hideFormBuilderDrawer = false
+					break
+				case 'delete':
+					openConfirmModal({
+						title: '',
+						description: `You're about to permanently delete this . This process is irreversible.`,
+						type: 'warning',
+						confirmCallback: () => confirmDelete(JSON.parse(data), JSON.parse(keys), rowId)
+					})
+					break
+			}
+		},
+		postRenderChangeYesOrNo(params: any) {
+			const { data, colDef, colId, rowId } = params.srcElement.dataset
+			const jsonData = JSON.parse(data)
+			const value = !jsonData[colId]
+			openConfirmModal({
+				title: '',
+				description: `Want to change status to ${value === true ? 'YES' : 'NO'}. Continue?`,
+				type: 'warning',
+				confirmCallback: () => confirmYesOrNo(value, JSON.parse(colDef), colId, jsonData, rowId)
+			})
+		}
+	}
+
+	async function confirmYesOrNo(value: any, colDef: any, colId: any, data: any, rowId: number) {
+		data[colId] = value
+		const response = await postData(
+			`${import.meta.env.VITE_API_URL}/api/v1/${colDef.model}/${data[colDef.id]}`,
+			{ [colId]: value }
+		)
+		if (response) {
+			updateItem({ dataModel: data, rowId: rowId })
+			sendSuccessNotification('Update')
+		} else {
+			sendErrorNotification('An error has occurred')
+		}
+	}
+
+	async function confirmDelete(data: any, keys: string[], rowId: string) {
+		const slugKeys: string = keys.map((key) => `/${data[key]}`).join('')
+		console.log(`${import.meta.env.VITE_API_URL}/api/v1/user${slugKeys}`)
+		const response = await deleteData(`${import.meta.env.VITE_API_URL}/api/v1/user${slugKeys}`)
+		if (response) {
+			deleteItem(rowId)
+			sendSuccessNotification('Delete')
+		} else {
+			sendErrorNotification('An error has occurred')
 		}
 	}
 
@@ -85,7 +164,8 @@
 	 * @description Genera la columna de acciones
 	 */
 	if ($widget.params.actions && !formatDefinitionKeys.includes('actions')) {
-		columnDefs.push(colAction($widget, actionBtnMap))
+		console.log('ENTRO A GENRAR LA COLUMNA DE ACCIONES')
+		// columnDefs.push(colAction($widget, actionBtnMap))
 	}
 
 	columnDefs = columnDefs.sort((a: any, b: any) => a.order - b.order)
@@ -151,14 +231,25 @@
 		$widget.resized = false
 	}
 
-	const updateItem = (obj: any) => {
-		const rowNode = gridOptions.api!.getRowNode(obj.rowId)
-		rowNode!.setData(obj.dataModel)
-	}
-
 	const newItem = (obj: any) => {
 		gridOptions.api!.applyTransaction({ add: [obj.dataModel] })
 		gridOptions.api!.refreshCells({ force: true })
+	}
+
+	const updateItem = (obj: any) => {
+		const rowNode = gridOptions.api!.getRowNode(obj.rowId)
+		if (rowNode) {
+			rowNode.setData({ id: obj.rowId, ...obj.dataModel })
+			gridOptions.api!.redrawRows({ rowNodes: [rowNode] })
+		}
+		gridOptions.api!.refreshCells({ force: true })
+	}
+
+	const deleteItem = (id: string) => {
+		const rowNode = gridOptions.api!.getRowNode(id)
+		if (rowNode) {
+			gridOptions.api!.applyTransaction({ remove: [rowNode.data] })
+		}
 	}
 </script>
 

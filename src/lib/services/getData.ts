@@ -1,5 +1,6 @@
 import { storeUser } from '$lib/stores';
 import { onDestroy } from 'svelte';
+import { get } from 'svelte/store';
 
 /**
  * Perform an HTTP request using the fetch API.
@@ -96,13 +97,11 @@ export async function getApiData(
 	myFetch?: any
 ) {
 	if (!options.headers?.authorization) {
-		const a = storeUser.subscribe((user: any) => {
-			if (user?.token) {
-				const headers = { authorization: `Bearer ${user?.token}` }
-				options = { ...options, headers }
-			}
-		})
-		onDestroy(a)
+		const user = get(storeUser)
+		if (user?.token) {
+			const headers = { authorization: `Bearer ${user?.token}` }
+			options = { ...options, headers }
+		}
 	}
 	const response = await getData(getQuerySlug(url), method, payload, queryParams, options, myFetch)
 	return response
@@ -110,12 +109,11 @@ export async function getApiData(
 
 export async function patchData(url: string, payload: Record<string, any> = {}) {
 	let options	
-	storeUser.subscribe((user: any) => {
-		if (user?.token) {
-			const headers = { authorization: `Bearer ${user.token}` }
-			options = { ...options, headers }
-		}
-	})
+	const user = get(storeUser)
+	if (user?.token) {
+		const headers = { authorization: `Bearer ${user?.token}` }
+		options = { ...options, headers }
+	}
 
 	const response = await getData(getQuerySlug(url), 'PATCH', payload, {}, options)
 	return { ...response }
@@ -123,25 +121,37 @@ export async function patchData(url: string, payload: Record<string, any> = {}) 
 
 export async function postData(url: string, payload: Record<string, any> = {}) {
 	let options	
-	storeUser.subscribe((user: any) => {
-		if (user?.token) {
-			const headers = { authorization: `Bearer ${user.token}` }
-			options = { ...options, headers }
-		}
-	})
+	const user = get(storeUser)
+	if (user?.token) {
+		const headers = { authorization: `Bearer ${user?.token}` }
+		options = { ...options, headers }
+	}
+	
 	const response = await getData(getQuerySlug(url), 'POST', payload, {}, options)
 	return { ...response }
 }
 
 export async function putData(url: string, payload: Record<string, any> = {}) {
 	let options	
-	storeUser.subscribe((user: any) => {
-		if (user?.token) {
-			const headers = { authorization: `Bearer ${user.token}` }
-			options = { ...options, headers }
-		}
-	})
+	const user = get(storeUser)
+	if (user?.token) {
+		const headers = { authorization: `Bearer ${user?.token}` }
+		options = { ...options, headers }
+	}
+	
 	const response = await getData(getQuerySlug(url), 'PUT', payload, {}, options)
+	return { ...response }
+}
+
+export async function deleteData(url: string) {
+	let options	
+	const user = get(storeUser)
+	if (user?.token) {
+		const headers = { authorization: `Bearer ${user?.token}` }
+		options = { ...options, headers }
+	}
+	
+	const response = await getData(getQuerySlug(url), 'DELETE', {}, {}, options)
 	return { ...response }
 }
 

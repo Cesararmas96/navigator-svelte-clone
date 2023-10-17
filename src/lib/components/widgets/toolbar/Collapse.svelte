@@ -22,4 +22,4 @@
 >
 	<Icon icon={$widget.collapse ? 'mdi:chevron-down' : 'mdi:chevron-up'} size="18" />
 </button>
-<Tooltip placement="left">{$widget.collapse ? 'Expand' : 'Collapse'}</Tooltip>
+<Tooltip placement="bottom" class="z-10">{$widget.collapse ? 'Expand' : 'Collapse'}</Tooltip>

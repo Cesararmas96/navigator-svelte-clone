@@ -15,6 +15,7 @@
 	import ToolbarCollapse from './toolbar/Collapse.svelte'
 	import { storeCCPWidget, storeCCPWidgetBehavior } from '$lib/stores/dashboards'
 	import { storeUser } from '$lib/stores'
+	import { themeMode } from '$lib/stores/preferences'
 
 	export let isToolbarVisible: boolean
 
@@ -27,7 +28,11 @@
 
 	let bg: string
 	let toolbar: any
-	$: bg = $widget?.params?.settings?.appearance?.background
+	$: if ($themeMode !== 'dark') {
+		bg = $widget?.params?.settings?.appearance?.background
+	} else {
+		bg = ''
+	}
 	$: toolbar = $widget?.params?.settings?.toolbar
 
 	// TODO get session from session storage
@@ -76,7 +81,7 @@
 		>
 			<Icon icon={'tabler:clipboard-copy'} size="18" />
 		</button>
-		<Tooltip placement="left">Copy</Tooltip>
+		<Tooltip placement="bottom" class="z-10">Copy</Tooltip>
 
 		{#if $storeUser.groups.includes('superuser')}
 			<button
@@ -85,10 +90,10 @@
 			>
 				<Icon icon={'ion:cut-sharp'} size="18" />
 			</button>
-			<Tooltip placement="left">Cut</Tooltip>
+			<Tooltip placement="bottom" class="z-10">Cut</Tooltip>
 		{/if}
 
-		<Tooltip placement="left" triggeredBy="#more-actions">More</Tooltip>
+		<Tooltip placement="bottom" class="z-10" triggeredBy="#more-actions">More</Tooltip>
 		<button
 			id="more-actions"
 			type="button"

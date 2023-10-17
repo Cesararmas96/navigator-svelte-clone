@@ -115,11 +115,12 @@
 		resizedSlug = item.slug
 	}
 
-	$: {
+	$: if (!dashboard.loaded) {
 		gridItems = []
 		getGridItems(dashboard.dashboard_id).then((items: any) => {
 			gridItems = items
 		})
+		dashboard.loaded = true
 	}
 
 	const handleWidgetPaste = async () => {
@@ -187,22 +188,12 @@
 	$: if ($storeCCPWidget) addWidgetCopyAlert()
 </script>
 
-<svelte:window
-	bind:innerWidth
-	on:resize={() => {
-		setTimeout(() => {
-			console.log('resize', gridController.gridParams.items)
-			gridController.gridParams.updateGrid()
-			gridItems = reloadLocations(dashboard, gridController.gridParams, isMobile())
-		}, 100)
-	}}
-/>
+<svelte:window bind:innerWidth />
 
 <Alerts />
 
 <div id="grid">
 	<Grid
-		breakpoints={{ xs: 320, sm: 640, md: 768, lg: 1024, xl: 1280, xxl: 1536 }}
 		{itemSize}
 		class="grid-container"
 		gap={5}

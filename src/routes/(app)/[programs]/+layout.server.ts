@@ -16,10 +16,18 @@ export const load = async ({params, fetch, locals}) => {
   const trocModule = (modules && modules.length > 0) ? 
     modules.find((item: any) => item.module_name === moduleName || item.module_slug === moduleName) : null;
   const menu = (trocModule) ? modules.filter((item: any) => item.program_id === trocModule?.program_id) : [];
-  const dashboards = (trocModule) ? 
-    await getApiData(`${urlBase}/api/v2/dashboards?program_id=${trocModule?.program_id}&module_id=${trocModule?.module_id}`, 'GET', {}, {}, {headers}, fetch):
-    [];
+  const dashboards = await getApiData(
+    `${urlBase}/api/v2/dashboards?program_id=${trocModule?.program_id}&module_id=${
+      trocModule?.module_id
+    }&explorer=${trocModule?.module_slug?.includes('explorer') ? true : false}`,
+    'GET',
+    {},
+    {},
+    { headers },
+    fetch
+  )
 
+  console.log('dashboards', dashboards)
   return { programs, trocModule, dashboards, menu, user: locals.user }
 
 }

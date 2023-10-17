@@ -33,7 +33,7 @@
 
 <main>
 	<div class="main-container dark:text-white-dark min-h-screen text-black">
-		<div class="flex min-h-screen">
+		<div class="flex min-h-screen bg-white">
 			<div
 				class="hidden min-h-screen w-4/5 flex-col items-center justify-center bg-gradient-to-t from-[#0066f4bf] to-[#0a3af7] p-4 text-white dark:text-black lg:flex"
 			>
@@ -79,14 +79,22 @@
 						{/if} -->
 
 						<div>
-							<Label for="email" class="mb-1">Email</Label>
-							<Input type="text" id="email" name="email" placeholder="email@email.com" required />
+							<Label for="email" class="mb-1 !text-gray-900">Email</Label>
+							<Input
+								type="text"
+								id="email"
+								defaultClass="block w-full p-2.5 !focus:border-primary-500 !focus:ring-primary-500 !bg-gray-50 !text-gray-900 !border-gray-300 text-sm rounded-lg"
+								name="email"
+								placeholder="email@email.com"
+								required
+							/>
 						</div>
 						<div>
-							<Label for="password" class="mb-1">Password</Label>
+							<Label for="password" class="mb-1 !text-gray-900">Password</Label>
 							<Input
 								type="password"
 								id="password"
+								defaultClass="block w-full p-2.5 !focus:border-primary-500 !focus:ring-primary-500 !bg-gray-50 !text-gray-900 !border-gray-300 text-sm rounded-lg"
 								name="password"
 								placeholder="**********"
 								required
@@ -102,7 +110,7 @@
 						{/if} -->
 
 						<div class="flex justify-end">
-							<a class="text-sm dark:text-gray-400" href="/">Forgot your password?</a>
+							<a class="text-sm" href="/">Forgot your password?</a>
 						</div>
 
 						<Button color="blue" class="w-full" type="submit">SIGN IN</Button>
