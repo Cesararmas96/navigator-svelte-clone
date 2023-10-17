@@ -148,6 +148,11 @@ function toUpperCase(value: any) {
   }
 }
 
+function colHidden() {
+  return null
+}
+
+
 export const formats: Record<string, any> = {
   fnValidationNumber: fnValidationNumber,
   fnFormatNumber: fnFormatNumber,
@@ -169,4 +174,6 @@ export const formats: Record<string, any> = {
   // news
   number: fnFormatNumber,
   integer: fnFormatInteger,
+  colHidden: colHidden,
+  fnFormaNumber: fnFormatNumber,
 }

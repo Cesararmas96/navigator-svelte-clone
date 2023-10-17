@@ -16,7 +16,7 @@
 >
 	<div class="flex">
 		<FooterLike />
-		<FooterComment />
+		<!-- <FooterComment /> -->
 	</div>
 	<div class="flex text-sm">
 		<FooterShare />

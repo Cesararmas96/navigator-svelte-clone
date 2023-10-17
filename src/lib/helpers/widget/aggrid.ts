@@ -4,7 +4,7 @@ import { capitalizeWord } from '../common/common'
 import type { ValueGetterParams } from 'ag-grid-community'
 import { fnFormatMoney, fnFormatPercent, formats } from '../common/formats'
 
-export const colAction = (widget: any, colDef: Record<string, any>, callbacks: any) => {
+export const colAction = (widget: any, callbacks: any, colDef?: Record<string, any>) => {
   return {
     headerName: 'Actions',
     field: 'actions',
@@ -17,7 +17,7 @@ export const colAction = (widget: any, colDef: Record<string, any>, callbacks: a
         data: params.data,
         tableParams: params,
         widget: widget,
-      }, colDef, callbacks[widget.params.actions.postRender])
+      }, callbacks[widget.params.actions.postRender], colDef)
     }
   }
 }
@@ -46,9 +46,9 @@ export const generateColumnDefsByData = (widget: any, simpleTable: boolean) => {
         if (simpleTable) {
           const def: FunctionMapType = definitions;
           for (const [fnName, indices] of Object.entries(def)) {
-            if (indices.includes(idx)) {          
-                const fn = formats[fnName]; 
-                return fn(value);
+            if (indices.includes(idx)) {     
+              const fn = formats[fnName]; 
+              return fn(value);
             }
           }
         } else {
@@ -74,7 +74,7 @@ export const generateColumnDefsByDefinition = (widget: any, callbacks: any) => {
     .filter(([key, col]: [string, any]) => !col.hidden) // Filtrar columnas ocultas
     .map(([key, col]: [string, any]) => {
       return key === 'actions'
-        ? colAction(widget, col, callbacks)
+        ? colAction(widget, callbacks, col)
         : {
             order: col.order,
             headerName: col.title,
@@ -85,7 +85,7 @@ export const generateColumnDefsByDefinition = (widget: any, callbacks: any) => {
             headerClass: headerClass(col),
             cellRenderer: (params: ValueGetterParams) => {
               if (col.render && gridCellBuildFunctionsMap[col.render])
-                return gridCellBuildFunctionsMap[col.render](params, col, callbacks)
+                return gridCellBuildFunctionsMap[col.render](params, callbacks, col)
 
               // if ($widget.params.pqgrid?.formulas && Array.isArray($widget.params.pqgrid?.formulas)) {
               // 	$widget.params.pqgrid.formulas.map((formula: any, formulaIndex: number) => {
@@ -450,7 +450,7 @@ function metricsRender(threshold: any) {
 	}
 }
 
-export const gridCellBuildFunctionsMap: { [key: string]: (params: any, colDef: Record<string, any>, callback?: Record<string, () => void> | (() => void)) => any } = {
+export const gridCellBuildFunctionsMap: { [key: string]: (params: any, callback?: Record<string, () => void> | (() => void), colDef?: Record<string, any>) => any } = {
 	modulesActive: modulesActive,
 	modulesProgram: modulesProgram,
   actions: actions,
@@ -459,7 +459,7 @@ export const gridCellBuildFunctionsMap: { [key: string]: (params: any, colDef: R
   isActiveYesOrNo: isActiveYesOrNo,
 }
 
-function modulesActive(params: any, colDef: Record<string, any>) {
+function modulesActive(params: any) {
 	if (params.column.colId === 'active') {
 		const cls = params.data[params.column.colId] ? 'badge-success' : 'badge-danger'
 		return `<span class='badge ${cls}'>${
@@ -468,11 +468,11 @@ function modulesActive(params: any, colDef: Record<string, any>) {
 	}
 }
 
-function modulesProgram(params: any, colDef: Record<string, any>) {
+function modulesProgram(params: any) {
 	return params.data[params.column.colId]
 }
 
-function jsonPretty(params: any, colDef: Record<string, any>) {
+function jsonPretty(params: any) {
   try {
     return JSON.stringify(params.data[params.column.colId])
   } catch (error) {
@@ -480,7 +480,7 @@ function jsonPretty(params: any, colDef: Record<string, any>) {
   }
 }
 
-function dateAndTime(params: any, colDef: Record<string, any>) {
+function dateAndTime(params: any) {
   try {
     if (params.column.colId && params.data[params.column.colId]) {
       const date = moment.tz(params.data[params.column.colId], 'America/New_York')
@@ -491,12 +491,12 @@ function dateAndTime(params: any, colDef: Record<string, any>) {
   }
 }
 
-function isActiveYesOrNo(params: any, colDef: Record<string, any>, callback?: Record<string, () => void> | (() => void)) {
+function isActiveYesOrNo(params: any, callback?: Record<string, () => void> | (() => void), colDef?: Record<string, any>) {
   try {
     const active = params.data[params.column.colId]
     let title = (!active)? 'No' : 'Yes'
     const cls = params.data[params.column.colId] ? 'badge-success' : 'badge-danger'
-    if (!colDef.postRender) {
+    if (!colDef!.postRender) {
       return `<span class='badge ${cls}'>${title}</span>`
     } else {
       const a = document.createElement('a')
@@ -507,7 +507,7 @@ function isActiveYesOrNo(params: any, colDef: Record<string, any>, callback?: Re
       a.classList.add('cursor-pointer')
       a.classList.add('badge')
       a.classList.add(cls)
-      a.addEventListener('click', callback![colDef.postRender])
+      a.addEventListener('click', callback![colDef!.postRender])
       a.href = '#'
       a.innerHTML = title
       return a
@@ -517,11 +517,11 @@ function isActiveYesOrNo(params: any, colDef: Record<string, any>, callback?: Re
   }
 }
 
-function actions(params: any, colDef: Record<string, any>, callback?: Record<string, () => void> | (() => void)) {
+function actions(params: any, callback?: Record<string, () => void> | (() => void), colDef?: Record<string, any>) {
 	const container = document.createElement('span')
 	container.classList.add('flex', 'items-center', 'justify-center', 'gap-1', 'mt-0.5', 'opacity-60')
 	params.widget.params.actions.btns.map((btn: any) => {
-		container.appendChild(createActionBtn({ btn, ...params }, colDef, callback))
+		container.appendChild(createActionBtn({ btn, ...params }, callback, colDef))
 	})
 	return container
 }
@@ -531,7 +531,7 @@ const icons: any = {
 	delete: 'material-symbols:delete-outline-rounded'
 }
 
-function createActionBtn(params: any, colDef: Record<string, any>, callback?: Record<string, () => void> | (() => void)) {
+function createActionBtn(params: any, callback?: Record<string, () => void> | (() => void), colDef?: Record<string, any>) {
 	const data = params.data
 	const widget = params.widget
 
@@ -542,10 +542,11 @@ function createActionBtn(params: any, colDef: Record<string, any>, callback?: Re
   btn.dataset.data = JSON.stringify(data)
   btn.dataset.keys = JSON.stringify(widget.params?.model?.primaryKey ? [widget.params?.model?.primaryKey] : widget.params?.model?.keys || [])
   btn.dataset.rowId = params.tableParams.rowIndex
-  btn.dataset.colDef = JSON.stringify(colDef)
   btn.dataset.colId = params.tableParams.column.colId
+  if (colDef) btn.dataset.colDef = JSON.stringify(colDef)
 
 	btn.classList.add('cursor-pointer')
+  // console.log('btn', colDef)
   if (callback && typeof callback === 'function') {
     btn.addEventListener('click', callback)
   }

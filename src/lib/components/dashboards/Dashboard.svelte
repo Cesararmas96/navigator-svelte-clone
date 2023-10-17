@@ -10,22 +10,28 @@
 		removeItem,
 		addNewItem,
 		pasteItem,
-		reloadLocations,
 		saveLocations,
 		loadLocalStoredLocations
 	} from '$lib/helpers/dashboard/grid'
-	import { getApiData, postData } from '$lib/services/getData'
+	import { getApiData } from '$lib/services/getData'
 	import Alerts from '../widgets/type/Alert/Alerts.svelte'
-	import { clearAlerts, sendAlert, sendErrorAlert } from '$lib/helpers/common/alerts'
+	import { clearAlerts, dismissAlert, sendAlert, sendErrorAlert } from '$lib/helpers/common/alerts'
 	import { AlertType, type AlertMessage } from '$lib/interfaces/Alert'
 	import { storeCCPWidget, storeCCPWidgetBehavior } from '$lib/stores/dashboards'
 	import { storeUser } from '$lib/stores'
-	import Spinner from '../common/Spinner.svelte'
-	import { Button, Modal, Table, TableBodyCell, TableBodyRow, TableHeadCell } from 'flowbite-svelte'
 	import { generateUniqueSlug } from '$lib/helpers/common/common'
 	import { sendErrorNotification } from '$lib/stores/toast'
+	import { writable } from 'svelte/store'
+	import { createEventDispatcher, setContext } from 'svelte'
 
 	export let dashboard: any
+
+	const dispatch = createEventDispatcher()
+
+	const storeDashboard: any = writable(dashboard)
+	setContext('dashboard', storeDashboard)
+	$: $storeDashboard = dashboard
+
 	const baseUrl = import.meta.env.VITE_API_URL
 
 	const cols = 12
@@ -36,12 +42,26 @@
 	let gridController: GridController
 	let widgets: any[] = []
 
+	$: if (dashboard.user_id === $storeUser.user_id) {
+		const alert: AlertMessage = {
+			id: 'dashboard-system-msg',
+			title: `Customizing a system dashboard`,
+			message: `Don't forget that you are customizing a system dashboard, please publish it again`,
+			type: AlertType.WARNING,
+			callback1Btn: 'Publish',
+			callback1: () => dispatch('handleCustomize', false)
+		}
+		sendAlert(alert)
+	} else {
+		dismissAlert('dashboard-system-msg')
+	}
+
 	const isMobile = (): boolean => {
 		return innerWidth < 500
 	}
 
 	const getGridItems = async (dashboardId: string) => {
-		clearAlerts()
+		clearAlerts(['dashboard-system-msg'])
 
 		try {
 			widgets = await getApiData(`${baseUrl}/api/v2/widgets?dashboard_id=${dashboardId}`, 'GET')
@@ -82,6 +102,8 @@
 		setTimeout(async () => {
 			isChanging = false
 			saveLocations(dashboard, gridItems, gridController.gridParams)
+			if (dashboard.user_id !== $storeUser.user_id) return
+
 			const payload = { widget_location: { ...gridController.gridParams.items } }
 			// console.log(`${baseUrl}/api/v2/widgets/location/${dashboard.dashboard_id}`)
 			// postData(`${baseUrl}/api/v2/widgets/location/${dashboard.dashboard_id}`, payload)
@@ -114,12 +136,13 @@
 		resizedSlug = item.slug
 	}
 
-	$: if (!dashboard.loaded) {
+	$: {
+		// if (!dashboard.loaded) {
 		gridItems = []
 		getGridItems(dashboard.dashboard_id).then((items: any) => {
 			gridItems = items
 		})
-		dashboard.loaded = true
+		// dashboard.loaded = true
 	}
 
 	const handleWidgetPaste = async () => {
