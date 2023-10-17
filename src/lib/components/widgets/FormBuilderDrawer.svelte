@@ -111,7 +111,7 @@
 		slug: string,
 		conditions: Record<string, any>
 	) {
-		const dataSchema = await getApiData(`${slug}/${primaryKey}`, 'GET', conditions)
+		const dataSchema = await getApiData(`${slug}${primaryKey}`, 'GET', conditions)
 
 		title = `${capitalizeWord(record.action)} ${jsonSchema?.title} #${primaryKey}`
 
@@ -145,7 +145,7 @@
 		let callback = $selectedFormBuilderRecord.callbackNew
 
 		if (type === 'update') {
-			url = `${url}/${primaryKey}`
+			url = `${url}${primaryKey}`
 			method = 'POST'
 			message = 'Successfully updated'
 			callback = $selectedFormBuilderRecord.callbackUpdate
