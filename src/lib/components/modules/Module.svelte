@@ -376,14 +376,14 @@
                                         Settings</DropdownItem
                                     > -->
 
-<!--                                    <DropdownItem-->
-<!--                                            on:click={() => displayModal = true}-->
-<!--                                            defaultClass="flex flex-row font-medium py-2 pl-2 pr-4 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"-->
-<!--                                    >-->
-<!--                                        <Icon icon="zondicons:add-outline" size="18" classes="mr-1"/>-->
-<!--                                        Insert Widget-->
-<!--                                    </DropdownItem-->
-<!--                                    >-->
+                                    <DropdownItem
+
+                                            defaultClass="flex flex-row font-medium py-2 pl-2 pr-4 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"
+                                    >
+                                        <Icon icon="zondicons:add-outline" size="18" classes="mr-1"/>
+                                        Insert Widget
+                                    </DropdownItem
+                                    >
 
 
                                     <DropdownItem

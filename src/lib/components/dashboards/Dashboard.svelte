@@ -22,6 +22,8 @@
 
     import {Button, Card, Table, TableBodyCell, TableBodyRow, TableHeadCell, Modal, P} from "flowbite-svelte";
     import Icon from "$lib/components/common/Icon.svelte";
+    import {openModal} from "$lib/helpers/common/modal";
+    import AddWidgetModal from "$lib/components/modals/AddWidgetModal.svelte";
 
     export let dashboard: any;
     const baseUrl = import.meta.env.VITE_API_URL;
@@ -144,47 +146,10 @@
 
     let displayModal = false;
 
-    const getWidgetTemplates = async () => {
-        displayModal = true;
-
-        try {
-            // Extract program id
-            const {program_id} = dashboard;
-
-            const token = $storeUser.token;
-            const resp = await fetch(`https://api.dev.navigator.mobileinsight.com/api/v2/widgets-template?program_id=${program_id}`,
-
-                {
-                    method: "GET",
-                    headers: {
-                        "Authorization": `Bearer ${token}`
-                    }
-                }
-            );
-
-            if (!resp.ok) {
-                const errorMessage = `Failed to fetch data: ${resp.status} - ${resp.statusText}`;
-                throw new Error(errorMessage);
-            }
-
-
-            const data = await resp.json();
-            console.log(data);
 
 
 
-
-
-
-            return data;
-        } catch (error) {
-            console.error("An error occurred:", error.message);
-            // Handle the error as needed, e.g., display an error message or log it.
-        }
-    };
-
-
-    const handleWidgetInsert = async (widgetUid: string) => {
+const handleWidgetInsert = async (widgetUid: string) => {
         const token = $storeUser.token
 
 
@@ -223,12 +188,6 @@
 
            gridItems = pasteItem(newItem, gridItems);
 
-
-
-
-
-
-
             displayModal = false
             return widget;
         } catch (error) {
@@ -239,18 +198,14 @@
     };
 
 
-const getTemplateIcon = async(widget) => {
-    let rawIcon = widget.attributes && widget.attributes.icon
 
 
-    if (rawIcon.includes(' ')){
-        rawIcon = rawIcon.split(' ')[1]
-
-    }
 
 
-return rawIcon
-}
+const insertWidget = () => {
+    openModal('Insert Widget', 'AddWidgetModal', {dashboard, handleWidgetInsert})
+
+    };
 
 
 
@@ -258,46 +213,9 @@ return rawIcon
 
 <svelte:window bind:innerWidth/>
 
-<button on:click={() => displayModal = true}><Icon icon={"material-symbols:add"} size="18"></Icon>Add Widget</button>
+<button on:click={insertWidget}><Icon icon={"material-symbols:add"} size="18"></Icon>Add Widget</button>
 
 
-{#if (displayModal)}
-    {#await getWidgetTemplates()}
-        <Spinner fullScreen={false}/>
-
-    {:then widgets}
-
-
-
-<div class="z-30">
-
-        <Modal bind:open={displayModal} placement={"bottom-center"}>
-            <P size={"3xl"}>All Widgets</P>
-            <ul class="my-4 space-y-3">
-                {#each widgets as widget}
-                    {#if (widget.title)}
-                    <div
-                       class="flex items-center p-3 text-base font-bold text-gray-900 bg-gray-50 rounded-lg hover:bg-gray-100 group hover:shadow dark:bg-gray-600 dark:hover:bg-gray-500 dark:text-white">
-                        {#await getTemplateIcon(widget) then icon}
-                            <span style="color:{widget.attributes.fg_color}">
-
-                        <Icon icon={icon} size="25px"/>
-                            </span>
-                            {/await}
-                        <button class="flex-1 ml-3 whitespace-nowrap" on:click={() => handleWidgetInsert(widget.uid)}>{widget.title}</button>
-
-                    </div>
-                    {/if}
-                {/each}
-            </ul>
-
-        </Modal>
-
-</div>
-
-    {/await}
-
-{/if}
 
 <Alerts/>
 
