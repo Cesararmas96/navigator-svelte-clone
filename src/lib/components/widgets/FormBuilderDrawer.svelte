@@ -52,11 +52,12 @@
 			keys.unshift($selectedFormBuilderWidget.params.model.primaryKey)
 		}
 
-		keys.map((key) => {
-			if (data[key]) {
-				primaryKey = primaryKey.concat('/', data[key])
-			}
-		})
+		data &&
+			keys.map((key) => {
+				if (data[key]) {
+					primaryKey = primaryKey.concat('/', data[key])
+				}
+			})
 
 		getDataModel($selectedFormBuilderRecord, slug, conditions)
 	}
