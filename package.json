@@ -51,8 +51,8 @@
 	"type": "module",
 	"dependencies": {
 		"@floating-ui/dom": "^1.4.5",
-		"@mixoo/form": "^1.2.4",
-		"@mixoo/ui": "^1.0.7",
+		"@mixoo/form": "^1.2.5",
+		"@mixoo/ui": "^1.0.8",
 		"@nextlint/core": "^1.2.0",
 		"@nextlint/svelte": "^1.1.2",
 		"@popperjs/core": "^2.11.8",
@@ -63,7 +63,6 @@
 		"ag-grid-community": "^30.1.0",
 		"bigger-picture": "^1.1.12",
 		"check-password-strength": "^2.0.7",
-
 		"cl-editor": "^2.3.0",
 		"date-fns": "^2.30.0",
 		"echarts": "^5.4.3",
