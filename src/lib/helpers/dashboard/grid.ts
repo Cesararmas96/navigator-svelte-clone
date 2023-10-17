@@ -5,6 +5,7 @@ const rowHeight = 12
 const minRowHeight = 14
 
 export const loadV2Locations = (_dashboard: any, _widgets: any[], cols: number, isMobile: boolean) => {
+  console.log('loadV2Locations')
   let widgets: any[] = []
   let x: number = 0
   let y: number = 0
@@ -35,6 +36,7 @@ export const loadV2Locations = (_dashboard: any, _widgets: any[], cols: number, 
 }
 
 export const loadV3Locations = (_dashboard: any, _widgets: any[], cols: number, isMobile: boolean) => {
+  console.log('loadV3Locations')
   if (!_dashboard.widget_location || Object.keys(_dashboard.widget_location).length === 0) {
     let row = 0
     _dashboard.widget_location = {};
@@ -63,32 +65,32 @@ export const loadV3Locations = (_dashboard: any, _widgets: any[], cols: number, 
 }
 
 export const loadLocalStoredLocations = (_dashboard: any, _widgets: any[], isMobile) => {
+  console.log('loadLocalStoredLocations')
   const grid = localStorage.getItem('grid')
-  let y = 0
-  if (grid) {
-    const gridData = JSON.parse(grid)
-    const dashboardGrid = gridData.widget_location[_dashboard.dashboard_id]
-    if (dashboardGrid) {
-      return Object.entries(dashboardGrid).sort(([keyA, itemA], [keyB, itemB]) => {
-        if ((itemA as any).x < (itemB as any).x) return -1;
-        if ((itemA as any).x > (itemB as any).x) return 1;
-        if ((itemA as any).y < (itemB as any).y) return -1;
-        if ((itemA as any).y > (itemB as any).y) return 1;
-        return 0;
-      }).map(([key, item]: [string, any]) => {
-        const data = _widgets.find((item) => item.widget_slug === key) || {}
+  if (!grid) return []
 
-        if (isMobile) {
-          data.resize_on_load = true
-          const ret = { slug: key, x: 0, w: 12, h: item.h, y, data }
-          y = y + item.h
-          return ret
-        }
-        return { slug: key, uid: data.uid, ...item, data }
-      })
-    }
+  let y = 0
+  const gridData = JSON.parse(grid)
+  const dashboardGrid = gridData.widget_location[_dashboard.dashboard_id]
+  if (dashboardGrid) {
+    return Object.entries(dashboardGrid).sort(([keyA, itemA], [keyB, itemB]) => {
+      if ((itemA as any).x < (itemB as any).x) return -1;
+      if ((itemA as any).x > (itemB as any).x) return 1;
+      if ((itemA as any).y < (itemB as any).y) return -1;
+      if ((itemA as any).y > (itemB as any).y) return 1;
+      return 0;
+    }).map(([key, item]: [string, any]) => {
+      const data = _widgets.find((item) => item.widget_slug === key) || {}
+
+      if (isMobile) {
+        data.resize_on_load = true
+        const ret = { slug: key, x: 0, w: 12, h: item.h, y, data }
+        y = y + item.h
+        return ret
+      }
+      return { slug: key, uid: data.uid, ...item, data }
+    })
   }
-  return []
 }
 
 export const saveLocations = (dashboard: any, gridItems: any[], gridParams: GridParams) => {

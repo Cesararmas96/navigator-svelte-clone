@@ -1,6 +1,5 @@
-import { storeUser } from '$lib/stores';
-import { onDestroy } from 'svelte';
-import { get } from 'svelte/store';
+import { storeUser } from '$lib/stores'
+import { get } from 'svelte/store'
 
 /**
  * Perform an HTTP request using the fetch API.
@@ -21,7 +20,6 @@ export async function getData(
 	options: Record<string, any> = {},
 	myFetch?: any
 ) {
-
 	try {
 		// Validate that 'url' is a non-empty string
 		if (typeof url !== 'string' || url.trim() === '') {
@@ -60,14 +58,14 @@ export async function getData(
 			headers: headers,
 			body: JSON.stringify(payload)
 		}
-		if (method === 'GET' || method === 'DELETE') delete configRequest.body
+		if (method === 'GET') delete configRequest.body
 
 		let response: any
 		if (myFetch) {
 			response = await myFetch(`${urlWithParams}`, configRequest)
 		} else {
 			response = (await fetch(`${urlWithParams}`, configRequest)) || {}
-		} 
+		}
 
 		// const validResponseStatus = [200, 202]
 		// if (validResponseStatus.includes(response?.status)) {
@@ -96,8 +94,9 @@ export async function getApiData(
 	options: Record<string, any> = {},
 	myFetch?: any
 ) {
-	if (!options.headers?.authorization) {
+	if (!options?.headers?.authorization) {
 		const user = get(storeUser)
+
 		if (user?.token) {
 			const headers = { authorization: `Bearer ${user?.token}` }
 			options = { ...options, headers }
@@ -108,42 +107,43 @@ export async function getApiData(
 }
 
 export async function patchData(url: string, payload: Record<string, any> = {}) {
-	let options	
-	const user = get(storeUser)
-	if (user?.token) {
-		const headers = { authorization: `Bearer ${user?.token}` }
-		options = { ...options, headers }
-	}
+	let options
+	storeUser.subscribe((user: any) => {
+		if (user?.token) {
+			const headers = { authorization: `Bearer ${user.token}` }
+			options = { ...options, headers }
+		}
+	})
 
 	const response = await getData(getQuerySlug(url), 'PATCH', payload, {}, options)
 	return { ...response }
 }
 
 export async function postData(url: string, payload: Record<string, any> = {}) {
-	let options	
-	const user = get(storeUser)
-	if (user?.token) {
-		const headers = { authorization: `Bearer ${user?.token}` }
-		options = { ...options, headers }
-	}
-	
+	let options
+	storeUser.subscribe((user: any) => {
+		if (user?.token) {
+			const headers = { authorization: `Bearer ${user.token}` }
+			options = { ...options, headers }
+		}
+	})
 	const response = await getData(getQuerySlug(url), 'POST', payload, {}, options)
 	return { ...response }
 }
 
 export async function putData(url: string, payload: Record<string, any> = {}) {
-	let options	
-	const user = get(storeUser)
-	if (user?.token) {
-		const headers = { authorization: `Bearer ${user?.token}` }
-		options = { ...options, headers }
-	}
-	
+	let options
+	storeUser.subscribe((user: any) => {
+		if (user?.token) {
+			const headers = { authorization: `Bearer ${user.token}` }
+			options = { ...options, headers }
+		}
+	})
 	const response = await getData(getQuerySlug(url), 'PUT', payload, {}, options)
 	return { ...response }
 }
 
-export async function deleteData(url: string) {
+export async function deleteData(url: string, payload: Record<string, any> = {}) {
 	let options	
 	const user = get(storeUser)
 	if (user?.token) {
@@ -151,7 +151,7 @@ export async function deleteData(url: string) {
 		options = { ...options, headers }
 	}
 	
-	const response = await getData(getQuerySlug(url), 'DELETE', {}, {}, options)
+	const response = await getData(getQuerySlug(url), 'DELETE', payload, {}, options)
 	return { ...response }
 }
 

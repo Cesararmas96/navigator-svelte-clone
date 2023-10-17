@@ -10,16 +10,10 @@
 	} from '$lib/stores/dashboards'
 	import Icon from '../common/Icon.svelte'
 	import { openConfirmModal, openModal } from '$lib/helpers/common/modal'
-	import { getApiData, patchData } from '$lib/services/getData'
+	import { deleteData, getApiData, patchData, putData } from '$lib/services/getData'
 	import { page } from '$app/stores'
 	import { sendErrorNotification, sendSuccessNotification } from '$lib/stores/toast'
-	import {
-		clearAlerts,
-		dismissAlert,
-		sendAlert,
-		sendInfoAlert,
-		sendWarningAlert
-	} from '$lib/helpers/common/alerts'
+	import { clearAlerts, sendAlert, sendInfoAlert } from '$lib/helpers/common/alerts'
 	import Alerts from '../widgets/type/Alert/Alerts.svelte'
 	import { AlertType, type AlertMessage } from '$lib/interfaces/Alert'
 	import html2canvas from 'html2canvas'
@@ -49,22 +43,40 @@
 	}
 
 	let popupRemoveModal = false
-	let selectedDashboardId: number
+	let selectedDashboardUID: string
 
-	function handleNewDashboard(event: MouseEvent) {
+	const loadDashboards = async () => {
+		dashboards = await getApiData(
+			`${baseUrl}/api/v2/dashboards?program_id=${trocModule?.program_id}&module_id=${
+				trocModule?.module_id
+			}&explorer=${trocModule?.module_slug?.includes('explorer') ? true : false}`,
+			'GET'
+		)
+		$storeDashboards = dashboards
+	}
+
+	async function handleNewDashboard(event: MouseEvent) {
 		event.preventDefault()
 		event.stopPropagation()
-		const dashboardId = new Date().getTime()
-		const tab = {
-			dashboard_id: dashboardId,
-			description: 'New tab',
+
+		const tab = await putData(`${baseUrl}/api/v2/dashboards`, {
+			dashboard_name: 'New tab',
 			attributes: {
-				icon: 'mdi:tab',
-				color: ''
+				icon: 'tabler:device-desktop-analytics',
+				color: '#1E90FF',
+				row_header: 'false'
 			},
-			module_id: trocModule.module
-		}
-		$storeDashboards = [...$storeDashboards, tab]
+			params: {
+				closable: false,
+				sortable: false,
+				showSettingsBtn: true
+			},
+			module_id: trocModule.module_id,
+			program_id: trocModule.program_id,
+			user_id: user.user_id
+		})
+		await loadDashboards()
+		currentDashboard = $storeDashboards.find((d: any) => d.duid === tab.data.dashboard_duid)
 	}
 
 	const showRemoveIcon = (event: MouseEvent) => {
@@ -85,13 +97,26 @@
 		$hideDashboardSettings = false
 		$selectedDashboard = dashboard
 	}
-	const handleDashboardRemove = (dashboardId: number) => {
-		selectedDashboardId = dashboardId
+	const handleDashboardRemove = (dashboardUID: string) => {
+		selectedDashboardUID = dashboardUID
 		popupRemoveModal = true
 	}
-	const handleRemoveConfirm = () => {
-		dashboards = dashboards.filter((d: any) => d.dashboard_id !== selectedDashboardId)
-		$storeDashboards = dashboards
+	const handleRemoveConfirm = async () => {
+		try {
+			const removeDashboard = await deleteData(
+				`${baseUrl}/api/v2/dashboards/${currentDashboard.duid}`,
+				{ duid: currentDashboard.duid }
+			)
+			const temp = dashboards.filter((d: any) => d.duid !== currentDashboard.duid)
+			dashboards = []
+			dashboards = [...temp]
+			currentDashboard = dashboards[0] ? { ...dashboards[0] } : null
+			$storeDashboards = dashboards
+			sendSuccessNotification(removeDashboard.message)
+			clearAlerts()
+		} catch (e: any) {
+			sendErrorNotification(e.message)
+		}
 	}
 
 	const confirmCustomize = async (impersonation: boolean) => {
@@ -245,17 +270,14 @@
 <Tabs style="pill" contentClass="p-0 mt-2">
 	<div class="card ml-[5px] mr-[10px] w-full p-1">
 		<div class="nav-scroll gap-1 overflow-visible font-bold text-heading">
-			{#if dashboards}
-				{#each dashboards as dashboard}
+			{#if $storeDashboards && $storeDashboards.length > 0}
+				{#each $storeDashboards as dashboard}
 					<TabItem
 						open={dashboard.dashboard_id === currentDashboard.dashboard_id}
 						on:mouseover={showRemoveIcon}
 						on:mouseleave={hideRemoveIcon}
 						defaultClass="hover:nav-hover"
-						on:click={() => {
-							// dashboard.loaded = false
-							currentDashboard = { ...dashboard }
-						}}
+						on:click={() => (currentDashboard = { ...dashboard })}
 					>
 						<div slot="title" class="flex flex-row items-center gap-2">
 							<Icon icon={dashboard.attributes.icon} size="20px" />
@@ -333,7 +355,7 @@
 									>
 									{#if user.user_id === userId}
 										<DropdownItem
-											on:click={() => handleDashboardRemove(dashboard.dashboard_id)}
+											on:click={() => handleDashboardRemove(dashboard.ddui)}
 											defaultClass="flex flex-row text-red-500 font-medium py-2 pl-2 pr-4 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"
 										>
 											<Icon icon="tabler:trash" size="18" classes="mr-1" />
@@ -347,7 +369,10 @@
 					</TabItem>
 				{/each}
 			{/if}
-			<TabItem on:click={handleNewDashboard} open={!dashboards}>
+			<TabItem
+				on:click={handleNewDashboard}
+				open={!$storeDashboards || $storeDashboards.length === 0}
+			>
 				<div slot="title" class="flex items-center gap-2">
 					<Icon icon="gala:add" size="20px" />
 					New tab

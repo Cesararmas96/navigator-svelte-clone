@@ -15,7 +15,13 @@
 	} from '$lib/helpers/dashboard/grid'
 	import { getApiData } from '$lib/services/getData'
 	import Alerts from '../widgets/type/Alert/Alerts.svelte'
-	import { clearAlerts, dismissAlert, sendAlert, sendErrorAlert } from '$lib/helpers/common/alerts'
+	import {
+		clearAlerts,
+		dismissAlert,
+		sendAlert,
+		sendErrorAlert,
+		sendInfoAlert
+	} from '$lib/helpers/common/alerts'
 	import { AlertType, type AlertMessage } from '$lib/interfaces/Alert'
 	import { storeCCPWidget, storeCCPWidgetBehavior } from '$lib/stores/dashboards'
 	import { storeUser } from '$lib/stores'
@@ -42,7 +48,7 @@
 	let gridController: GridController
 	let widgets: any[] = []
 
-	$: if (dashboard.user_id === $storeUser.user_id) {
+	$: if (dashboard.is_system && dashboard.user_id === $storeUser.user_id) {
 		const alert: AlertMessage = {
 			id: 'dashboard-system-msg',
 			title: `Customizing a system dashboard`,
@@ -61,11 +67,15 @@
 	}
 
 	const getGridItems = async (dashboardId: string) => {
+		gridItems = []
 		clearAlerts(['dashboard-system-msg'])
 
 		try {
 			widgets = await getApiData(`${baseUrl}/api/v2/widgets?dashboard_id=${dashboardId}`, 'GET')
-
+			if (!widgets) {
+				sendInfoAlert('No widgets', 'There are no widgets in this dashboard')
+				return []
+			}
 			widgets = widgets.map((widget: any) => {
 				widget.widget_slug = generateUniqueSlug(widget.title, widgets)
 				return widget
@@ -73,18 +83,22 @@
 
 			let items: any[] = []
 
-			items = loadLocalStoredLocations(dashboard, widgets, isMobile())
+			items = loadLocalStoredLocations(dashboard, widgets, isMobile())!
 			if (items.length > 0) return items
 
 			const setNewLocations =
 				!dashboard.widget_location || Object.keys(dashboard.widget_location).length === 0
 
+			console.log('PASO', dashboard, widgets)
 			items =
 				dashboard.attributes.explorer === 'v3' || setNewLocations
 					? loadV3Locations(dashboard, widgets, cols, isMobile())
 					: loadV2Locations(dashboard, widgets, cols, isMobile())
+
+			console.log('PASO items', items)
 			return items
 		} catch (error: any) {
+			console.error(error)
 			sendErrorNotification(error)
 			sendErrorAlert(
 				'Error loading the widgets',
@@ -138,8 +152,9 @@
 
 	$: {
 		// if (!dashboard.loaded) {
-		gridItems = []
-		getGridItems(dashboard.dashboard_id).then((items: any) => {
+		console.log($storeDashboard.dashboard_id)
+		getGridItems($storeDashboard.dashboard_id).then((items: any) => {
+			console.log('ENTRO')
 			gridItems = items
 		})
 		// dashboard.loaded = true
