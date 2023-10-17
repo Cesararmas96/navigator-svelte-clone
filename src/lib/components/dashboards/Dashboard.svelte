@@ -212,8 +212,6 @@
 
 <svelte:window bind:innerWidth />
 
-<button on:click={insertWidget}><Icon icon={'material-symbols:add'} size="18" />Add Widget</button>
-
 <Alerts />
 
 <Grid
