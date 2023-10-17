@@ -1,5 +1,14 @@
 <script lang="ts">
-	import { Tabs, TabItem, Modal, Button, Dropdown, DropdownItem, MenuButton } from 'flowbite-svelte'
+	import {
+		Tabs,
+		TabItem,
+		Modal,
+		Button,
+		Dropdown,
+		DropdownItem,
+		MenuButton,
+		P
+	} from 'flowbite-svelte'
 	import Dashboard from '../dashboards/Dashboard.svelte'
 	import {
 		hideDashboardSettings,
@@ -25,6 +34,11 @@
 	import html2canvas from 'html2canvas'
 	import { loading } from '$lib/stores/preferences'
 	import { storeUser } from '$lib/stores'
+
+	import Spinner from '$lib/components/common/Spinner.svelte'
+	import { addNewItem, pasteItem } from '$lib/helpers/dashboard/grid'
+
+	import Grid, { GridItem, type GridController } from 'svelte-grid-extended'
 
 	export let trocModule: any
 	export let dashboards: any
@@ -238,6 +252,17 @@
 		}, 700)
 	}
 	$: if ($storeCCPDashboard) addDashboardCopyAlert()
+
+	let showInsertWidgetItem = false
+	let insertWidgetCallback: any
+	const handleWidgetInsert = (e: any) => {
+		showInsertWidgetItem = true
+		insertWidgetCallback = e.detail
+	}
+
+	const insertWidget = () => {
+		openModal('Insert Widget', 'AddWidgetModal', { currentDashboard, handleWidgetInsert })
+	}
 </script>
 
 <Alerts position="top" />
@@ -273,12 +298,22 @@
 								/>
 								<Dropdown bind:open={dropdownOpen} id={dashboard.dashboard_id.toString()}>
 									<!-- <DropdownItem
-										on:click={($event) => handleDashboardSettings($event, dashboard)}
-										defaultClass="flex flex-row font-medium py-2 pl-2 pr-4 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"
-									>
-										<Icon icon="tabler:settings" size="18" classes="mr-1" />
-										Settings</DropdownItem
-									> -->
+                                        on:click={($event) => handleDashboardSettings($event, dashboard)}
+                                        defaultClass="flex flex-row font-medium py-2 pl-2 pr-4 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"
+                                    >
+                                        <Icon icon="tabler:settings" size="18" classes="mr-1" />
+                                        Settings</DropdownItem
+                                    > -->
+									{#if showInsertWidgetItem}
+										<DropdownItem
+											defaultClass="flex flex-row font-medium py-2 pl-2 pr-4 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"
+											on:click={insertWidgetCallback}
+										>
+											<Icon icon="zondicons:add-outline" size="18" classes="mr-1" />
+											Insert Widget
+										</DropdownItem>
+									{/if}
+
 									<DropdownItem
 										on:click={() => handleDashboardCopy('copy')}
 										defaultClass="flex flex-row font-medium py-2 pl-2 pr-4 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"
@@ -343,7 +378,7 @@
 								</Dropdown>
 							</div>
 						</div>
-						<Dashboard {dashboard} on:handleCustomize={(e) => confirmCustomize(e.detail)} />
+						<Dashboard {dashboard} on:handleWidgetInsert={handleWidgetInsert} />
 					</TabItem>
 				{/each}
 			{/if}

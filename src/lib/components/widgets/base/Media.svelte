@@ -1,9 +1,12 @@
 <script lang="ts">
 	import { getContext } from 'svelte'
+    import type {Writable} from "svelte/store";
 
-	let widget: any = getContext('widget')
+	export let widget: Writable<any>
+
+
 
 	const data = $widget?.url
 </script>
 
-<slot {data} />
+<slot {data} {widget}/>

@@ -23,6 +23,22 @@
 	import { sendErrorNotification } from '$lib/stores/toast'
 	import { writable } from 'svelte/store'
 	import { createEventDispatcher, setContext } from 'svelte'
+	import { onMount } from 'svelte'
+	import Spinner from '$lib/components/common/Spinner.svelte'
+
+	import {
+		Button,
+		Card,
+		Table,
+		TableBodyCell,
+		TableBodyRow,
+		TableHeadCell,
+		Modal,
+		P
+	} from 'flowbite-svelte'
+	import Icon from '$lib/components/common/Icon.svelte'
+	import { openModal } from '$lib/helpers/common/modal'
+	import AddWidgetModal from '$lib/components/modals/AddWidgetModal.svelte'
 
 	export let dashboard: any
 
@@ -60,7 +76,7 @@
 		return innerWidth < 500
 	}
 
-	const getGridItems = async (dashboardId: string) => {
+		const getGridItems = async (dashboardId: string) => {
 		clearAlerts(['dashboard-system-msg'])
 
 		try {
@@ -173,7 +189,9 @@
 			// 4. Insert the widget
 			// const response = await getApiData(`${baseUrl}/api/v2/widgets`, 'PUT', payload)
 			// 4.2 Insert the widget into widgets store
+			// console.log($storeWidgets)
 			// $storeWidgets.push(response.data)
+			// console.log($storeWidgets)
 			// 5. Check if behavior was "cut" to remove the widget
 			const behavior = $storeCCPWidgetBehavior
 			// if (behavior === 'cut') {
@@ -211,66 +229,59 @@
 
 	let displayModal = false
 
-	const getWidgetTemplates = async () => {
-		displayModal = true
+	const handleWidgetInsert = async (widgetUid: string) => {
+		const token = $storeUser.token
 
 		try {
-			// Extract program id
-			const { program_id } = dashboard
-
-			const token = sessionStorage.getItem('token')
+			const payload = { widget_name: 'New widget' }
 			const resp = await fetch(
-				`https://api.dev.navigator.mobileinsight.com/api/v2/widgets-template?program_id=${program_id}`,
-
+				`${baseUrl}/api/v2/widgets-template/${widgetUid}`,
+				// const resp = await fetch(`https://api.dev.navigator.mobileinsight.com/api/v2/widgets-template/b13b619a-847e-4734-a3d2-fa198f0531b7`,
 				{
 					method: 'PATCH',
 					headers: {
-						Authorization: `Bearer ${token}`
-					}
+						Authorization: `Bearer ${token}`,
+						'Content-Type': 'application/json'
+					},
+					body: JSON.stringify(payload)
 				}
 			)
-			// getApiData(`https://api.dev.navigator.mobileinsight.com/api/v2/widgets-template`, "GET", "");
 
 			if (!resp.ok) {
 				const errorMessage = `Failed to fetch data: ${resp.status} - ${resp.statusText}`
 				throw new Error(errorMessage)
 			}
+			const widget = await resp.json()
 
-			const data = await resp.json()
-			console.log(data)
+			widget.resize_load = true
+			const newItem = Object.create({})
+			newItem.data = widget
+			newItem.w = 6
+			newItem.h = 12
+			const position = addNewItem(newItem, gridController)
+			newItem.x = position.x
+			newItem.y = position.y
 
-			return data
-		} catch (error: any) {
+			console.log(newItem)
+
+			gridItems = pasteItem(newItem, gridItems)
+
+			displayModal = false
+			return widget
+		} catch (error) {
 			console.error('An error occurred:', error.message)
 			// Handle the error as needed, e.g., display an error message or log it.
 		}
 	}
 
-	const handleWidgetInsert = async (widgetUid: string) => {
-		const token = sessionStorage.getItem('token')
-		try {
-			const resp = await fetch(
-				`https://api.dev.navigator.mobileinsight.com/api/v2/widgets-template/${widgetUid}`,
+	const dispatch = createEventDispatcher()
 
-				{
-					method: 'PATCH',
-					headers: {
-						Authorization: `Bearer ${token}`
-					}
-				}
-			)
+	onMount(() => {
+		dispatch('handleWidgetInsert', insertWidget)
+	})
 
-			if (!resp.ok) {
-				const errorMessage = `Failed to fetch data: ${resp.status} - ${resp.statusText}`
-				throw new Error(errorMessage)
-			}
-			const data = await resp.json()
-			console.log(data)
-			return data
-		} catch (error: any) {
-			console.error('An error occurred:', error.message)
-			// Handle the error as needed, e.g., display an error message or log it.
-		}
+	const insertWidget = () => {
+		openModal('Insert Widget', 'AddWidgetModal', { dashboard, handleWidgetInsert })
 	}
 </script>
 
