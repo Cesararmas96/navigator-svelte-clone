@@ -128,14 +128,15 @@
 
 	async function confirmDelete(data: any, keys: string[], rowId: string) {
 		const slugKeys: string = keys.map((key) => `/${data[key]}`).join('')
-		console.log(`${import.meta.env.VITE_API_URL}${$widget.params.model.meta}${slugKeys}`)
-		// const response = await deleteData(`${import.meta.env.VITE_API_URL}${$widget.params.model.meta}${slugKeys}`)
-		// if (response) {
-		// 	deleteItem(rowId)
-		// 	sendSuccessNotification('Delete')
-		// } else {
-		// 	sendErrorNotification('An error has occurred')
-		// }
+		const response = await deleteData(
+			`${import.meta.env.VITE_API_URL}/${$widget.params.model.meta}${slugKeys}`
+		)
+		if (response) {
+			deleteItem(rowId)
+			sendSuccessNotification('Delete')
+		} else {
+			sendErrorNotification('An error has occurred')
+		}
 	}
 
 	// async function confirmDeleteUsers(data: any, keys: string[], rowId: string) {

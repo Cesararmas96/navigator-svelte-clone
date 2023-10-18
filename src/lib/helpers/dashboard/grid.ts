@@ -207,7 +207,6 @@ export const pasteItem = (item: any, items: any[]) => {
   delete widget.loaded
   delete widget.fetch
   const newItem = { slug: widget.widget_slug, x, y, w, h, data: { ...widget } }
-
   return [...items, newItem]
 }
 

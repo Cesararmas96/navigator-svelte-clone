@@ -211,6 +211,7 @@
 			}
 
 			gridItems = pasteItem(newItem, gridItems)
+			saveLocations(dashboard, gridItems, gridController.gridParams)
 		} catch (error: any) {
 			console.error(`An error occurred: ${error.message}`)
 			// TODO: Handle error and display an appropriate message to the user if needed.

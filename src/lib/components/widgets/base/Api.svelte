@@ -65,7 +65,8 @@
 					break
 				case 'CURRENT_DATE':
 				case 'ENTRY_DATE':
-					validateDate = moment(entryDate).format('YYYY-MM-DD')
+					// validateDate = moment(entryDate).format('YYYY-MM-DD')
+					validateDate = '2023-09-28'
 					break
 				case 'YESTERDAY':
 					validateDate = moment(entryDate).subtract(1, 'days').format('YYYY-MM-DD')
@@ -74,7 +75,8 @@
 					validateDate = moment(entryDate).subtract(1, 'month').format('YYYY-MM-DD')
 					break
 				case 'FDOM':
-					validateDate = moment(entryDate).startOf('month').format('YYYY-MM-DD')
+					// validateDate = moment(entryDate).startOf('month').format('YYYY-MM-DD')
+					validateDate = '2023-09-01'
 					break
 				case 'FDOPW':
 					if (moment(entryDate).isSame(moment().day(6), 'd')) {
