@@ -64,8 +64,6 @@
 		"ag-grid-community": "^30.1.0",
 		"bigger-picture": "^1.1.12",
 		"check-password-strength": "^2.0.7",
-
-		"check-password-strength": "^2.0.7",
 		"cl-editor": "^2.3.0",
 		"date-fns": "^2.30.0",
 		"echarts": "^5.4.3",

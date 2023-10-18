@@ -289,7 +289,7 @@
 
 			displayModal = false
 			return widget
-		} catch (error) {
+		} catch (error: any) {
 			console.error('An error occurred:', error.message)
 			// Handle the error as needed, e.g., display an error message or log it.
 		}

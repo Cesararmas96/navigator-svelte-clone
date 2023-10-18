@@ -17,7 +17,8 @@ export async function getData(
 	method = 'POST',
 	payload: Record<string, any> = {},
 	queryParams: Record<string, any> = {},
-	options: Record<string, any> = {}
+	options: Record<string, any> = {},
+	myFetch?: any
 ) {
 	try {
 		// Validate that 'url' is a non-empty string
@@ -85,15 +86,13 @@ export async function getData(
 	}
 }
 
-const token =
-	'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTc0ODMyNzksImlhdCI6MTY5NzEyMzI3OSwiaXNzIjoiTW9iaWxlaW5zaWdodCIsInVzZXIiOjE1Nzc5LCJ1c2VybmFtZSI6ImptZW5kb3phMUB0cm9jZ2xvYmFsLmNvbSIsInVzZXJfaWQiOjE1Nzc5LCJpZCI6ImptZW5kb3phMUB0cm9jZ2xvYmFsLmNvbSJ9.u9Rxmp7NXjtA8ACZ00o_0g2I4JOK69aqUs2UPsd0Z1E'
-
 export async function getApiData(
 	url: string,
 	method = 'POST',
 	payload: Record<string, any> = {},
 	queryParams: Record<string, any> = {},
-	options: Record<string, any> = {}
+	options: Record<string, any> = {},
+	myFetch?: any
 ) {
 	if (!options?.headers?.authorization) {
 		const user = get(storeUser)
@@ -103,7 +102,7 @@ export async function getApiData(
 			options = { ...options, headers }
 		}
 	}
-	const response = await getData(getQuerySlug(url), method, payload, queryParams, options)
+	const response = await getData(getQuerySlug(url), method, payload, queryParams, options, myFetch)
 	return response
 }
 
@@ -163,7 +162,7 @@ const getQuerySlug = (widgetSlug: any) => {
 		slugQuery = slugQuery.slug || slugQuery
 	}
 
-	let slugNew = null
+	let slugNew = ''
 	if (slugQuery && slugQuery.includes('{BASE_URL_API}')) {
 		slugNew = slugQuery.replace('{BASE_URL_API}', import.meta.env.VITE_API_URL)
 	} else if (slugQuery && slugQuery.includes('{BASE_URL_DATA}')) {
