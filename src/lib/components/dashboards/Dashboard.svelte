@@ -13,7 +13,7 @@
 		saveLocations,
 		loadLocalStoredLocations
 	} from '$lib/helpers/dashboard/grid'
-	import { getApiData, postData } from '$lib/services/getData'
+	import { deleteData, getApiData, postData, putData } from '$lib/services/getData'
 	import Alerts from '../widgets/type/Alert/Alerts.svelte'
 	import {
 		clearAlerts,
@@ -122,16 +122,16 @@
 			saveLocations(dashboard, gridItems, gridController.gridParams)
 			if (dashboard.user_id !== $storeUser.user_id) return
 			const payload = { widget_location: { ...gridController.gridParams.items } }
-			console.log(`${baseUrl}/api/v2/widgets/location/${dashboard.dashboard_id}`)
-			// postData(`${baseUrl}/api/v2/widgets/location/${dashboard.dashboard_id}`, payload)
-			// if (dashboard.attributes.explorer !== 'v3') {
-			// 	postData(`${baseUrl}/api/v2/dashboards/${dashboard.duid}`, {
-			// 		dashboard: {
-			// 			dashboard_id: dashboard.dashboard_id,
-			// 			attributes: { explorer: 'v3' }
-			// 		}
-			// 	})
-			// }
+			console.log(`${baseUrl}/api/v2/widgets/location/${dashboard.dashboard_id}`, payload)
+			await postData(
+				`${baseUrl}/api/v2/dashboard/widgets/location/${dashboard.dashboard_id}`,
+				payload
+			)
+			if (dashboard.attributes.explorer !== 'v3') {
+				postData(`${baseUrl}/api/v2/dashboards/${dashboard.duid}`, {
+					attributes: { explorer: 'v3' }
+				})
+			}
 		}, 2000)
 	}
 
@@ -168,18 +168,8 @@
 
 			const { program_id, dashboard_id } = dashboard // Assuming dashboard is defined somewhere
 			const widget_id = copiedWidget.widget_id // TODO: Check if widget_id is defined
-			const tempTitle = 'Temp Title'
+			const tempTitle = copiedWidget.title + ($storeCCPWidgetBehavior === 'copy' ? ' - Copy' : '')
 
-			const item = gridItems.find((item: any) => item.slug === copiedWidget.widget_slug)
-			const newItem = structuredClone(item)
-			const position = addNewItem(newItem, gridController)
-			newItem.data = copiedWidget
-			newItem.x = position.x
-			newItem.y = position.y
-
-			gridItems = pasteItem(newItem, gridItems)
-
-			// 3. Build the payload
 			const payload = {
 				program_id,
 				dashboard_id,
@@ -187,19 +177,35 @@
 				widget_id,
 				user_id: $storeUser.user_id
 			}
-			// 4. Insert the widget
-			// const response = await getApiData(`${baseUrl}/api/v2/widgets`, 'PUT', payload)
-			// 4.2 Insert the widget into widgets store
-			// $storeWidgets.push(response.data)
-			// 5. Check if behavior was "cut" to remove the widget
+
+			const item = gridItems.find((item: any) => item.slug === copiedWidget.widget_slug)
+			const response = await putData(`${baseUrl}/api/v2/widgets`, payload)
+			console.log(copiedWidget.uid)
+			item.data = response.data
+			const newItem = structuredClone(item)
+			const position = addNewItem(newItem, gridController)
+			newItem.data = copiedWidget
+			newItem.x = position.x
+			newItem.y = position.y
+
 			const behavior = $storeCCPWidgetBehavior
-			// if (behavior === 'cut') {
-			// 	await getApiData(`${baseUrl}/api/v2/widgets/${copiedWidget.uid}`, 'DELETE')
-			// }
+			if (behavior === 'cut') {
+				// await deleteData(`${baseUrl}/api/v2/widgets/${copiedWidget.uid}`)
+				gridItems = gridItems.filter((item: any) => item.slug !== copiedWidget.widget_slug)
+			}
+
+			gridItems = pasteItem(newItem, gridItems)
 		} catch (error: any) {
 			console.error(`An error occurred: ${error.message}`)
 			// TODO: Handle error and display an appropriate message to the user if needed.
 		}
+
+		clearCopyWidgets()
+	}
+
+	const clearCopyWidgets = () => {
+		storeCCPWidget.set(null)
+		storeCCPWidgetBehavior.set(null)
 	}
 
 	const addWidgetCopyAlert = () => {

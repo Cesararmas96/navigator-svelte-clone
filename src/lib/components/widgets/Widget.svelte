@@ -75,7 +75,7 @@
 		class:hidden={$widget.collapse}
 		class="widget-content relative flex w-full cursor-auto flex-col space-y-4 rounded-md text-sm"
 		on:pointerdown={(event) => {
-			event.preventDefault()
+			// event.preventDefault()
 			event.stopPropagation()
 		}}
 	>

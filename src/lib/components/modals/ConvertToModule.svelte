@@ -110,26 +110,12 @@
 		type: string = 'create'
 	) {
 		$loading = true
-
+		console.log(params)
 		try {
 			const resp = await postData(`${import.meta.env.VITE_API_URL}/api/v2/modules`, params)
-			console.log(resp)
 			if (resp) {
 				sendSuccessNotification(resp.message)
 				goto(`/${program!.program_slug}/${redirect}`)
-
-				// if (type === 'update') {
-				// 	goto(`/${program!.program_slug}/${redirect?.replace(program!.program_slug + '_', '')}`)
-				// 	// router.push(
-				// 	// 	`/${program!.program_slug}/${redirect?.replace(program!.program_slug + '_', '')}`
-				// 	// )
-				// } else {
-				// 	goto(`/${program!.program_slug}/${redirect?.replace(program!.program_slug + '_', '')}`)
-				// 	window.location.href = `/${program!.program_slug}/${redirect?.replace(
-				// 		program!.program_slug + '_',
-				// 		''
-				// 	)}`
-				// }
 			} else {
 				sendErrorNotification('Failed to module.')
 			}

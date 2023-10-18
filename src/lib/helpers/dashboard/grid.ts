@@ -180,7 +180,7 @@ export const cloneItem = (item: any, items: any[]) => {
 }
 
 export const pasteItem = (item: any, items: any[]) => {
-  const widget = item.data
+  const widget = {...item.data}
 
   const w = item.w
   const h = item.h
@@ -190,7 +190,7 @@ export const pasteItem = (item: any, items: any[]) => {
 
   widget.id = `widget-ccp-${generateUID()}`
   widget.uid = widget.id
-  widget.title = widget.title + ' Copy'
+  widget.title = widget.title + ' - Copy'
   widget.widget_slug = `${widget.widget_slug}-copy`
   widget.master_filtering = true
   delete widget.clone

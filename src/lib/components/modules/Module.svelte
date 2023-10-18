@@ -10,7 +10,7 @@
 	} from '$lib/stores/dashboards'
 	import Icon from '../common/Icon.svelte'
 	import { openConfirmModal, openModal } from '$lib/helpers/common/modal'
-	import { deleteData, getApiData, patchData, putData } from '$lib/services/getData'
+	import { deleteData, getApiData, patchData, postData, putData } from '$lib/services/getData'
 	import { page } from '$app/stores'
 	import { sendErrorNotification, sendSuccessNotification } from '$lib/stores/toast'
 	import { clearAlerts, sendAlert, sendInfoAlert } from '$lib/helpers/common/alerts'
@@ -42,6 +42,7 @@
 
 	$: if (pastedDashboard) {
 		dashboards = [...dashboards, pastedDashboard]
+		pastedDashboard = null
 	}
 
 	let popupRemoveModal = false
@@ -178,35 +179,20 @@
 	}
 
 	const handleDashboardPaste = async () => {
-		// 1. Get dashboard from session storage
-		let copiedDashboard: any = $storeCCPDashboard
-		// TODO if widget does not exist, a modal should appear telling the user nothing was copied
-		if (!copiedDashboard) return
-		// TODO get session from session storage
-		// 2. Extract data
-		const { duid, module_id } = copiedDashboard
-		// 3. Build the payload
+		let pastedDashboard: any = $storeCCPDashboard
+		const { duid, module_id } = pastedDashboard
 		const payload = { duid, module_id }
-		console.log(payload)
-		// 4. Clone the dashboard
 		try {
-			// 4.1 Make API request to insert the widget
-			console.log($storeDashboards)
-			pastedDashboard = copiedDashboard
-			clearCopyDashboard()
-
-			await getApiData(`${baseUrl}/api/v2/dashboard/clone`, 'POST', payload).then((d) => {
-				// 4.2 Insert the widget into widgets store
-				clearCopyDashboard()
-				$storeDashboards.push(d.data)
-				console.log($storeDashboards)
-			})
+			const resp = await postData(`${baseUrl}/api/v2/dashboard/clone`, payload)
+			console.log(resp)
+			pastedDashboard = resp.data
 		} catch (e: any) {
-			console.log(`There was an error: ${e.message}`)
+			console.log(`There was an error: ${e}`)
 		}
 		if ($storeCCPDashboardBehavior === 'cut') {
 			await getApiData(`${baseUrl}/api/v2/dashboards/${currentDashboard.uid}`, 'DELETE')
 		}
+		clearCopyDashboard()
 	}
 
 	const clearCopyDashboard = () => {

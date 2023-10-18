@@ -4,6 +4,8 @@
 	import { getContext } from 'svelte'
 	import type { Writable } from 'svelte/store'
 	import { getWidgetAction } from '$lib/helpers'
+	import { deleteData } from '$lib/services/getData'
+	import { sendErrorNotification } from '$lib/stores/toast'
 
 	const widget = getContext<Writable<any>>('widget')
 
@@ -18,18 +20,13 @@
 			removeAction.action()
 		} else {
 			const urlBase = import.meta.env.VITE_API_URL
-			const endpoint = `${urlBase}/api/v2/widgets/${$widget.uid}`
-			const method = 'DELETE'
-
-			// Removes DOM element and DELETE request if not cloned
-			// if (!isClonedWidget) {
-			// 	try {
-			// 		// const response = await getData(endpoint, method);
-			// 		removeWidgetFromDOM()
-			// 	} catch (e: any) {
-			// 		console.log(e.message)
-			// 	}
-			// } else removeWidgetFromDOM()
+			try {
+				await deleteData(`${urlBase}/api/v2/widgets/${$widget.uid}`)
+				removeAction.action()
+			} catch (e: any) {
+				sendErrorNotification('Failed to remove widget. ' + e.message)
+				console.log(e)
+			}
 		}
 	}
 </script>
