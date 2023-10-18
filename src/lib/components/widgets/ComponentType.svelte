@@ -3,7 +3,7 @@
 	import { getContext, onMount } from 'svelte'
 	import type { Writable } from 'svelte/store'
 	import NoDataFound from './NoDataFound.svelte'
-    import {capitalizeWord} from "$lib/helpers/common/common";
+	import { capitalizeWord } from '$lib/helpers/common/common'
 
 	export let widget: Writable<any>
 	export let data: any
@@ -12,11 +12,9 @@
 	let classbase = $widget.classbase?.replace('Widget', '')
 	const resizeAction = getWidgetAction($widgetActions, 'resize')
 
-    if (!classbase){
+	if (!classbase) {
 		classbase = capitalizeWord($widget.widget_type_id)
-    }
-
-
+	}
 
 	let Thing: any
 

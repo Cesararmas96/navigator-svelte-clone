@@ -270,15 +270,13 @@
 	}
 </script>
 
-<div class="flex flex-row justify-between">
-	<Filter filterCallback={onFilterTextBoxChanged} />
-	<Toolbar
-		position="top"
-		widgetUID={$widget.uid}
-		btnsActions={$widget.params.btnsActions}
-		on:click={(e) => actionBtnMap[e.detail](e)}
-	/>
-</div>
+<Toolbar
+	position="top"
+	widgetUID={$widget.uid}
+	btnsActions={$widget.params.btnsActions}
+	filterCallback={onFilterTextBoxChanged}
+	on:click={(e) => actionBtnMap[e.detail](e)}
+/>
 <div
 	id="grid-{$widget.uid}"
 	style="width: 100%"

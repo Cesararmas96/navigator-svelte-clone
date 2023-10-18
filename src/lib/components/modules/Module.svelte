@@ -190,7 +190,7 @@
 	const handleDashboardPaste = async () => {
 		let pastedDashboard: any = $storeCCPDashboard
 		const { duid, module_id } = pastedDashboard
-		const payload = { duid, module_id }
+		const payload = { dashboard_id: currentDashboard.dashboard_id, module_id }
 		try {
 			const resp = await postData(`${baseUrl}/api/v2/dashboard/clone`, payload)
 			console.log(resp)
@@ -318,7 +318,7 @@
 										on:click={() => (dropdownOpen = !dropdownOpen)}
 									/>
 									<Dropdown bind:open={dropdownOpen} id={dashboard.dashboard_id.toString()}>
-										{#if showInsertWidgetItem}
+										{#if user.user_id === userId}
 											<DropdownItem
 												defaultClass="flex flex-row font-medium py-2 pl-2 pr-4 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"
 												on:click={insertWidgetCallback}
