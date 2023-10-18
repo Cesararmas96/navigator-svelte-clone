@@ -4,16 +4,16 @@ import { generateUID } from "../common/common"
 const rowHeight = 12
 const minRowHeight = 14
 
-export const loadV2Locations = (_dashboard: any, _widgets: any[], cols: number, isMobile: boolean) => {
+export const loadV2Locations = (widgetLocation: Record<string, any>, _dashboard: any, _widgets: any[], cols: number, isMobile: boolean) => {
   console.log('loadV2Locations')
   let widgets: any[] = []
   let x: number = 0
   let y: number = 0
 
-  if (_dashboard.widget_location) {
+  if (widgetLocation) {
     const locations = _dashboard.attributes.cols.split(',') || [_dashboard.attributes.cols]
-    Object.keys(_dashboard.widget_location).forEach(function callback(value: any, index: number) {
-      Object.entries(_dashboard.widget_location[value]).map(([key, item]: [string, any]) => {
+    Object.keys(widgetLocation).forEach(function callback(value: any, index: number) {
+      Object.entries(widgetLocation[value]).map(([key, item]: [string, any]) => {
         const uid = key
         const data = _widgets.find((item) => item.uid === uid) || {}
         const slug = data.widget_slug
@@ -35,27 +35,27 @@ export const loadV2Locations = (_dashboard: any, _widgets: any[], cols: number, 
   return widgets
 }
 
-export const loadV3Locations = (_dashboard: any, _widgets: any[], cols: number, isMobile: boolean) => {
+export const loadV3Locations = (widgetLocation: Record<string, any>, _widgets: any[], cols: number, isMobile: boolean) => {
   console.log('loadV3Locations')
-  if (!_dashboard.widget_location || Object.keys(_dashboard.widget_location).length === 0) {
+  if (!widgetLocation || Object.keys(widgetLocation).length === 0) {
     let row = 0
-    _dashboard.widget_location = {};
+    widgetLocation = {};
     _widgets.forEach((widget: any) => {
       widget.resize_on_load = true
-      _dashboard.widget_location[widget.widget_slug] = { x: 0, y: row, w: cols, h: minRowHeight };
+      widgetLocation[widget.widget_slug] = { x: 0, y: row, w: cols, h: minRowHeight };
       row += minRowHeight;
     });
   }
 
   if (isMobile) {
     let y = 0
-    return Object.entries(_dashboard.widget_location)
+    return Object.entries(widgetLocation)
   		.map(([key, item]: [string, any]) => {
         const data = _widgets.find((i) => i.widget_slug === key) || {}
         return { slug: key, x: 0, w: cols, h: item.h, y: ++y, data }
       })
   } else {
-    return Object.entries(_dashboard.widget_location)
+    return Object.entries(widgetLocation)
       .map(([key, item]: [string, any]) => {
         const data = _widgets.find((item) => item.widget_slug === key) || {}
         return { slug: key, ...item, data }
@@ -113,13 +113,13 @@ export const saveLocations = (dashboard: any, gridItems: any[], gridParams: Grid
   }))
 }
 
-export const reloadLocations = (_dashboard: any, gridParams: GridParams, isMobile: boolean) => {
+export const reloadLocations = (widgetLocation: Record<string, any>, gridParams: GridParams, isMobile: boolean) => {
   let y = 0
   // gridParams.itemSize = {height: 10, width: 300}
   // gridParams.cols = 1
   gridParams.updateGrid()
   if (!isMobile) {
-    return Object.entries(_dashboard.widget_location)
+    return Object.entries(widgetLocation)
   		.map(([key, item]: [string, any]) => {
         gridParams.items[key].y = item.y
         gridParams.items[key].h = item.h

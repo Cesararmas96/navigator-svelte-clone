@@ -26,8 +26,5 @@ export const load = async ({params, fetch, locals}) => {
     { headers },
     fetch
   )
-
-  console.log('dashboards', dashboards)
   return { programs, trocModule, dashboards, menu, user: locals.user }
-
 }

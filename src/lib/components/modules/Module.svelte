@@ -19,6 +19,7 @@
 	import html2canvas from 'html2canvas'
 	import { loading } from '$lib/stores/preferences'
 	import { storeUser } from '$lib/stores'
+	import { onMount } from 'svelte'
 
 	export let trocModule: any
 	export let dashboards: any
@@ -30,7 +31,8 @@
 
 	clearAlerts()
 
-	$: currentDashboard = dashboards && dashboards.length > 0 ? { ...dashboards[0] } : {}
+	let currentDashboard
+
 	$: if (!dashboards || dashboards?.length === 0)
 		sendInfoAlert(
 			'There are no dashboards here yet. But you can start to add them by clicking on the "New tab" buttom above'
@@ -127,7 +129,7 @@
 			})
 			if (resp.data && resp.data.dashboard_id) {
 				currentDashboard = { ...resp.data }
-				dashboards = dashboards.map((item) => {
+				$storeDashboards = $storeDashboards.map((item) => {
 					if (item.dashboard_id === currentDashboard.dashboard_id) {
 						return currentDashboard
 					}
@@ -230,7 +232,6 @@
 	}
 
 	const handleShareDashboard = () => {
-		console.log('handleShareDashboard', currentDashboard)
 		const url = `/share/dashboard/${currentDashboard.program_id}/${currentDashboard.module_id}/${currentDashboard.duid}`
 		const link = document.createElement('a')
 		link.href = url
@@ -262,127 +263,144 @@
 			dropdownOpen = false
 		}, 700)
 	}
+
+	onMount(() => {
+		if (dashboards && dashboards.length > 0) {
+			currentDashboard = { ...dashboards[0] }
+		}
+	})
+
+	$: if (
+		dashboards &&
+		dashboards.length > 0 &&
+		currentDashboard &&
+		!dashboards.some((d) => d.duid === currentDashboard.duid)
+	) {
+		currentDashboard = { ...dashboards[0] }
+	}
+
 	$: if ($storeCCPDashboard) addDashboardCopyAlert()
 </script>
 
 <Alerts position="top" />
 
-<Tabs style="pill" contentClass="p-0 mt-2">
-	<div class="card ml-[5px] mr-[10px] w-full p-1">
-		<div class="nav-scroll gap-1 overflow-visible font-bold text-heading">
-			{#if $storeDashboards && $storeDashboards.length > 0}
-				{#each $storeDashboards as dashboard}
-					<TabItem
-						open={dashboard.dashboard_id === currentDashboard.dashboard_id}
-						on:mouseover={showRemoveIcon}
-						on:mouseleave={hideRemoveIcon}
-						defaultClass="hover:nav-hover"
-						on:click={() => (currentDashboard = { ...dashboard })}
-					>
-						<div slot="title" class="flex flex-row items-center gap-2">
-							<Icon icon={dashboard.attributes.icon} size="20px" />
-							<p title={dashboard?.dashboard_id}>
-								{dashboard.name}
-							</p>
-							<div
-								class:hidden={currentDashboard.dashboard_id !== dashboard.dashboard_id}
-								class="flex items-center"
-							>
-								<Icon
-									icon="tabler:chevron-down"
-									size="20px"
-									on:click={() => (dropdownOpen = !dropdownOpen)}
-								/>
-								<Dropdown bind:open={dropdownOpen} id={dashboard.dashboard_id.toString()}>
-									<!-- <DropdownItem
+{#if $storeDashboards && $storeDashboards.length > 0 && currentDashboard}
+	<Tabs style="pill" contentClass="p-0 mt-2">
+		<div class="card ml-[5px] mr-[10px] w-full p-1">
+			<div class="nav-scroll gap-1 overflow-visible font-bold text-heading">
+				{#if $storeDashboards && $storeDashboards.length > 0}
+					{#each $storeDashboards as dashboard}
+						<TabItem
+							open={dashboard.dashboard_id === currentDashboard.dashboard_id}
+							on:mouseover={showRemoveIcon}
+							on:mouseleave={hideRemoveIcon}
+							defaultClass="hover:nav-hover"
+							on:click={() => (currentDashboard = { ...dashboard })}
+						>
+							<div slot="title" class="flex flex-row items-center gap-2">
+								<Icon icon={dashboard.attributes.icon} size="20px" />
+								<p title={dashboard?.dashboard_id}>
+									{dashboard.name}
+								</p>
+								<div
+									class:hidden={currentDashboard.dashboard_id !== dashboard.dashboard_id}
+									class="flex items-center"
+								>
+									<Icon
+										icon="tabler:chevron-down"
+										size="20px"
+										on:click={() => (dropdownOpen = !dropdownOpen)}
+									/>
+									<Dropdown bind:open={dropdownOpen} id={dashboard.dashboard_id.toString()}>
+										<!-- <DropdownItem
 										on:click={($event) => handleDashboardSettings($event, dashboard)}
 										defaultClass="flex flex-row font-medium py-2 pl-2 pr-4 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"
 									>
 										<Icon icon="tabler:settings" size="18" classes="mr-1" />
 										Settings</DropdownItem
 									> -->
-									<DropdownItem
-										on:click={() => handleDashboardCopy('copy')}
-										defaultClass="flex flex-row font-medium py-2 pl-2 pr-4 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"
-									>
-										<Icon icon="mdi:content-copy" size="18" classes="mr-1" />
-										Copy dashboard</DropdownItem
-									>
-									{#if user.user_id === userId}
 										<DropdownItem
-											on:click={() => handleDashboardCopy('cut')}
+											on:click={() => handleDashboardCopy('copy')}
 											defaultClass="flex flex-row font-medium py-2 pl-2 pr-4 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"
 										>
-											<Icon icon="mdi:content-cut" size="18" classes="mr-1" />
-											Cut dashboard</DropdownItem
+											<Icon icon="mdi:content-copy" size="18" classes="mr-1" />
+											Copy dashboard</DropdownItem
 										>
-									{/if}
-									{#if user.superuser}
+										{#if user.user_id === userId}
+											<DropdownItem
+												on:click={() => handleDashboardCopy('cut')}
+												defaultClass="flex flex-row font-medium py-2 pl-2 pr-4 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"
+											>
+												<Icon icon="mdi:content-cut" size="18" classes="mr-1" />
+												Cut dashboard</DropdownItem
+											>
+										{/if}
+										{#if user.superuser}
+											<DropdownItem
+												on:click={handleCustomize}
+												defaultClass="flex flex-row font-medium py-2 pl-2 pr-4 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"
+											>
+												<Icon
+													icon={!userId ? 'mdi:file-edit-outline' : 'mdi:publish'}
+													size="18"
+													classes="mr-1"
+												/>
+												{!userId ? 'Customize' : 'Publish'}</DropdownItem
+											>
+										{/if}
+										{#if user.user_id === userId}
+											<DropdownItem
+												on:click={handleConvertToModule}
+												defaultClass="flex flex-row font-medium py-2 pl-2 pr-4 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"
+											>
+												<Icon icon="fluent:convert-range-20-regular" size="18" classes="mr-1" />
+												Convert to Module</DropdownItem
+											>
+										{/if}
 										<DropdownItem
-											on:click={handleCustomize}
+											on:click={handleShareDashboard}
 											defaultClass="flex flex-row font-medium py-2 pl-2 pr-4 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"
 										>
-											<Icon
-												icon={!userId ? 'mdi:file-edit-outline' : 'mdi:publish'}
-												size="18"
-												classes="mr-1"
-											/>
-											{!userId ? 'Customize' : 'Publish'}</DropdownItem
+											<Icon icon="mdi:share-variant" size="18" classes="mr-1" />
+											Share Dashboard</DropdownItem
 										>
-									{/if}
-									{#if user.user_id === userId}
 										<DropdownItem
-											on:click={handleConvertToModule}
+											on:click={handleScreenshot}
 											defaultClass="flex flex-row font-medium py-2 pl-2 pr-4 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"
 										>
-											<Icon icon="fluent:convert-range-20-regular" size="18" classes="mr-1" />
-											Convert to Module</DropdownItem
+											<Icon icon="tabler:camera" size="18" classes="mr-1" />
+											Screenshot</DropdownItem
 										>
-									{/if}
-									<DropdownItem
-										on:click={handleShareDashboard}
-										defaultClass="flex flex-row font-medium py-2 pl-2 pr-4 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"
-									>
-										<Icon icon="mdi:share-variant" size="18" classes="mr-1" />
-										Share Dashboard</DropdownItem
-									>
-									<DropdownItem
-										on:click={handleScreenshot}
-										defaultClass="flex flex-row font-medium py-2 pl-2 pr-4 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"
-									>
-										<Icon icon="tabler:camera" size="18" classes="mr-1" />
-										Screenshot</DropdownItem
-									>
-									{#if user.user_id === userId}
-										<DropdownItem
-											on:click={() => handleDashboardRemove(dashboard.ddui)}
-											defaultClass="flex flex-row text-red-500 font-medium py-2 pl-2 pr-4 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"
-										>
-											<Icon icon="tabler:trash" size="18" classes="mr-1" />
-											Remove</DropdownItem
-										>
-									{/if}
-								</Dropdown>
+										{#if user.user_id === userId}
+											<DropdownItem
+												on:click={() => handleDashboardRemove(dashboard.ddui)}
+												defaultClass="flex flex-row text-red-500 font-medium py-2 pl-2 pr-4 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"
+											>
+												<Icon icon="tabler:trash" size="18" classes="mr-1" />
+												Remove</DropdownItem
+											>
+										{/if}
+									</Dropdown>
+								</div>
 							</div>
-						</div>
-						<Dashboard {dashboard} on:handleCustomize={(e) => confirmCustomize(e.detail)} />
-					</TabItem>
-				{/each}
-			{/if}
-			<TabItem
-				on:click={handleNewDashboard}
-				open={!$storeDashboards || $storeDashboards.length === 0}
-			>
-				<div slot="title" class="flex items-center gap-2">
-					<Icon icon="gala:add" size="20px" />
-					New tab
-				</div>
-				<div><Alerts /></div>
-			</TabItem>
+							<Dashboard {dashboard} on:handleCustomize={(e) => confirmCustomize(e.detail)} />
+						</TabItem>
+					{/each}
+				{/if}
+				<TabItem
+					on:click={handleNewDashboard}
+					open={!$storeDashboards || $storeDashboards.length === 0}
+				>
+					<div slot="title" class="flex items-center gap-2">
+						<Icon icon="gala:add" size="20px" />
+						New tab
+					</div>
+					<div><Alerts /></div>
+				</TabItem>
+			</div>
 		</div>
-	</div>
-</Tabs>
-
+	</Tabs>
+{/if}
 <Modal bind:open={popupRemoveModal} size="xs" autoclose>
 	<div class="text-center">
 		<Icon

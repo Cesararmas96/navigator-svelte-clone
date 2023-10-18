@@ -13,7 +13,7 @@
 		saveLocations,
 		loadLocalStoredLocations
 	} from '$lib/helpers/dashboard/grid'
-	import { getApiData } from '$lib/services/getData'
+	import { getApiData, postData } from '$lib/services/getData'
 	import Alerts from '../widgets/type/Alert/Alerts.svelte'
 	import {
 		clearAlerts,
@@ -37,7 +37,7 @@
 	const storeDashboard: any = writable(dashboard)
 	setContext('dashboard', storeDashboard)
 	$: $storeDashboard = dashboard
-
+	$: widgetLocation = { ...dashboard.widget_location }
 	const baseUrl = import.meta.env.VITE_API_URL
 
 	const cols = 12
@@ -48,7 +48,7 @@
 	let gridController: GridController
 	let widgets: any[] = []
 
-	$: if (dashboard.is_system && dashboard.user_id === $storeUser.user_id) {
+	$: if ($storeDashboard.user_id === $storeUser.user_id) {
 		const alert: AlertMessage = {
 			id: 'dashboard-system-msg',
 			title: `Customizing a system dashboard`,
@@ -68,13 +68,19 @@
 
 	const getGridItems = async (dashboardId: string) => {
 		gridItems = []
-		clearAlerts(['dashboard-system-msg'])
 
 		try {
 			widgets = await getApiData(`${baseUrl}/api/v2/widgets?dashboard_id=${dashboardId}`, 'GET')
 			if (!widgets) {
-				sendInfoAlert('No widgets', 'There are no widgets in this dashboard')
+				sendAlert({
+					id: 'dashboard-no-widgets',
+					title: 'No widgets',
+					message: 'There are no widgets in this dashboard',
+					type: AlertType.INFO
+				})
 				return []
+			} else {
+				dismissAlert('dashboard-no-widgets')
 			}
 			widgets = widgets.map((widget: any) => {
 				widget.widget_slug = generateUniqueSlug(widget.title, widgets)
@@ -84,18 +90,16 @@
 			let items: any[] = []
 
 			items = loadLocalStoredLocations(dashboard, widgets, isMobile())!
-			if (items.length > 0) return items
+			if (items && items.length > 0) return items
 
 			const setNewLocations =
 				!dashboard.widget_location || Object.keys(dashboard.widget_location).length === 0
 
-			console.log('PASO', dashboard, widgets)
 			items =
 				dashboard.attributes.explorer === 'v3' || setNewLocations
-					? loadV3Locations(dashboard, widgets, cols, isMobile())
-					: loadV2Locations(dashboard, widgets, cols, isMobile())
+					? loadV3Locations(widgetLocation, widgets, cols, isMobile())
+					: loadV2Locations(widgetLocation, dashboard, widgets, cols, isMobile())
 
-			console.log('PASO items', items)
 			return items
 		} catch (error: any) {
 			console.error(error)
@@ -117,13 +121,15 @@
 			isChanging = false
 			saveLocations(dashboard, gridItems, gridController.gridParams)
 			if (dashboard.user_id !== $storeUser.user_id) return
-
 			const payload = { widget_location: { ...gridController.gridParams.items } }
-			// console.log(`${baseUrl}/api/v2/widgets/location/${dashboard.dashboard_id}`)
+			console.log(`${baseUrl}/api/v2/widgets/location/${dashboard.dashboard_id}`)
 			// postData(`${baseUrl}/api/v2/widgets/location/${dashboard.dashboard_id}`, payload)
 			// if (dashboard.attributes.explorer !== 'v3') {
 			// 	postData(`${baseUrl}/api/v2/dashboards/${dashboard.duid}`, {
-			// 		dashboard: { attributes: { explorer: 'v3' } }
+			// 		dashboard: {
+			// 			dashboard_id: dashboard.dashboard_id,
+			// 			attributes: { explorer: 'v3' }
+			// 		}
 			// 	})
 			// }
 		}, 2000)
@@ -151,13 +157,9 @@
 	}
 
 	$: {
-		// if (!dashboard.loaded) {
-		console.log($storeDashboard.dashboard_id)
 		getGridItems($storeDashboard.dashboard_id).then((items: any) => {
-			console.log('ENTRO')
 			gridItems = items
 		})
-		// dashboard.loaded = true
 	}
 
 	const handleWidgetPaste = async () => {
@@ -229,7 +231,7 @@
 
 <Alerts />
 
-<div id="grid">
+<div id="grid" class="w-full">
 	<Grid
 		{itemSize}
 		class="grid-container"

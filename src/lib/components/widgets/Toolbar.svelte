@@ -23,8 +23,8 @@
 		/(https:\/\/www\.|http:\/\/www\.|https:\/\/|http:\/\/)?[a-zA-Z]{2,}(\.[a-zA-Z]{2,})(\.[a-zA-Z]{2,})?\/[a-zA-Z0-9]{2,}|((https:\/\/www\.|http:\/\/www\.|https:\/\/|http:\/\/)?[a-zA-Z]{2,}(\.[a-zA-Z]{2,})(\.[a-zA-Z]{2,})?)|(https:\/\/www\.|http:\/\/www\.|https:\/\/|http:\/\/)?[a-zA-Z0-9]{2,}\.[a-zA-Z0-9]{2,}\.[a-zA-Z0-9]{2,}(\.[a-zA-Z0-9]{2,})?/
 
 	const widget: any = getContext('widget')
-	const dashboard: any = getContext('dashboard')
-	let isWidgetOwner: boolean = $dashboard.user_id === $storeUser.user_id
+
+	let isWidgetOwner: boolean = $widget.user_id === $storeUser.user_id
 	let menuOpen = false
 
 	let bg: string
@@ -62,29 +62,31 @@
 		{#if toolbar.filtering}
 			<ToolbarFilter />
 		{/if}
-		{#if toolbar.clone}
+		{#if toolbar.clone && !$widget.shared}
 			<ToolbarClone />
 		{/if}
 		<ToolbarCollapse />
-		{#if toolbar.max}
+		{#if toolbar.max && !$widget.shared}
 			<ToolbarMaximize />
 		{/if}
-		{#if toolbar.pin}
+		{#if toolbar.pin && !$widget.shared}
 			<ToolbarPin />
 		{/if}
 		{#if toolbar.help && $widget.description}
 			<ToolbarHelp helpText={$widget.description} />
 		{/if}
 		<!--Trying copy widget-->
-		<button
-			class="icon btn hover:bg-light-100 dark:hover:bg-dark-200"
-			on:click={() => handleWidgetCopyorCut(widget, 'copy')}
-		>
-			<Icon icon={'tabler:clipboard-copy'} size="18" />
-		</button>
-		<Tooltip placement="bottom" class="z-10">Copy</Tooltip>
+		{#if !$widget.shared}
+			<button
+				class="icon btn hover:bg-light-100 dark:hover:bg-dark-200"
+				on:click={() => handleWidgetCopyorCut(widget, 'copy')}
+			>
+				<Icon icon={'tabler:clipboard-copy'} size="18" />
+			</button>
+			<Tooltip placement="bottom" class="z-10">Copy</Tooltip>
+		{/if}
 
-		{#if isWidgetOwner || $widget.temp || $widget.cloned}
+		{#if (isWidgetOwner || $widget.temp || $widget.cloned) && !$widget.shared}
 			<button
 				class="icon btn hover:bg-light-100 dark:hover:bg-dark-200"
 				on:click={() => handleWidgetCopyorCut(widget, 'cut')}
@@ -111,12 +113,12 @@
 			{#if toolbar.export}
 				<ToolbarExportData on:itemClick={() => (menuOpen = !menuOpen)} />
 			{/if}
-			{#if isWidgetOwner && !($widget.temp || $widget.cloned)}
+			{#if isWidgetOwner && !($widget.temp || $widget.cloned) && !$widget.shared}
 				<ToolbarSettings on:itemClick={() => (menuOpen = !menuOpen)} />
 			{/if}
 		</Dropdown>
 
-		{#if isWidgetOwner || $widget.temp || $widget.cloned}
+		{#if isWidgetOwner || $widget.temp || ($widget.cloned && !$widget.shared)}
 			<ToolbarClose />
 		{/if}
 	</div>
