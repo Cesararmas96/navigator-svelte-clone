@@ -4,7 +4,6 @@
 	import { renderHTML } from '@nextlint/core'
 
 	// import Devtool from './_components/Devtool.svelte'
-
 	const showcaseContent = {
 		type: 'doc',
 		attrs: { align: 'left' },
@@ -710,8 +709,8 @@
 </script>
 
 <div class="editor">
-	{#if editorModeView}
-		<!-- <Button
+	<!-- {#if editorModeView} -->
+	<!-- <Button
 					class="mb-2 w-full rounded p-2 text-sm "
 					on:click={() => {
 						onSave()
@@ -719,7 +718,7 @@
 				>
 					Save
 				</Button> -->
-		<!-- <Button
+	<!-- <Button
 			class="mb-2 w-full rounded p-2 text-sm "
 			outline
 			on:click={() => {
@@ -728,32 +727,32 @@
 		>
 			Clear
 		</Button> -->
-		<EditorTheme>
-			<div class="container">
-				<div class="wrapper">
-					<SvelteEditor
-						content={showcaseContent}
-						placeholder="Write here or press '/' for help"
-						onCreated={(createdEditor) => {
-							editor = createdEditor
-						}}
-						onChange={(nextEditor) => {
-							editor = nextEditor
-						}}
-						plugins={{
-							selectImage: {
-								handleUpload,
-								unsplash: {
-									accessKey: 'omv67BHUb-gbDEbf9UwFsvGbKdQHwnreJPAzgI0Mz5I'
-								}
+	<EditorTheme>
+		<div class="container">
+			<div class="wrapper">
+				<SvelteEditor
+					content={showcaseContent}
+					placeholder="Write here or press '/' for help"
+					onCreated={(createdEditor) => {
+						editor = createdEditor
+					}}
+					onChange={(nextEditor) => {
+						editor = nextEditor
+					}}
+					plugins={{
+						selectImage: {
+							handleUpload,
+							unsplash: {
+								accessKey: 'omv67BHUb-gbDEbf9UwFsvGbKdQHwnreJPAzgI0Mz5I'
 							}
-						}}
-					/>
-				</div>
+						}
+					}}
+				/>
 			</div>
-		</EditorTheme>
-	{:else}
-		<!-- <EditorTheme>
+		</div>
+	</EditorTheme>
+	<!-- {:else} -->
+	<!-- <EditorTheme>
 			<div class="container">
 				<div class="wrapper">
 					<SvelteEditor
@@ -769,7 +768,7 @@
 				</div>
 			</div>
 		</EditorTheme> -->
-	{/if}
+	<!-- {/if} -->
 </div>
 
 <style lang="scss">
