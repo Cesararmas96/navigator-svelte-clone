@@ -2,10 +2,12 @@
 	import { Input, Label } from 'flowbite-svelte'
 
 	export let filterCallback: (inputId: string) => void
+
+	let showFilter: boolean = false
 </script>
 
+<!-- {#if showFilter} -->
 <div class="flex flex-col px-1 py-3">
-	<!-- <Label for="filter-text-box" class="mb-1">Filter:</Label> -->
 	<Input
 		type="text"
 		id="filter-text-box"
@@ -20,3 +22,7 @@
 		on:keypress={() => filterCallback('filter-text-box')}
 	/>
 </div>
+<!-- {:else} -->
+<!-- svelte-ignore a11y-invalid-attribute -->
+<!-- <a href="#" on:click={() => (showFilter = !showFilter)} class="px-1 py-1">Show filter...</a> -->
+<!-- {/if} -->

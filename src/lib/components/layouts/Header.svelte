@@ -33,7 +33,7 @@
 		</NavBrand>
 	</div>
 	<!-- Search -->
-	<Search />
+	<!-- <Search /> -->
 
 	<i class="ml-auto" />
 

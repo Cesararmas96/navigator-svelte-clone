@@ -105,12 +105,20 @@ export const saveLocations = (dashboard: any, gridItems: any[], gridParams: Grid
     acc[key] = { x: item.x, y: item.y, w: item.w, h: item.h };
     return acc;
   }, {});
-  
-  localStorage.setItem('grid', JSON.stringify({
-    "widget_location": {
-      [dashboard.dashboard_id]: items
-    }
-  }))
+
+  const grid = localStorage.getItem('grid')
+  if (grid && JSON.parse(grid).widget_location[dashboard.dashboard_id]) {
+    const gridData = JSON.parse(grid)
+    gridData.widget_location[dashboard.dashboard_id] = items
+    localStorage.setItem('grid', JSON.stringify(gridData))
+  } else { 
+    localStorage.setItem('grid', JSON.stringify({
+      "widget_location": {
+        [dashboard.dashboard_id]: items
+      }
+    }))
+  }
+
 }
 
 export const reloadLocations = (widgetLocation: Record<string, any>, gridParams: GridParams, isMobile: boolean) => {
