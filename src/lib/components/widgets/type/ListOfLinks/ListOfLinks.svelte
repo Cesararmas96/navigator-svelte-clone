@@ -1,7 +1,7 @@
 <script lang="ts">
     import {A, Card, P, Table, TableBody, TableBodyCell, TableBodyRow, TableHead, TableHeadCell} from "flowbite-svelte";
     import Icon from "$lib/components/common/Icon.svelte";
-    import jsonData from "../../../data/widgetListOfLinks.json";
+    import jsonData from "../../../../../data/widgetListOfLinks.json";
 
     const getWidgetCardData = (jsonData: any) => {
         const data = jsonData;

@@ -1,6 +1,6 @@
 <script lang="ts">
     import {Button, Card} from "flowbite-svelte";
-    import jsonData from "../../../data/widgetCardData.json";
+    import jsonData from "../../../../../data/widgetCardData.json";
 
 
     const getWidgetCardData = (jsonData: any) => {

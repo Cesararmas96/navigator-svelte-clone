@@ -1,6 +1,6 @@
 <script lang="ts">
     import {Card, Timeline, TimelineItem} from "flowbite-svelte";
-    import jsonData from "../../../data/widgetTimelineData.json";
+    import jsonData from "../../../../../data/widgetTimelineData.json";
     import Icon from "$lib/components/common/Icon.svelte";
 
 
