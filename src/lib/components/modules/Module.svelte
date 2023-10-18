@@ -318,13 +318,15 @@
 										on:click={() => (dropdownOpen = !dropdownOpen)}
 									/>
 									<Dropdown bind:open={dropdownOpen} id={dashboard.dashboard_id.toString()}>
-										<!-- <DropdownItem
-										on:click={($event) => handleDashboardSettings($event, dashboard)}
-										defaultClass="flex flex-row font-medium py-2 pl-2 pr-4 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"
-									>
-										<Icon icon="tabler:settings" size="18" classes="mr-1" />
-										Settings</DropdownItem
-									> -->
+										{#if showInsertWidgetItem}
+											<DropdownItem
+												defaultClass="flex flex-row font-medium py-2 pl-2 pr-4 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"
+												on:click={insertWidgetCallback}
+											>
+												<Icon icon="zondicons:add-outline" size="18" classes="mr-1" />
+												Insert Widget
+											</DropdownItem>
+										{/if}
 										<DropdownItem
 											on:click={() => handleDashboardCopy('copy')}
 											defaultClass="flex flex-row font-medium py-2 pl-2 pr-4 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"
