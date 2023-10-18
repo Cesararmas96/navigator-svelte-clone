@@ -108,12 +108,11 @@ export async function getApiData(
 
 export async function patchData(url: string, payload: Record<string, any> = {}) {
 	let options
-	storeUser.subscribe((user: any) => {
-		if (user?.token) {
-			const headers = { authorization: `Bearer ${user.token}` }
-			options = { ...options, headers }
-		}
-	})
+	const user = get(storeUser)
+	if (user?.token) {
+		const headers = { authorization: `Bearer ${user?.token}` }
+		options = { ...options, headers }
+	}
 
 	const response = await getData(getQuerySlug(url), 'PATCH', payload, {}, options)
 	return { ...response }
@@ -121,24 +120,24 @@ export async function patchData(url: string, payload: Record<string, any> = {}) 
 
 export async function postData(url: string, payload: Record<string, any> = {}) {
 	let options
-	storeUser.subscribe((user: any) => {
-		if (user?.token) {
-			const headers = { authorization: `Bearer ${user.token}` }
-			options = { ...options, headers }
-		}
-	})
+	const user = get(storeUser)
+	if (user?.token) {
+		const headers = { authorization: `Bearer ${user?.token}` }
+		options = { ...options, headers }
+	}
+
 	const response = await getData(getQuerySlug(url), 'POST', payload, {}, options)
 	return { ...response }
 }
 
 export async function putData(url: string, payload: Record<string, any> = {}) {
 	let options
-	storeUser.subscribe((user: any) => {
-		if (user?.token) {
-			const headers = { authorization: `Bearer ${user.token}` }
-			options = { ...options, headers }
-		}
-	})
+	const user = get(storeUser)
+	if (user?.token) {
+		const headers = { authorization: `Bearer ${user?.token}` }
+		options = { ...options, headers }
+	}
+
 	const response = await getData(getQuerySlug(url), 'PUT', payload, {}, options)
 	return { ...response }
 }
