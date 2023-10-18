@@ -1,5 +1,5 @@
-import { storeUser } from '$lib/stores'
-import { get } from 'svelte/store'
+import { handleError } from '$lib/helpers/common/errors'
+import { sendErrorNotification } from '$lib/stores/toast'
 
 /**
  * Perform an HTTP request using the fetch API.
@@ -17,8 +17,7 @@ export async function getData(
 	method = 'POST',
 	payload: Record<string, any> = {},
 	queryParams: Record<string, any> = {},
-	options: Record<string, any> = {},
-	myFetch?: any
+	options: Record<string, any> = {}
 ) {
 	try {
 		// Validate that 'url' is a non-empty string
@@ -58,14 +57,8 @@ export async function getData(
 			headers: headers,
 			body: JSON.stringify(payload)
 		}
-		if (method === 'GET' || method === 'DELETE') delete configRequest.body
-
-		let response: any
-		if (myFetch) {
-			response = await myFetch(`${urlWithParams}`, configRequest)
-		} else {
-			response = (await fetch(`${urlWithParams}`, configRequest)) || {}
-		}
+		if (method === 'GET') delete configRequest.body
+		const response = (await fetch(`${urlWithParams}`, configRequest)) || {}
 
 		// const validResponseStatus = [200, 202]
 		// if (validResponseStatus.includes(response?.status)) {
@@ -86,73 +79,29 @@ export async function getData(
 	}
 }
 
+const token =
+	'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTc0ODMyNzksImlhdCI6MTY5NzEyMzI3OSwiaXNzIjoiTW9iaWxlaW5zaWdodCIsInVzZXIiOjE1Nzc5LCJ1c2VybmFtZSI6ImptZW5kb3phMUB0cm9jZ2xvYmFsLmNvbSIsInVzZXJfaWQiOjE1Nzc5LCJpZCI6ImptZW5kb3phMUB0cm9jZ2xvYmFsLmNvbSJ9.u9Rxmp7NXjtA8ACZ00o_0g2I4JOK69aqUs2UPsd0Z1E'
+
 export async function getApiData(
 	url: string,
 	method = 'POST',
 	payload: Record<string, any> = {},
 	queryParams: Record<string, any> = {},
-	options: Record<string, any> = {},
-	myFetch?: any
+	options: Record<string, any> = {}
 ) {
-	if (!options?.headers?.authorization) {
-		const user = get(storeUser)
-
-		if (user?.token) {
-			const headers = { authorization: `Bearer ${user?.token}` }
-			options = { ...options, headers }
-		}
+	if (!options.authorization) {
+		const headers = { authorization: `Bearer ${token}` }
+		options = { ...options, headers }
 	}
-	const response = await getData(getQuerySlug(url), method, payload, queryParams, options, myFetch)
+	const response = await getData(getQuerySlug(url), method, payload, queryParams, options)
 	return response
 }
 
 export async function patchData(url: string, payload: Record<string, any> = {}) {
-	let options
-	storeUser.subscribe((user: any) => {
-		if (user?.token) {
-			const headers = { authorization: `Bearer ${user.token}` }
-			options = { ...options, headers }
-		}
-	})
-
-	const response = await getData(getQuerySlug(url), 'PATCH', payload, {}, options)
-	return { ...response }
-}
-
-export async function postData(url: string, payload: Record<string, any> = {}) {
-	let options
-	storeUser.subscribe((user: any) => {
-		if (user?.token) {
-			const headers = { authorization: `Bearer ${user.token}` }
-			options = { ...options, headers }
-		}
-	})
-	const response = await getData(getQuerySlug(url), 'POST', payload, {}, options)
-	return { ...response }
-}
-
-export async function putData(url: string, payload: Record<string, any> = {}) {
-	let options
-	storeUser.subscribe((user: any) => {
-		if (user?.token) {
-			const headers = { authorization: `Bearer ${user.token}` }
-			options = { ...options, headers }
-		}
-	})
-	const response = await getData(getQuerySlug(url), 'PUT', payload, {}, options)
-	return { ...response }
-}
-
-export async function deleteData(url: string) {
-	let options	
-	const user = get(storeUser)
-	if (user?.token) {
-		const headers = { authorization: `Bearer ${user?.token}` }
-		options = { ...options, headers }
-	}
-	
-	const response = await getData(getQuerySlug(url), 'DELETE', {}, {}, options)
-	return { ...response }
+	const headers = { authorization: `Bearer ${token}` }
+	console.log('url', getQuerySlug(url), payload)
+	//const response = await getData(getQuerySlug(url), 'PATCH', paload, {}, headers)
+	return { data: 1 }
 }
 
 const getQuerySlug = (widgetSlug: any) => {
@@ -163,7 +112,7 @@ const getQuerySlug = (widgetSlug: any) => {
 		slugQuery = slugQuery.slug || slugQuery
 	}
 
-	let slugNew = ''
+	let slugNew = null
 	if (slugQuery && slugQuery.includes('{BASE_URL_API}')) {
 		slugNew = slugQuery.replace('{BASE_URL_API}', import.meta.env.VITE_API_URL)
 	} else if (slugQuery && slugQuery.includes('{BASE_URL_DATA}')) {
