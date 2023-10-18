@@ -1,5 +1,5 @@
-import { handleError } from '$lib/helpers/common/errors'
-import { sendErrorNotification } from '$lib/stores/toast'
+import { storeUser } from '$lib/stores'
+import { get } from 'svelte/store'
 
 /**
  * Perform an HTTP request using the fetch API.
@@ -58,7 +58,13 @@ export async function getData(
 			body: JSON.stringify(payload)
 		}
 		if (method === 'GET') delete configRequest.body
-		const response = (await fetch(`${urlWithParams}`, configRequest)) || {}
+
+		let response: any
+		if (myFetch) {
+			response = await myFetch(`${urlWithParams}`, configRequest)
+		} else {
+			response = (await fetch(`${urlWithParams}`, configRequest)) || {}
+		}
 
 		// const validResponseStatus = [200, 202]
 		// if (validResponseStatus.includes(response?.status)) {
@@ -89,19 +95,64 @@ export async function getApiData(
 	queryParams: Record<string, any> = {},
 	options: Record<string, any> = {}
 ) {
-	if (!options.authorization) {
-		const headers = { authorization: `Bearer ${token}` }
-		options = { ...options, headers }
+	if (!options?.headers?.authorization) {
+		const user = get(storeUser)
+
+		if (user?.token) {
+			const headers = { authorization: `Bearer ${user?.token}` }
+			options = { ...options, headers }
+		}
 	}
 	const response = await getData(getQuerySlug(url), method, payload, queryParams, options)
 	return response
 }
 
 export async function patchData(url: string, payload: Record<string, any> = {}) {
-	const headers = { authorization: `Bearer ${token}` }
-	console.log('url', getQuerySlug(url), payload)
-	//const response = await getData(getQuerySlug(url), 'PATCH', paload, {}, headers)
-	return { data: 1 }
+	let options
+	const user = get(storeUser)
+	if (user?.token) {
+		const headers = { authorization: `Bearer ${user?.token}` }
+		options = { ...options, headers }
+	}
+
+	const response = await getData(getQuerySlug(url), 'PATCH', payload, {}, options)
+	return { ...response }
+}
+
+export async function postData(url: string, payload: Record<string, any> = {}) {
+	let options
+	const user = get(storeUser)
+	if (user?.token) {
+		const headers = { authorization: `Bearer ${user?.token}` }
+		options = { ...options, headers }
+	}
+
+	const response = await getData(getQuerySlug(url), 'POST', payload, {}, options)
+	return { ...response }
+}
+
+export async function putData(url: string, payload: Record<string, any> = {}) {
+	let options
+	const user = get(storeUser)
+	if (user?.token) {
+		const headers = { authorization: `Bearer ${user?.token}` }
+		options = { ...options, headers }
+	}
+
+	const response = await getData(getQuerySlug(url), 'PUT', payload, {}, options)
+	return { ...response }
+}
+
+export async function deleteData(url: string, payload: Record<string, any> = {}) {
+	let options	
+	const user = get(storeUser)
+	if (user?.token) {
+		const headers = { authorization: `Bearer ${user?.token}` }
+		options = { ...options, headers }
+	}
+	
+	const response = await getData(getQuerySlug(url), 'DELETE', payload, {}, options)
+	return { ...response }
 }
 
 const getQuerySlug = (widgetSlug: any) => {

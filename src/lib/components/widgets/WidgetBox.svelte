@@ -189,8 +189,8 @@
 	}}
 	on:pointerdown={(event) => {
 		if (draggable) return
-		event.preventDefault()
-		event.stopPropagation()
+		// event.preventDefault()
+		// event.stopPropagation()
 	}}
 >
 	{#if widgetStore}

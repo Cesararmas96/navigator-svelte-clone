@@ -8,6 +8,8 @@
 	const sharedWidget = { ...data.widget }
 	sharedWidget.loaded = false
 	storeUser.set(data.user)
+
+	sharedWidget.shared = true
 </script>
 
 <WidgetBox widget={sharedWidget} let:fixed let:isOwner let:isToolbarVisible let:widget>

@@ -24,6 +24,8 @@
 	import Modal from '$lib/components/common/Modal.svelte'
 	import { deleteData, postData } from '$lib/services/getData'
 	import { sendErrorNotification, sendSuccessNotification } from '$lib/stores/toast'
+	import Filter from './Filter.svelte'
+	import type { as } from 'vitest/dist/reporters-5f784f42'
 
 	export let data: any
 	export let simpleTable: boolean = false
@@ -126,14 +128,26 @@
 
 	async function confirmDelete(data: any, keys: string[], rowId: string) {
 		const slugKeys: string = keys.map((key) => `/${data[key]}`).join('')
-		const response = await deleteData(`${import.meta.env.VITE_API_URL}/api/v1/user${slugKeys}`)
-		if (response) {
-			deleteItem(rowId)
-			sendSuccessNotification('Delete')
-		} else {
-			sendErrorNotification('An error has occurred')
-		}
+		console.log(`${import.meta.env.VITE_API_URL}${$widget.params.model.meta}${slugKeys}`)
+		// const response = await deleteData(`${import.meta.env.VITE_API_URL}${$widget.params.model.meta}${slugKeys}`)
+		// if (response) {
+		// 	deleteItem(rowId)
+		// 	sendSuccessNotification('Delete')
+		// } else {
+		// 	sendErrorNotification('An error has occurred')
+		// }
 	}
+
+	// async function confirmDeleteUsers(data: any, keys: string[], rowId: string) {
+	// 	const slugKeys: string = keys.map((key) => `/${data[key]}`).join('')
+	// 	const response = await deleteData(`${import.meta.env.VITE_API_URL}/api/v1/users${slugKeys}`)
+	// 	if (response) {
+	// 		deleteItem(rowId)
+	// 		sendSuccessNotification('Delete')
+	// 	} else {
+	// 		sendErrorNotification('An error has occurred')
+	// 	}
+	// }
 
 	/**
 	 * @description Definición por defecto de las columnas
@@ -224,7 +238,7 @@
 	/**
 	 * @description Actualiza el tamaño de la tabla cuando se cambia el tamaño del widget
 	 */
-	$: if ($widget.resized) {
+	$: if ($widget.resized && document.querySelector(`#grid-${$widget.uid}`)) {
 		const eGridDiv: HTMLElement = document.querySelector(`#grid-${$widget.uid}`)!
 		eGridDiv.style.height = gridHeight($widget.uid, $widget.params)
 		$widget.resized = false
@@ -250,14 +264,21 @@
 			gridOptions.api!.applyTransaction({ remove: [rowNode.data] })
 		}
 	}
+	function onFilterTextBoxChanged(elementId: any) {
+		console.log(elementId)
+		gridOptions.api!.setQuickFilter((document.getElementById(elementId)! as HTMLInputElement).value)
+	}
 </script>
 
-<Toolbar
-	position="top"
-	widgetUID={$widget.uid}
-	btnsActions={$widget.params.btnsActions}
-	on:click={(e) => actionBtnMap[e.detail](e)}
-/>
+<div class="flex flex-row justify-between">
+	<Filter filterCallback={onFilterTextBoxChanged} />
+	<Toolbar
+		position="top"
+		widgetUID={$widget.uid}
+		btnsActions={$widget.params.btnsActions}
+		on:click={(e) => actionBtnMap[e.detail](e)}
+	/>
+</div>
 <div
 	id="grid-{$widget.uid}"
 	style="width: 100%"

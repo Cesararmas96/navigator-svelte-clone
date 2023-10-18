@@ -4,7 +4,6 @@ import { redirect } from "@sveltejs/kit"
 // export const ssr = false;
 
 export const load = async ({params, fetch, locals, url}) => {
-  console.log('locals.user', locals.user)
   if (!locals.user)  throw redirect(302, '/login')
 
   const urlBase = import.meta.env.VITE_API_URL

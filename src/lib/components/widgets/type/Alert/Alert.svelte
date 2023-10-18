@@ -17,7 +17,7 @@
 		info: { icon: 'mdi:information-outline', color: 'blue' }
 	}
 
-	const color = types[alert.type].color
+	$: color = types[alert.type].color
 
 	const onClick1 = () => {
 		dismissAlert(alert.id!)
