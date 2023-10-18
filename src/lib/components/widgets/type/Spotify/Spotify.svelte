@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Spotify } from 'sveltekit-embed'
 
-	export let data: string
+	export let data: Record<string, any>
 
 	// const regExp =
 	// 	/(https?:\/\/open.spotify.com\/(track|user|artist|album)\/[a-zA-Z0-9]+(\/playlist\/[a-zA-Z0-9]+|)|spotify:(track|user|artist|album):[a-zA-Z0-9]+(:playlist:[a-zA-Z0-9]+|))/
@@ -11,7 +11,7 @@
 	let spotifyLink: string = ''
 
 	$: {
-		let url = data
+		let url = data?.url
 		const match = url.match(regExp)
 		spotifyLink = match ? match[2] + '/' + match[3] : ''
 		console.log(match, spotifyLink)

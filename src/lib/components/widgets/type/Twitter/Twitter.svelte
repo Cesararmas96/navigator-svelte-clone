@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { Tweet } from 'sveltekit-embed'
 
-	export let data: string
+	export let data: Record<string, any>
 
 	let tweetLink: string
-	$: tweetLink = data
+	$: tweetLink = data?.url
 </script>
 
 {#if tweetLink}
