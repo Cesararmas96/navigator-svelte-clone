@@ -43,7 +43,7 @@
 					title: fnFormats(card, 'toUpperCase'),
 					data: values[card],
 					order: cardIndex,
-					icon: 'tabler-brand-google-analytics',
+					icon: configExtend?.icon || 'tabler-brand-google-analytics',
 					col:
 						$widget.params.card && $widget.params.card.colspan
 							? $widget.params.card.colspan
@@ -64,9 +64,9 @@
 </script>
 
 {#if data}
-	<div class="grid grid-cols-12 gap-3">
+	<div class="grid grid-cols-12 gap-1">
 		{#each cards as card}
-			<div style:grid-column={`span ${card.col} / span ${card.col}`} class="my-2">
+			<div style:grid-column={`span ${card.col} / span ${card.col}`}>
 				<SimpleCard {card} />
 			</div>
 		{/each}
