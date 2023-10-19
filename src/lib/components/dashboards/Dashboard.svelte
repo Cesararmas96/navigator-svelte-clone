@@ -30,21 +30,7 @@
 	import { writable } from 'svelte/store'
 	import { createEventDispatcher, setContext } from 'svelte'
 	import { onMount } from 'svelte'
-	import Spinner from '$lib/components/common/Spinner.svelte'
-
-	import {
-		Button,
-		Card,
-		Table,
-		TableBodyCell,
-		TableBodyRow,
-		TableHeadCell,
-		Modal,
-		P
-	} from 'flowbite-svelte'
-	import Icon from '$lib/components/common/Icon.svelte'
 	import { openModal } from '$lib/helpers/common/modal'
-	import AddWidgetModal from '$lib/components/modals/AddWidgetModal.svelte'
 
 	export let dashboard: any
 
@@ -52,6 +38,7 @@
 
 	const storeDashboard: any = writable(dashboard)
 	setContext('dashboard', storeDashboard)
+	$: console.log('dashboard', $storeDashboard)
 	$: $storeDashboard = dashboard
 	$: widgetLocation = { ...dashboard.widget_location }
 	const baseUrl = import.meta.env.VITE_API_URL
@@ -82,8 +69,9 @@
 		return innerWidth < 500
 	}
 
-	const getGridItems = async (dashboardId: string) => {
+	const setGridItems = async (dashboardId: string): Promise<void> => {
 		gridItems = []
+		dismissAlert('dashboard-no-widgets')
 
 		try {
 			widgets = await getApiData(`${baseUrl}/api/v2/widgets?dashboard_id=${dashboardId}`, 'GET')
@@ -94,9 +82,7 @@
 					message: 'There are no widgets in this dashboard',
 					type: AlertType.INFO
 				})
-				return []
-			} else {
-				dismissAlert('dashboard-no-widgets')
+				return
 			}
 			widgets = widgets.map((widget: any) => {
 				widget.widget_slug = generateUniqueSlug(widget.title, widgets)
@@ -106,7 +92,11 @@
 			let items: any[] = []
 
 			items = loadLocalStoredLocations(dashboard, widgets, isMobile())!
-			if (items && items.length > 0) return items
+			console.log('items', items)
+			if (items && items.length > 0) {
+				gridItems = [...items]
+				return
+			}
 
 			const setNewLocations =
 				!dashboard.widget_location || Object.keys(dashboard.widget_location).length === 0
@@ -116,7 +106,7 @@
 					? loadV3Locations(widgetLocation, widgets, cols, isMobile())
 					: loadV2Locations(widgetLocation, dashboard, widgets, cols, isMobile())
 
-			return items
+			gridItems = [...items]
 		} catch (error: any) {
 			console.error(error)
 			sendErrorNotification(error)
@@ -124,7 +114,6 @@
 				'Error loading the widgets',
 				`There was a problem with the server. Please try again later or contact technical support if the issue persists. (${error.message})`
 			)
-			return []
 		}
 	}
 
@@ -138,14 +127,15 @@
 			saveLocations(dashboard, gridItems, gridController.gridParams)
 			if (dashboard.user_id !== $storeUser.user_id) return
 			const payload = { widget_location: { ...gridController.gridParams.items } }
-			console.log(`${baseUrl}/api/v2/widgets/location/${dashboard.dashboard_id}`, payload)
 			await postData(
 				`${baseUrl}/api/v2/dashboard/widgets/location/${dashboard.dashboard_id}`,
 				payload
 			)
+
 			if (dashboard.attributes.explorer !== 'v3') {
-				postData(`${baseUrl}/api/v2/dashboards/${dashboard.duid}`, {
-					attributes: { explorer: 'v3' }
+				const attributes = { ...dashboard.attributes, explorer: 'v3' }
+				postData(`${baseUrl}/api/v2/dashboards/${dashboard.dashboard_id}`, {
+					attributes
 				})
 			}
 		}, 2000)
@@ -172,11 +162,7 @@
 		resizedSlug = item.slug
 	}
 
-	$: {
-		getGridItems($storeDashboard.dashboard_id).then((items: any) => {
-			gridItems = items
-		})
-	}
+	$: setGridItems($storeDashboard.dashboard_id)
 
 	const handleWidgetPaste = async () => {
 		try {
@@ -361,3 +347,6 @@
 		{/each}
 	</Grid>
 </div>
+
+<!-- {"prepaid", "internet", "postpaid", "apd-bucket", "accessories", "carriers-mtd", "prepaid-top-10-rep", "unlocked-per-store", "performance-metrics", "postpaid-top-10-rep", "prepaid-accessories", "postpaid-accessories", "prepaid-through-warp", "other-quality-metrics", "performance-metrics-1", "prepaid-top-10-stores", "straight-line-to-goal", "accessories-top-10-rep", "postpaid-top-10-stores", "prepaid-protection-plan", "top-10-devices-sold-mtd", "postpaid-quality-metrics", "accessories-top-10-stores", "postpaid-protection-plans", "mtd-postpaid-same-month-returns", "count-of-stores-with-zero-sales-mtd", "selected-day-sales-average-per-door", "daily-comp-store-postpaid-sales-comparison-year-over-year", 
+} -->

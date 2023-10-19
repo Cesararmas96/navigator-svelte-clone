@@ -107,9 +107,13 @@ export const saveLocations = (dashboard: any, gridItems: any[], gridParams: Grid
   }, {});
 
   const grid = localStorage.getItem('grid')
-  if (grid && JSON.parse(grid).widget_location[dashboard.dashboard_id]) {
+  if (grid) {
     const gridData = JSON.parse(grid)
-    gridData.widget_location[dashboard.dashboard_id] = items
+    if (gridData.widget_location[dashboard.dashboard_id]) {
+      gridData.widget_location[dashboard.dashboard_id] = items
+    } else {
+      gridData.widget_location = { ...gridData.widget_location, [dashboard.dashboard_id]: items }
+    }
     localStorage.setItem('grid', JSON.stringify(gridData))
   } else { 
     localStorage.setItem('grid', JSON.stringify({
