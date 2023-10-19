@@ -78,7 +78,7 @@
                             </span>
                     {/await}
                     <button class="flex-1 ml-3 flex-wrap"
-                            on:click={() => props.handleWidgetInsert(widget.uid)}>{widget.title}</button>
+                            on:click={() => props.handleWidgetInsert(widget.uid, widget.widget_id)}>{widget.title}</button>
 
                 </div>
             {/if}

@@ -154,16 +154,28 @@
 
 	let displayModal = false
 
-	const handleWidgetInsert = async (widgetUid: string) => {
+	const handleWidgetInsert = async (widgetUid: string, widgetId: string) => {
 		const token = $storeUser.token
 
+
 		try {
-			const payload = { widget_name: 'New widget' }
-			const resp = await fetch(
-				`${baseUrl}/api/v2/widgets-template/${widgetUid}`,
+
+
+			const payload = {
+				program_id: dashboard.program_id,
+				dashboard_id: dashboard.dashboard_id,
+				title: "My new Widget",
+				widget_id: widgetId,
+			}
+			console.log(payload);
+
+
+
+
 				// const resp = await fetch(`https://api.dev.navigator.mobileinsight.com/api/v2/widgets-template/b13b619a-847e-4734-a3d2-fa198f0531b7`,
+				const resp = await fetch(`https://api.dev.navigator.mobileinsight.com/api/v2/widgets/${widgetUid}`,
 				{
-					method: 'PATCH',
+					method: 'PUT',
 					headers: {
 						Authorization: `Bearer ${token}`,
 						'Content-Type': 'application/json'
@@ -180,7 +192,7 @@
 
 			widget.resize_load = true
 			const newItem = Object.create({})
-			newItem.data = widget
+			newItem.data = widget.data
 			newItem.w = 6
 			newItem.h = 12
 			const position = addNewItem(newItem, gridController)

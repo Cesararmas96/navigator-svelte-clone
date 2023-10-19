@@ -291,8 +291,8 @@ Content-Type: application/json
 ###
 # group: Widgets
 # @name Insert Widget
-PUT https://api.dev.navigator.mobileinsight.com/api/v2/widgets
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTY5NzI0MjQsImlhdCI6MTY5NjYxMjQyNCwiaXNzIjoiTW9iaWxlaW5zaWdodCIsInVzZXIiOjE1Nzc5LCJ1c2VybmFtZSI6ImptZW5kb3phMUB0cm9jZ2xvYmFsLmNvbSIsInVzZXJfaWQiOjE1Nzc5LCJpZCI6ImptZW5kb3phMUB0cm9jZ2xvYmFsLmNvbSJ9.gRS3837D5E8dYqeBqr_l22vhvM2bIN9kROK_PyYQOMw
+PUT https://api.dev.navigator.mobileinsight.com/api/v2/widgets/ba935f5a-1517-11ed-a133-0a62d395
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTc4Mjc2MTMsImlhdCI6MTY5NzQ2NzYxMywiaXNzIjoiTW9iaWxlaW5zaWdodCIsInVzZXIiOjE1Nzc5LCJ1c2VybmFtZSI6ImptZW5kb3phMUB0cm9jZ2xvYmFsLmNvbSIsInVzZXJfaWQiOjE1Nzc5LCJpZCI6ImptZW5kb3phMUB0cm9jZ2xvYmFsLmNvbSJ9.PXZ2blxrSHfFtGKy-NRhPZVprIuBq8Ps7xrZqm3HgCg
 Content-Type: application/json
 
 {
@@ -301,7 +301,6 @@ Content-Type: application/json
   "title": "Nuevo widget v7",
   "widget_id": 278
 }
-
 ###
 # group: Widgets
 # @name Delete Widget
