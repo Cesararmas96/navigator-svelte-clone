@@ -1,5 +1,5 @@
 <script lang="ts">
-    import {Button, Input, Label, Tooltip} from "flowbite-svelte";
+    import {Button, Input, Label, P, Tooltip} from "flowbite-svelte";
     import type {ActionData} from "../$types";
     import {onMount} from "svelte";
     import {enhance} from "$app/forms";
@@ -41,7 +41,7 @@
 
             // 4. Display the company information on the page
 
-            const slideshowCarouselData = slideshowUrls.map((url: string) => ({"original": url, "thumbnailClass": 'hidden', "loading": "lazy"}));
+            const slideshowCarouselData = slideshowUrls.map((url: string) => ({"original": url, "thumbnailClass": "hidden", "loading": "lazy"}));
 
 
             console.log(slideshowUrls);
@@ -102,9 +102,9 @@
         showPlayButton: false,
         showNav: false,
         infinite: true,
-        additionalClass: 'my-image-carousel',
+        additionalClass: "my-image-carousel",
         stopPropagation: true
-    }
+    };
 
 
 </script>
@@ -117,10 +117,10 @@
                 <div
                         class=" w-4/5 flex-col items-center justify-center text-white dark:text-black lg:flex width-full"
                 >
-<!--                    <div class="mx-auto w-full cursor-default" >-->
+                    <!--                    <div class="mx-auto w-full cursor-default" >-->
 
-                        <ImageGallery items={data.slideshowCarouselData} {...gallerySettings}/>
-<!--                    </div>-->
+                    <ImageGallery items={data.slideshowCarouselData} {...gallerySettings}/>
+                    <!--                    </div>-->
 
 
                 </div>
@@ -187,22 +187,38 @@
 
                                 {#each Object.values(filteredObject) as method}
 
+                                    {#if method.name === 'ADFSAuth'}
 
-                                    <li>
                                         <Button
                                                 href={`${apiUrl}${method.uri}`}
                                                 outline
                                                 color={method.color || 'light'}
                                                 class="w-full flex mr-auto ml-auto"
                                         >
-
-                                            <!--TODO Each icon must not be in /static/static. Create a function that splits /static-->
-                                            <img src={method.icon} style="max-width: 150px" alt={method.name}/>
-
-
+                                            <P weight="medium">Sign in with SSO</P>
                                         </Button>
-                                        <Tooltip>{method.description}</Tooltip>
-                                    </li>
+
+
+                                    {:else}
+                                        <li>
+                                            <Button
+                                                    href={`${apiUrl}${method.uri}`}
+                                                    outline
+                                                    color={method.color || 'light'}
+                                                    class="w-full flex mr-auto ml-auto"
+
+                                            >
+
+                                                <!--TODO Each icon must not be in /static/static. Create a function that splits /static-->
+                                                <img src={method.icon} style="max-width: 150px" alt={method.name}/>
+
+
+                                            </Button>
+                                            <Tooltip>{method.description}</Tooltip>
+                                        </li>
+
+
+                                    {/if}
 
 
                                 {/each}
@@ -223,14 +239,14 @@
 
 <style module>
 
-.my-image-carousel {
-    /*width: 100%;*/
-    /*height: 100%;*/
+    .my-image-carousel {
+        /*width: 100%;*/
+        /*height: 100%;*/
 
-min-width: 10000px;
+        min-width: 10000px;
 
 
-}
+    }
 
 
 </style>
