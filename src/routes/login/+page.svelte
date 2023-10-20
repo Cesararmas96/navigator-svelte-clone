@@ -1,96 +1,19 @@
 <script lang="ts">
     import {Button, Input, Label, P, Tooltip} from "flowbite-svelte";
-    import type {ActionData} from "../$types";
     import {onMount} from "svelte";
     import {enhance} from "$app/forms";
-    import {extractSubdomain} from "$lib/helpers/login/login";
-    import {getData} from "$lib/services/getData";
+    import {
+        buildImageUrls,
+        extractSubdomain,
+        fetchCompanyData,
+        fetchTotalAuthMethods,
+        filterAuthMethods,
+        removeBasicAuth,
+    } from "$lib/helpers/login/login";
     import ImageGallery from "@react2svelte/image-gallery";
 
-
-    export let form: ActionData;
-
-    let authMethods: Array<any> = [];
     const apiUrl = import.meta.env.VITE_API_URL;
-
-    const baseUrl = "https://api.trocdigital.io/api/v2/";
-
-
-    const getLoginData = async () => {
-        {
-
-            // 1. Obtain information from company URL
-            const subdomain = extractSubdomain();
-
-            // 2. Use that URL to fetch the company information from the API
-            const rawData = await fetch(`${apiUrl}/api/v1/clients?subdomain_prefix=${subdomain}`);
-            const [data] = await rawData.json();
-            console.log(data);
-
-            // 3. Get image URLs
-            const rootLink = `${baseUrl}services/images/`;
-            const {branding, slideshow, client, auth_backends: authMethods} = data;
-            const {favicon, icon, logo_client, logo_home, sidebar} = branding;
-
-            const slideshowUrls = slideshow.map((slide) => `${rootLink}${slide}`);
-            const favIconUrl = `${rootLink}${favicon}`;
-            const iconUrl = `${rootLink}${icon}`;
-            const logoClientUrl = `${rootLink}${logo_client}`;
-            const logoHomeUrl = `${rootLink}${logo_home}`;
-            const sidebarUrl = `${rootLink}${sidebar}`;
-
-            // 4. Display the company information on the page
-
-            const slideshowCarouselData = slideshowUrls.map((url: string) => ({"original": url, "thumbnailClass": "hidden", "loading": "lazy"}));
-
-
-            console.log(slideshowUrls);
-            return {
-                slideshowCarouselData,
-                client,
-                authMethods,
-                favIconUrl,
-                iconUrl,
-                logoClientUrl,
-                logoHomeUrl,
-                sidebarUrl,
-                slideshow: slideshowUrls,
-
-            };
-
-
-        }
-
-    };
-
-
-    let filteredObject = {};
-    const importLoginMethods = async () => {
-
-        const data = await getLoginData();
-        const {authMethods} = data;
-
-        const response = await fetch(`${apiUrl}/api/v1/auth/methods`);
-        const totalAuthMethods = await response.json();
-
-
-        filteredObject = Object.fromEntries(
-            Object.entries(totalAuthMethods).filter(([key]) => authMethods.includes(key))
-        );
-        console.log(filteredObject);
-        delete filteredObject.BasicAuth;
-
-        return filteredObject;
-
-
-    };
-
-
-    onMount(() => {
-        getLoginData();
-        importLoginMethods();
-
-    });
+    const baseProdUrl = "https://api.trocdigital.io/api/v2/";
 
 
     const gallerySettings = {
@@ -102,9 +25,46 @@
         showPlayButton: false,
         showNav: false,
         infinite: true,
-        additionalClass: "my-image-carousel",
-        stopPropagation: true
     };
+
+
+    const getLoginData = async () => {
+
+        try {
+            const subdomain = extractSubdomain();
+            const rootLink = `${baseProdUrl}services/images/`;
+            const data = await fetchCompanyData(subdomain, apiUrl);
+            return buildImageUrls(data, rootLink);
+        } catch (error) {
+            console.error("Failed to fetch company data:", error);
+            return null;
+        }
+    };
+
+
+    let filteredObject = {};
+    const importLoginMethods = async () => {
+        const data = await getLoginData();
+        const {authMethods} = data;
+
+        try {
+            const totalAuthMethods = await fetchTotalAuthMethods(apiUrl);
+            filteredObject = filterAuthMethods(totalAuthMethods, authMethods);
+            filteredObject = removeBasicAuth(filteredObject);
+            console.log(filteredObject);
+            return filteredObject;
+        } catch (error) {
+            console.error("Failed to fetch login methods:", error);
+            return null;
+        }
+    };
+
+
+    onMount(() => {
+        getLoginData();
+        importLoginMethods();
+
+    });
 
 
 </script>
