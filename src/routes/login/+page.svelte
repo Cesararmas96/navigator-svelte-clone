@@ -5,6 +5,7 @@
     import {enhance} from "$app/forms";
     import {extractSubdomain} from "$lib/helpers/login/login";
     import {getData} from "$lib/services/getData";
+    import ImageGallery from "@react2svelte/image-gallery";
 
 
     export let form: ActionData;
@@ -39,7 +40,13 @@
             const sidebarUrl = `${rootLink}${sidebar}`;
 
             // 4. Display the company information on the page
+
+            const slideshowCarouselData = slideshowUrls.map((url: string) => ({"original": url, "thumbnailClass": 'hidden', "loading": "lazy"}));
+
+
+            console.log(slideshowUrls);
             return {
+                slideshowCarouselData,
                 client,
                 authMethods,
                 favIconUrl,
@@ -48,6 +55,7 @@
                 logoHomeUrl,
                 sidebarUrl,
                 slideshow: slideshowUrls,
+
             };
 
 
@@ -69,6 +77,7 @@
         filteredObject = Object.fromEntries(
             Object.entries(totalAuthMethods).filter(([key]) => authMethods.includes(key))
         );
+        console.log(filteredObject);
         delete filteredObject.BasicAuth;
 
         return filteredObject;
@@ -82,37 +91,37 @@
         importLoginMethods();
 
     });
+
+
+    const gallerySettings = {
+        autoPlay: true,
+        slideDuration: 250,
+        showBullets: false,
+        showThumbnails: true,
+        showFullscreenButton: false,
+        showPlayButton: false,
+        showNav: false,
+        infinite: true,
+        additionalClass: 'my-image-carousel',
+        stopPropagation: true
+    }
+
+
 </script>
 
-
-<!--<img src={data.favIconUrl} alt="Favicon"/>-->
-
-<!--<img src={data.iconUrl} alt="Icon"/>-->
-
-<!--<img src={data.logoClientUrl} alt="Logo Client"/>-->
-
-<!--<img src={data.logoHomeUrl} alt="Logo Home"/>-->
-
-<!--<img src={data.sidebarUrl} alt="Sidebar"/>-->
-
-
-<!--{#each slideshow as photo}-->
-<!--    <img src={photo} alt="Sidebar" style="max-width: 50px"/>-->
-
-
-<!--{/each}-->
-
-
 {#await getLoginData() then data}
+
     <main>
         <div class="main-container dark:text-white-dark min-h-screen text-black">
             <div class="flex min-h-screen bg-white">
                 <div
-                        class="hidden min-h-screen w-4/5 flex-col items-center justify-center p-4 text-white dark:text-black lg:flex"
+                        class=" w-4/5 flex-col items-center justify-center text-white dark:text-black lg:flex width-full"
                 >
-                    <div class="mx-auto  w-full">
-                        <img src="{data.slideshow[0]}" alt="coming_soon" class="w-full h-full"/>
-                    </div>
+<!--                    <div class="mx-auto w-full cursor-default" >-->
+
+                        <ImageGallery items={data.slideshowCarouselData} {...gallerySettings}/>
+<!--                    </div>-->
+
 
                 </div>
                 <div class="relative flex w-full items-center justify-center lg:w-2/5">
@@ -125,19 +134,6 @@
                         <form class="space-y-5 mt-4" action="?/login" method="POST" use:enhance>
                             <p class="mb-7">Sign in with Basic User/Password authentication</p>
 
-                            <!-- {#if errors?.status}
-                                    <Alert
-                                                    color="yellow"
-                                                    dismissable
-                                                    transition={fly}
-                                                    params={{ x: 200 }}
-                                                    class="border-l-4"
-                                                    on:click={closeAlertError}
-                                    >
-                                            <iconify-icon icon="tabler:info-triangle" height="unset" class="mr-1 w-4 h-4"/>
-                                            {errors?.reason}
-                                    </Alert>
-                            {/if} -->
 
                             <div>
                                 <Label for="email" class="mb-1 !text-gray-900">Email</Label>
@@ -201,7 +197,7 @@
                                         >
 
                                             <!--TODO Each icon must not be in /static/static. Create a function that splits /static-->
-                                            <img src={method.icon} style="max-width: 150px"/>
+                                            <img src={method.icon} style="max-width: 150px" alt={method.name}/>
 
 
                                         </Button>
@@ -215,13 +211,26 @@
 
 
                         </ul>
-                        <p class="text-center mt-5">
-                            Dont't have an account ? <a href="auth-cover-register.html"
-                                                        class="font-bold text-primary hover:underline">Sign Up</a>
-                        </p>
+
+
                     </div>
                 </div>
             </div>
         </div>
     </main>
 {/await}
+
+
+<style module>
+
+.my-image-carousel {
+    /*width: 100%;*/
+    /*height: 100%;*/
+
+min-width: 10000px;
+
+
+}
+
+
+</style>
