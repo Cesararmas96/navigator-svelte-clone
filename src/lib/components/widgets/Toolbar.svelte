@@ -1,11 +1,13 @@
 <script lang="ts">
 	import { Dropdown, Tooltip } from 'flowbite-svelte'
+	import ToolbarLike from './footer/Like.svelte'
 	import ToolbarReload from './toolbar/Reload.svelte'
 	import ToolbarSettings from './toolbar/Settings.svelte'
 	import ToolbarPin from './toolbar/Pin.svelte'
 	import ToolbarHelp from './toolbar/Help.svelte'
 	import ToolbarScreenshot from './toolbar/Screenshot.svelte'
 	import ToolbarExportData from './toolbar/ExportData.svelte'
+	import ToolbarShared from './toolbar/Shared.svelte'
 	import Icon from '../common/Icon.svelte'
 	import { getContext } from 'svelte'
 	import ToolbarFilter from './toolbar/Filter.svelte'
@@ -56,6 +58,9 @@
 	}}
 >
 	<div class="flex flex-row justify-end pl-0">
+		{#if toolbar.like}
+			<ToolbarLike />
+		{/if}
 		{#if toolbar.reload}
 			<ToolbarReload />
 		{/if}
@@ -115,6 +120,9 @@
 			{/if}
 			{#if isWidgetOwner && !($widget.temp || $widget.cloned) && !$widget.shared}
 				<ToolbarSettings on:itemClick={() => (menuOpen = !menuOpen)} />
+			{/if}
+			{#if toolbar.shared}
+				<ToolbarShared on:itemClick={() => (menuOpen = !menuOpen)} />
 			{/if}
 		</Dropdown>
 

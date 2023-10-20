@@ -87,7 +87,7 @@
 	{/if}
 	<div class="px-3">
 		<div class="flex h-8 items-center justify-between">
-			<div class={`mb-2 text-lg font-bold text-white ${fontColor}`}>
+			<div class={`mb-3 text-3xl font-bold text-white ${fontColor}`}>
 				{card.frontMask}
 				{fnFormats(card.data, card.format)}
 				{card.backMask}
@@ -99,11 +99,11 @@
 					{card.backMask}
 				{/if}
 			</div>
-			<Icon icon="tabler:chart-bar" size="28" />
+			<Icon icon={card.icon} size="28" />
 		</div>
-		<div class="text-lg font-bold">{card.title}</div>
+		<div class="text-md font-medium">{card.title}</div>
 		{#if card?.footer}
-			<div class="text-gray-50">{card.footer}</div>
+			<div class="text-sm font-normal text-gray-50">{card.footer}</div>
 		{/if}
 	</div>
 </div>

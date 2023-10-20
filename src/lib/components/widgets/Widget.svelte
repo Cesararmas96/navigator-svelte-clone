@@ -41,7 +41,7 @@
 
 <div
 	id={`widget-${$widget.uid}`}
-	class:h-[calc(100%-2rem)]={!$widget.temp && !$widget.collapse}
+	class:h-[calc(100%-0.5rem)]={!$widget.temp && !$widget.collapse}
 	class:overflow-hidden={!scrollableBox}
 	class:overflow-y-auto={scrollableBox}
 	class:absolute={!$widget.temp && !$widget.collapse}
@@ -97,7 +97,7 @@
 	</div>
 </div>
 <!-- Widget Footer -->
-{#if !$widget.temp}
+<!-- {#if !$widget.temp}
 	<div
 		class:hidden={$widget.collapse}
 		id={`widget-footer-${$widget.uid}`}
@@ -107,4 +107,4 @@
 			<WidgetFooter {isToolbarVisible} />
 		{/if}
 	</div>
-{/if}
+{/if} -->
