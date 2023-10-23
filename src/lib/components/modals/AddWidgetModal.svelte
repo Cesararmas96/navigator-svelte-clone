@@ -2,7 +2,7 @@
 
 
     import {storeUser} from "$lib/stores";
-    import {P} from "flowbite-svelte";
+    import {Button, P, TabItem} from "flowbite-svelte";
     import Spinner from "$lib/components/common/Spinner.svelte";
     import {addNewItem, pasteItem} from "$lib/helpers/dashboard/grid";
     import Icon from "$lib/components/common/Icon.svelte";
@@ -11,16 +11,14 @@
     export let props;
 
 
-    const baseUrl = import.meta.env.VITE_API_URL
+    const baseUrl = import.meta.env.VITE_API_URL;
 
     const getTemplateIcon = async (widget) => {
         let rawIcon = widget.attributes && widget.attributes.icon;
-        if (rawIcon.includes(" ")) {
+        if (rawIcon?.includes(" ")) {
             rawIcon = rawIcon.split(" ")[1];
 
         }
-
-
         return rawIcon;
     };
 
@@ -50,7 +48,7 @@
 
 
             const data = await resp.json();
-            console.log(data);
+
 
             return data;
         } catch (error) {
@@ -58,6 +56,31 @@
             // Handle the error as needed, e.g., display an error message or log it.
         }
     };
+
+
+    const getWidgetCategory = async (data) => {
+        // Get by category
+        const uniqueWidgetTypeIds = new Set();
+
+        data.forEach(item => {
+            uniqueWidgetTypeIds.add(item.widget_type_id);
+        });
+
+        const widgetType = [...uniqueWidgetTypeIds].sort();
+        return widgetType;
+
+
+    };
+
+
+    const handleCategorySearch = async (category, widgets) => {
+        const catWidgets = widgets.filter((widget) => widget.widget_type_id === category)
+
+        console.log(catWidgets);
+
+        return catWidgets
+    };
+
 
 
 </script>
@@ -68,6 +91,24 @@
 
 {:then widgets}
     <ul class="my-4 space-y-3">
+
+        {#await getWidgetCategory(widgets) then categories}
+
+            {#each categories as category}
+
+                <div on:click={() => handleCategorySearch(category, widgets)} class="flex flex-row items-center p-3 text-base font-bold text-gray">
+
+              {category}
+                </div>
+
+
+
+
+
+            {/each}
+        {/await}
+
+
         {#each widgets as widget}
             {#if (widget.title)}
                 <div

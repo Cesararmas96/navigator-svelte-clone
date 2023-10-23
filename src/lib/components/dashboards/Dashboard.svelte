@@ -159,8 +159,6 @@
 
 
 		try {
-
-
 			const payload = {
 				program_id: dashboard.program_id,
 				dashboard_id: dashboard.dashboard_id,
