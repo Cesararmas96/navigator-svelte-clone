@@ -23,7 +23,7 @@
 </script>
 
 <div
-	id={`widget-instances-${$widget.uid}`}
+	id={`widget-instances-${$widget.widget_id}`}
 	class:hidden={!$widget.instances || $widget.instances.length === 0}
 >
 	{#if $widget.instances}

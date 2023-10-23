@@ -11,7 +11,9 @@
 		addNewItem,
 		pasteItem,
 		saveLocations,
-		loadLocalStoredLocations
+		loadLocalStoredLocations,
+		reorderLines,
+		transformLocations
 	} from '$lib/helpers/dashboard/grid'
 	import { deleteData, getApiData, postData, putData } from '$lib/services/getData'
 	import Alerts from '../widgets/type/Alert/Alerts.svelte'
@@ -75,6 +77,7 @@
 
 		try {
 			widgets = await getApiData(`${baseUrl}/api/v2/widgets?dashboard_id=${dashboardId}`, 'GET')
+			console.log('widgets', widgets)
 			if (!widgets) {
 				sendAlert({
 					id: 'dashboard-no-widgets',
@@ -92,7 +95,6 @@
 			let items: any[] = []
 
 			items = loadLocalStoredLocations(dashboard, widgets, isMobile())!
-			console.log('items', items)
 			if (items && items.length > 0) {
 				gridItems = [...items]
 				return
@@ -160,6 +162,9 @@
 	let resizedSlug = ''
 	$: changeItemSize = (item: any) => {
 		resizedSlug = item.slug
+		console.log(gridController.gridParams.items)
+		console.log(transformLocations(gridItems))
+		// reorderLines(item.y, gridItems)
 	}
 
 	$: setGridItems($storeDashboard.dashboard_id)
@@ -182,7 +187,6 @@
 
 			const item = gridItems.find((item: any) => item.slug === copiedWidget.widget_slug)
 			const response = await putData(`${baseUrl}/api/v2/widgets`, payload)
-			console.log(copiedWidget.uid)
 			item.data = response.data
 			const newItem = structuredClone(item)
 			const position = addNewItem(newItem, gridController)
@@ -192,7 +196,7 @@
 
 			const behavior = $storeCCPWidgetBehavior
 			if (behavior === 'cut') {
-				// await deleteData(`${baseUrl}/api/v2/widgets/${copiedWidget.uid}`)
+				await deleteData(`${baseUrl}/api/v2/widgets/${copiedWidget.widget_id}`)
 				gridItems = gridItems.filter((item: any) => item.slug !== copiedWidget.widget_slug)
 			}
 
@@ -223,14 +227,9 @@
 			callback1Btn: 'Paste Widget',
 			callback1: handleWidgetPaste,
 			callback2Btn: 'Clear',
-			callback2: clearCopyWidget
+			callback2: clearCopyWidgets
 		}
 		sendAlert(alert)
-	}
-
-	const clearCopyWidget = () => {
-		storeCCPWidget.set(null)
-		storeCCPWidgetBehavior.set(null)
 	}
 
 	$: if ($storeCCPWidget) addWidgetCopyAlert()
