@@ -6,27 +6,36 @@
 	import { getWidgetAction } from '$lib/helpers'
 	import { deleteData } from '$lib/services/getData'
 	import { sendErrorNotification } from '$lib/stores/toast'
+	import { openConfirmModal, openModal } from '$lib/helpers/common/modal'
 
 	const widget = getContext<Writable<any>>('widget')
 
 	const widgetActions = getContext<Writable<any[]>>('widgetActions')
+	const removeAction = getWidgetAction($widgetActions, 'remove')
 
 	async function closeWidget() {
-		const removeAction = getWidgetAction($widgetActions, 'remove')
 		if ($widget.temp) {
 			const closeInstanceAction = getWidgetAction($widgetActions, 'closeInstance')
 			closeInstanceAction.action()
 		} else if ($widget.cloned) {
 			removeAction.action()
 		} else {
-			const urlBase = import.meta.env.VITE_API_URL
-			try {
-				await deleteData(`${urlBase}/api/v2/widgets/${$widget.uid}`)
-				removeAction.action()
-			} catch (e: any) {
-				sendErrorNotification('Failed to remove widget. ' + e.message)
-				console.log(e)
-			}
+			openConfirmModal({
+				description: `You're about to permanently delete this. This process is irreversible.`,
+				type: 'warning',
+				confirmCallback: () => confirmDeleteWidget()
+			})
+		}
+	}
+
+	const confirmDeleteWidget = async () => {
+		const urlBase = import.meta.env.VITE_API_URL
+		try {
+			await deleteData(`${urlBase}/api/v2/widgets/${$widget.widget_id}`)
+			removeAction.action()
+		} catch (e: any) {
+			sendErrorNotification('Failed to remove widget. ' + e.message)
+			console.log(e)
 		}
 	}
 </script>

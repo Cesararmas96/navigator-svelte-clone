@@ -6,7 +6,7 @@
 	export let widget: Writable<any>
 </script>
 
-<div id={`widget-content-${$widget.uid}`}>
+<div id={`widget-content-${$widget.widget_id}`}>
 	<ComponentBase {widget} let:data>
 		<ComponentType {widget} {data} />
 	</ComponentBase>

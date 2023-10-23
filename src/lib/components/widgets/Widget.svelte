@@ -40,7 +40,7 @@
 </script>
 
 <div
-	id={`widget-${$widget.uid}`}
+	id={`widget-${$widget.widget_id}`}
 	class:h-[calc(100%-2rem)]={!$widget.temp && !$widget.collapse}
 	class:overflow-hidden={!scrollableBox}
 	class:overflow-y-auto={scrollableBox}
@@ -53,7 +53,7 @@
 		<Spinner fullScreen={false} />
 	{/if}
 	<!-- Widget Header -->
-	<div id={`widget-header-${$widget.uid}`} class:mt-1={$widget.temp} class="h-8">
+	<div id={`widget-header-${$widget.widget_id}`} class:mt-1={$widget.temp} class="h-8">
 		{#if !fixed && header}
 			<WidgetHeader {isToolbarVisible} />
 		{:else if isToolbarVisible && isOwner}
@@ -71,7 +71,7 @@
 
 	<!-- Widget Content -->
 	<div
-		id={`widget-main-content-${$widget.uid}`}
+		id={`widget-main-content-${$widget.widget_id}`}
 		class:hidden={$widget.collapse}
 		class="widget-content relative flex w-full cursor-auto flex-col space-y-4 rounded-md text-sm"
 		on:pointerdown={(event) => {
@@ -100,7 +100,7 @@
 {#if !$widget.temp}
 	<div
 		class:hidden={$widget.collapse}
-		id={`widget-footer-${$widget.uid}`}
+		id={`widget-footer-${$widget.widget_id}`}
 		class="absolute bottom-0 -ml-1 h-8 w-full p-1"
 	>
 		{#if !fixed && footer}

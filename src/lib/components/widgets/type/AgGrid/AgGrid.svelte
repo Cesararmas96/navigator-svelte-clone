@@ -221,16 +221,16 @@
 	const resizeAction = getWidgetAction($widgetActions, 'resize')
 
 	onMount(() => {
-		const eGridDiv: HTMLElement = document.querySelector(`#grid-${$widget.uid}`)!
+		const eGridDiv: HTMLElement = document.querySelector(`#grid-${$widget.widget_id}`)!
 		new Grid(eGridDiv, gridOptions)
-		eGridDiv.style.height = gridHeight($widget.uid, $widget.params)
+		eGridDiv.style.height = gridHeight($widget.widget_id, $widget.params)
 		if ($widget.temp) {
 			const instanceLoadedAction = getWidgetAction($widgetActions, 'instanceLoaded')
 			instanceLoadedAction.action()
 		}
 		if ($widget.resize_on_load) resizeAction.action()
 		setTimeout(() => {
-			eGridDiv.style.height = gridHeight($widget.uid, $widget.params)
+			eGridDiv.style.height = gridHeight($widget.widget_id, $widget.params)
 		}, 100)
 	})
 
@@ -239,9 +239,9 @@
 	/**
 	 * @description Actualiza el tamaño de la tabla cuando se cambia el tamaño del widget
 	 */
-	$: if ($widget.resized && document.querySelector(`#grid-${$widget.uid}`)) {
-		const eGridDiv: HTMLElement = document.querySelector(`#grid-${$widget.uid}`)!
-		eGridDiv.style.height = gridHeight($widget.uid, $widget.params)
+	$: if ($widget.resized && document.querySelector(`#grid-${$widget.widget_id}`)) {
+		const eGridDiv: HTMLElement = document.querySelector(`#grid-${$widget.widget_id}`)!
+		eGridDiv.style.height = gridHeight($widget.widget_id, $widget.params)
 		$widget.resized = false
 	}
 
@@ -273,18 +273,18 @@
 
 <Toolbar
 	position="top"
-	widgetUID={$widget.uid}
+	widgetUID={$widget.widget_id}
 	btnsActions={$widget.params.btnsActions}
 	filterCallback={onFilterTextBoxChanged}
 	on:click={(e) => actionBtnMap[e.detail](e)}
 />
 <div
-	id="grid-{$widget.uid}"
+	id="grid-{$widget.widget_id}"
 	style="width: 100%"
 	class:ag-theme-balham={!isDark}
 	class:ag-theme-balham-dark={isDark}
 />
-<Toolbar position="bottom" widgetUID={$widget.uid} btnsActions={$widget.params.btnsActions} />
+<Toolbar position="bottom" widgetUID={$widget.widget_id} btnsActions={$widget.params.btnsActions} />
 
 <style>
 	.ag-theme-balham {

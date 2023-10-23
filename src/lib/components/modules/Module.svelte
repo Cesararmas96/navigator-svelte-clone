@@ -137,6 +137,7 @@
 				dashboard_id: currentDashboard.dashboard_id,
 				impersonation
 			})
+			console.log(resp)
 			if (resp.data && resp.data.dashboard_id) {
 				currentDashboard = { ...resp.data }
 				$storeDashboards = $storeDashboards.map((item) => {
@@ -147,7 +148,7 @@
 				})
 				sendSuccessNotification(resp.message)
 			} else {
-				// useNotify('Could not remove widget.')
+				sendErrorNotification('There was an error while customizing the dashboard')
 			}
 		} catch (e: any) {
 			sendErrorNotification(e.message)
@@ -189,8 +190,8 @@
 
 	const handleDashboardPaste = async () => {
 		let pastedDashboard: any = $storeCCPDashboard
-		const { duid, module_id } = pastedDashboard
-		const payload = { dashboard_id: currentDashboard.dashboard_id, module_id }
+		const { duid, dashboard_id } = pastedDashboard
+		const payload = { dashboard_id, duid, module_id: trocModule.module_id }
 		try {
 			const resp = await postData(`${baseUrl}/api/v2/dashboard/clone`, payload)
 			console.log(resp)

@@ -1,4 +1,4 @@
-import type { GridParams, LayoutItem } from "svelte-grid-extended/types"
+import type { GridParams } from "svelte-grid-extended/types"
 import { generateUID } from "../common/common"
 
 const rowHeight = 12
@@ -15,7 +15,7 @@ export const loadV2Locations = (widgetLocation: Record<string, any>, _dashboard:
     Object.keys(widgetLocation).forEach(function callback(value: any, index: number) {
       Object.entries(widgetLocation[value]).map(([key, item]: [string, any]) => {
         const uid = key
-        const data = _widgets.find((item) => item.uid === uid) || {}
+        const data = _widgets.find((item) => item.widget_id === uid) || {}
         const slug = data.widget_slug
         data.resize_on_load = true
         let w = !isMobile ? parseInt(locations[index]) * (cols / 12) : cols
@@ -125,6 +125,19 @@ export const saveLocations = (dashboard: any, gridItems: any[], gridParams: Grid
 
 }
 
+export const transformLocations = (items: any[]) => {
+  return items.map((item) => {
+    const gridItem = {
+      slug: item.slug,
+      x: item.x,
+      y: item.y,
+      w: item.w,
+      h: item.h,
+    }
+    return gridItem;
+  });
+}
+
 export const reloadLocations = (widgetLocation: Record<string, any>, gridParams: GridParams, isMobile: boolean) => {
   let y = 0
   // gridParams.itemSize = {height: 10, width: 300}
@@ -172,8 +185,8 @@ export const cloneItem = (item: any, items: any[]) => {
 
   const widget = structuredClone(item.data)
 
-  widget.id = `widget-clone-${generateUID()}`
-  widget.uid = widget.id
+  widget.widget_id = `widget-clone-${generateUID()}`
+  widget.uid = widget.widget_id
   widget.parent = { widget_slug: item.widget_slug, order: clones.length }
   widget.title = widget.title + ' Copy' + (clones ? ` (${clones.length + 1})` : '')
   widget.widget_slug = `${widget.widget_slug}-clone${clones ? clones.length + 1 : ''}`
@@ -200,8 +213,8 @@ export const pasteItem = (item: any, items: any[]) => {
   const y = item.y
 
 
-  widget.id = `widget-ccp-${generateUID()}`
-  widget.uid = widget.id
+  widget.widget_id = `widget-ccp-${generateUID()}`
+  widget.uid = widget.widget_id
   widget.title = widget.title + ' - Copy'
   widget.widget_slug = `${widget.widget_slug}-copy`
   widget.master_filtering = true
@@ -215,6 +228,7 @@ export const pasteItem = (item: any, items: any[]) => {
 }
 
 export const resizeItem = (item: any, items: any[]) => {
+  console.log('resizeItem')
   const header = document.getElementById(`widget-header-${item.data.uid}`)?.clientHeight || 0
   const content = document.getElementById(`widget-main-content-${item.data.uid}`)?.clientHeight || 0
   // const widgetInstances =
@@ -226,7 +240,7 @@ export const resizeItem = (item: any, items: any[]) => {
 }
 
 export const removeItem = (item: any, items: any[]) => {  
-  if (item.data.parent) items = reorderAfterDelete(item, items)
+  if (item.data.parent) items = reorderLines(item.y, items)
   items = items.filter((gridItem) => gridItem.slug !== item.slug)
   return items
 }
@@ -267,11 +281,12 @@ const reorderAfterResize = (item: any, prevousHeight: number, items: any[]) => {
   return [...items]
 }
 
-const reorderAfterDelete = (item: any, items: any[]) => {
-  const height = maxHeight(item.y, items)
+export const reorderLines = (y: number, items: any[]) => {
+  console.log('reorderLines')
+  const height = maxHeight(y, items)
   console.log(height)
   items.map((i) => {
-    if (i.y > item.y) i.y -= height
+    if (i.y > y) i.y += height
     return i
   })
   return [...items]

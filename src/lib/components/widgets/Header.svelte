@@ -1,7 +1,7 @@
 <script lang="ts">
 	import WidgetToolbar from './Toolbar.svelte'
 	import HeaderTitle from './Title.svelte'
-	import { getContext } from 'svelte'
+	import { getContext, onMount } from 'svelte'
 
 	export let isToolbarVisible: boolean
 
@@ -10,7 +10,7 @@
 </script>
 
 <div class="widget-header space-y flex space-x-3">
-	<div class="widget-header flex space-x-3">
+	<div id={`widget-title-${$widget.widget_id}`} class="widget-header flex space-x-3">
 		<HeaderTitle
 			icon={$widget?.params?.settings?.header?.icon ? $widget?.attributes?.icon : undefined}
 			title={$widget?.params?.settings?.header?.title ? $widget?.title : undefined}

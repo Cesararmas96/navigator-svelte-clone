@@ -39,7 +39,7 @@
 					module_id: $widget.module_id,
 					program_id: $widget.program_id,
 					widget_type_id: $widget.widget_type_id,
-					parent: $widget.uid,
+					parent: $widget.widget_id,
 					dataExtra: drilldown!.dataExtra // TODO: investigar que es el dataExtra
 				},
 				drilldown,

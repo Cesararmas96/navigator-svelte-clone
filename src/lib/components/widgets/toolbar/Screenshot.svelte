@@ -17,9 +17,9 @@
 
 		sendSuccessNotification('Generating the screenshot, please wait...')
 		setTimeout(async () => {
-			const mainContent = document.getElementById(`widget-${$widget.uid}`)!
+			const mainContent = document.getElementById(`widget-${$widget.widget_id}`)!
 
-			mainContent.querySelector(`#widget-toolbar-${$widget.uid}`)!.classList.add('hidden')
+			mainContent.querySelector(`#widget-toolbar-${$widget.widget_id}`)!.classList.add('hidden')
 			const spinner = mainContent.querySelector(`#spinner`)
 			if (spinner) spinner.classList.add('hidden')
 

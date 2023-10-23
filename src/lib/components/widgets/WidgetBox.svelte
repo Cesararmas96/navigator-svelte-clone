@@ -50,18 +50,21 @@
 				},
 				toolbar: {
 					show: true,
-					close: true,
-					reload: true,
-					filtering: true,
-					clone: true,
-					help: true,
-					export: true,
-					screenshot: true,
-					max: true,
-					share: true,
-					pin: true,
-					like: true,
-					comments: true
+					close: false,
+					reload: false,
+					filtering: false,
+					collapse: false,
+					clone: false,
+					help: false,
+					export: false,
+					screenshot: false,
+					max: false,
+					share: false,
+					pin: false,
+					like: false,
+					cut: false,
+					copy: false,
+					comments: false
 				},
 				footer: {
 					show: true,
@@ -95,23 +98,17 @@
 
 		addWidgetAction(widgetActions, {
 			name: 'remove',
-			action: () => {
-				dispatch('handleRemove')
-			}
+			action: () => dispatch('handleRemove')
 		})
 
 		addWidgetAction(widgetActions, {
 			name: 'clone',
-			action: () => {
-				dispatch('handleCloning')
-			}
+			action: () => dispatch('handleCloning')
 		})
 
 		addWidgetAction(widgetActions, {
 			name: 'collapse',
-			action: () => {
-				dispatchResize()
-			}
+			action: () => dispatchResize()
 		})
 
 		addWidgetAction(widgetActions, {
@@ -156,7 +153,10 @@
 		border = false
 	}
 
-	$: if (resized) $widgetStore.resized = true
+	$: if (resized) {
+		console.log('resized')
+		$widgetStore.resized = true
+	}
 
 	const bgTypeClass = (bg: string) => {
 		return !isDarkMode() ? (isUrl(bg) ? 'widget-bg-image' : 'widget-bg-color') : ''
