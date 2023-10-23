@@ -8,9 +8,11 @@ export function initModal() {
 	setContext('modal', modal)
 }
 
-export const openExportDataModal = (modal: Writable<any>) => {
+export const openExportDataModal = (modal: Writable<any>, _props: any) => {
+	console.log('openExportDataModal', _props)
 	const props = {
-		title: 'Export Modal'
+		title: 'Export Modal',
+		..._props
 	}
 	const instanceConfig = { component: 'ExportData', props}
 	modal.update((m) => (m = instanceConfig))

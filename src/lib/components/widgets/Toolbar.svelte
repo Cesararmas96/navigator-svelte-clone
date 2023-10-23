@@ -1,43 +1,30 @@
 <script lang="ts">
 	import { Dropdown, Tooltip } from 'flowbite-svelte'
-	import ToolbarLike from './footer/Like.svelte'
-	import ToolbarReload from './toolbar/Reload.svelte'
-	import ToolbarSettings from './toolbar/Settings.svelte'
-	import ToolbarPin from './toolbar/Pin.svelte'
 	import ToolbarHelp from './toolbar/Help.svelte'
-	import ToolbarScreenshot from './toolbar/Screenshot.svelte'
-	import ToolbarExportData from './toolbar/ExportData.svelte'
-	import ToolbarShared from './toolbar/Shared.svelte'
 	import Icon from '../common/Icon.svelte'
-	import { getContext, onMount } from 'svelte'
-	import ToolbarFilter from './toolbar/Filter.svelte'
-	import ToolbarClone from './toolbar/Clone.svelte'
-	import ToolbarMaximize from './toolbar/Maximize.svelte'
+	import { getContext } from 'svelte'
 	import ToolbarClose from './toolbar/Close.svelte'
-	import ToolbarCollapse from './toolbar/Collapse.svelte'
 	import { storeCCPWidget, storeCCPWidgetBehavior } from '$lib/stores/dashboards'
 	import { storeUser } from '$lib/stores'
 	import { themeMode } from '$lib/stores/preferences'
 	import type { Writable } from 'svelte/store'
-	import ToolbarCutCopy from './toolbar/CutCopy.svelte'
 	import { getWidgetAction } from '$lib/helpers'
 	import ButtonItem from './toolbar/ButtonItem.svelte'
 	import ButtonToggle from './toolbar/ButtonToggle.svelte'
-	import { screenshot, togglePin } from '$lib/helpers/widget/toolbar'
+	import { like, pin, screenshot } from '$lib/helpers/widget/toolbar'
 	import { selectedWidgetMaximize } from '$lib/stores/widgets'
-	import { sendSuccessNotification } from '$lib/stores/toast'
 	import { openExportDataModal } from '$lib/helpers/common/modal'
-	import { goto } from '$app/navigation'
 
 	export let isToolbarVisible: boolean
 
 	const widgetActions = getContext<Writable<any>>('widgetActions')
 	const widget = getContext<Writable<any>>('widget')
+	const dashboard = getContext<Writable<any>>('dashboard')
 
 	const patternUrl =
 		/(https:\/\/www\.|http:\/\/www\.|https:\/\/|http:\/\/)?[a-zA-Z]{2,}(\.[a-zA-Z]{2,})(\.[a-zA-Z]{2,})?\/[a-zA-Z0-9]{2,}|((https:\/\/www\.|http:\/\/www\.|https:\/\/|http:\/\/)?[a-zA-Z]{2,}(\.[a-zA-Z]{2,})(\.[a-zA-Z]{2,})?)|(https:\/\/www\.|http:\/\/www\.|https:\/\/|http:\/\/)?[a-zA-Z0-9]{2,}\.[a-zA-Z0-9]{2,}\.[a-zA-Z0-9]{2,}(\.[a-zA-Z0-9]{2,})?/
 
-	let isWidgetOwner: boolean = $widget.user_id === $storeUser.user_id
+	let isWidgetOwner: boolean = $dashboard?.attributes?.user_id === $storeUser.user_id
 	let menuOpen = false
 
 	let bg: string
@@ -51,24 +38,47 @@
 
 	let showInMenu: boolean = false
 	const handleShowMenu = (widget_id: string) => {
-		const title = document.getElementById(`widget-title-${widget_id}`)!
-		const toolbar = document.getElementById(`widget-toolbar-${widget_id}`)!
-		const widget = document.getElementById(`widget-${widget_id}`)!
-		showInMenu = widget?.offsetWidth - (title?.offsetWidth + toolbar?.offsetWidth + 20) < 0
+		const titleEL = document.getElementById(`widget-title-${widget_id}`)!
+		const toolbarEL = 200
+		const widgetEL = document.getElementById(`widget-${widget_id}`)!
+		showInMenu = widgetEL?.offsetWidth - (titleEL?.offsetWidth + toolbarEL) < 0
 	}
 
 	$: if (isToolbarVisible) {
-		setTimeout(() => {
-			handleShowMenu($widget.widget_id)
-		}, 10)
+		handleShowMenu($widget.widget_id)
+		setToolbarItems()
 	}
 
 	let toolbarItems
 	let listOutOfMenu
 	let listInMenu
 
-	onMount(() => {
+	let modal: any = getContext('modal')
+
+	const setToolbarItems = () => {
 		toolbarItems = {
+			like: {
+				component: ButtonToggle,
+				item: {
+					status: $widget.like,
+					items: {
+						active: {
+							name: 'Unlike',
+							icon: 'twemoji:red-heart',
+							tooltipText: 'Unlike',
+							action: (status) => like(status, $widget.widget_id)
+						},
+						inactive: {
+							name: 'Like',
+							icon: 'icon-park-outline:like',
+							tooltipText: 'Like',
+							action: (status) => like(status, $widget.widget_id)
+						}
+					}
+				},
+				hide: toolbar['like'] || $widget['shared'],
+				showInMenu
+			},
 			reload: {
 				component: ButtonItem,
 				item: {
@@ -166,13 +176,13 @@
 							name: 'Unpin',
 							icon: 'tabler:pinned-off',
 							tooltipText: 'Unpin widget',
-							action: (status) => togglePin(status, $widget.widget_id, $storeUser.user_id)
+							action: (status) => pin(status, $widget.widget_id, $storeUser.user_id)
 						},
 						inactive: {
 							name: 'Pin',
 							icon: 'tabler:pinned',
 							tooltipText: 'Pin widget',
-							action: (status) => togglePin(status, $widget.widget_id, $storeUser.user_id)
+							action: (status) => pin(status, $widget.widget_id, $storeUser.user_id)
 						}
 					}
 				},
@@ -204,11 +214,7 @@
 						storeCCPWidgetBehavior.set('cut')
 					}
 				},
-				hide:
-					$widget['user_id'] !== $storeUser['user_id'] ||
-					$widget['temp'] ||
-					$widget['cloned'] ||
-					$widget['shared'],
+				hide: !isWidgetOwner || $widget['temp'] || $widget['cloned'] || $widget['shared'],
 				showInMenu
 			},
 			screenshot: {
@@ -229,7 +235,7 @@
 					icon: 'tabler:file-export',
 					tooltipText: 'Export data',
 					action: () => {
-						// openExportDataModal(modal, $widget.query_slug.slug);
+						openExportDataModal(modal, { query_slug: $widget.query_slug.slug })
 					}
 				},
 				hide: toolbar['export'],
@@ -260,7 +266,7 @@
 		listInMenu = Object.keys(toolbarItems).filter(
 			(item) => !toolbarItems[item].hide && toolbarItems[item].showInMenu
 		)
-	})
+	}
 </script>
 
 {#if toolbarItems}
@@ -283,25 +289,8 @@
 					item={toolbarItems[item].item}
 				/>
 			{/each}
-			<!-- {#if toolbar.reload}<ToolbarReload {showInMenu} />{/if} -->
-			<!-- {#if toolbar.filtering}<ToolbarFilter />{/if} -->
-			<!-- {#if toolbar.clone && !$widget.shared}<ToolbarClone />{/if} -->
-			<!-- <ToolbarCollapse /> -->
-			<!-- {#if toolbar.max && !$widget.shared}<ToolbarMaximize />{/if} -->
-			<!-- {#if toolbar.pin && !$widget.shared}<ToolbarPin />{/if} -->
-			<!-- {#if toolbar['pin'] === undefined || toolbar['pin'] === true}
-					<svelte:component
-						this={toolbarItems['pin'].component}
-						{showInMenu}
-						item={toolbarItems['pin'].item}
-					/>
-				{/if} -->
 
 			{#if !toolbar.help && $widget.description}<ToolbarHelp helpText={$widget.description} />{/if}
-			<!-- {#if !$widget.shared}<ToolbarCutCopy action="copy" {showInMenu} />{/if}
-				{#if (isWidgetOwner || $widget.temp || $widget.cloned) && !$widget.shared}
-					<ToolbarCutCopy action="cut" {showInMenu} />
-				{/if} -->
 
 			<Tooltip placement="bottom" class="z-10" triggeredBy="#more-actions">More</Tooltip>
 			<button
@@ -322,30 +311,6 @@
 						on:itemClick={() => (menuOpen = !menuOpen)}
 					/>
 				{/each}
-
-				<!-- {#if toolbar.reload}<ToolbarReload {showInMenu} />{/if} -->
-				<!-- {#if showInMenu}
-					{#if toolbar['reload'] === undefined || toolbar['reload'] === true}
-						<svelte:component
-							this={toolbarItems['reload'].component}
-							{showInMenu}
-							item={toolbarItems['reload'].item}
-						/>
-					{/if}
-					{#if !$widget.shared}<ToolbarCutCopy action="copy" {showInMenu} />{/if}
-					{#if (isWidgetOwner || $widget.temp || $widget.cloned) && !$widget.shared}
-						<ToolbarCutCopy action="cut" {showInMenu} />
-					{/if}
-				{/if}
-				{#if toolbar.screenshot}
-					<ToolbarScreenshot on:itemClick={() => (menuOpen = !menuOpen)} />
-				{/if}
-				{#if toolbar.export}
-					<ToolbarExportData on:itemClick={() => (menuOpen = !menuOpen)} />
-				{/if}
-				{#if isWidgetOwner && !($widget.temp || $widget.cloned) && !$widget.shared}
-					<ToolbarSettings on:itemClick={() => (menuOpen = !menuOpen)} />
-				{/if} -->
 			</Dropdown>
 
 			{#if isWidgetOwner || $widget.temp || ($widget.cloned && !$widget.shared)}

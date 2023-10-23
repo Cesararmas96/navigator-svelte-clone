@@ -1,5 +1,5 @@
 import { setContext } from "svelte"
-import { writable, type Writable } from 'svelte/store';
+import { get, writable, type Writable } from 'svelte/store';
 
 type Action = {
   name: string,
@@ -14,8 +14,8 @@ export const initWidgetActions = (): Writable<any[]> => {
 
 export const addWidgetAction = (widgetActions: Writable<any>, action: Action) => {
   widgetActions.update((actions: any) => {
-    if (!actions.find((a: any) => a.name === action.name))
-      actions.push(action)
+    actions = actions.filter((a: any) => a.name !== action.name)
+    actions.push(action)
     return actions
   })
 }

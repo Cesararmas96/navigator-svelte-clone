@@ -133,15 +133,13 @@ export const headerClass = (formatDefinition: any): string => {
 }
 
 export const gridHeight = (id: string, formatDefinition: any): any => {
-	const widgetHeight = document.getElementById(`widget-${id}`)!.offsetHeight
-	const headerHeight = document.getElementById(`widget-header-${id}`)!.offsetHeight
-	const toolbarTopEL = document.getElementById(`aggrid-toolbar-${id}-top`)
+  const mainHeight = document.getElementById(`widget-main-content-${id}`)!.offsetHeight
+  const toolbarTopEL = document.getElementById(`aggrid-toolbar-${id}-top`)
   const toolbarTop = toolbarTopEL ? toolbarTopEL.offsetHeight : 0
 	const toolbarBottomEL = document.getElementById(`aggrid-toolbar-${id}-bottom`)
   const toolbarBottom = toolbarBottomEL ? toolbarBottomEL.offsetHeight : 0
-  // const footerHeight = document.getElementById(`widget-footer-${id}`)!.offsetHeight
-	const contentHeight = widgetHeight - headerHeight - toolbarTop - toolbarBottom
-	return contentHeight > 200 ? `${contentHeight}px` : '200px'
+	const contentHeight = mainHeight - toolbarTop - toolbarBottom
+  return `${contentHeight}px`
 }
 
 export const recordsPerPage = (formatDefinition: any): any => {

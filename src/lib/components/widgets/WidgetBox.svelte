@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { isDarkMode, isUrl } from '$lib/helpers/common/common'
 	import { addWidgetAction, initWidgetActions } from '$lib/helpers/widget/actions'
-	import { createEventDispatcher, onMount, setContext } from 'svelte'
+	import { createEventDispatcher, getContext, onMount, setContext } from 'svelte'
 	import { writable, type Writable } from 'svelte/store'
 	import { selectedWidgetSettings } from '$lib/stores/widgets'
 	import { storeUser } from '$lib/stores'
@@ -76,7 +76,9 @@
 		}
 	}
 
-	$: isOwner = widget.user_id === $storeUser.user_id
+	const dashboard = getContext<Writable<any>>('dashboard')
+
+	$: isOwner = $dashboard?.attributes?.user_id === $storeUser.user_id
 	setContext('isWidgetOwner', isOwner)
 
 	let widgetStore: any = writable(widget)
@@ -154,7 +156,6 @@
 	}
 
 	$: if (resized) {
-		console.log('resized')
 		$widgetStore.resized = true
 	}
 

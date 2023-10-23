@@ -19,13 +19,14 @@
 		selectedFormBuilderWidget
 	} from '$lib/stores/widgets'
 	import Toolbar from './Toolbar.svelte'
-	import { getWidgetAction } from '$lib/helpers'
+	import { addWidgetAction, getWidgetAction } from '$lib/helpers'
 	import { openConfirmModal } from '$lib/helpers/common/modal'
 	import Modal from '$lib/components/common/Modal.svelte'
 	import { deleteData, postData } from '$lib/services/getData'
 	import { sendErrorNotification, sendSuccessNotification } from '$lib/stores/toast'
 	import Filter from './Filter.svelte'
 	import type { as } from 'vitest/dist/reporters-5f784f42'
+	import { setContentHeight } from '$lib/helpers/widget/widget'
 
 	export let data: any
 	export let simpleTable: boolean = false
@@ -239,11 +240,25 @@
 	/**
 	 * @description Actualiza el tamaño de la tabla cuando se cambia el tamaño del widget
 	 */
-	$: if ($widget.resized && document.querySelector(`#grid-${$widget.widget_id}`)) {
+	// $: if (
+	// 	$widget.resize_components === true &&
+	// 	document.querySelector(`#grid-${$widget.widget_id}`)
+	// ) {
+	// 	const eGridDiv: HTMLElement = document.querySelector(`#grid-${$widget.widget_id}`)!
+	// 	eGridDiv.style.height = gridHeight($widget.widget_id, $widget.params)
+	// 	$widget.resize_components = false
+	// }
+
+	const resizeAgGridContent = () => {
+		setContentHeight($widget.widget_id)
 		const eGridDiv: HTMLElement = document.querySelector(`#grid-${$widget.widget_id}`)!
 		eGridDiv.style.height = gridHeight($widget.widget_id, $widget.params)
 		$widget.resized = false
 	}
+	addWidgetAction(widgetActions, {
+		name: 'resizeContent',
+		action: resizeAgGridContent
+	})
 
 	const newItem = (obj: any) => {
 		gridOptions.api!.applyTransaction({ add: [obj.dataModel] })
@@ -273,7 +288,7 @@
 
 <Toolbar
 	position="top"
-	widgetUID={$widget.widget_id}
+	widgetID={$widget.widget_id}
 	btnsActions={$widget.params.btnsActions}
 	filterCallback={onFilterTextBoxChanged}
 	on:click={(e) => actionBtnMap[e.detail](e)}
@@ -284,7 +299,7 @@
 	class:ag-theme-balham={!isDark}
 	class:ag-theme-balham-dark={isDark}
 />
-<Toolbar position="bottom" widgetUID={$widget.widget_id} btnsActions={$widget.params.btnsActions} />
+<Toolbar position="bottom" widgetID={$widget.widget_id} btnsActions={$widget.params.btnsActions} />
 
 <style>
 	.ag-theme-balham {

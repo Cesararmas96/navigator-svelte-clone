@@ -7,7 +7,7 @@
 	const dispatch = createEventDispatcher()
 
 	export let position: string
-	export let widgetUID: string
+	export let widgetID: string
 	export let btnsActions: any
 	export let filterCallback: ((inputId: string) => void) | undefined = undefined
 
@@ -21,12 +21,11 @@
 	}
 </script>
 
-<div class="flex flex-row justify-between">
+<div id={`aggrid-toolbar-${widgetID}-${position}`} class="flex flex-row justify-between">
 	{#if filterCallback}
 		<Filter {filterCallback} />
 	{/if}
 	<div
-		id={`aggrid-toolbar-${widgetUID}-${position}`}
 		class={'widget-toolbar flex w-full flex-row justify-end px-3 py-3'}
 		class:hidden={buttons.length === 0}
 	>

@@ -4,11 +4,12 @@ import html2canvas from "html2canvas"
 
 const urlBase = import.meta.env.VITE_API_URL
 
-export const togglePin = async (status: boolean, widgetId: string, userId: string) : Promise<boolean> => {
+export const pin = async (status: boolean, widgetId: string, userId: string) : Promise<boolean> => {
   const endpoint = `${urlBase}/api/v1/interactions/pin`
   status = !status
   try {
     const method = !status ? 'DELETE' : 'PUT'
+    console.log('method', method)
     await getApiData(endpoint, method, {
       widget_id: widgetId,
       user_id: userId
@@ -42,4 +43,19 @@ export const screenshot = async (widgetId: string, title: string) => {
     link.download = `${title}.png`
     link.click()
   }, 700)
+}
+
+export const like = async (status: boolean, widgetId: string) => {
+  try {
+    status = !status
+    const method = status ? 'PUT' : 'DELETE'
+    const response = await getApiData(`${urlBase}/api/v1/interactions/likes`, method, {
+      object_uuid: widgetId,
+      object_type: 'widget'
+    })
+    console.log(response)
+    return status
+  } catch (error) {
+    throw error
+  }
 }
