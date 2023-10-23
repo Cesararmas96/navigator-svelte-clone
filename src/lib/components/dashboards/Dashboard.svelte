@@ -40,7 +40,6 @@
 
 	const storeDashboard: any = writable(dashboard)
 	setContext('dashboard', storeDashboard)
-	$: console.log('dashboard', $storeDashboard)
 	$: $storeDashboard = dashboard
 	$: widgetLocation = { ...dashboard.widget_location }
 	const baseUrl = import.meta.env.VITE_API_URL
@@ -77,7 +76,6 @@
 
 		try {
 			widgets = await getApiData(`${baseUrl}/api/v2/widgets?dashboard_id=${dashboardId}`, 'GET')
-			console.log('widgets', widgets)
 			if (!widgets) {
 				sendAlert({
 					id: 'dashboard-no-widgets',
