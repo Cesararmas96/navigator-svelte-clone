@@ -13,8 +13,8 @@
 	let activeDrilldown: any
 
 	$: drilldownOpen = $widget.instances
-		.map((instance: any) => instance.uid)
-		.includes(activeDrilldown?.uid)
+		.map((instance: any) => instance.widget_id)
+		.includes(activeDrilldown?.widget_id)
 
 	const fontColor = () => {
 		// return card && card.color ? card.color : 'text-blue-500'

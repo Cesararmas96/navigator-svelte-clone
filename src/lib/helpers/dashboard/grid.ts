@@ -14,8 +14,7 @@ export const loadV2Locations = (widgetLocation: Record<string, any>, _dashboard:
     const locations = _dashboard.attributes.cols.split(',') || [_dashboard.attributes.cols]
     Object.keys(widgetLocation).forEach(function callback(value: any, index: number) {
       Object.entries(widgetLocation[value]).map(([key, item]: [string, any]) => {
-        const uid = key
-        const data = _widgets.find((item) => item.widget_id === uid) || {}
+        const data = _widgets.find((item) => item.widget_id === key) || {}
         const slug = data.widget_slug
         data.resize_on_load = true
         let w = !isMobile ? parseInt(locations[index]) * (cols / 12) : cols
@@ -24,7 +23,7 @@ export const loadV2Locations = (widgetLocation: Record<string, any>, _dashboard:
           x = 0
           y += minRowHeight
         }
-        widgets.push({ uid, slug, x, y, w, h: minRowHeight, data })
+        widgets.push({ slug, x, y, w, h: minRowHeight, data })
         x += w
       })
     })
@@ -88,7 +87,7 @@ export const loadLocalStoredLocations = (_dashboard: any, _widgets: any[], isMob
         y = y + item.h
         return ret
       }
-      return { slug: key, uid: data.uid, ...item, data }
+      return { slug: key, ...item, data }
     })
   }
 }
@@ -186,7 +185,6 @@ export const cloneItem = (item: any, items: any[]) => {
   const widget = structuredClone(item.data)
 
   widget.widget_id = `widget-clone-${generateUID()}`
-  widget.uid = widget.widget_id
   widget.parent = { widget_slug: item.widget_slug, order: clones.length }
   widget.title = widget.title + ' Copy' + (clones ? ` (${clones.length + 1})` : '')
   widget.widget_slug = `${widget.widget_slug}-clone${clones ? clones.length + 1 : ''}`
@@ -214,7 +212,6 @@ export const pasteItem = (item: any, items: any[]) => {
 
 
   widget.widget_id = `widget-ccp-${generateUID()}`
-  widget.uid = widget.widget_id
   widget.title = widget.title + ' - Copy'
   widget.widget_slug = `${widget.widget_slug}-copy`
   widget.master_filtering = true
@@ -229,8 +226,8 @@ export const pasteItem = (item: any, items: any[]) => {
 
 export const resizeItem = (item: any, items: any[]) => {
   console.log('resizeItem')
-  const header = document.getElementById(`widget-header-${item.data.uid}`)?.clientHeight || 0
-  const content = document.getElementById(`widget-main-content-${item.data.uid}`)?.clientHeight || 0
+  const header = document.getElementById(`widget-header-${item.data.widget_id}`)?.clientHeight || 0
+  const content = document.getElementById(`widget-main-content-${item.data.widget_id}`)?.clientHeight || 0
   // const widgetInstances =
   //   document.getElementById(`widget-instances-${item.uid}`)?.clientHeight || 0
   const height = header + content //+ widgetInstances

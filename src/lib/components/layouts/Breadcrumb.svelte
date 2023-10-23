@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { page } from '$app/stores'
 	import { storeProgram } from '$lib/stores/programs'
-	import modulesJson from '../../../data/modules.json'
 	import { onMount } from 'svelte'
 	import Icon from '../common/Icon.svelte'
 	import { format } from 'date-fns'
+	import { storeModules } from '$lib/stores/modules'
 
 	const createUrl = (item: any) => {
 		if (item.attributes.order === '0') {
@@ -25,7 +25,7 @@
 		slugs
 			.filter((slug) => slug !== '')
 			.forEach((slug) => {
-				const m = modulesJson.find((item) => item.module_name === slug)
+				const m = $storeModules.find((item) => item.module_name === slug)
 				if (m) {
 					breadcrumbs.push({
 						name: m.attributes.order === '0' ? $storeProgram?.program_name : m.description,
@@ -36,7 +36,9 @@
 				}
 			})
 
-		const trocModule = modulesJson.find((item) => item.module_name === activeUrl.split('/').at(-1))
+		const trocModule = $storeModules.find(
+			(item) => item.module_name === activeUrl.split('/').at(-1)
+		)
 		if (trocModule) {
 			breadcrumb = trocModule.description
 		}

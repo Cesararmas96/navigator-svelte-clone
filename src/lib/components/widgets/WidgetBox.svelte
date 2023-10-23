@@ -167,7 +167,7 @@
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
 <div
-	id={widget?.uid}
+	id={widget?.widget_id}
 	style:color
 	style:--widget-bg-image={'url(' + background + ')'}
 	style:--widget-bg-color={backgroundRGB}

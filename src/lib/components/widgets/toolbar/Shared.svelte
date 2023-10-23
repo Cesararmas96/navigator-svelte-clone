@@ -22,7 +22,7 @@
 </script>
 
 <a
-	href={`/share/widget/${$widget?.dashboard_id}/${$widget?.uid}`}
+	href={`/share/widget/${$widget?.dashboard_id}/${$widget?.widget_id}`}
 	target="_blank"
 	on:click={handleApiData}
 >

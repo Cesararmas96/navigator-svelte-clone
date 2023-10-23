@@ -51,7 +51,7 @@
 		if ($selectedFormBuilderWidget?.params?.model?.primaryKey) {
 			keys.unshift($selectedFormBuilderWidget.params.model.primaryKey)
 		}
-
+		console.log(data, keys)
 		data &&
 			keys.map((key) => {
 				if (data[key]) {

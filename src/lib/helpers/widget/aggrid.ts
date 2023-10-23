@@ -132,14 +132,14 @@ export const headerClass = (formatDefinition: any): string => {
 	return cellClass
 }
 
-export const gridHeight = (uid: string, formatDefinition: any): any => {
-	const widgetHeight = document.getElementById(`widget-${uid}`)!.offsetHeight
-	const headerHeight = document.getElementById(`widget-header-${uid}`)!.offsetHeight
-	const toolbarTopEL = document.getElementById(`aggrid-toolbar-${uid}-top`)
+export const gridHeight = (id: string, formatDefinition: any): any => {
+	const widgetHeight = document.getElementById(`widget-${id}`)!.offsetHeight
+	const headerHeight = document.getElementById(`widget-header-${id}`)!.offsetHeight
+	const toolbarTopEL = document.getElementById(`aggrid-toolbar-${id}-top`)
   const toolbarTop = toolbarTopEL ? toolbarTopEL.offsetHeight : 0
-	const toolbarBottomEL = document.getElementById(`aggrid-toolbar-${uid}-bottom`)
+	const toolbarBottomEL = document.getElementById(`aggrid-toolbar-${id}-bottom`)
   const toolbarBottom = toolbarBottomEL ? toolbarBottomEL.offsetHeight : 0
-  // const footerHeight = document.getElementById(`widget-footer-${uid}`)!.offsetHeight
+  // const footerHeight = document.getElementById(`widget-footer-${id}`)!.offsetHeight
 	const contentHeight = widgetHeight - headerHeight - toolbarTop - toolbarBottom
 	return contentHeight > 200 ? `${contentHeight}px` : '200px'
 }

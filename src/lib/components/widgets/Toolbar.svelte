@@ -27,6 +27,7 @@
 	import { selectedWidgetMaximize } from '$lib/stores/widgets'
 	import { sendSuccessNotification } from '$lib/stores/toast'
 	import { openExportDataModal } from '$lib/helpers/common/modal'
+	import { goto } from '$app/navigation'
 
 	export let isToolbarVisible: boolean
 
@@ -49,10 +50,10 @@
 	$: toolbar = $widget?.params?.settings?.toolbar
 
 	let showInMenu: boolean = false
-	const handleShowMenu = (uid: string) => {
-		const title = document.getElementById(`widget-title-${uid}`)!
-		const toolbar = document.getElementById(`widget-toolbar-${uid}`)!
-		const widget = document.getElementById(`widget-${uid}`)!
+	const handleShowMenu = (widget_id: string) => {
+		const title = document.getElementById(`widget-title-${widget_id}`)!
+		const toolbar = document.getElementById(`widget-toolbar-${widget_id}`)!
+		const widget = document.getElementById(`widget-${widget_id}`)!
 		showInMenu = widget?.offsetWidth - (title?.offsetWidth + toolbar?.offsetWidth + 20) < 0
 	}
 
@@ -233,6 +234,23 @@
 				},
 				hide: toolbar['export'],
 				showInMenu: true
+			},
+			share: {
+				component: ButtonItem,
+				item: {
+					name: 'Share',
+					icon: 'mdi:share-variant',
+					tooltipText: 'Share',
+					action: () => {
+						const url = `/share/widget/${$widget?.dashboard_id}/${$widget?.widget_id}`
+						const link = document.createElement('a')
+						link.href = url
+						link.target = '_blank'
+						link.click()
+					}
+				},
+				hide: toolbar['share'],
+				showInMenu: true
 			}
 		}
 
@@ -301,6 +319,7 @@
 						this={toolbarItems[item].component}
 						showInMenu={toolbarItems[item].showInMenu}
 						item={toolbarItems[item].item}
+						on:itemClick={() => (menuOpen = !menuOpen)}
 					/>
 				{/each}
 

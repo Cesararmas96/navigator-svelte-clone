@@ -47,7 +47,7 @@
 			'There are no dashboards here yet. But you can start to add them by clicking on the "New tab" buttom above'
 		)
 
-	$: userId = currentDashboard?.user_id
+	$: userId = currentDashboard?.attributes?.user_id
 
 	$: if (pastedDashboard) {
 		dashboards = [...dashboards, pastedDashboard]
@@ -55,7 +55,7 @@
 	}
 
 	let popupRemoveModal = false
-	let selectedDashboardUID: string
+	let selectedDashboardID: string
 
 	const loadDashboards = async () => {
 		dashboards = await getApiData(
@@ -72,7 +72,7 @@
 		event.stopPropagation()
 
 		const tab = await putData(`${baseUrl}/api/v2/dashboards`, {
-			dashboard_name: 'New tab',
+			name: 'New tab',
 			attributes: {
 				icon: 'tabler:device-desktop-analytics',
 				color: '#1E90FF',
@@ -88,7 +88,7 @@
 			user_id: user.user_id
 		})
 		await loadDashboards()
-		currentDashboard = $storeDashboards.find((d: any) => d.duid === tab.data.dashboard_duid)
+		currentDashboard = $storeDashboards.find((d: any) => d.dashboard_id === tab.data.dashboard_id)
 	}
 
 	const showRemoveIcon = (event: MouseEvent) => {
@@ -109,17 +109,17 @@
 		$hideDashboardSettings = false
 		$selectedDashboard = dashboard
 	}
-	const handleDashboardRemove = (dashboardUID: string) => {
-		selectedDashboardUID = dashboardUID
+	const handleDashboardRemove = (dashboardID: string) => {
+		selectedDashboardID = dashboardID
 		popupRemoveModal = true
 	}
 	const handleRemoveConfirm = async () => {
 		try {
 			const removeDashboard = await deleteData(
-				`${baseUrl}/api/v2/dashboards/${currentDashboard.duid}`,
-				{ duid: currentDashboard.duid }
+				`${baseUrl}/api/v2/dashboards/${currentDashboard.dashboard_id}`,
+				{ dashboard_id: currentDashboard.dashboard_id }
 			)
-			const temp = dashboards.filter((d: any) => d.duid !== currentDashboard.duid)
+			const temp = dashboards.filter((d: any) => d.dashboard_id !== currentDashboard.dashboard_id)
 			dashboards = []
 			dashboards = [...temp]
 			currentDashboard = dashboards[0] ? { ...dashboards[0] } : null
@@ -133,20 +133,24 @@
 
 	const confirmCustomize = async (impersonation: boolean) => {
 		try {
-			const resp = await patchData(`${import.meta.env.VITE_API_URL}/api/v2/dashboards`, {
-				dashboard_id: currentDashboard.dashboard_id,
-				impersonation
-			})
-			console.log(resp)
-			if (resp.data && resp.data.dashboard_id) {
-				currentDashboard = { ...resp.data }
+			const user = impersonation ? { user_id: $storeUser.user_id } : { user_id: null }
+			const resp = await postData(
+				`${import.meta.env.VITE_API_URL}/api/v2/dashboards/${currentDashboard.dashboard_id}`,
+				{
+					attributes: { ...currentDashboard.attributes, ...user }
+				}
+			)
+			if (resp['0'] && resp['0'].dashboard_id) {
+				currentDashboard = { ...resp['0'] }
 				$storeDashboards = $storeDashboards.map((item) => {
 					if (item.dashboard_id === currentDashboard.dashboard_id) {
 						return currentDashboard
 					}
 					return item
 				})
-				sendSuccessNotification(resp.message)
+				sendSuccessNotification(
+					impersonation ? 'You can customize this dashboard' : 'Dashboard published'
+				)
 			} else {
 				sendErrorNotification('There was an error while customizing the dashboard')
 			}
@@ -160,7 +164,7 @@
 		let description =
 			'Are you sure that you want to customizable this dashboard?\nThis action cannot be undone.'
 
-		if (currentDashboard.user_id) {
+		if (currentDashboard?.attributes?.user_id) {
 			impersonation = false
 			description =
 				'Are you sure that you want to publish this dashboard?\nThis action cannot be undone.'
@@ -190,8 +194,8 @@
 
 	const handleDashboardPaste = async () => {
 		let pastedDashboard: any = $storeCCPDashboard
-		const { duid, dashboard_id } = pastedDashboard
-		const payload = { dashboard_id, duid, module_id: trocModule.module_id }
+		const { dashboard_id } = pastedDashboard
+		const payload = { dashboard_id, module_id: trocModule.module_id }
 		try {
 			const resp = await postData(`${baseUrl}/api/v2/dashboard/clone`, payload)
 			console.log(resp)
@@ -200,7 +204,7 @@
 			console.log(`There was an error: ${e}`)
 		}
 		if ($storeCCPDashboardBehavior === 'cut') {
-			await getApiData(`${baseUrl}/api/v2/dashboards/${currentDashboard.uid}`, 'DELETE')
+			await getApiData(`${baseUrl}/api/v2/dashboards/${currentDashboard.dashboard_id}`, 'DELETE')
 		}
 		clearCopyDashboard()
 	}
@@ -228,7 +232,7 @@
 	}
 
 	const handleShareDashboard = () => {
-		const url = `/share/dashboard/${currentDashboard.program_id}/${currentDashboard.module_id}/${currentDashboard.duid}`
+		const url = `/share/dashboard/${currentDashboard.program_id}/${currentDashboard.module_id}/${currentDashboard.dashboard_id}`
 		const link = document.createElement('a')
 		link.href = url
 		link.setAttribute('target', '_blank')
@@ -241,7 +245,6 @@
 		sendSuccessNotification('Generating the screenshot, please wait...')
 		setTimeout(async () => {
 			const mainContent = document.getElementById(`grid`)!
-			// mainContent.querySelector(`#widget-toolbar-${currentDashboard.uid}`)!.classList.add('hidden')
 			const spinner = mainContent.querySelector(`#spinner`)
 			if (spinner) spinner.classList.add('hidden')
 
@@ -270,7 +273,7 @@
 		dashboards &&
 		dashboards.length > 0 &&
 		currentDashboard &&
-		!dashboards.some((d) => d.duid === currentDashboard.duid)
+		!dashboards.some((d) => d.dashboard_id === currentDashboard.dashboard_id)
 	) {
 		currentDashboard = { ...dashboards[0] }
 	}
@@ -382,7 +385,7 @@
 										>
 										{#if user.user_id === userId}
 											<DropdownItem
-												on:click={() => handleDashboardRemove(dashboard.ddui)}
+												on:click={() => handleDashboardRemove(dashboard.dashboard_id)}
 												defaultClass="flex flex-row text-red-500 font-medium py-2 pl-2 pr-4 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"
 											>
 												<Icon icon="tabler:trash" size="18" classes="mr-1" />

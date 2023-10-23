@@ -11,7 +11,11 @@ export const load = async ({params, fetch, locals, url}) => {
   const token = url.searchParams.get("token") || locals.user?.token;
   const headers = token ? {authorization: `Bearer ${token}`} : {};
 
-  const dashboards = await getApiData(`${urlBase}/api/v2/dashboards?program_id=${params.program_id}&module_id=${params.module_id}`, 'GET', {}, {}, {headers}, fetch)
-  const dashboard = dashboards.find((item: any) => item.duid === params.uuid);
+  const dashboards = await getApiData(
+    `${urlBase}/api/v2/dashboards?program_id=${params.program_id}&module_id=${
+      params.module_id
+    }&explorer=false`, 'GET', {}, {}, { headers }, fetch
+  )
+  const dashboard = dashboards.find((item: any) => item.dashboard_id === params.id);
   return { dashboard, user: locals.user }
 }

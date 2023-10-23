@@ -2,4 +2,4 @@
 	export let widget: any
 </script>
 
-<div id={`widget-content-top-${widget.uid}`} />
+<div id={`widget-content-top-${widget.widget_id}`} />

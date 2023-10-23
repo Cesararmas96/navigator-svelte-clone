@@ -1,5 +1,5 @@
 export interface Widget {
-    uid: string;
+    widget_id: string;
     description: null | string;
     widget_slug: null;
     dashboard_id: number;
