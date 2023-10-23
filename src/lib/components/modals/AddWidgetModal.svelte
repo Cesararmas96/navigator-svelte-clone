@@ -58,6 +58,7 @@
     };
 
 
+    let widgetTypes;
     const getWidgetCategory = async (data) => {
         // Get by category
         const uniqueWidgetTypeIds = new Set();
@@ -66,21 +67,24 @@
             uniqueWidgetTypeIds.add(item.widget_type_id);
         });
 
-        const widgetType = [...uniqueWidgetTypeIds].sort();
-        return widgetType;
 
+        widgetTypes = [...uniqueWidgetTypeIds].sort();
+        console.log(widgetTypes);
+        return widgetTypes;
 
     };
 
 
+    let selectedCategoryWidgets;
     const handleCategorySearch = async (category, widgets) => {
-        const catWidgets = widgets.filter((widget) => widget.widget_type_id === category)
+        console.log(widgetTypes);
+        console.log(widgets);
+        selectedCategoryWidgets = widgets.filter((widget) => widget.widget_type_id === category);
 
-        console.log(catWidgets);
+        console.log(selectedCategoryWidgets);
 
-        return catWidgets
+        return selectedCategoryWidgets;
     };
-
 
 
 </script>
@@ -92,17 +96,34 @@
 {:then widgets}
     <ul class="my-4 space-y-3">
 
+        {#if selectedCategoryWidgets}
+            {#each selectedCategoryWidgets as widget}
+                {#if (widget.title)}
+                    <div
+                            class="flex flex-row items-center p-3 text-base font-bold text-gray-900 bg-gray-50 rounded-lg hover:bg-gray-100 group hover:shadow dark:bg-gray-600 dark:hover:bg-gray-500 dark:text-white">
+                        {#await getTemplateIcon(widget) then icon}
+                            <span style="color:{widget.attributes.fg_color}">
+                            <Icon icon={icon} size="25px"/>
+                            </span>
+                        {/await}
+                        <button class="flex-1 ml-3 flex-wrap"
+                                on:click={() => props.handleWidgetInsert(widget.uid, widget.widget_id)}>{widget.title}</button>
+
+                    </div>
+                {/if}
+            {/each}
+        {/if}
+
+
         {#await getWidgetCategory(widgets) then categories}
 
             {#each categories as category}
 
-                <div on:click={() => handleCategorySearch(category, widgets)} class="flex flex-row items-center p-3 text-base font-bold text-gray">
+                <div on:click={() => handleCategorySearch(category, widgets)}
+                     class="flex flex-row items-center p-3 text-base font-bold text-gray">
 
-              {category}
+                    {category}
                 </div>
-
-
-
 
 
             {/each}
