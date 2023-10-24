@@ -17,26 +17,28 @@
 <Dropdown triggeredBy=".avatarProfile" containerClass="min-w-[150px]">
 	<div>
 		<DropdownItem>
-			<div class="flex cursor-pointer flex-row items-center">
-				<Icon icon="line-md:account" size="20px" />
-				<a href="/profile" class="mx-2"> Profile </a>
-			</div>
+			<a href="/profile">
+				<div class="mx-2 flex cursor-pointer flex-row items-center">
+					<Icon icon="line-md:account" size="20px" classes="mr-3" />
+					Profile
+				</div>
+			</a>
 		</DropdownItem>
 		<DropdownItem>
-			<div class="flex cursor-pointer flex-row items-center">
-				<Icon icon="line-md:clipboard-check" size="20px" />
-				<a href="/admin" class="mx-2"> Admin </a>
-			</div>
+			<a href="/admin">
+				<div class="mx-2 flex cursor-pointer flex-row items-center">
+					<Icon icon="line-md:clipboard-check" size="20px" classes="mr-3" />
+					Admin
+				</div>
+			</a>
 		</DropdownItem>
 		<DropdownItem slot="footer">
-			<div class="flex cursor-pointer">
-				<form action="/logout" method="POST" use:enhance>
-					<button type="submit" class="flex flex-row items-center">
-						<Icon icon="line-md:arrow-align-left" size="20px" />
-						<span class="mx-2">Log Out</span>
-					</button>
-				</form>
-			</div>
+			<form action="/logout" method="POST" use:enhance>
+				<button type="submit" class="mx-2 flex cursor-pointer flex-row items-center">
+					<Icon icon="line-md:arrow-align-left" size="20px" classes="mr-3" />
+					Log Out
+				</button>
+			</form>
 		</DropdownItem>
 	</div>
 </Dropdown>
