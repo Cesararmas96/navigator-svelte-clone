@@ -2,7 +2,7 @@
 
 
     import {storeUser} from "$lib/stores";
-    import {Button, P, TabItem} from "flowbite-svelte";
+    import {Button, Listgroup, P, TabItem} from "flowbite-svelte";
     import Spinner from "$lib/components/common/Spinner.svelte";
     import {addNewItem, pasteItem} from "$lib/helpers/dashboard/grid";
     import Icon from "$lib/components/common/Icon.svelte";
@@ -60,16 +60,28 @@
 
     let widgetTypes;
     const getWidgetCategory = async (data) => {
-        // Get by category
+
         const uniqueWidgetTypeIds = new Set();
 
         data.forEach(item => {
+            if (item.widget_type_id.includes("api-")) {
+                item.widget_type_id = item.widget_type_id.replace("api-", "");
+            }
+            if (item.widget_type_id.includes("-")) {
+                item.widget_type_id = item.widget_type_id.replaceAll("-", " ");
+            }
+
+            item.widget_type_id = item.widget_type_id
+                .split(" ")
+                .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                .join(" ");
+
+
             uniqueWidgetTypeIds.add(item.widget_type_id);
         });
 
+        const widgetTypes = [...uniqueWidgetTypeIds].sort();
 
-        widgetTypes = [...uniqueWidgetTypeIds].sort();
-        console.log(widgetTypes);
         return widgetTypes;
 
     };
@@ -77,11 +89,8 @@
 
     let selectedCategoryWidgets;
     const handleCategorySearch = async (category, widgets) => {
-        console.log(widgetTypes);
-        console.log(widgets);
-        selectedCategoryWidgets = widgets.filter((widget) => widget.widget_type_id === category);
 
-        console.log(selectedCategoryWidgets);
+        selectedCategoryWidgets = widgets.filter((widget) => widget.widget_type_id === category);
 
         return selectedCategoryWidgets;
     };
@@ -94,57 +103,65 @@
     <Spinner fullScreen={false}/>
 
 {:then widgets}
-    <ul class="my-4 space-y-3">
 
-        {#if selectedCategoryWidgets}
-            {#each selectedCategoryWidgets as widget}
-                {#if (widget.title)}
-                    <div
-                            class="flex flex-row items-center p-3 text-base font-bold text-gray-900 bg-gray-50 rounded-lg hover:bg-gray-100 group hover:shadow dark:bg-gray-600 dark:hover:bg-gray-500 dark:text-white">
-                        {#await getTemplateIcon(widget) then icon}
-                            <span style="color:{widget.attributes.fg_color}">
-                            <Icon icon={icon} size="25px"/>
-                            </span>
-                        {/await}
-                        <button class="flex-1 ml-3 flex-wrap"
-                                on:click={() => props.handleWidgetInsert(widget.uid, widget.widget_id)}>{widget.title}</button>
 
+    <div class="flex space-x-4">
+        <ul class="my-4 space-y-3">
+
+
+            {#await getWidgetCategory(widgets) then categories}
+
+
+                <Listgroup active items={categories} let:item class="w-48" on:click={console.log}>
+
+                    <div on:click={() => handleCategorySearch(item, widgets)}
+                         class="flex flex-row items-center p-3 text-base font-bold text-gray">
+
+                        {item}
                     </div>
-                {/if}
-            {/each}
-        {/if}
+                </Listgroup>
+            {/await}
 
+        </ul>
+        <ul class="my-4 space-y-3">
 
-        {#await getWidgetCategory(widgets) then categories}
-
-            {#each categories as category}
-
-                <div on:click={() => handleCategorySearch(category, widgets)}
-                     class="flex flex-row items-center p-3 text-base font-bold text-gray">
-
-                    {category}
-                </div>
-
-
-            {/each}
-        {/await}
-
-
-        {#each widgets as widget}
-            {#if (widget.title)}
-                <div
-                        class="flex flex-row items-center p-3 text-base font-bold text-gray-900 bg-gray-50 rounded-lg hover:bg-gray-100 group hover:shadow dark:bg-gray-600 dark:hover:bg-gray-500 dark:text-white">
-                    {#await getTemplateIcon(widget) then icon}
+            {#if selectedCategoryWidgets}
+                {#each selectedCategoryWidgets as widget}
+                    {#if (widget.title)}
+                        <div
+                                class="flex flex-row items-center p-3 text-base font-bold text-gray-900 bg-gray-50 rounded-lg hover:bg-gray-100 group hover:shadow dark:bg-gray-600 dark:hover:bg-gray-500 dark:text-white">
+                            {#await getTemplateIcon(widget) then icon}
                             <span style="color:{widget.attributes.fg_color}">
                             <Icon icon={icon} size="25px"/>
                             </span>
-                    {/await}
-                    <button class="flex-1 ml-3 flex-wrap"
-                            on:click={() => props.handleWidgetInsert(widget.uid, widget.widget_id)}>{widget.title}</button>
+                            {/await}
+                            <button class="flex-1 ml-3 flex-wrap"
+                                    on:click={() => props.handleWidgetInsert(widget.uid, widget.widget_id)}>{widget.title}</button>
 
-                </div>
+                        </div>
+                    {/if}
+                {/each}
+
+            {:else }
+                {#each widgets as widget}
+                    {#if (widget.title)}
+                        <div
+                                class="flex flex-row items-center p-3 text-base font-bold text-gray-900 bg-gray-50 rounded-lg hover:bg-gray-100 group hover:shadow dark:bg-gray-600 dark:hover:bg-gray-500 dark:text-white">
+                            {#await getTemplateIcon(widget) then icon}
+                            <span style="color:{widget.attributes.fg_color}">
+                            <Icon icon={icon} size="25px"/>
+                            </span>
+                            {/await}
+                            <button class="flex-1 ml-3 flex-wrap"
+                                    on:click={() => props.handleWidgetInsert(widget.uid, widget.widget_id)}>{widget.title}</button>
+
+                        </div>
+                    {/if}
+                {/each}
             {/if}
-        {/each}
-    </ul>
+
+        </ul>
+
+    </div>
 
 {/await}
