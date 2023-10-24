@@ -11,7 +11,8 @@
 		generateColumnDefsByDefinition,
 		gridFunctionsMap,
 		gridHeight,
-		recordsPerPage
+		recordsPerPage,
+		setMainContentHeight
 	} from '$lib/helpers/widget/aggrid'
 	import {
 		hideFormBuilderDrawer,
@@ -140,17 +141,6 @@
 		}
 	}
 
-	// async function confirmDeleteUsers(data: any, keys: string[], rowId: string) {
-	// 	const slugKeys: string = keys.map((key) => `/${data[key]}`).join('')
-	// 	const response = await deleteData(`${import.meta.env.VITE_API_URL}/api/v1/users${slugKeys}`)
-	// 	if (response) {
-	// 		deleteItem(rowId)
-	// 		sendSuccessNotification('Delete')
-	// 	} else {
-	// 		sendErrorNotification('An error has occurred')
-	// 	}
-	// }
-
 	/**
 	 * @description Definición por defecto de las columnas
 	 */
@@ -204,6 +194,7 @@
 		onGridReady: (params: GridReadyEvent<any, any>) => {
 			onGridSizeChanged(params)
 		},
+		onFirstDataRendered: function (event) {},
 		onGridSizeChanged: onGridSizeChanged
 	}
 
@@ -224,15 +215,16 @@
 	onMount(() => {
 		const eGridDiv: HTMLElement = document.querySelector(`#grid-${$widget.widget_id}`)!
 		new Grid(eGridDiv, gridOptions)
-		eGridDiv.style.height = gridHeight($widget.widget_id, $widget.params)
+		// eGridDiv.style.height = gridHeight($widget.widget_id, $widget.params)
 		if ($widget.temp) {
 			const instanceLoadedAction = getWidgetAction($widgetActions, 'instanceLoaded')
 			instanceLoadedAction.action()
 		}
-		if ($widget.resize_on_load) resizeAction.action()
+		resizeAction.action()
 		setTimeout(() => {
-			eGridDiv.style.height = gridHeight($widget.widget_id, $widget.params)
-		}, 100)
+			resizeAgGridContent()
+			// $widget.resized = true
+		}, 1000)
 	})
 
 	$: isDark = $themeMode === 'dark'
@@ -240,15 +232,6 @@
 	/**
 	 * @description Actualiza el tamaño de la tabla cuando se cambia el tamaño del widget
 	 */
-	// $: if (
-	// 	$widget.resize_components === true &&
-	// 	document.querySelector(`#grid-${$widget.widget_id}`)
-	// ) {
-	// 	const eGridDiv: HTMLElement = document.querySelector(`#grid-${$widget.widget_id}`)!
-	// 	eGridDiv.style.height = gridHeight($widget.widget_id, $widget.params)
-	// 	$widget.resize_components = false
-	// }
-
 	const resizeAgGridContent = () => {
 		setContentHeight($widget.widget_id)
 		const eGridDiv: HTMLElement = document.querySelector(`#grid-${$widget.widget_id}`)!
@@ -286,20 +269,27 @@
 	}
 </script>
 
-<Toolbar
-	position="top"
-	widgetID={$widget.widget_id}
-	btnsActions={$widget.params.btnsActions}
-	filterCallback={onFilterTextBoxChanged}
-	on:click={(e) => actionBtnMap[e.detail](e)}
-/>
-<div
-	id="grid-{$widget.widget_id}"
-	style="width: 100%"
-	class:ag-theme-balham={!isDark}
-	class:ag-theme-balham-dark={isDark}
-/>
-<Toolbar position="bottom" widgetID={$widget.widget_id} btnsActions={$widget.params.btnsActions} />
+<div id="aggrid-container-{$widget.widget_id}" class="grid-container flex flex-col">
+	<Toolbar
+		position="top"
+		widgetID={$widget.widget_id}
+		btnsActions={$widget.params.btnsActions}
+		filterCallback={onFilterTextBoxChanged}
+		on:click={(e) => actionBtnMap[e.detail](e)}
+	/>
+	<div
+		id="grid-{$widget.widget_id}"
+		style="width: 100%"
+		class="grid min-h-[300px]"
+		class:ag-theme-balham={!isDark}
+		class:ag-theme-balham-dark={isDark}
+	/>
+	<Toolbar
+		position="bottom"
+		widgetID={$widget.widget_id}
+		btnsActions={$widget.params.btnsActions}
+	/>
+</div>
 
 <style>
 	.ag-theme-balham {
@@ -308,4 +298,14 @@
 		--ag-odd-row-background-color: #f9f9f9;
 		--ag-header-foreground-color: #000;
 	}
+
+	/* Estilo para el contenedor */
+	.grid-container {
+		min-height: 300px; /* O la altura que desees */
+	}
+
+	/* Estilo para ag-Grid */
+	/* .aggrid {
+		min-height: 300px;
+	} */
 </style>

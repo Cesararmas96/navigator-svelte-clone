@@ -75,7 +75,7 @@
 			event.stopPropagation()
 		}}
 	>
-		<div class="h-full w-full">
+		<div class="w-full">
 			<ContentTop {widget} />
 
 			<Content {widget} />

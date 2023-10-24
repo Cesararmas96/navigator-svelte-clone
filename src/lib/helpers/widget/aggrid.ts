@@ -132,6 +132,11 @@ export const headerClass = (formatDefinition: any): string => {
 	return cellClass
 }
 
+export const setMainContentHeight = (id: string): any => {
+  const gridHeight = document.getElementById(`grid-${id}`)!.offsetHeight
+  document.getElementById(`widget-main-content-${id}`)?.setAttribute('style', `height: ${gridHeight}px`)
+}
+
 export const gridHeight = (id: string, formatDefinition: any): any => {
   const mainHeight = document.getElementById(`widget-main-content-${id}`)!.offsetHeight
   const toolbarTopEL = document.getElementById(`aggrid-toolbar-${id}-top`)

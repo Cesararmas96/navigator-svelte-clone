@@ -1,5 +1,7 @@
 <script lang="ts">
-	export let widget: any
+	import type { Writable } from 'svelte/store'
+
+	export let widget: Writable<any>
 </script>
 
-<div id={`widget-content-top-${widget.widget_id}`} />
+<div id={`widget-content-top-${$widget.widget_id}`} />

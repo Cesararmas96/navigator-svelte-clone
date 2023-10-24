@@ -4,7 +4,7 @@
 	import type { Writable } from 'svelte/store'
 	import NoDataFound from './NoDataFound.svelte'
 	import { capitalizeWord } from '$lib/helpers/common/common'
-	import { contentHeight, setContentHeight } from '$lib/helpers/widget/widget'
+	import { setContentHeight } from '$lib/helpers/widget/widget'
 
 	export let widget: Writable<any>
 	export let data: any
@@ -39,7 +39,7 @@
 		if ($widget.temp) {
 			$widget.instance_loading = true
 		}
-		resizeComponentContent()
+		// if ($widget.resize_on_load) resizeComponentContent()
 	})
 </script>
 
