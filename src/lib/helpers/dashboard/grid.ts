@@ -1,5 +1,6 @@
 import type { GridParams } from "svelte-grid-extended/types"
 import { generateUID } from "../common/common"
+import { sl } from "date-fns/locale"
 
 const rowHeight = 12
 const minRowHeight = 14
@@ -93,6 +94,7 @@ export const loadLocalStoredLocations = (_dashboard: any, _widgets: any[], isMob
 }
 
 export const saveLocations = (dashboard: any, gridItems: any[], gridParams: GridParams) => {
+  console.log('saveLocations')
   const items = Object.entries(gridParams.items).reduce((acc, [key, item]) => {
     const gridItem = gridItems.find((i) => i.slug === key)
     if (gridItem) {
@@ -124,20 +126,18 @@ export const saveLocations = (dashboard: any, gridItems: any[], gridParams: Grid
 
 }
 
-export const transformLocations = (items: any[]) => {
-  return items.map((item) => {
-    const gridItem = {
-      slug: item.slug,
-      x: item.x,
-      y: item.y,
-      w: item.w,
-      h: item.h,
-    }
-    return gridItem;
+export const syncGridItems = (items: any[], gridParams: GridParams) => {
+  console.log('syncGridItems')
+  items.map((item) => {
+    item.y = gridParams.items[item.slug].y
+    item.h = gridParams.items[item.slug].h
+    item.w = gridParams.items[item.slug].w
+    item.x = gridParams.items[item.slug].x
   });
 }
 
 export const reloadLocations = (widgetLocation: Record<string, any>, gridParams: GridParams, isMobile: boolean) => {
+  console.log('reloadLocations')
   let y = 0
   // gridParams.itemSize = {height: 10, width: 300}
   // gridParams.cols = 1
@@ -225,7 +225,6 @@ export const pasteItem = (item: any, items: any[]) => {
 }
 
 export const resizeItem = (item: any, items: any[]) => {
-  console.log('resizeItem')
   const header = document.getElementById(`widget-header-${item.data.widget_id}`)?.clientHeight || 0
   const content = document.getElementById(`widget-main-content-${item.data.widget_id}`)?.clientHeight || 0
   // const widgetInstances =
@@ -236,8 +235,8 @@ export const resizeItem = (item: any, items: any[]) => {
   return reorderAfterResize(item, prevousHeight, items)
 }
 
-export const removeItem = (item: any, items: any[]) => {  
-  if (item.data.parent) items = reorderLines(item.y, items)
+export const removeItem = (item: any, items: any[], gridParams: GridParams) => {  
+  if (item.data.parent) items = reorderLines(item, items, gridParams)
   items = items.filter((gridItem) => gridItem.slug !== item.slug)
   return items
 }
@@ -278,15 +277,9 @@ const reorderAfterResize = (item: any, prevousHeight: number, items: any[]) => {
   return [...items]
 }
 
-export const reorderLines = (y: number, items: any[]) => {
-  console.log('reorderLines')
-  const height = maxHeight(y, items)
-  console.log(height)
-  items.map((i) => {
-    if (i.y > y) i.y += height
-    return i
-  })
-  return [...items]
+export const reorderLines = (item: any, items: any[], gridParams: GridParams) => {
+  const height = maxHeight(item.y, items)
+  return reorderAfterResize(item, 0, items)
 }
 
 export const addNewItem = (item, gridController: any) => {

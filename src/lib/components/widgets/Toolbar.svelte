@@ -274,7 +274,7 @@
 		id={`widget-toolbar-${$widget.widget_id}`}
 		style:background-color={patternUrl.test(bg) ? 'transparent' : bg}
 		class={isToolbarVisible
-			? `widget-toolbar absolute right-2 mt-1 rounded-md bg-white dark:bg-dark-100`
+			? `widget-toolbar absolute right-2 rounded-md bg-white dark:bg-dark-100`
 			: 'hidden'}
 		on:pointerdown={(event) => {
 			event.preventDefault()

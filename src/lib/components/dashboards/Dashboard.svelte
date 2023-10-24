@@ -12,18 +12,12 @@
 		pasteItem,
 		saveLocations,
 		loadLocalStoredLocations,
-		reorderLines,
-		transformLocations
+		syncGridItems,
+		reorderLines
 	} from '$lib/helpers/dashboard/grid'
 	import { deleteData, getApiData, postData, putData } from '$lib/services/getData'
 	import Alerts from '../widgets/type/Alert/Alerts.svelte'
-	import {
-		clearAlerts,
-		dismissAlert,
-		sendAlert,
-		sendErrorAlert,
-		sendInfoAlert
-	} from '$lib/helpers/common/alerts'
+	import { dismissAlert, sendAlert, sendErrorAlert } from '$lib/helpers/common/alerts'
 	import { AlertType, type AlertMessage } from '$lib/interfaces/Alert'
 	import { storeCCPWidget, storeCCPWidgetBehavior } from '$lib/stores/dashboards'
 	import { storeUser } from '$lib/stores'
@@ -150,7 +144,7 @@
 	}
 	$: handleRemove = (item: any) => {
 		// item.data.component.$destroy()
-		gridItems = removeItem(item, gridItems)
+		gridItems = removeItem(item, gridItems, gridController.gridParams)
 		// gridItems.map((item: any) => {
 		// 	delete item.data.loaded
 		// 	return item
@@ -160,9 +154,6 @@
 	let resizedSlug = ''
 	$: changeItemSize = (item: any) => {
 		resizedSlug = item.slug
-		// console.log(gridController.gridParams.items)
-		// console.log(transformLocations(gridItems))
-		// reorderLines(item.y, gridItems)
 	}
 
 	$: setGridItems($storeDashboard.dashboard_id)
@@ -344,6 +335,3 @@
 		{/each}
 	</Grid>
 </div>
-
-<!-- {"prepaid", "internet", "postpaid", "apd-bucket", "accessories", "carriers-mtd", "prepaid-top-10-rep", "unlocked-per-store", "performance-metrics", "postpaid-top-10-rep", "prepaid-accessories", "postpaid-accessories", "prepaid-through-warp", "other-quality-metrics", "performance-metrics-1", "prepaid-top-10-stores", "straight-line-to-goal", "accessories-top-10-rep", "postpaid-top-10-stores", "prepaid-protection-plan", "top-10-devices-sold-mtd", "postpaid-quality-metrics", "accessories-top-10-stores", "postpaid-protection-plans", "mtd-postpaid-same-month-returns", "count-of-stores-with-zero-sales-mtd", "selected-day-sales-average-per-door", "daily-comp-store-postpaid-sales-comparison-year-over-year", 
-} -->
