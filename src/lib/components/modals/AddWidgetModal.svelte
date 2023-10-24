@@ -1,10 +1,6 @@
 <script lang="ts">
-
-
     import {storeUser} from "$lib/stores";
-    import {Button, Listgroup, P, TabItem} from "flowbite-svelte";
     import Spinner from "$lib/components/common/Spinner.svelte";
-    import {addNewItem, pasteItem} from "$lib/helpers/dashboard/grid";
     import Icon from "$lib/components/common/Icon.svelte";
 
 
@@ -13,8 +9,8 @@
 
     const baseUrl = import.meta.env.VITE_API_URL;
 
-    const getTemplateIcon = async (widget) => {
-        let rawIcon = widget.attributes && widget.attributes.icon;
+    const getTemplateIcon = async (template) => {
+        let rawIcon = template.attributes && template.attributes.icon;
         if (rawIcon?.includes(" ")) {
             rawIcon = rawIcon.split(" ")[1];
 
@@ -23,7 +19,7 @@
     };
 
 
-    const getWidgetTemplates = async () => {
+    const fetchWidgetTemplates = async () => {
 
 
         try {
@@ -59,11 +55,11 @@
 
 
     let widgetTypes;
-    const getWidgetCategory = async (data) => {
+    const getWidgetCategories = async (templates) => {
 
-        const uniqueWidgetTypeIds = new Set();
+        const uniqueIds = new Set();
 
-        data.forEach(item => {
+        templates.forEach(item => {
             if (item.widget_type_id.includes("api-")) {
                 item.widget_type_id = item.widget_type_id.replace("api-", "");
             }
@@ -77,29 +73,29 @@
                 .join(" ");
 
 
-            uniqueWidgetTypeIds.add(item.widget_type_id);
+            uniqueIds.add(item.widget_type_id);
         });
 
-        const widgetTypes = [...uniqueWidgetTypeIds].sort();
+        const categories = [...uniqueIds].sort();
 
-        return widgetTypes;
+        return categories;
 
     };
 
 
-    let selectedCategoryWidgets;
-    const handleCategorySearch = async (category, widgets) => {
+    let filteredTemplates;
+    const handleCategorySearch = async (category, templates) => {
 
-        selectedCategoryWidgets = widgets.filter((widget) => widget.widget_type_id === category);
+        filteredTemplates = templates.filter((widget) => widget.widget_type_id === category);
 
-        return selectedCategoryWidgets;
+        return filteredTemplates;
     };
 
 
 </script>
 
 
-{#await getWidgetTemplates()}
+{#await fetchWidgetTemplates()}
     <Spinner fullScreen={false}/>
 
 {:then widgets}
@@ -109,24 +105,37 @@
         <ul class="my-4 space-y-3">
 
 
-            {#await getWidgetCategory(widgets) then categories}
+            {#await getWidgetCategories(widgets) then categories}
+
+                <div
+                        class="flex flex-row items-center p-3 text-base font-bold text-gray">
+                    <a href="#" class="flex-1 ml-3 flex-wrap btn" on:click={() => {filteredTemplates = null}}>
+                        All
+                    </a>
+
+                </div>
+                {#each categories as category}
+
+                    <div
+                         class="flex flex-row items-center p-2 text-base font-bold text-gray">
 
 
-                <Listgroup active items={categories} let:item class="w-48" on:click={console.log}>
+                        <a href="#" class="flex-1 ml-3 flex-wrap btn" on:click={() => handleCategorySearch(category, widgets)}>
+                            {category}
+                        <a/>
 
-                    <div on:click={() => handleCategorySearch(item, widgets)}
-                         class="flex flex-row items-center p-3 text-base font-bold text-gray">
 
-                        {item}
                     </div>
-                </Listgroup>
+
+
+                {/each}
             {/await}
 
         </ul>
         <ul class="my-4 space-y-3">
 
-            {#if selectedCategoryWidgets}
-                {#each selectedCategoryWidgets as widget}
+            {#if filteredTemplates}
+                {#each filteredTemplates as widget}
                     {#if (widget.title)}
                         <div
                                 class="flex flex-row items-center p-3 text-base font-bold text-gray-900 bg-gray-50 rounded-lg hover:bg-gray-100 group hover:shadow dark:bg-gray-600 dark:hover:bg-gray-500 dark:text-white">
