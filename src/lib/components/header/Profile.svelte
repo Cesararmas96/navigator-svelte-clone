@@ -18,16 +18,22 @@
 	<div>
 		<DropdownItem>
 			<div class="flex cursor-pointer flex-row items-center">
-				<Icon icon="mdi:account-outline" size="20px" />
+				<Icon icon="line-md:account" size="20px" />
 				<a href="/profile" class="mx-2"> Profile </a>
+			</div>
+		</DropdownItem>
+		<DropdownItem>
+			<div class="flex cursor-pointer flex-row items-center">
+				<Icon icon="line-md:clipboard-check" size="20px" />
+				<a href="/admin" class="mx-2"> Admin </a>
 			</div>
 		</DropdownItem>
 		<DropdownItem slot="footer">
 			<div class="flex cursor-pointer">
 				<form action="/logout" method="POST" use:enhance>
 					<button type="submit" class="flex flex-row items-center">
-						<Icon icon="mdi:power" size="20px" />
-						<span class="mx-2">Log out</span>
+						<Icon icon="line-md:arrow-align-left" size="20px" />
+						<span class="mx-2">Log Out</span>
 					</button>
 				</form>
 			</div>
