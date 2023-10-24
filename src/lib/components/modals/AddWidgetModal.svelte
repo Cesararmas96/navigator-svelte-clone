@@ -2,6 +2,9 @@
     import {storeUser} from "$lib/stores";
     import Spinner from "$lib/components/common/Spinner.svelte";
     import Icon from "$lib/components/common/Icon.svelte";
+    import Help from "$lib/components/widgets/toolbar/Help.svelte";
+    import {Popover} from "flowbite-svelte";
+    import {fade, slide} from "svelte/transition";
 
 
     export let props;
@@ -117,12 +120,13 @@
                 {#each categories as category}
 
                     <div
-                         class="flex flex-row items-center p-3 text-base font-bold text-gray-900 bg-gray-50 rounded-lg hover:bg-gray-100 group hover:shadow dark:bg-gray-600 dark:hover:bg-gray-500 dark:text-white">
+                            class="flex flex-row items-center p-3 text-base font-bold text-gray-900 bg-gray-50 rounded-lg hover:bg-gray-100 group hover:shadow dark:bg-gray-600 dark:hover:bg-gray-500 dark:text-white">
 
 
-                        <a href="#" class="flex-1 ml-3 flex-wrap btn min-w-max" on:click={() => handleCategorySearch(category, widgets)}>
+                        <a href="#" class="flex-1 ml-3 flex-wrap btn min-w-max"
+                           on:click={() => handleCategorySearch(category, widgets)}>
                             {category}
-                        <a/>
+                            <a/>
 
 
                     </div>
@@ -161,8 +165,17 @@
                             <Icon icon={icon} size="25px"/>
                             </span>
                             {/await}
-                            <button class="flex-1 ml-3 flex-wrap"
+                            <button class="flex-1 ml-3 flex-wrap" id="template-button"
                                     on:click={() => props.handleWidgetInsert(widget.uid, widget.widget_id)}>{widget.title}</button>
+
+                                <Popover class="w-64 text-sm font-light " placement="top"
+                                       transition={fade} params={{ duration: 200 }}>
+                            {#if widget.description}
+                                    {widget.description}
+                            {:else}
+                                {widget.title}
+                            {/if}
+                                </Popover>
 
                         </div>
                     {/if}
