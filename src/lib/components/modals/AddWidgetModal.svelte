@@ -108,7 +108,7 @@
             {#await getWidgetCategories(widgets) then categories}
 
                 <div
-                        class="flex flex-row items-center p-3 text-base font-bold text-gray">
+                        class="flex flex-row items-center p-3 text-base font-bold text-gray-900 bg-gray-50 rounded-lg hover:bg-gray-100 group hover:shadow dark:bg-gray-600 dark:hover:bg-gray-500 dark:text-white">
                     <a href="#" class="flex-1 ml-3 flex-wrap btn" on:click={() => {filteredTemplates = null}}>
                         All
                     </a>
@@ -117,10 +117,10 @@
                 {#each categories as category}
 
                     <div
-                         class="flex flex-row items-center p-2 text-base font-bold text-gray">
+                         class="flex flex-row items-center p-3 text-base font-bold text-gray-900 bg-gray-50 rounded-lg hover:bg-gray-100 group hover:shadow dark:bg-gray-600 dark:hover:bg-gray-500 dark:text-white">
 
 
-                        <a href="#" class="flex-1 ml-3 flex-wrap btn" on:click={() => handleCategorySearch(category, widgets)}>
+                        <a href="#" class="flex-1 ml-3 flex-wrap btn min-w-max" on:click={() => handleCategorySearch(category, widgets)}>
                             {category}
                         <a/>
 
