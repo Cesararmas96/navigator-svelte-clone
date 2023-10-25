@@ -29,7 +29,6 @@ const login: Action = async ({ cookies, request }) => {
     body: JSON.stringify({username, password})
   });
 
-
   if (response.ok) {
     const data = await response.json();
     const token = encrypt(data.token);
@@ -47,6 +46,8 @@ const login: Action = async ({ cookies, request }) => {
       // set cookie to expire after a month
       maxAge: 60 * 60 * 24 * 30,
     })
+  } else {
+    return fail(400, { credentials: true })
   }
   // redirect the user
   throw redirect(302, '/')
