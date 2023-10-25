@@ -283,13 +283,16 @@
 	let showInsertWidgetItem = false
 	let insertWidgetCallback: any
 	const handleWidgetInsert = (e: any) => {
-
 		showInsertWidgetItem = true
 		insertWidgetCallback = e.detail
 	}
 
 	const insertWidget = () => {
-		openModal('Insert Widget', 'AddWidgetModal', { currentDashboard, handleWidgetInsert })
+		openModal('Insert Widget', 'AddWidgetModal', {
+			currentDashboard,
+			handleWidgetInsert,
+			size: 'md'
+		})
 	}
 </script>
 

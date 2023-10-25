@@ -1,190 +1,164 @@
 <script lang="ts">
-    import {storeUser} from "$lib/stores";
-    import Spinner from "$lib/components/common/Spinner.svelte";
-    import Icon from "$lib/components/common/Icon.svelte";
-    import Help from "$lib/components/widgets/toolbar/Help.svelte";
-    import {Popover} from "flowbite-svelte";
-    import {fade, slide} from "svelte/transition";
+	import { Popover } from 'flowbite-svelte'
+	import { fade } from 'svelte/transition'
+	import Loading from '$lib/components/common/Loading.svelte'
+	import { getApiData } from '$lib/services/getData'
+	import { onMount } from 'svelte'
 
+	export let props
+	let data: any[] = []
+	const baseUrl = import.meta.env.VITE_API_URL
+	const icons = {
+		'fa fa-bar-chart': `/img/icons/bar.png`,
+		'fa fa-area-chart': `/img/icons/area.png`,
+		'fa fa-table': `/img/icons/grid.png`,
+		'fa fa-circle-o-notch': `/img/icons/pie-2.png`,
+		'fa fa-tachometer': `/img/icons/speedometer.png`,
+		'fa fa-id-card-o': `/img/icons/id.png`,
+		'fa fa-map': `/img/icons/map.png`,
+		'fa fa-clock-o': `/img/icons/clock.png`,
+		'far fa-rss': `/img/icons/rss.png`,
+		'fa fa-desktop': `/img/icons/pc.png`,
+		'fa fa-file-image-o': `/img/icons/photo.png`,
+		'fa fa-film': `/img/icons/cinema.png`,
+		'fa fa-youtube': `/img/icons/youtube.png`,
+		'tabler:brand-spotify': `/img/icons/spotify.svg`,
+		undefined: `/img/icons/loading.svg`,
+		loading: `/img/icons/loading.svg`,
+		'fa fa-flickr': `/img/icons/flickr.svg`
+	}
 
-    export let props;
+	async function loadData() {
+		try {
+			const { program_id } = props.currentDashboard
+			const response = await getApiData(
+				`${baseUrl}/api/v2/widgets-template?program_id=${program_id}`,
+				'GET'
+			)
 
+			if (response) data = response
+		} catch (error: any) {
+			console.error('An error occurred:', error.message)
+		}
+	}
 
-    const baseUrl = import.meta.env.VITE_API_URL;
+	function getWidgetCategories(templates) {
+		const uniqueIds = new Set()
 
-    const getTemplateIcon = async (template) => {
-        let rawIcon = template.attributes && template.attributes.icon;
-        if (rawIcon?.includes(" ")) {
-            rawIcon = rawIcon.split(" ")[1];
+		templates.forEach((item) => {
+			if (item.widget_type_id.includes('api-')) {
+				item.widget_type_id = item.widget_type_id.replace('api-', '')
+			}
+			if (item.widget_type_id.includes('-')) {
+				item.widget_type_id = item.widget_type_id.replaceAll('-', ' ')
+			}
 
-        }
-        return rawIcon;
-    };
+			item.widget_type_id = item.widget_type_id
+				.split(' ')
+				.map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+				.join(' ')
 
+			uniqueIds.add(item.widget_type_id)
+		})
 
-    const fetchWidgetTemplates = async () => {
+		const categories = [...uniqueIds].sort()
 
-        try {
-            // Extract program id
-            const {program_id} = props.currentDashboard;
+		return categories
+	}
 
-            const token = $storeUser.token;
-            const resp = await fetch(`${baseUrl}/api/v2/widgets-template?program_id=${program_id}`,
+	let filteredTemplates
+	const handleCategorySearch = async (category, templates) => {
+		filteredTemplates = templates.filter((widget) => widget.widget_type_id === category)
 
-                {
-                    method: "GET",
-                    headers: {
-                        "Authorization": `Bearer ${token}`
-                    }
-                }
-            );
+		return filteredTemplates
+	}
 
-            if (!resp.ok) {
-                const errorMessage = `Failed to fetch data: ${resp.status} - ${resp.statusText}`;
-                throw new Error(errorMessage);
-            }
-
-
-            const data = await resp.json();
-
-
-            return data;
-        } catch (error) {
-            console.error("An error occurred:", error.message);
-            // Handle the error as needed, e.g., display an error message or log it.
-        }
-    };
-
-
-    let widgetTypes;
-    const getWidgetCategories = async (templates) => {
-
-        const uniqueIds = new Set();
-
-        templates.forEach(item => {
-            if (item.widget_type_id.includes("api-")) {
-                item.widget_type_id = item.widget_type_id.replace("api-", "");
-            }
-            if (item.widget_type_id.includes("-")) {
-                item.widget_type_id = item.widget_type_id.replaceAll("-", " ");
-            }
-
-            item.widget_type_id = item.widget_type_id
-                .split(" ")
-                .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-                .join(" ");
-
-
-            uniqueIds.add(item.widget_type_id);
-        });
-
-        const categories = [...uniqueIds].sort();
-
-        console.log(categories);
-
-        return categories;
-
-    };
-
-
-    let filteredTemplates;
-    const handleCategorySearch = async (category, templates) => {
-
-        filteredTemplates = templates.filter((widget) => widget.widget_type_id === category);
-
-        return filteredTemplates;
-    };
-
-
+	onMount(() => {
+		loadData()
+	})
 </script>
 
+{#if data && data.length > 0}
+	<div class="flex">
+		<ul class=" mr-2 h-96 w-72 overflow-x-hidden" data-simplebar="modal-add-widget-category">
+			<div
+				class="group my-1 flex flex-row items-center rounded-lg bg-gray-50 py-1 text-base font-bold text-gray-900 hover:bg-gray-100 hover:shadow dark:bg-gray-600 dark:text-white dark:hover:bg-gray-500"
+			>
+				<!-- svelte-ignore a11y-invalid-attribute -->
+				<a
+					href="#"
+					class="btn ml-3 flex-1 flex-wrap"
+					on:click={() => {
+						filteredTemplates = null
+					}}
+				>
+					All
+				</a>
+			</div>
+			{#each getWidgetCategories(data) as category}
+				<div
+					class="group my-1 flex flex-row items-center rounded-lg bg-gray-50 py-1 text-base font-bold text-gray-900 hover:bg-gray-100 hover:shadow dark:bg-gray-600 dark:text-white dark:hover:bg-gray-500"
+				>
+					<!-- svelte-ignore a11y-invalid-attribute -->
+					<a
+						href="#"
+						class="btn ml-3 min-w-max flex-1 flex-wrap"
+						on:click={() => handleCategorySearch(category, data)}
+					>
+						{category}
+						<button />
+					</a>
+				</div>
+			{/each}
+		</ul>
+		<ul class="h-96 w-full overflow-y-auto overflow-x-hidden">
+			{#if filteredTemplates}
+				{#each filteredTemplates as widget}
+					{#if widget.title}
+						<!-- svelte-ignore a11y-invalid-attribute -->
+						<a href="#" on:click={() => props.handleWidgetInsert(widget.uid, widget.widget_id)}>
+							<div
+								class="group my-1 flex flex-row items-center rounded-lg bg-gray-50 p-2.5 text-base font-bold text-gray-900 hover:bg-gray-100 hover:shadow dark:bg-gray-600 dark:text-white dark:hover:bg-gray-500"
+							>
+								<img src={icons[widget.attributes.icon]} alt="" width="20" />
+								<span class="ml-3 flex-1 flex-wrap">{widget.title}</span>
 
-{#await fetchWidgetTemplates()}
-    <Spinner fullScreen={false}/>
+								<Popover class="w-64 text-sm " transition={fade} params={{ duration: 200 }}>
+									{#if widget.description}
+										{widget.description}
+									{:else}
+										{widget.title}
+									{/if}
+								</Popover>
+							</div>
+						</a>
+					{/if}
+				{/each}
+			{:else}
+				{#each data as widget}
+					{#if widget.title}
+						<!-- svelte-ignore a11y-invalid-attribute -->
+						<a href="#" on:click={() => props.handleWidgetInsert(widget.uid, widget.widget_id)}>
+							<div
+								class="group my-1 flex flex-row items-center rounded-lg bg-gray-50 p-2.5 text-base font-bold text-gray-900 hover:bg-gray-100 hover:shadow dark:bg-gray-600 dark:text-white dark:hover:bg-gray-500"
+							>
+								<img src={icons[widget.attributes.icon]} alt="" width="20" />
+								<!-- {widget.attributes.icon} -->
+								<span class="ml-3 flex-1 flex-wrap">{widget.title}</span>
 
-{:then widgets}
-
-
-    <div class="flex space-x-4">
-        <ul class="my-4 space-y-3">
-
-
-            {#await getWidgetCategories(widgets) then categories}
-
-                <div
-                        class="flex flex-row items-center p-3 text-base font-bold text-gray-900 bg-gray-50 rounded-lg hover:bg-gray-100 group hover:shadow dark:bg-gray-600 dark:hover:bg-gray-500 dark:text-white">
-                    <a href="#" class="flex-1 ml-3 flex-wrap btn" on:click={() => {filteredTemplates = null}}>
-                        All
-                    </a>
-
-                </div>
-                {#each categories as category}
-
-                    <div
-                            class="flex flex-row items-center p-3 text-base font-bold text-gray-900 bg-gray-50 rounded-lg hover:bg-gray-100 group hover:shadow dark:bg-gray-600 dark:hover:bg-gray-500 dark:text-white">
-
-
-                        <a href="#" class="flex-1 ml-3 flex-wrap btn min-w-max"
-                           on:click={() => handleCategorySearch(category, widgets)}>
-                            {category}
-                            <a/>
-
-
-                    </div>
-
-
-                {/each}
-            {/await}
-
-        </ul>
-        <ul class="my-4 space-y-3">
-
-            {#if filteredTemplates}
-                {#each filteredTemplates as widget}
-                    {#if (widget.title)}
-                        <div
-                                class="flex flex-row items-center p-3 text-base font-bold text-gray-900 bg-gray-50 rounded-lg hover:bg-gray-100 group hover:shadow dark:bg-gray-600 dark:hover:bg-gray-500 dark:text-white">
-                            {#await getTemplateIcon(widget) then icon}
-                            <span style="color:{widget.attributes.fg_color}">
-                            <Icon icon={icon} size="25px"/>
-                            </span>
-                            {/await}
-                            <button class="flex-1 ml-3 flex-wrap"
-                                    on:click={() => props.handleWidgetInsert(widget.uid, widget.widget_id)}>{widget.title}</button>
-
-                        </div>
-                    {/if}
-                {/each}
-
-            {:else }
-                {#each widgets as widget}
-                    {#if (widget.title)}
-                        <div
-                                class="flex flex-row items-center p-3 text-base font-bold text-gray-900 bg-gray-50 rounded-lg hover:bg-gray-100 group hover:shadow dark:bg-gray-600 dark:hover:bg-gray-500 dark:text-white">
-                            {#await getTemplateIcon(widget) then icon}
-                            <span style="color:{widget.attributes.fg_color}">
-                            <Icon icon={icon} size="25px"/>
-                            </span>
-                            {/await}
-                            <button class="flex-1 ml-3 flex-wrap" id="template-button"
-                                    on:click={() => props.handleWidgetInsert(widget.uid, widget.widget_id)}>{widget.title}</button>
-
-                                <Popover class="w-64 text-sm font-light " placement="top"
-                                       transition={fade} params={{ duration: 200 }}>
-                            {#if widget.description}
-                                    {widget.description}
-                            {:else}
-                                {widget.title}
-                            {/if}
-                                </Popover>
-
-                        </div>
-                    {/if}
-                {/each}
-            {/if}
-
-        </ul>
-
-    </div>
-
-{/await}
+								<Popover class="w-64 text-sm " transition={fade} params={{ duration: 200 }}>
+									{#if widget.description}
+										{widget.description}
+									{:else}
+										{widget.title}
+									{/if}
+								</Popover>
+							</div>
+						</a>
+					{/if}
+				{/each}
+			{/if}
+		</ul>
+	</div>{:else}
+	<Loading />
+{/if}
