@@ -13,7 +13,13 @@
 </script>
 
 {#if $openModal}
-	<Modal title={$openModal.props.title} size="xs" bind:open={$openModal} autoclose outsideclose>
+	<Modal
+		title={$openModal.props.title}
+		size={$openModal.props?.size || 'xs'}
+		bind:open={$openModal}
+		autoclose
+		outsideclose
+	>
 		<p class="text-sm font-normal text-gray-500 dark:text-gray-400" />
 		<span class="my-4 space-y-3">
 			{#await Thing()}
