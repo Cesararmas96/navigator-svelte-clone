@@ -22,11 +22,7 @@ export const buildImageUrls = (data, rootLink) => {
 	const sidebarUrl = `${rootLink}${sidebar}`
 
 	return {
-		slideshowCarouselData: slideshowUrls.map((url) => ({
-			original: url,
-			thumbnailClass: 'hidden',
-			loading: 'lazy'
-		})),
+		slideshowCarouselData: slideshowUrls,
 		client,
 		authMethods,
 		favIconUrl,
@@ -36,20 +32,6 @@ export const buildImageUrls = (data, rootLink) => {
 		sidebarUrl,
 		slideshow: slideshowUrls
 	}
-}
-
-export const fetchCompanyData = async (subdomain, urlBase) => {
-	//
-	const rawData = await fetch(`${urlBase}/api/v1/clients?subdomain_prefix=${subdomain}`)
-	const [data] = await rawData.json()
-	return data
-}
-
-// Import Login methods helpers
-export const fetchTotalAuthMethods = async (urlBase) => {
-	// Gets all auth methods allowed by Navigator
-	const response = await fetch(`${urlBase}/api/v1/auth/methods`)
-	return await response.json()
 }
 
 export const filterAuthMethods = (totalAuthMethods, authMethods) => {

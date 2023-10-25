@@ -49,7 +49,7 @@ export async function getData(
 
 		options.headers['Origin'] = 'https://navigator.com'
 		// Add the authentication token if authenticated
-		if (loggedIn) options.headers.authorization = options.headers.authorization || null
+		if (loggedIn && options.headers.authorization) options.headers.authorization = options.headers.authorization || null
 
 		const headers = new Headers(options.headers)
 
