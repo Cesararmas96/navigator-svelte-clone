@@ -283,6 +283,7 @@
 	let showInsertWidgetItem = false
 	let insertWidgetCallback: any
 	const handleWidgetInsert = (e: any) => {
+
 		showInsertWidgetItem = true
 		insertWidgetCallback = e.detail
 	}
@@ -325,7 +326,7 @@
 										{#if user.user_id === userId}
 											<DropdownItem
 												defaultClass="flex flex-row font-medium py-2 pl-2 pr-4 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"
-												on:click={insertWidgetCallback}
+												on:click={insertWidget}
 											>
 												<Icon icon="zondicons:add-outline" size="18" classes="mr-1" />
 												Insert Widget
