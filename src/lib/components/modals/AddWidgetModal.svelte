@@ -8,6 +8,7 @@
 	export let props
 	let data: any[] = []
 	const baseUrl = import.meta.env.VITE_API_URL
+	let active = 'All'
 	const icons = {
 		'fa fa-bar-chart': `/img/icons/bar.png`,
 		'fa fa-area-chart': `/img/icons/area.png`,
@@ -19,10 +20,13 @@
 		'fa fa-clock-o': `/img/icons/clock.png`,
 		'far fa-rss': `/img/icons/rss.png`,
 		'fa fa-desktop': `/img/icons/pc.png`,
+		'material-symbols:iframe': `/img/icons/pc.png`,
 		'fa fa-file-image-o': `/img/icons/photo.png`,
 		'fa fa-film': `/img/icons/cinema.png`,
 		'fa fa-youtube': `/img/icons/youtube.png`,
 		'tabler:brand-spotify': `/img/icons/spotify.svg`,
+		'tabler:carousel-horizontal': `/img/icons/gallery.png`,
+		'tabler:wash-dry-shade': `/img/icons/content.png`,
 		undefined: `/img/icons/loading.svg`,
 		loading: `/img/icons/loading.svg`,
 		'fa fa-flickr': `/img/icons/flickr.svg`
@@ -69,8 +73,22 @@
 	let filteredTemplates
 	const handleCategorySearch = async (category, templates) => {
 		filteredTemplates = templates.filter((widget) => widget.widget_type_id === category)
-
+		searchTerm = ''
+		active = category
 		return filteredTemplates
+	}
+
+	let searchTerm = ''
+	function filterCategories() {
+		searchTerm = searchTerm.toLowerCase()
+		filteredTemplates = data.filter((template) => {
+			return template.widget_name.toLowerCase().includes(searchTerm)
+		})
+
+		if (searchTerm === '') {
+			filteredTemplates = null
+		}
+		active = 'All'
 	}
 
 	onMount(() => {
@@ -79,10 +97,23 @@
 </script>
 
 {#if data && data.length > 0}
+	<div class="flex flex-row justify-between">
+		<div />
+		<input
+			type="text"
+			class="mb-4 h-8 rounded-md bg-white/75 text-center text-base placeholder:text-muted dark:bg-dark-100/50"
+			placeholder="Search template..."
+			bind:value={searchTerm}
+			on:input={filterCategories}
+		/>
+	</div>
+
 	<div class="flex">
 		<ul class=" mr-2 h-96 w-72 overflow-x-hidden" data-simplebar="modal-add-widget-category">
 			<div
-				class="group my-1 flex flex-row items-center rounded-lg bg-gray-50 py-1 text-base font-bold text-gray-900 hover:bg-gray-100 hover:shadow dark:bg-gray-600 dark:text-white dark:hover:bg-gray-500"
+				class="group my-1 flex {active === 'All'
+					? 'bg-primary-500 text-white hover:bg-primary-600 dark:bg-primary-600  dark:hover:bg-primary-500'
+					: 'bg-gray-50 text-gray-900 hover:bg-gray-100 dark:bg-gray-600 dark:text-white dark:hover:bg-gray-500'} flex-row items-center rounded-lg py-1 text-base font-bold hover:shadow"
 			>
 				<!-- svelte-ignore a11y-invalid-attribute -->
 				<a
@@ -90,6 +121,7 @@
 					class="btn ml-3 flex-1 flex-wrap"
 					on:click={() => {
 						filteredTemplates = null
+						active = 'All'
 					}}
 				>
 					All
@@ -97,8 +129,11 @@
 			</div>
 			{#each getWidgetCategories(data) as category}
 				<div
-					class="group my-1 flex flex-row items-center rounded-lg bg-gray-50 py-1 text-base font-bold text-gray-900 hover:bg-gray-100 hover:shadow dark:bg-gray-600 dark:text-white dark:hover:bg-gray-500"
+					class="group my-1 flex {active === category
+						? 'bg-primary-500 text-white hover:bg-primary-600 dark:bg-primary-600  dark:hover:bg-primary-500'
+						: 'bg-gray-50 text-gray-900 hover:bg-gray-100 dark:bg-gray-600 dark:text-white dark:hover:bg-gray-500'} flex-row items-center rounded-lg py-1 text-base font-bold hover:shadow"
 				>
+					<!-- class:bg-primary-500={active === category} -->
 					<!-- svelte-ignore a11y-invalid-attribute -->
 					<a
 						href="#"
@@ -112,7 +147,18 @@
 			{/each}
 		</ul>
 		<ul class="h-96 w-full overflow-y-auto overflow-x-hidden">
-			{#if filteredTemplates}
+			{#if filteredTemplates && filteredTemplates.length === 0}
+				<div class="flex p-10">
+					<div class="card m-auto w-full max-w-sm p-8 text-center">
+						<img class="mb-4 inline-block w-16" src="/img/misc/coming-soon.svg" alt="" />
+						<h5 class="mb-3 text-lg font-bold text-heading">Not found!</h5>
+						<div class="">
+							We are sorry that the template widget you are looking for does not exist. Please check
+							and try again.
+						</div>
+					</div>
+				</div>
+			{:else if filteredTemplates}
 				{#each filteredTemplates as widget}
 					{#if widget.title}
 						<!-- svelte-ignore a11y-invalid-attribute -->
@@ -120,6 +166,8 @@
 							<div
 								class="group my-1 flex flex-row items-center rounded-lg bg-gray-50 p-2.5 text-base font-bold text-gray-900 hover:bg-gray-100 hover:shadow dark:bg-gray-600 dark:text-white dark:hover:bg-gray-500"
 							>
+								<!-- {widget.attributes.icon} -->
+
 								<img src={icons[widget.attributes.icon]} alt="" width="20" />
 								<span class="ml-3 flex-1 flex-wrap">{widget.title}</span>
 

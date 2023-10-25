@@ -19,9 +19,9 @@
 		bind:open={$openModal}
 		autoclose
 		outsideclose
+		defaultClass="relative flex flex-col border rounded-lg	"
 	>
-		<p class="text-sm font-normal text-gray-500 dark:text-gray-400" />
-		<span class="my-4 space-y-3">
+		<span class="my-4">
 			{#await Thing()}
 				Loading...
 			{:then component}
