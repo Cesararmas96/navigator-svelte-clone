@@ -24,10 +24,9 @@
 
     const fetchWidgetTemplates = async () => {
 
-
         try {
             // Extract program id
-            const {program_id} = props.dashboard;
+            const {program_id} = props.currentDashboard;
 
             const token = $storeUser.token;
             const resp = await fetch(`${baseUrl}/api/v2/widgets-template?program_id=${program_id}`,
@@ -80,6 +79,8 @@
         });
 
         const categories = [...uniqueIds].sort();
+
+        console.log(categories);
 
         return categories;
 
