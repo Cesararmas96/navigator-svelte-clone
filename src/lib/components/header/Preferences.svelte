@@ -43,7 +43,7 @@
 	aria-expanded="false"
 	class="icon relative grid h-9 w-9 place-content-center rounded text-2xl font-light hover:bg-white/10 aria-expanded:bg-white/20"
 >
-	<Icon icon="tabler:settings" size="20px" />
+	<Icon icon="line-md:cog-loop" size="20px" />
 </button>
 
 <Dropdown
