@@ -52,11 +52,7 @@
 	class="flex grid h-full grid-cols-3 flex-col gap-3 p-4"
 >
 	<div slot="header" class="py-2 text-center font-bold">Preferences</div>
-	<PreferenceItem
-		name="Toggle Fullscreen"
-		icon="icon-park:full-screen-one"
-		id="fullscreen-toggle"
-	/>
+	<PreferenceItem name="Toggle Fullscreen" icon="tabler:arrows-maximize" id="fullscreen-toggle" />
 	<PreferenceItem
 		name="Toggle Dark Mode"
 		icon={$themeMode === 'dark' ? 'tabler:sun' : 'tabler:moon'}
@@ -64,5 +60,7 @@
 		on:click={handleDarkMode}
 	/>
 	<PreferenceItem name="Adjust Page Zoom" icon="fluent-mdl2:zoom-to-fit" id="adjust-page-zoom" />
-	<ThemeColorPicker />
+	{#if $themeMode !== 'dark'}
+		<ThemeColorPicker />
+	{/if}
 </Dropdown>

@@ -7,7 +7,10 @@ declare global {
 			theme: {
 				mode: string;
 				color: string;
-			};
+			},
+			module: any, 
+			user: any,
+			token: string
 		}
 		// interface Error {}
 		// interface Locals {}

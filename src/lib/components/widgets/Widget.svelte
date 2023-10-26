@@ -1,13 +1,13 @@
 <script lang="ts">
 	import WidgetHeader from './Header.svelte'
-	import WidgetFooter from './Footer.svelte'
 	import WidgetSettings from './toolbar/Settings.svelte'
 	import ContentTop from './ContentTop.svelte'
 	import ContentBottom from './ContentBottom.svelte'
 	import Content from './Content.svelte'
-	import { createEventDispatcher, getContext } from 'svelte'
+	import { createEventDispatcher } from 'svelte'
 	import type { Writable } from 'svelte/store'
 	import Instances from './Instances.svelte'
+	import Spinner from '../common/Spinner.svelte'
 
 	const dispatch = createEventDispatcher()
 
@@ -20,28 +20,34 @@
 	let header: boolean
 	let footer: boolean
 
-	const widget = getContext<Writable<any>>('widget')
+	export let widget: Writable<any>
 
 	$: {
 		header = $widget?.params?.settings?.header?.show
 		footer = $widget?.params?.settings?.footer?.show
 	}
 
+	const handleInstanceResize = (event: Event) => {
+		$widget.instance_loading = false
+		dispatch('handleInstanceResize', event)
+	}
+
 	$: scrollable = !$widget.temp ? $widget?.params?.settings?.general?.scrollable : false
 </script>
 
 <div
-	id={`widget-${$widget.uid}`}
-	class:h-[calc(100%-2rem)]={!$widget.temp && !$widget.collapse}
-	class:overflow-hidden={!scrollableBox}
-	class:overflow-y-auto={scrollableBox}
+	id={`widget-${$widget.widget_id}`}
+	class:h-[calc(100%-0.5rem)]={!$widget.temp && !$widget.collapse}
 	class:absolute={!$widget.temp && !$widget.collapse}
 	class:-ml-1={!$widget.temp && !$widget.collapse}
 	class:p-1={!$widget.temp && !$widget.collapse}
 	class="w-full"
 >
+	{#if $widget.loading}
+		<Spinner fullScreen={false} />
+	{/if}
 	<!-- Widget Header -->
-	<div id={`widget-header-${$widget.uid}`} class:mt-5={$widget.temp} class="h-8">
+	<div id={`widget-header-${$widget.widget_id}`} class:mt-1={$widget.temp} class="min-h-8">
 		{#if !fixed && header}
 			<WidgetHeader {isToolbarVisible} />
 		{:else if isToolbarVisible && isOwner}
@@ -59,33 +65,30 @@
 
 	<!-- Widget Content -->
 	<div
-		id={`widget-main-content-${$widget.uid}`}
+		id={`widget-main-content-${$widget.widget_id}`}
+		class:overflow-hidden={!scrollableBox}
+		class:overflow-y-auto={scrollableBox}
 		class:hidden={$widget.collapse}
-		class="widget-content relative flex w-full cursor-auto space-y-4 rounded-md text-sm"
+		class="widget-content relative flex w-full cursor-auto flex-col space-y-4 rounded-md text-sm"
 		on:pointerdown={(event) => {
-			event.preventDefault()
+			// event.preventDefault()
 			event.stopPropagation()
 		}}
 	>
-		<div class="h-full w-full">
-			<ContentTop widget={$widget} />
+		<div class="w-full">
+			<ContentTop {widget} />
 
-			<Content widget={$widget} />
+			<Content {widget} />
 
-			<ContentBottom widget={$widget} />
+			<ContentBottom {widget} />
 		</div>
+
+		<Instances
+			{widget}
+			{isToolbarVisible}
+			{fixed}
+			{isOwner}
+			on:handleInstanceResize={handleInstanceResize}
+		/>
 	</div>
-	<Instances widget={$widget} {isToolbarVisible} {fixed} {isOwner} on:handleInstanceResize />
 </div>
-<!-- Widget Footer -->
-{#if !$widget.temp}
-	<div
-		class:hidden={$widget.collapse}
-		id={`widget-footer-${$widget.uid}`}
-		class="absolute bottom-0 -ml-1 h-8 w-full p-1"
-	>
-		{#if !fixed && footer}
-			<WidgetFooter {isToolbarVisible} />
-		{/if}
-	</div>
-{/if}

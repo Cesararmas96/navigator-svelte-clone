@@ -4,7 +4,7 @@ import { writable } from "svelte/store";
 export const toasts = writable<Toast[]>([]);
 
 export const sendNotification = (toast: Toast) => {
-  toast.dismissable = true
+  toast.dismissable = false
   toasts.update((all) => [{...toast }, ...all]);
   if (toast.timeout) setTimeout(() => dismissNotification(toast.id), toast.timeout);
 };
@@ -33,7 +33,8 @@ export const sendWarningNotification = (message: string, timeout: number = 3000)
   });
 }
 
-export const sendErrorNotification = (message: string, timeout: number = 3000) => {
+export const sendErrorNotification = (error: any, timeout: number = 3000) => {
+  let message = error.message || error
   sendNotification({
     id: generateId(),
     type: ToastType.ERROR,

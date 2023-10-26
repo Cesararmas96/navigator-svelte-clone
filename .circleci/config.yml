@@ -222,7 +222,7 @@ workflows:
           name: "deploy-navigator-svelte-production"
           kubeconfig-secret: "troc-services-kubeconfig"
           env-tag: "production"
-          vpn-target: "https://redash.internal-dev.trocdigital.io"
+          vpn-target: "https://redash.internal.trocdigital.io"
           context: 
             - navigator-dev
           requires:

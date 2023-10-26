@@ -2,8 +2,10 @@
 	import Module from '$lib/components/modules/Module.svelte'
 	import { page } from '$app/stores'
 	import { storeModules } from '$lib/stores/modules'
+	import { storeDashboards } from '$lib/stores/dashboards.js'
+	import { isAuthenticated } from '$lib/stores'
 
-	let trocModule: any
+	let trocModule
 
 	$: {
 		trocModule = $storeModules.find((item) => {
@@ -11,6 +13,7 @@
 			return item.module_name === $page.url.pathname.split('/')[index]
 		})
 	}
+	$: isAuthenticated
 </script>
 
-<Module {trocModule} />
+<Module {trocModule} dashboards={$storeDashboards} />

@@ -1,11 +1,12 @@
 <script lang="ts">
+	import { modal } from '$lib/helpers/common/modal'
 	import { Modal } from 'flowbite-svelte'
-	import { getContext } from 'svelte'
+	import { onDestroy } from 'svelte'
 	import type { Writable } from 'svelte/store'
 
-	const openModal = getContext<Writable<any>>('modal')
+	// const openModal = getContext<Writable<any>>('modal')
+	const openModal: Writable<any> = modal
 	let Thing: any
-
 	$: Thing = async () => {
 		return (await import(`../modals/${$openModal.component}.svelte`)).default
 	}
@@ -13,20 +14,19 @@
 
 {#if $openModal}
 	<Modal
-		title={$openModal.title}
-		size="xs"
+		title={$openModal.props.title}
+		size={$openModal.props?.size || 'xs'}
 		bind:open={$openModal}
-		on:close={() => ($openModal = null)}
+		autoclose
+		outsideclose
+		defaultClass="relative flex flex-col border rounded-lg	"
 	>
-		<p class="text-sm font-normal text-gray-500 dark:text-gray-400" />
-		<span class="my-4 space-y-3">
+		<span class="my-4">
 			{#await Thing()}
 				Loading...
 			{:then component}
-				<svelte:component this={component} />
+				<svelte:component this={component} props={$openModal.props} />
 			{/await}
 		</span>
 	</Modal>
 {/if}
-
-<!-- {Thing} -->

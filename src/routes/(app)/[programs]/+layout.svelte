@@ -2,19 +2,20 @@
 	import Sidebar from '$lib/components/layouts/Sidebar.svelte'
 	import Breadcrumb from '$lib/components/layouts/Breadcrumb.svelte'
 	import Header from '$lib/components/layouts/Header.svelte'
-	import { storeDashboards } from '$lib/stores/dashboards.js'
-	import { sidebarMin } from '$lib/stores/sidebar.js'
-	import dashboardsJson from '../../../data/dashboards.json'
-	import widgetsJson from '../../../data/json-widget.json'
-	import { storeModules } from '$lib/stores/modules'
-	import { storeWidgets } from '$lib/stores/widgets'
 	import Footer from '$lib/components/layouts/Footer.svelte'
+	import { sidebarMin } from '$lib/stores/sidebar.js'
+	import { storeDashboards } from '$lib/stores/dashboards.js'
+	import { storeModule, storeModules } from '$lib/stores/modules'
+	import { storePrograms } from '$lib/stores/programs.js'
+	import { storeUser } from '$lib/stores/session.js'
 
 	export let data
 
 	$storeModules = data.menu
-	storeDashboards.set(dashboardsJson)
-	storeWidgets.set(widgetsJson)
+	$storeModule = data.trocModule
+	$storeDashboards = data.dashboards
+	$storePrograms = data.programs
+	$storeUser = data.user
 
 	let width: number
 </script>

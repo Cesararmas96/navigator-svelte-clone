@@ -1,7 +1,6 @@
 <script lang="ts">
 	import Footer from '$lib/components/layouts/Footer.svelte'
 	import Header from '$lib/components/layouts/Header.svelte'
-	import { SpeedDial, SpeedDialButton } from 'flowbite-svelte'
 
 	let width: number
 </script>

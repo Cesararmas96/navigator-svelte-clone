@@ -5,7 +5,7 @@
 	export let size: string = '14px'
 	export let classes: string = ''
 
-	icon = icon.indexOf('fa fa-') === 0 ? iconEquivalences[icon] : icon
+	$: icon = icon?.indexOf('fa fa-') === 0 ? iconEquivalences[icon] : icon
 </script>
 
 <iconify-icon {icon} height={size} class={classes} />

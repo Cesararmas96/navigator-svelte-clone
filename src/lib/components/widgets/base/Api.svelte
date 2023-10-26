@@ -4,21 +4,25 @@
 	import { getApiData } from '$lib/services/getData'
 	import { variablesOperationalProgram } from '$lib/stores/programs'
 	import { getContext } from 'svelte'
+	import type { Writable } from 'svelte/store'
+	import { addWidgetAction } from '$lib/helpers'
+	import { sendErrorNotification } from '$lib/stores/toast'
 
-	let widget: any = getContext('widget')
+	export let widget: Writable<any>
 	let widgetActions: any = getContext('widgetActions')
 
-	const urlBase = import.meta.env.VITE_API_URL
-	const slug = $widget.query_slug.slug
+	const slug = $widget.query_slug?.slug || $widget.params.query?.slug
 	const conditionsRaw = $widget.conditions
 	const method = $widget.params?.ajax?.method || $widget.params?.ajax?.type
 	let data: any
 
 	async function fetchData() {
-		// console.log('SLUG', slug)
 		const conditions = buildConditions()
-		// console.log('CONDITIONS TOTAL', conditions)
-		data = getApiData(`${urlBase}/api/v2/services/queries/${slug}`, method, conditions)
+		try {
+			data = getApiData(slug, method, conditions)
+		} catch (error) {
+			sendErrorNotification(error)
+		}
 	}
 
 	function buildConditions() {
@@ -61,7 +65,8 @@
 					break
 				case 'CURRENT_DATE':
 				case 'ENTRY_DATE':
-					validateDate = moment(entryDate).format('YYYY-MM-DD')
+					// validateDate = moment(entryDate).format('YYYY-MM-DD')
+					validateDate = '2023-09-28'
 					break
 				case 'YESTERDAY':
 					validateDate = moment(entryDate).subtract(1, 'days').format('YYYY-MM-DD')
@@ -70,7 +75,8 @@
 					validateDate = moment(entryDate).subtract(1, 'month').format('YYYY-MM-DD')
 					break
 				case 'FDOM':
-					validateDate = moment(entryDate).startOf('month').format('YYYY-MM-DD')
+					// validateDate = moment(entryDate).startOf('month').format('YYYY-MM-DD')
+					validateDate = '2023-09-01'
 					break
 				case 'FDOPW':
 					if (moment(entryDate).isSame(moment().day(6), 'd')) {
@@ -208,38 +214,30 @@
 		})
 	}
 
-	if (!$widgetActions.find((action: any) => action.name === 'reloadFetchData')) {
-		const actions = $widgetActions
-		actions.push({
-			name: 'reloadFetchData',
-			action: () => fetchData()
-		})
-		$widgetActions = actions
+	addWidgetAction(widgetActions, {
+		name: 'reloadFetchData',
+		action: () => fetchRefreshData()
+	})
+
+	const fetchRefreshData = () => {
+		$widget.data = null
+		$widget.fetch = false
 	}
 
-	if (!$widgetActions.find((action: any) => action.name === 'exportData')) {
-		const actions = $widgetActions
-		actions.push({
-			name: 'exportData'
-			// action: () => fetchData()
-		})
-		$widgetActions = actions
+	$: if (!$widget.fetch) {
+		if (!$widget.data) {
+			fetchData()
+		} else {
+			data = $widget.data // $dataStore
+		}
+		$widget.fetch = true
 	}
-
-	if (!$widgetActions.find((action: any) => action.name === 'filterData')) {
-		const actions = $widgetActions
-		actions.push({
-			name: 'filterData'
-			// action: () => fetchData()
-		})
-		$widgetActions = actions
-	}
-
-	fetchData()
 </script>
 
 {#await data}
 	<Loading />
 {:then data}
 	<slot {data} />
+{:catch error}
+	{sendErrorNotification(error)}
 {/await}

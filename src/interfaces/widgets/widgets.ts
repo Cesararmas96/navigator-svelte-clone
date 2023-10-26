@@ -1,11 +1,10 @@
 export interface Widget {
-    id: number;
-    uid: string;
+    widget_id: string;
     description: null | string;
     widget_slug: null;
     dashboard_id: number;
     widget_name: string;
-    widget_id: number;
+    widget_id: string;
     title: string;
     url: null | string;
     query_slug: QuerySlug;

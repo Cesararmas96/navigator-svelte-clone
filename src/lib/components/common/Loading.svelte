@@ -1,5 +1,6 @@
 <script>
-	import { CardPlaceholder } from 'flowbite-svelte'
+	import { CardPlaceholder, ImagePlaceholder, Skeleton, TextPlaceholder } from 'flowbite-svelte'
 </script>
 
-<CardPlaceholder />
+<!-- <ImagePlaceholder imgHeight={'10'} class="" /> -->
+<TextPlaceholder class="mt-2" />

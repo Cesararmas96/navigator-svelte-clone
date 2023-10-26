@@ -21,10 +21,10 @@
 		<button
 			id="sidebar-toggle"
 			type="button"
-			class="-ml-2 mr-2 grid h-9 w-9 place-content-center rounded font-light hover:bg-white/10 dark:hover:bg-dark-100 xl:hidden"
+			class="btn-sidebar-toggle -ml-2 mr-2 grid h-9 w-9 place-content-center rounded font-light hover:bg-white/10 dark:hover:bg-dark-100 xl:hidden"
 			on:click={toggleDrawer}
 		>
-			<Icon icon="tabler:layout-sidebar" size="20px" />
+			<Icon icon="tabler:layout-sidebar" size="20px" classes="btn-sidebar-toggle" />
 		</button>
 		<NavBrand href="/home" class="">
 			<span class="ml-4 self-center whitespace-nowrap text-xl font-semibold dark:text-white">
@@ -33,7 +33,7 @@
 		</NavBrand>
 	</div>
 	<!-- Search -->
-	<Search />
+	<!-- <Search /> -->
 
 	<i class="ml-auto" />
 
@@ -55,160 +55,10 @@
 			</button>
 		</li>
 
-		<!-- Notifications -->
-		<!-- <li class="dropdown-header mx-1" data-tb-dropdown>
-			<button
-				type="button"
-				data-tb-dropdown-toggle
-				aria-expanded="false"
-				class="icon relative grid h-9 w-9 place-content-center rounded text-2xl font-light hover:bg-white/10 aria-expanded:bg-white/20"
-			>
-				notifications
-
-				<include src="./partials/misc/_notification-ping.html" />
-			</button>
-
-			<div data-tb-dropdown-menu tabindex="0">
-				<div class="flex h-full flex-col">
-					<div class="flex items-center px-5 py-2">
-						<div class="font-bold text-heading">Notifications</div>
-						<nav class="-mr-1 ml-auto flex items-center">
-							<button type="button" class="icon btn hover:bg-light-100">done_all</button>
-							<button type="button" class="icon btn hover:bg-light-100">tune</button>
-							<button type="button" class="icon btn hover:bg-light-100">launch</button>
-						</nav>
-					</div>
-
-					<div class="mb-1 flex-1 p-1 pt-0" data-simplebar>
-						<div id="top-nav-notification" />
-					</div>
-				</div>
-			</div>
-		</li> -->
-
-		<!-- Messages -->
-		<!-- <li class="dropdown-header mx-1" data-tb-dropdown>
-			<button
-				type="button"
-				data-tb-dropdown-toggle
-				aria-expanded="false"
-				class="icon relative grid h-9 w-9 place-content-center rounded text-2xl font-light hover:bg-white/10 aria-expanded:bg-white/20"
-			>
-				chat
-
-				<include src="./partials/misc/_notification-ping.html" />
-			</button>
-
-			<div data-tb-dropdown-menu tabindex="0">
-				<div class="flex h-full flex-col">
-					<div class="flex items-center px-5 py-2">
-						<div class="font-bold text-heading">Messages</div>
-						<nav class="-mr-1 ml-auto flex items-center">
-							<button type="button" class="icon btn hover:bg-light-100">add_circle_outline</button>
-							<button type="button" class="icon btn hover:bg-light-100">call</button>
-							<button type="button" class="icon btn hover:bg-light-100">fullscreen</button>
-						</nav>
-					</div>
-
-					<div class="flex-1 p-1 pt-0" data-simplebar>
-						<div id="top-nav-message" />
-					</div>
-				</div>
-			</div>
-		</li> -->
-
-		<!-- Tasks -->
-		<!-- <li class="dropdown-header mx-1 hidden sm:block" data-tb-dropdown>
-			<button
-				type="button"
-				data-tb-dropdown-toggle
-				aria-expanded="false"
-				class="icon relative grid h-9 w-9 place-content-center rounded text-2xl font-light hover:bg-white/10 aria-expanded:bg-white/20"
-			>
-				check_circle
-			</button>
-
-			<div data-tb-dropdown-menu tabindex="0">
-				<div class="flex h-full flex-col">
-					<div class="mb-3 flex items-center px-5 py-2">
-						<div class="font-bold text-heading">Tasks</div>
-						<nav class="-mr-1 ml-auto flex items-center">
-							<button type="button" class="icon btn hover:bg-light-100">task_alt</button>
-							<button type="button" class="icon btn hover:bg-light-100">launch</button>
-						</nav>
-					</div>
-
-					<div class="flex-1 p-1 pt-0" data-simplebar>
-						<div id="top-nav-task" />
-					</div>
-				</div>
-			</div>
-		</li> -->
-
-		<!-- Shortcuts -->
-		<!-- <li class="dropdown-header mx-1 hidden sm:block" data-tb-dropdown>
-			<button
-				type="button"
-				data-tb-dropdown-toggle
-				aria-expanded="false"
-				class="icon relative grid h-9 w-9 place-content-center rounded text-2xl font-light hover:bg-white/10 aria-expanded:bg-white/20"
-			>
-				apps
-			</button>
-
-			<div data-tb-dropdown-menu tabindex="0">
-				<div class="flex h-full flex-col">
-					<div class="flex items-center px-5 py-2">
-						<div class="font-bold text-heading">App Shortcuts</div>
-						<nav class="-mr-1 ml-auto flex items-center">
-							<button type="button" class="icon btn hover:bg-light-100">add_circle_outline</button>
-							<button type="button" class="icon btn hover:bg-light-100">delete</button>
-						</nav>
-					</div>
-
-					<div class="flex-1 p-5 pt-3" data-simplebar>
-						<div id="top-nav-shortcut" class="grid grid-cols-3 gap-3" />
-					</div>
-				</div>
-			</div>
-		</li> -->
-
 		<!-- Preferences -->
 		<li id="preferences" class="dropdown-header mx-1 hidden sm:block">
 			<Preferences />
 		</li>
-
-		<!-- Language -->
-		<!-- <li class="relative mx-1 hidden md:block" data-tb-dropdown>
-			<button
-				type="button"
-				data-tb-dropdown-toggle
-				aria-expanded="false"
-				title="Language"
-				class="icon grid h-9 w-9 place-content-center rounded hover:bg-white/10 aria-expanded:bg-white/20"
-			>
-				<img class="h-4 rounded-sm" src="../assets/img/flags/england.svg" alt="" />
-			</button>
-
-			<div class="w-32 rounded-tr p-1" data-tb-dropdown-menu tabindex="0">
-				<a href="" class="flex items-center" data-tb-dropdown-item>
-					<img class="mr-3 h-5 rounded-sm" src="../assets/img/flags/china.svg" alt="" />
-					Chinese
-				</a>
-				<a href="" class="flex items-center" data-tb-dropdown-item>
-					<img class="mr-3 h-5 rounded-sm" src="../assets/img/flags/france.svg" alt="" />
-					France
-				</a>
-				<a href="" class="flex items-center" data-tb-dropdown-item>
-					<img class="mr-3 h-5 rounded-sm" src="../assets/img/flags/germany.svg" alt="" />
-					Germany
-				</a>
-				<a href="" class="flex items-center" data-tb-dropdown-item>
-					<img class="mr-3 h-5 rounded-sm" src="../assets/img/flags/japan.svg" alt="" />
-					Japan
-				</a>
-			</div>
-		</li> -->
 
 		<!-- Profile -->
 		<li class="relative mx-1 md:block">

@@ -1,15 +1,26 @@
 <script lang="ts">
-	import { onMount } from 'svelte'
+	import { capitalizeWord } from '$lib/helpers/common/common'
+	import type { Writable } from 'svelte/store'
 
-	export let name: string
+	export let widget: Writable<any>
 
 	let Thing: any
 
-	onMount(async () => {
-		Thing = (await import(`./base/${name}.svelte`)).default
-	})
+	let widgetBase: string
+
+	$: if ($widget && $widget.widget_type_id) {
+		widgetBase = $widget.widget_type_id.includes('-')
+			? capitalizeWord($widget.widget_type_id.split('-')[0])
+			: capitalizeWord($widget.widget_type_id)
+
+		widgetBase = widgetBase === 'Api' || widgetBase === 'Rest' ? widgetBase : 'Media'
+
+		import(`./base/${widgetBase}.svelte`).then((value: any) => {
+			Thing = value.default
+		})
+	}
 </script>
 
-<svelte:component this={Thing} let:data>
+<svelte:component this={Thing} {widget} let:data>
 	<slot {data} />
 </svelte:component>

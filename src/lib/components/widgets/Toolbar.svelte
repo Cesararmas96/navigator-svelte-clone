@@ -1,84 +1,321 @@
 <script lang="ts">
-    import {Dropdown, Tooltip} from "flowbite-svelte";
-    import ToolbarSettings from "./toolbar/Settings.svelte";
-    import ToolbarHelp from "./toolbar/Help.svelte";
-    import ToolbarScreenshot from "./toolbar/Screenshot.svelte";
-    import ToolbarExportData from "./toolbar/ExportData.svelte";
-    import Icon from "../common/Icon.svelte";
-    import {getContext} from "svelte";
-    import ToolbarMaximize from "./toolbar/Maximize.svelte";
-    import ToolbarClose from "./toolbar/Close.svelte";
-    import ToggleToolbarButtons from "$lib/components/widgets/toolbar/ToggleToolbarButtons.svelte";
-    import Pin from "$lib/components/widgets/toolbar/Pin.svelte";
+	import { Dropdown, Tooltip } from 'flowbite-svelte'
+	import ToolbarHelp from './toolbar/Help.svelte'
+	import Icon from '../common/Icon.svelte'
+	import { getContext } from 'svelte'
+	import ToolbarClose from './toolbar/Close.svelte'
+	import { storeCCPWidget, storeCCPWidgetBehavior } from '$lib/stores/dashboards'
+	import { storeUser } from '$lib/stores'
+	import { themeMode } from '$lib/stores/preferences'
+	import type { Writable } from 'svelte/store'
+	import { getWidgetAction } from '$lib/helpers'
+	import ButtonItem from './toolbar/ButtonItem.svelte'
+	import ButtonToggle from './toolbar/ButtonToggle.svelte'
+	import { like, pin, screenshot } from '$lib/helpers/widget/toolbar'
+	import { selectedWidgetMaximize } from '$lib/stores/widgets'
+	import { openExportDataModal } from '$lib/helpers/common/modal'
 
-    export let isToolbarVisible: boolean;
+	export let isToolbarVisible: boolean
 
-    const patternUrl =
-        /(https:\/\/www\.|http:\/\/www\.|https:\/\/|http:\/\/)?[a-zA-Z]{2,}(\.[a-zA-Z]{2,})(\.[a-zA-Z]{2,})?\/[a-zA-Z0-9]{2,}|((https:\/\/www\.|http:\/\/www\.|https:\/\/|http:\/\/)?[a-zA-Z]{2,}(\.[a-zA-Z]{2,})(\.[a-zA-Z]{2,})?)|(https:\/\/www\.|http:\/\/www\.|https:\/\/|http:\/\/)?[a-zA-Z0-9]{2,}\.[a-zA-Z0-9]{2,}\.[a-zA-Z0-9]{2,}(\.[a-zA-Z0-9]{2,})?/;
+	const widgetActions = getContext<Writable<any>>('widgetActions')
+	const widget = getContext<Writable<any>>('widget')
+	const dashboard = getContext<Writable<any>>('dashboard')
 
-    const widget: any = getContext("widget");
-    let isWidgetOwner: boolean = getContext("isWidgetOwner");
-    let menuOpen = false;
+	const patternUrl =
+		/(https:\/\/www\.|http:\/\/www\.|https:\/\/|http:\/\/)?[a-zA-Z]{2,}(\.[a-zA-Z]{2,})(\.[a-zA-Z]{2,})?\/[a-zA-Z0-9]{2,}|((https:\/\/www\.|http:\/\/www\.|https:\/\/|http:\/\/)?[a-zA-Z]{2,}(\.[a-zA-Z]{2,})(\.[a-zA-Z]{2,})?)|(https:\/\/www\.|http:\/\/www\.|https:\/\/|http:\/\/)?[a-zA-Z0-9]{2,}\.[a-zA-Z0-9]{2,}\.[a-zA-Z0-9]{2,}(\.[a-zA-Z0-9]{2,})?/
 
-    let bg: string;
-    let toolbar: any;
-    $: bg = $widget?.params?.settings?.appearance?.background;
-    $: toolbar = $widget?.params?.settings?.toolbar;
+	let isWidgetOwner: boolean = $dashboard?.attributes?.user_id === $storeUser.user_id
+	let menuOpen = false
+
+	let bg: string
+	let toolbar: any
+	$: if ($themeMode !== 'dark') {
+		bg = $widget?.params?.settings?.appearance?.background
+	} else {
+		bg = ''
+	}
+	$: toolbar = $widget?.params?.settings?.toolbar
+
+	let showInMenu: boolean = false
+	const handleShowMenu = (widget_id: string) => {
+		const titleEL = document.getElementById(`widget-title-${widget_id}`)!
+		const toolbarEL = 200
+		const widgetEL = document.getElementById(`widget-${widget_id}`)!
+		showInMenu = widgetEL?.offsetWidth - (titleEL?.offsetWidth + toolbarEL) < 0
+	}
+
+	$: if (isToolbarVisible) {
+		handleShowMenu($widget.widget_id)
+		setToolbarItems()
+	}
+
+	let toolbarItems
+	let listOutOfMenu
+	let listInMenu
+
+	let modal: any = getContext('modal')
+
+	const setToolbarItems = () => {
+		toolbarItems = {
+			like: {
+				component: ButtonToggle,
+				item: {
+					status: $widget.like,
+					items: {
+						active: {
+							name: 'Unlike',
+							icon: 'twemoji:red-heart',
+							tooltipText: 'Unlike',
+							action: (status) => like(status, $widget.widget_id)
+						},
+						inactive: {
+							name: 'Like',
+							icon: 'icon-park-outline:like',
+							tooltipText: 'Like',
+							action: (status) => like(status, $widget.widget_id)
+						}
+					}
+				},
+				hide: toolbar['like'] || $widget['shared'],
+				showInMenu
+			},
+			reload: {
+				component: ButtonItem,
+				item: {
+					name: 'Reload',
+					icon: 'tabler:refresh',
+					tooltipText: 'Clear cache and reload',
+					action: () => {
+						const reloadAction = getWidgetAction($widgetActions, 'reloadFetchData')
+						reloadAction.action()
+					}
+				},
+				hide: toolbar['reload'],
+				showInMenu
+			},
+			clone: {
+				component: ButtonItem,
+				item: {
+					name: 'Clone',
+					icon: 'tabler:copy',
+					tooltipText: 'Clone Widget',
+					action: () => {
+						const cloneAction = getWidgetAction($widgetActions, 'clone')
+						cloneAction.action()
+					}
+				},
+				hide: toolbar['clone'] || $widget['shared'],
+				showInMenu
+			},
+			collapse: {
+				component: ButtonToggle,
+				item: {
+					status: $widget.collapse,
+					items: {
+						active: {
+							name: 'Expand',
+							icon: 'mdi:chevron-down',
+							tooltipText: 'Expand widget',
+							action: (status) => {
+								const collapseAction = getWidgetAction($widgetActions, 'collapse')
+								collapseAction.action()
+								$widget.collapse = false
+								return $widget.collapse
+							}
+						},
+						inactive: {
+							name: 'Collapse',
+							icon: 'mdi:chevron-up',
+							tooltipText: 'Collapse widget',
+							action: (status) => {
+								const collapseAction = getWidgetAction($widgetActions, 'collapse')
+								collapseAction.action()
+								$widget.collapse = true
+								return $widget.collapse
+							}
+						}
+					}
+				},
+				hide: toolbar['collapse'],
+				showInMenu
+			},
+			maximize: {
+				component: ButtonToggle,
+				item: {
+					status: Boolean($selectedWidgetMaximize),
+					items: {
+						active: {
+							name: 'Restore',
+							icon: 'tabler:arrows-diagonal-minimize-2',
+							tooltipText: 'Restore',
+							action: (status) => {
+								$selectedWidgetMaximize = null
+								return true
+							}
+						},
+						inactive: {
+							name: 'Fullscreen',
+							icon: 'tabler:arrows-diagonal',
+							tooltipText: 'Fullscreen',
+							action: (status) => {
+								$selectedWidgetMaximize = { widget: { ...$widget } }
+								return false
+							}
+						}
+					}
+				},
+				hide: toolbar['max'] || $widget['shared'],
+				showInMenu
+			},
+			pin: {
+				component: ButtonToggle,
+				item: {
+					status: $widget.pin,
+					items: {
+						active: {
+							name: 'Unpin',
+							icon: 'tabler:pinned-off',
+							tooltipText: 'Unpin widget',
+							action: (status) => pin(status, $widget.widget_id, $storeUser.user_id)
+						},
+						inactive: {
+							name: 'Pin',
+							icon: 'tabler:pinned',
+							tooltipText: 'Pin widget',
+							action: (status) => pin(status, $widget.widget_id, $storeUser.user_id)
+						}
+					}
+				},
+				hide: toolbar['pin'] || $widget['shared'],
+				showInMenu
+			},
+			copy: {
+				component: ButtonItem,
+				item: {
+					name: 'Copy',
+					icon: 'tabler:clipboard-copy',
+					tooltipText: 'Copy Widget',
+					action: () => {
+						storeCCPWidget.set($widget)
+						storeCCPWidgetBehavior.set('copy')
+					}
+				},
+				hide: toolbar['copy'] || $widget['shared'],
+				showInMenu
+			},
+			cut: {
+				component: ButtonItem,
+				item: {
+					name: 'Cut',
+					icon: 'ion:cut-sharp',
+					tooltipText: 'Cut Widget',
+					action: () => {
+						storeCCPWidget.set($widget)
+						storeCCPWidgetBehavior.set('cut')
+					}
+				},
+				hide: !isWidgetOwner || $widget['temp'] || $widget['cloned'] || $widget['shared'],
+				showInMenu
+			},
+			screenshot: {
+				component: ButtonItem,
+				item: {
+					name: 'Screenshot',
+					icon: 'tabler:camera',
+					tooltipText: 'Screenshot',
+					action: () => screenshot($widget.widget_id, $widget.title)
+				},
+				hide: toolbar['screenshot'],
+				showInMenu: true
+			},
+			export: {
+				component: ButtonItem,
+				item: {
+					name: 'Export Data',
+					icon: 'tabler:file-export',
+					tooltipText: 'Export data',
+					action: () => {
+						openExportDataModal(modal, { query_slug: $widget.query_slug.slug })
+					}
+				},
+				hide: toolbar['export'],
+				showInMenu: true
+			},
+			share: {
+				component: ButtonItem,
+				item: {
+					name: 'Share',
+					icon: 'mdi:share-variant',
+					tooltipText: 'Share',
+					action: () => {
+						const url = `/share/widget/${$widget?.dashboard_id}/${$widget?.widget_id}`
+						const link = document.createElement('a')
+						link.href = url
+						link.target = '_blank'
+						link.click()
+					}
+				},
+				hide: toolbar['share'],
+				showInMenu: true
+			}
+		}
+
+		listOutOfMenu = Object.keys(toolbarItems).filter(
+			(item) => !toolbarItems[item].hide && !toolbarItems[item].showInMenu
+		)
+		listInMenu = Object.keys(toolbarItems).filter(
+			(item) => !toolbarItems[item].hide && toolbarItems[item].showInMenu
+		)
+	}
 </script>
 
-<div
-        style:background-color={patternUrl.test(bg) ? 'transparent' : bg}
-        class={isToolbarVisible ? `absolute right-2 mt-1 rounded-md bg-white dark:bg-dark-100` : 'hidden'}
-        on:pointerdown={(event) => {
-		event.preventDefault()
-		event.stopPropagation()
-	}}
->
-    <div class="flex flex-row justify-end pl-0">
-        {#if toolbar.reload}
-            <ToggleToolbarButtons icon={"tabler:refresh"} tooltipText={"Clear cache and reload"}/>
-        {/if}
-        {#if toolbar.filtering}
-            <ToggleToolbarButtons icon={"tabler:filter"} tooltipText={"Filter"}/>
-        {/if}
-        {#if toolbar.clone}
-            <ToggleToolbarButtons icon={"tabler:copy"} tooltipText={"Clone"}/>
-        {/if}
-        {#if toolbar.max}
-            <ToolbarMaximize/>
-        {/if}
-        {#if toolbar.pin}
-            <Pin/>
-        {/if}
+{#if toolbarItems}
+	<div
+		id={`widget-toolbar-${$widget.widget_id}`}
+		style:background-color={patternUrl.test(bg) ? 'transparent' : bg}
+		class={isToolbarVisible
+			? `widget-toolbar absolute right-2 rounded-md bg-white dark:bg-dark-100`
+			: 'hidden'}
+		on:pointerdown={(event) => {
+			event.preventDefault()
+			event.stopPropagation()
+		}}
+	>
+		<div class="flex flex-row justify-end pl-0">
+			{#each listOutOfMenu as item}
+				<svelte:component
+					this={toolbarItems[item].component}
+					showInMenu={toolbarItems[item].showInMenu}
+					item={toolbarItems[item].item}
+				/>
+			{/each}
 
+			{#if !toolbar.help && $widget.description}<ToolbarHelp helpText={$widget.description} />{/if}
 
-        <Tooltip placement="left" triggeredBy="#more-actions">More</Tooltip>
-        <button
-                id="more-actions"
-                type="button"
-                class="icon btn hover:bg-light-100 dark:hover:bg-dark-200"
-                aria-expanded="false"
-                aria-haspopup="true"
-        >
-            <Icon icon="tabler:dots-vertical" size="18"/>
-        </button>
-        <Dropdown class="w-36" bind:open={menuOpen}>
-            {#if toolbar.screenshot}
-                <ToolbarScreenshot on:itemClick={() => (menuOpen = !menuOpen)}/>
-            {/if}
-            {#if toolbar.export}
-                <ToolbarExportData on:itemClick={() => (menuOpen = !menuOpen)}/>
-            {/if}
-            {#if isWidgetOwner}
-                <ToolbarSettings on:itemClick={() => (menuOpen = !menuOpen)}/>
-            {/if}
-            {#if toolbar.help}
-                <ToolbarHelp/>
-            {/if}
-        </Dropdown>
+			<Tooltip placement="bottom" class="z-10" triggeredBy="#more-actions">More</Tooltip>
+			<button
+				id="more-actions"
+				type="button"
+				class="icon btn hover:bg-light-100 dark:hover:bg-dark-200"
+				aria-expanded="false"
+				aria-haspopup="true"
+			>
+				<Icon icon="tabler:dots-vertical" size="18" />
+			</button>
+			<Dropdown class="w-36" bind:open={menuOpen}>
+				{#each listInMenu as item}
+					<svelte:component
+						this={toolbarItems[item].component}
+						showInMenu={toolbarItems[item].showInMenu}
+						item={toolbarItems[item].item}
+						on:itemClick={() => (menuOpen = !menuOpen)}
+					/>
+				{/each}
+			</Dropdown>
 
-        {#if isWidgetOwner}
-            <ToolbarClose/>
-        {/if}
-    </div>
-</div>
+			{#if isWidgetOwner || $widget.temp || ($widget.cloned && !$widget.shared)}
+				<ToolbarClose />
+			{/if}
+		</div>
+	</div>
+{/if}

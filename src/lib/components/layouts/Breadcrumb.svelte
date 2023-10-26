@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { page } from '$app/stores'
 	import { storeProgram } from '$lib/stores/programs'
-	import modulesJson from '../../../data/modules.json'
 	import { onMount } from 'svelte'
 	import Icon from '../common/Icon.svelte'
 	import { format } from 'date-fns'
+	import { storeModules } from '$lib/stores/modules'
 
 	const createUrl = (item: any) => {
 		if (item.attributes.order === '0') {
@@ -25,7 +25,7 @@
 		slugs
 			.filter((slug) => slug !== '')
 			.forEach((slug) => {
-				const m = modulesJson.find((item) => item.module_name === slug)
+				const m = $storeModules.find((item) => item.module_name === slug)
 				if (m) {
 					breadcrumbs.push({
 						name: m.attributes.order === '0' ? $storeProgram?.program_name : m.description,
@@ -36,7 +36,9 @@
 				}
 			})
 
-		const trocModule = modulesJson.find((item) => item.module_name === activeUrl.split('/').at(-1))
+		const trocModule = $storeModules.find(
+			(item) => item.module_name === activeUrl.split('/').at(-1)
+		)
 		if (trocModule) {
 			breadcrumb = trocModule.description
 		}
@@ -64,14 +66,14 @@
 	<div id="date" class="hidden text-md text-muted lg:block">
 		<span>{format(new Date(), 'EEEE, LLLL d, yyyy')}</span>
 	</div>
-	<nav class="ml-3 hidden items-center text-heading md:flex">
+	<!-- <nav class="ml-3 hidden items-center text-heading md:flex">
 		<button class="btn icon hidden hover:bg-light-200 dark:hover:bg-dark-100 sm:flex">
 			<iconify-icon icon="tabler:info-circle" height="14px" />
 		</button>
 		<button class="btn icon hidden hover:bg-light-200 dark:hover:bg-dark-100 sm:flex">
 			<iconify-icon icon="tabler:brand-mixpanel" height="14px" />
 		</button>
-	</nav>
+	</nav> -->
 </div>
 
 <!-- <div class="my-2 flex flex-row">

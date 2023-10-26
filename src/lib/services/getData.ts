@@ -1,3 +1,6 @@
+import { storeUser } from '$lib/stores'
+import { get } from 'svelte/store'
+
 /**
  * Perform an HTTP request using the fetch API.
  *
@@ -10,86 +13,166 @@
  * @throws {Error} - If the request fails or encounters an error.
  */
 export async function getData(
-    url: string,
-    method = "POST",
-    payload: Record<string, any> = {},
-    queryParams: Record<string, any> = {},
-    options: Record<string, any> = {}
+	url: string,
+	method = 'POST',
+	payload: Record<string, any> = {},
+	queryParams: Record<string, any> = {},
+	options: Record<string, any> = {},
+	myFetch?: any
 ) {
-    try {
-        // Validate that 'url' is a non-empty string
-        if (typeof url !== "string" || url.trim() === "") {
-            throw new Error("The provided URL is not valid.");
-        }
+	try {
+		// Validate that 'url' is a non-empty string
+		if (typeof url !== 'string' || url.trim() === '') {
+			throw new Error('The provided URL is not valid.')
+		}
 
-        // Validate that 'method' is a valid HTTP method
-        const validMethods = ["GET", "POST", "PUT", "DELETE", "PATCH"];
-        if (!validMethods.includes(method.toUpperCase())) {
-            throw new Error("The provided HTTP method is not valid.");
-        }
+		// Validate that 'method' is a valid HTTP method
+		const validMethods = ['GET', 'POST', 'PUT', 'DELETE', 'PATCH']
+		if (!validMethods.includes(method.toUpperCase())) {
+			throw new Error('The provided HTTP method is not valid.')
+		}
 
-        // Build URL if continue with query parameters
-        const searchParams = new URLSearchParams(queryParams).toString();
-        const urlWithParams = searchParams ? `${url}?${searchParams}` : url;
+		// Build URL if continue with query parameters
+		const searchParams = new URLSearchParams(queryParams).toString()
+		const urlWithParams = searchParams ? `${url}?${searchParams}` : url
 
-        // Add authentication token handling here
-        const loggedIn = true;
-        // Temporarily
+		// Add authentication token handling here
+		const loggedIn = true
+		// Temporarily
 
-        options.headers = options.headers || {};
+		options.headers = options.headers || {}
 
-        // Configure the "Content-Type" header
-        if (method !== "GET")
-            options.headers["Content-Type"] =
-                options.headers["Content-Type"] || "application/json; charset=utf-8";
+		// Configure the "Content-Type" header
+		if (method !== 'GET')
+			options.headers['Content-Type'] =
+				options.headers['Content-Type'] || 'application/json; charset=utf-8'
 
-        // Add the authentication token if authenticated
-        if (loggedIn) options.headers.authorization = options.headers.authorization || null;
+		options.headers['Origin'] = 'https://navigator.com'
+		// Add the authentication token if authenticated
+		if (loggedIn && options.headers.authorization) options.headers.authorization = options.headers.authorization || null
 
-        const headers = new Headers(options.headers);
+		const headers = new Headers(options.headers)
 
-        const configRequest: RequestInit = {
-            method,
-            headers: headers,
-            // mode: 'no-cors',
-            // redirect: 'follow',
-            body: JSON.stringify(payload)
-        };
+		const configRequest: RequestInit = {
+			method,
+			headers: headers,
+			body: JSON.stringify(payload)
+		}
+		if (method === 'GET') delete configRequest.body
 
-        if (method === "GET") delete configRequest.body;
+		let response: any
+		if (myFetch) {
+			response = await myFetch(`${urlWithParams}`, configRequest)
+		} else {
+			response = (await fetch(`${urlWithParams}`, configRequest)) || {}
+		}
 
-        const response = await fetch(`${urlWithParams}`, configRequest);
+		// const validResponseStatus = [200, 202]
+		// if (validResponseStatus.includes(response?.status)) {
 
-        // const validResponseStatus = [200, 202]
-        // if (validResponseStatus.includes(response?.status)) {
+		if (response?.status === 204) return null
 
-        if (response.ok) {
-            return await response.json();
-        } else {
-            // Handle specific status code errors here
-            console.log(response);
-            throw new Error(`Request error: ${response.status}`);
-        }
-    } catch (error) {
-        // Handle general errors here
-        console.log(error);
-        throw new Error(`Request error: ${error}`);
-    }
+		if (!response?.ok) {
+			let statusText = response.statusText || 'Request error'
+			statusText = response.statusText.includes('reason')
+				? JSON.parse(response.statusText).reason
+				: statusText
+			throw new Error(`Request error: ${response.status} ${statusText}`)
+		}
+		return await response.json()
+	} catch (error) {
+		console.log('error', error)
+		throw error
+	}
 }
 
 export async function getApiData(
-    url: string,
-    method = "POST",
-    payload: Record<string, any> = {},
-    queryParams: Record<string, any> = {},
-    options: Record<string, any> = {}
+	url: string,
+	method = 'POST',
+	payload: Record<string, any> = {},
+	queryParams: Record<string, any> = {},
+	options: Record<string, any> = {},
+	myFetch?: any
 ) {
-    const token =
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTUxNDM3OTgsImlhdCI6MTY5NDc4Mzc5OCwiaXNzIjoiTW9iaWxlaW5zaWdodCIsInVzZXIiOjE1Nzc5LCJ1c2VybmFtZSI6ImptZW5kb3phMUB0cm9jZ2xvYmFsLmNvbSIsInVzZXJfaWQiOjE1Nzc5LCJpZCI6ImptZW5kb3phMUB0cm9jZ2xvYmFsLmNvbSJ9.cL6aOd93tjeYXnQqym3g2CABnzyhL3vGM9ddpTCMeic";
-    const headers = {
-        authorization: `Bearer ${token}`,
-        // origin: 'https://navigator.mobileinsight.com',
-        accept: "application/json, text/plain, */*"
-    };
-    return await getData(url, method, payload, queryParams, {...options, headers});
+	if (!options?.headers?.authorization) {
+		const user = get(storeUser)
+
+		if (user?.token) {
+			const headers = { authorization: `Bearer ${user?.token}` }
+			options = { ...options, headers }
+		}
+	}
+	const response = await getData(getQuerySlug(url), method, payload, queryParams, options, myFetch)
+	return response
+}
+
+export async function patchData(url: string, payload: Record<string, any> = {}) {
+	let options
+	const user = get(storeUser)
+	if (user?.token) {
+		const headers = { authorization: `Bearer ${user?.token}` }
+		options = { ...options, headers }
+	}
+
+	const response = await getData(getQuerySlug(url), 'PATCH', payload, {}, options)
+	return { ...response }
+}
+
+export async function postData(url: string, payload: Record<string, any> = {}) {
+	let options
+	const user = get(storeUser)
+	if (user?.token) {
+		const headers = { authorization: `Bearer ${user?.token}` }
+		options = { ...options, headers }
+	}
+
+	const response = await getData(getQuerySlug(url), 'POST', payload, {}, options)
+	return { ...response }
+}
+
+export async function putData(url: string, payload: Record<string, any> = {}) {
+	let options
+	const user = get(storeUser)
+	if (user?.token) {
+		const headers = { authorization: `Bearer ${user?.token}` }
+		options = { ...options, headers }
+	}
+
+	const response = await getData(getQuerySlug(url), 'PUT', payload, {}, options)
+	return { ...response }
+}
+
+export async function deleteData(url: string, payload: Record<string, any> = {}) {
+	let options	
+	const user = get(storeUser)
+	if (user?.token) {
+		const headers = { authorization: `Bearer ${user?.token}` }
+		options = { ...options, headers }
+	}
+	
+	const response = await getData(getQuerySlug(url), 'DELETE', payload, {}, options)
+	return { ...response }
+}
+
+const getQuerySlug = (widgetSlug: any) => {
+	let slugQuery = widgetSlug
+
+	if (Array.isArray(slugQuery)) {
+		slugQuery = Object.values(slugQuery[0])[0]
+		slugQuery = slugQuery.slug || slugQuery
+	}
+
+	let slugNew = ''
+	if (slugQuery && slugQuery.includes('{BASE_URL_API}')) {
+		slugNew = slugQuery.replace('{BASE_URL_API}', import.meta.env.VITE_API_URL)
+	} else if (slugQuery && slugQuery.includes('{BASE_URL_DATA}')) {
+		slugNew = slugQuery.replace('{BASE_URL_DATA}', import.meta.env.VITE_DATA_URL)
+	} else {
+		slugNew =
+			slugQuery && slugQuery.includes('http')
+				? slugQuery
+				: `${import.meta.env.VITE_API_URL}/api/v2/services/queries/${slugQuery}`
+	}
+
+	return slugNew
 }
