@@ -212,23 +212,6 @@
 	const widgetActions = getContext<Writable<any[]>>('widgetActions')
 	const resizeAction = getWidgetAction($widgetActions, 'resize')
 
-	onMount(() => {
-		const eGridDiv: HTMLElement = document.querySelector(`#grid-${$widget.widget_id}`)!
-		new Grid(eGridDiv, gridOptions)
-		// eGridDiv.style.height = gridHeight($widget.widget_id, $widget.params)
-		if ($widget.temp) {
-			const instanceLoadedAction = getWidgetAction($widgetActions, 'instanceLoaded')
-			instanceLoadedAction.action()
-		}
-		resizeAction.action()
-		setTimeout(() => {
-			resizeAgGridContent()
-			// $widget.resized = true
-		}, 1000)
-	})
-
-	$: isDark = $themeMode === 'dark'
-
 	/**
 	 * @description Actualiza el tamaño de la tabla cuando se cambia el tamaño del widget
 	 */
@@ -242,6 +225,31 @@
 		name: 'resizeContent',
 		action: resizeAgGridContent
 	})
+
+	// const resizeAgGridInstanceContent = () => {
+	// 	setContentHeight($widget.widget_id)
+	// 	const eGridDiv: HTMLElement = document.querySelector(`#grid-${$widget.widget_id}`)!
+	// 	eGridDiv.style.height = gridHeight($widget.widget_id, $widget.params)
+	// 	$widget.resized = false
+	// }
+
+	onMount(() => {
+		const eGridDiv: HTMLElement = document.querySelector(`#grid-${$widget.widget_id}`)!
+		new Grid(eGridDiv, gridOptions)
+		// eGridDiv.style.height = gridHeight($widget.widget_id, $widget.params)
+		if ($widget.temp) {
+			$widget.instance_loading = true
+			const instanceLoaded = getWidgetAction($widgetActions, 'instanceLoaded')
+			instanceLoaded.action()
+		} else {
+			resizeAction.action()
+		}
+		setTimeout(() => {
+			resizeAgGridContent()
+		}, 1000)
+	})
+
+	$: isDark = $themeMode === 'dark'
 
 	const newItem = (obj: any) => {
 		gridOptions.api!.applyTransaction({ add: [obj.dataModel] })

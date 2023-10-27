@@ -226,7 +226,7 @@ export const pasteItem = (item: any, items: any[]) => {
 
 export const resizeItem = (item: any, items: any[]) => {
   const header = document.getElementById(`widget-header-${item.data.widget_id}`)?.clientHeight || 0
-  const content = document.getElementById(`widget-main-content-${item.data.widget_id}`)?.clientHeight || 0
+  const content = document.getElementById(`widget-main-${item.data.widget_id}`)?.clientHeight || 0
   // const widgetInstances =
   //   document.getElementById(`widget-instances-${item.uid}`)?.clientHeight || 0
   const height = header + content //+ widgetInstances

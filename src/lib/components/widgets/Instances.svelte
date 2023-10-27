@@ -1,10 +1,9 @@
 <script lang="ts">
-	import { createEventDispatcher, getContext } from 'svelte'
+	import { createEventDispatcher } from 'svelte'
 	import type { Writable } from 'svelte/store'
 	import Widget from './Widget.svelte'
 	import WidgetInstence from './WidgetInstence.svelte'
 	import { removeInstance } from '$lib/helpers/widget/instances'
-	import Loading from '../common/Loading.svelte'
 
 	const dispatch = createEventDispatcher()
 

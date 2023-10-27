@@ -64,7 +64,7 @@ export async function getData(
 		if (myFetch) {
 			response = await myFetch(`${urlWithParams}`, configRequest)
 		} else {
-			response = (await fetch(`${urlWithParams}`, configRequest)) || {}
+			response = await fetch(`${urlWithParams}`, configRequest)
 		}
 
 		// const validResponseStatus = [200, 202]
@@ -73,11 +73,17 @@ export async function getData(
 		if (response?.status === 204) return null
 
 		if (!response?.ok) {
-			let statusText = response.statusText || 'Request error'
-			statusText = response.statusText.includes('reason')
-				? JSON.parse(response.statusText).reason
-				: statusText
-			throw new Error(`Request error: ${response.status} ${statusText}`)
+			let statusText = ''
+			const responseError = await response.json()
+			if (responseError && responseError.message){
+				statusText = responseError.message
+			}else {
+				statusText = response.statusText || 'Request error'
+				statusText = response.statusText.includes('reason')
+					? JSON.parse(response.statusText).reason
+					: statusText
+			}
+			throw new Error(`Request error: ${response.status}:<br> ${statusText}`)
 		}
 		return await response.json()
 	} catch (error) {

@@ -34,7 +34,7 @@
 	export let dashboards: any
 
 	const baseUrl = import.meta.env.VITE_API_URL
-	let pastedDashboard: any
+	// let pastedDashboard: any
 	let dropdownOpen = false
 	const user = $storeUser
 
@@ -42,53 +42,67 @@
 
 	let currentDashboard
 
+	$: console.log('currentDashboard', currentDashboard)
+
 	$: if (!dashboards || dashboards?.length === 0)
 		sendInfoAlert(
 			'There are no dashboards here yet. But you can start to add them by clicking on the "New tab" buttom above'
 		)
 
-	$: userId = currentDashboard?.attributes?.user_id
-
-	$: if (pastedDashboard) {
-		dashboards = [...dashboards, pastedDashboard]
-		pastedDashboard = null
-	}
+	$: isOwner =
+		currentDashboard?.attributes?.user_id === $storeUser.user_id ||
+		currentDashboard?.user_id === $storeUser.user_id
 
 	let popupRemoveModal = false
 	let selectedDashboardID: string
 
-	const loadDashboards = async () => {
+	const getCurrentDashboard = async (id: string) => {
 		dashboards = await getApiData(
 			`${baseUrl}/api/v2/dashboards?program_id=${trocModule?.program_id}&module_id=${
 				trocModule?.module_id
 			}&explorer=${trocModule?.module_slug?.includes('explorer') ? true : false}`,
 			'GET'
 		)
+		console.log(
+			'dashboards',
+			`${baseUrl}/api/v2/dashboards?program_id=${trocModule?.program_id}&module_id=${
+				trocModule?.module_id
+			}&explorer=${trocModule?.module_slug?.includes('explorer') ? true : false}`
+		)
 		$storeDashboards = dashboards
+		return { ...$storeDashboards.find((d: any) => d.dashboard_id === id) }
 	}
 
 	async function handleNewDashboard(event: MouseEvent) {
 		event.preventDefault()
 		event.stopPropagation()
+		loading.set(true)
 
-		const tab = await putData(`${baseUrl}/api/v2/dashboards`, {
-			name: 'New tab',
-			attributes: {
-				icon: 'tabler:device-desktop-analytics',
-				color: '#1E90FF',
-				row_header: 'false'
-			},
-			params: {
-				closable: false,
-				sortable: false,
-				showSettingsBtn: true
-			},
-			module_id: trocModule.module_id,
-			program_id: trocModule.program_id,
-			user_id: user.user_id
-		})
-		await loadDashboards()
-		currentDashboard = $storeDashboards.find((d: any) => d.dashboard_id === tab.data.dashboard_id)
+		try {
+			const tab = await putData(`${baseUrl}/api/v2/dashboards`, {
+				name: `New dashboard (${dashboards.length + 1})`,
+				attributes: {
+					icon: 'tabler:device-desktop-analytics',
+					color: '#1E90FF',
+					row_header: 'false'
+				},
+				params: {
+					closable: false,
+					sortable: false,
+					showSettingsBtn: true
+				},
+				module_id: trocModule.module_id,
+				program_id: trocModule.program_id,
+				user_id: user.user_id,
+				enabled: true,
+				position: dashboards.length + 1
+			})
+			currentDashboard = await getCurrentDashboard(tab.dashboard_id)
+		} catch (e: any) {
+			console.log(e)
+			sendErrorNotification(e)
+		}
+		loading.set(false)
 	}
 
 	const showRemoveIcon = (event: MouseEvent) => {
@@ -114,24 +128,26 @@
 		popupRemoveModal = true
 	}
 	const handleRemoveConfirm = async () => {
+		loading.set(true)
 		try {
-			const removeDashboard = await deleteData(
-				`${baseUrl}/api/v2/dashboards/${currentDashboard.dashboard_id}`,
-				{ dashboard_id: currentDashboard.dashboard_id }
-			)
+			await deleteData(`${baseUrl}/api/v2/dashboards/${currentDashboard.dashboard_id}`, {
+				dashboard_id: currentDashboard.dashboard_id
+			})
 			const temp = dashboards.filter((d: any) => d.dashboard_id !== currentDashboard.dashboard_id)
 			dashboards = []
 			dashboards = [...temp]
 			currentDashboard = dashboards[0] ? { ...dashboards[0] } : null
 			$storeDashboards = dashboards
-			sendSuccessNotification(removeDashboard.message)
+			sendSuccessNotification('Dashboard successfully deleted')
 			clearAlerts()
 		} catch (e: any) {
 			sendErrorNotification(e.message)
 		}
+		loading.set(false)
 	}
 
 	const confirmCustomize = async (impersonation: boolean) => {
+		loading.set(true)
 		try {
 			const user = impersonation ? { user_id: $storeUser.user_id } : { user_id: null }
 			const resp = await postData(
@@ -157,6 +173,7 @@
 		} catch (e: any) {
 			sendErrorNotification(e.message)
 		}
+		loading.set(false)
 	}
 
 	const handleCustomize = async () => {
@@ -193,20 +210,31 @@
 	}
 
 	const handleDashboardPaste = async () => {
-		let pastedDashboard: any = $storeCCPDashboard
-		const { dashboard_id } = pastedDashboard
+		loading.set(true)
+
+		const { dashboard_id } = $storeCCPDashboard
 		const payload = { dashboard_id, module_id: trocModule.module_id }
+
 		try {
-			const resp = await postData(`${baseUrl}/api/v2/dashboard/clone`, payload)
-			console.log(resp)
-			pastedDashboard = resp.data
+			const clone = await postData(`${baseUrl}/api/v2/dashboard/clone`, payload)
+			dashboards = [...dashboards, clone.data]
 		} catch (e: any) {
-			console.log(`There was an error: ${e}`)
+			sendErrorNotification(e)
 		}
+
 		if ($storeCCPDashboardBehavior === 'cut') {
-			await getApiData(`${baseUrl}/api/v2/dashboards/${currentDashboard.dashboard_id}`, 'DELETE')
+			try {
+				await getApiData(`${baseUrl}/api/v2/dashboards/${currentDashboard.dashboard_id}`, 'DELETE')
+				dashboards = dashboards.filter((d: any) => d.dashboard_id !== currentDashboard.dashboard_id)
+			} catch (e: any) {
+				sendErrorNotification(e)
+			}
 		}
+
+		$storeDashboards = dashboards
+		currentDashboard = { ...dashboards[dashboards.length - 1] }
 		clearCopyDashboard()
+		loading.set(false)
 	}
 
 	const clearCopyDashboard = () => {
@@ -283,7 +311,6 @@
 	let showInsertWidgetItem = false
 	let insertWidgetCallback: any
 	const handleWidgetInsert = (e: any) => {
-
 		showInsertWidgetItem = true
 		insertWidgetCallback = e.detail
 	}
@@ -323,7 +350,7 @@
 										on:click={() => (dropdownOpen = !dropdownOpen)}
 									/>
 									<Dropdown bind:open={dropdownOpen} id={dashboard.dashboard_id.toString()}>
-										{#if user.user_id === userId}
+										{#if isOwner}
 											<DropdownItem
 												defaultClass="flex flex-row font-medium py-2 pl-2 pr-4 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"
 												on:click={insertWidget}
@@ -339,7 +366,7 @@
 											<Icon icon="mdi:content-copy" size="18" classes="mr-1" />
 											Copy dashboard</DropdownItem
 										>
-										{#if user.user_id === userId}
+										{#if isOwner}
 											<DropdownItem
 												on:click={() => handleDashboardCopy('cut')}
 												defaultClass="flex flex-row font-medium py-2 pl-2 pr-4 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"
@@ -348,20 +375,24 @@
 												Cut dashboard</DropdownItem
 											>
 										{/if}
-										{#if user.superuser}
+										{#if user.superuser && currentDashboard.user_id === null}
 											<DropdownItem
 												on:click={handleCustomize}
 												defaultClass="flex flex-row font-medium py-2 pl-2 pr-4 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"
 											>
 												<Icon
-													icon={!userId ? 'mdi:file-edit-outline' : 'mdi:publish'}
+													icon={currentDashboard.attributes.user_id !== $storeUser.user_id
+														? 'mdi:file-edit-outline'
+														: 'mdi:publish'}
 													size="18"
 													classes="mr-1"
 												/>
-												{!userId ? 'Customize' : 'Publish'}</DropdownItem
+												{currentDashboard.attributes.user_id !== $storeUser.user_id
+													? 'Customize'
+													: 'Publish'}</DropdownItem
 											>
 										{/if}
-										{#if user.user_id === userId}
+										{#if isOwner}
 											<DropdownItem
 												on:click={handleConvertToModule}
 												defaultClass="flex flex-row font-medium py-2 pl-2 pr-4 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"
@@ -384,7 +415,7 @@
 											<Icon icon="tabler:camera" size="18" classes="mr-1" />
 											Screenshot</DropdownItem
 										>
-										{#if user.user_id === userId}
+										{#if isOwner}
 											<DropdownItem
 												on:click={() => handleDashboardRemove(dashboard.dashboard_id)}
 												defaultClass="flex flex-row text-red-500 font-medium py-2 pl-2 pr-4 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"

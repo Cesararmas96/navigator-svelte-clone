@@ -66,7 +66,7 @@
 			// element[0].appendChild(containerWidget)
 		})
 	}
-
+	$: console.log('card', $widget.instance_loading, drilldownOpen)
 	$: isLoading = $widget.instance_loading && drilldownOpen
 
 	const cardClass = `apiCard-content animate__animated animate__zoomIn card  ${

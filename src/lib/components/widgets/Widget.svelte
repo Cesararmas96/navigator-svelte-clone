@@ -65,7 +65,7 @@
 
 	<!-- Widget Content -->
 	<div
-		id={`widget-main-content-${$widget.widget_id}`}
+		id={`widget-main-${$widget.widget_id}`}
 		class:overflow-hidden={!scrollableBox}
 		class:overflow-y-auto={scrollableBox}
 		class:hidden={$widget.collapse}
@@ -75,7 +75,7 @@
 			event.stopPropagation()
 		}}
 	>
-		<div class="w-full">
+		<div id={`widget-main-content-${$widget.widget_id}`} class="w-full">
 			<ContentTop {widget} />
 
 			<Content {widget} />

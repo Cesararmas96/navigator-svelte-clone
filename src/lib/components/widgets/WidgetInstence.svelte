@@ -3,6 +3,7 @@
 	import { initInstances } from '$lib/helpers/widget/instances'
 	import { createEventDispatcher, onMount, setContext } from 'svelte'
 	import { writable, type Writable } from 'svelte/store'
+	import Spinner from '../common/Spinner.svelte'
 
 	export let widget: any
 	export let isToolbarVisible: boolean
@@ -16,6 +17,7 @@
 
 	let widgetBase: string
 	let widgetActions: Writable<any[]>
+	let instanceLoaded: boolean = false
 
 	const initActions = () => {
 		widgetActions = initWidgetActions()
@@ -30,6 +32,7 @@
 		addWidgetAction(widgetActions, {
 			name: 'instanceLoaded',
 			action: () => {
+				instanceLoaded = true
 				$widgetStore.instance_loading = null
 				$widgetStore.instance_loaded = null
 				dispatch('handleInstanceResize')
@@ -60,4 +63,6 @@
 	})
 </script>
 
-<slot widget={widgetStore} {isToolbarVisible} {fixed} {isOwner} />
+<div class:invisible={!instanceLoaded}>
+	<slot widget={widgetStore} {isToolbarVisible} {fixed} {isOwner} />
+</div>

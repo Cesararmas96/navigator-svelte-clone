@@ -11,11 +11,9 @@
 		addNewItem,
 		pasteItem,
 		saveLocations,
-		loadLocalStoredLocations,
-		syncGridItems,
-		reorderLines
+		loadLocalStoredLocations
 	} from '$lib/helpers/dashboard/grid'
-	import { deleteData, getApiData, postData, putData } from '$lib/services/getData'
+	import { deleteData, getApiData, patchData, postData, putData } from '$lib/services/getData'
 	import Alerts from '../widgets/type/Alert/Alerts.svelte'
 	import { dismissAlert, sendAlert, sendErrorAlert } from '$lib/helpers/common/alerts'
 	import { AlertType, type AlertMessage } from '$lib/interfaces/Alert'
@@ -126,9 +124,9 @@
 				payload
 			)
 
-			if (dashboard.attributes.explorer !== 'v3') {
+			if (!dashboard.attributes.explorer || dashboard.attributes.explorer !== 'v3') {
 				const attributes = { ...dashboard.attributes, explorer: 'v3' }
-				postData(`${baseUrl}/api/v2/dashboards/${dashboard.dashboard_id}`, {
+				patchData(`${baseUrl}/api/v2/dashboards/${dashboard.dashboard_id}`, {
 					attributes
 				})
 			}
@@ -228,21 +226,18 @@
 	const handleWidgetInsert = async (widgetUid: string, widgetId: string) => {
 		const token = $storeUser.token
 
-
 		try {
 			const payload = {
 				program_id: dashboard.program_id,
 				dashboard_id: dashboard.dashboard_id,
-				title: "My new Widget",
-				widget_id: widgetId,
+				title: 'My new Widget',
+				widget_id: widgetId
 			}
-			console.log(payload);
+			console.log(payload)
 
-
-
-
-				// const resp = await fetch(`https://api.dev.navigator.mobileinsight.com/api/v2/widgets-template/b13b619a-847e-4734-a3d2-fa198f0531b7`,
-				const resp = await fetch(`https://api.dev.navigator.mobileinsight.com/api/v2/widgets/${widgetUid}`,
+			// const resp = await fetch(`https://api.dev.navigator.mobileinsight.com/api/v2/widgets-template/b13b619a-847e-4734-a3d2-fa198f0531b7`,
+			const resp = await fetch(
+				`https://api.dev.navigator.mobileinsight.com/api/v2/widgets/${widgetUid}`,
 				{
 					method: 'PUT',
 					headers: {
@@ -312,6 +307,7 @@
 				class="grid-item"
 				activeClass="grid-item-active"
 				previewClass="bg-red-500 rounded"
+				resizable={false}
 				on:change={(e) => {
 					changeItemSize(item)
 				}}
@@ -329,10 +325,9 @@
 					on:handleCloning={() => handleCloning(item)}
 					on:handleRemove={() => handleRemove(item)}
 					on:handleResizable={(e) => {
-						item.data.params.settings.resizable = e.detail.resizable && !e.detail.fixed
+						// item.data.params.settings.resizable = e.detail.resizable && !e.detail.fixed
 					}}
 				>
-					<!-- bind:this={item.component} -->
 					<Widget
 						{widget}
 						{fixed}

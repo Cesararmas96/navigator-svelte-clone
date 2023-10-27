@@ -9,12 +9,10 @@ export const initInstances = () => {
 
 export const addInstance = (widget: Writable<any>, newInstance: any) => {
   const instanceConfig = structuredClone(newInstance);
-  const uuid = `widget-${generateUID()}`
-  instanceConfig.id = uuid;
-  instanceConfig.uid = uuid;
+  instanceConfig.widget_id = `widget-${generateUID()}`;
   instanceConfig.temp = true;
   instanceConfig.title = newInstance.title;
-  instanceConfig.widget_slug = uuid;
+  instanceConfig.widget_slug = instanceConfig.widget_id;
   // instanceConfig.master_filtering = true;
   delete instanceConfig.instance_loaded;
   delete instanceConfig.loaded;
