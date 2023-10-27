@@ -1,52 +1,38 @@
 <script lang="ts">
-	import { Button, Card } from 'flowbite-svelte'
-	import jsonData from '../../../../../data/widgetLinkData.json'
+	import { Card, Avatar, Button } from 'flowbite-svelte'
+	import Icon from '$lib/components/common/Icon.svelte'
 
-	const getWidgetCardData = (jsonData: any) => {
-		const data = jsonData
-		console.log(data)
-		return data
-	}
-
-	const data = getWidgetCardData(jsonData)
-
-	let isHovered: boolean
-
-	function handleMouseEnter() {
-		isHovered = true
-	}
-
-	function handleMouseLeave() {
-		isHovered = false
-	}
-
-	console.log(data)
+	export let data: Record<string, any>
+	const link = data.format_definition
 </script>
 
-<div
-	class="card-container"
-	on:mouseenter={handleMouseEnter}
-	on:mouseleave={handleMouseLeave}
-	role="button"
-	tabindex="0"
->
-	<Card href={data.href}>
-		<h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-			{data.title}
-		</h5>
-		<p class="mb-3 font-normal leading-tight text-gray-700 dark:text-gray-400">
-			{data.description}
-		</p>
-	</Card>
-</div>
+<a href={link?.href} target={link?.external ? '_blank' : ''}>
+	<!-- <Card href={link?.href}> -->
+	<div
+		class="animate__animated animate__zoomIn mt-6 flex flex-1 justify-between hover:-translate-y-0.5 hover:scale-100"
+	>
+		<div class="mx-5">
+			<h5 class=" text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
+				{link?.title}
+			</h5>
+			<p class=" text-lg leading-tight text-gray-700 dark:text-gray-400">
+				{link?.description}
+			</p>
 
-<style>
-	.card-container {
-		position: relative;
-		transition: transform 0.3s ease-in-out;
-	}
+			<!-- <div class="mt-2">
+				<Button href="/">Buy now</Button>
+			</div> -->
+		</div>
 
-	.card-container:hover {
-		transform: translateY(-10px); /* Adjust the value as needed */
-	}
-</style>
+		<div class="mx-5">
+			{#if link?.image}
+				<Avatar size="lg" src={link.image} />
+			{:else}
+				<Avatar size="lg">
+					<Icon icon={link?.icon || 'tabler:external-link'} size="40px" />
+				</Avatar>
+			{/if}
+		</div>
+	</div>
+	<!-- </Card> -->
+</a>

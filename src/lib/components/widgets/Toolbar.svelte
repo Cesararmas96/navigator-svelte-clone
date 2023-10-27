@@ -228,6 +228,20 @@
 				hide: toolbar['screenshot'],
 				showInMenu: true
 			},
+			settings: {
+				component: ButtonItem,
+				item: {
+					name: 'Settings',
+					icon: 'tabler:settings',
+					tooltipText: 'Settings',
+					action: () => {
+						// openSettings(modal, { query_slug: $widget.query_slug.slug })
+						console.log($widget)
+					}
+				},
+				hide: toolbar['export'],
+				showInMenu: true
+			},
 			export: {
 				component: ButtonItem,
 				item: {
