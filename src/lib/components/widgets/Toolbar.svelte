@@ -13,7 +13,9 @@
 	import ButtonToggle from './toolbar/ButtonToggle.svelte'
 	import { like, pin, screenshot } from '$lib/helpers/widget/toolbar'
 	import { selectedWidgetMaximize } from '$lib/stores/widgets'
+	import { saveWidgetSettings } from '$lib/helpers/widget/settings'
 	import { openExportDataModal } from '$lib/helpers/common/modal'
+	import { hideWidgetSettings, selectedWidgetSettings } from '$lib/stores/widgets'
 
 	export let isToolbarVisible: boolean
 
@@ -235,11 +237,15 @@
 					icon: 'tabler:settings',
 					tooltipText: 'Settings',
 					action: () => {
-						// openSettings(modal, { query_slug: $widget.query_slug.slug })
-						console.log($widget)
+						$selectedWidgetSettings = {
+							widget: widget,
+							state: 'edit',
+							callback: saveWidgetSettings
+						}
+						$hideWidgetSettings = false
 					}
 				},
-				hide: toolbar['export'],
+				hide: !isWidgetOwner || $widget['settings'],
 				showInMenu: true
 			},
 			export: {

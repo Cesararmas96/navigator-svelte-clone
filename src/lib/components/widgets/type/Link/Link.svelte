@@ -1,9 +1,17 @@
 <script lang="ts">
-	import { Card, Avatar, Button } from 'flowbite-svelte'
+	import { Avatar } from 'flowbite-svelte'
 	import Icon from '$lib/components/common/Icon.svelte'
+	import type { Link } from './interface'
+	import { getContext } from 'svelte'
 
-	export let data: Record<string, any>
-	const link = data.format_definition
+	const widget: any = getContext('widget')
+	let link: Link = $widget.format_definition
+
+	$: {
+		setTimeout(() => {
+			link = $widget.format_definition
+		}, 5)
+	}
 </script>
 
 <a href={link?.href} target={link?.external ? '_blank' : ''}>

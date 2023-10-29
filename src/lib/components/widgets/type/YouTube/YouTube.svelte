@@ -1,18 +1,19 @@
 <script lang="ts">
 	import { YouTube } from 'sveltekit-embed'
+	import { getContext } from 'svelte'
 
-	export let data: Record<string, any>
-
+	const widget: any = getContext('widget')
 	const regExp = /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/
-
 	let youTubeId: string = ''
 
 	$: {
-		let url = data?.url
-		console.log(url)
-		console.log('ACAAAA')
+		let url = $widget?.url
+		youTubeId = ''
 		const match = url.match(regExp)
-		youTubeId = match && match[2].length == 11 ? match[2] : ''
+		setTimeout(() => {
+			console.log('Load youtube ID')
+			youTubeId = match && match[2].length == 11 ? match[2] : ''
+		}, 5)
 	}
 </script>
 
