@@ -3,7 +3,7 @@
 	import Icon from '$lib/components/common/Icon.svelte'
 	import type { Link } from './interface'
 	import { getContext } from 'svelte'
-	import schema from './setting'
+	import { schema } from './setting'
 
 	const widget: any = getContext('widget')
 
