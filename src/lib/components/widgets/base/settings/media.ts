@@ -17,9 +17,11 @@ const schema = {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function createMediaSettings(widget: Writable<any>) {
+	const schemaUrl = structuredClone(schema)
+
 	widget.update((widgetBD) => {
-		schema.properties.url.default = widgetBD?.url
-		widgetBD.schema = schema
+		schemaUrl.properties.url.default = widgetBD?.url
+		widgetBD.schema = schemaUrl
 		return widgetBD
 	})
 }
