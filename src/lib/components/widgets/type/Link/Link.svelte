@@ -6,6 +6,7 @@
 
 	const widget: any = getContext('widget')
 	let link: Link = $widget.format_definition
+	let hover = false
 
 	$: {
 		setTimeout(() => {
@@ -14,7 +15,16 @@
 	}
 </script>
 
-<a href={link?.href} target={link?.external ? '_blank' : ''}>
+<a
+	href={link?.href}
+	target={link?.external ? '_blank' : ''}
+	on:mouseenter={() => {
+		hover = true
+	}}
+	on:mouseleave={() => {
+		hover = false
+	}}
+>
 	<!-- <Card href={link?.href}> -->
 	<div
 		class="animate__animated animate__zoomIn mt-6 flex flex-1 justify-between hover:-translate-y-0.5 hover:scale-100"
@@ -36,7 +46,10 @@
 			{#if link?.image}
 				<Avatar size="lg" src={link.image} />
 			{:else}
-				<Avatar size="lg">
+				<Avatar
+					size="lg"
+					class={hover ? 'dark:bg-primary-900 bg-primary-700 text-white dark:text-white' : ''}
+				>
 					<Icon icon={link?.icon || 'tabler:external-link'} size="40px" />
 				</Avatar>
 			{/if}

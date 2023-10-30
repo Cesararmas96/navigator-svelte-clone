@@ -80,7 +80,7 @@
 				return
 			}
 			widgets = widgets.map((widget: any) => {
-				widget.widget_slug = generateUniqueSlug(widget.title, widgets)
+				widget.widget_slug = widget?.widget_slug || generateUniqueSlug(widget.title, widgets)
 				return widget
 			})
 
@@ -228,21 +228,17 @@
 	const handleWidgetInsert = async (widgetUid: string, widgetId: string) => {
 		const token = $storeUser.token
 
-
 		try {
 			const payload = {
 				program_id: dashboard.program_id,
 				dashboard_id: dashboard.dashboard_id,
-				title: "My new Widget",
-				widget_id: widgetId,
+				title: 'My new Widget',
+				widget_id: widgetId
 			}
-			console.log(payload);
 
-
-
-
-				// const resp = await fetch(`https://api.dev.navigator.mobileinsight.com/api/v2/widgets-template/b13b619a-847e-4734-a3d2-fa198f0531b7`,
-				const resp = await fetch(`https://api.dev.navigator.mobileinsight.com/api/v2/widgets/${widgetUid}`,
+			// const resp = await fetch(`https://api.dev.navigator.mobileinsight.com/api/v2/widgets-template/b13b619a-847e-4734-a3d2-fa198f0531b7`,
+			const resp = await fetch(
+				`https://api.dev.navigator.mobileinsight.com/api/v2/widgets/${widgetUid}`,
 				{
 					method: 'PUT',
 					headers: {

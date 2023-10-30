@@ -31,7 +31,7 @@
 	const confirmDeleteWidget = async () => {
 		const urlBase = import.meta.env.VITE_API_URL
 		try {
-			await deleteData(`${urlBase}/api/v2/widgets/${$widget.widget_id}`)
+			await deleteData(`${urlBase}/api/v2/widgets/`, [{ widget_id: `${$widget.widget_id}` }])
 			removeAction.action()
 		} catch (e: any) {
 			sendErrorNotification('Failed to remove widget. ' + e.message)

@@ -7,9 +7,9 @@
 	let youTubeId: string = ''
 
 	$: {
-		let url = $widget?.url
+		const match = $widget?.url.match(regExp)
+
 		youTubeId = ''
-		const match = url.match(regExp)
 		setTimeout(() => {
 			console.log('Load youtube ID')
 			youTubeId = match && match[2].length == 11 ? match[2] : ''
