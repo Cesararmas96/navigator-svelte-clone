@@ -20,7 +20,8 @@
 		easing: sineIn
 	}
 
-	let schema = {
+	let schema
+	let schemaGeneralDefault = {
 		$schema: 'https://json-schema.org/draft/2020-12/schema',
 		$id: '/schemas/settings',
 		additionalProperties: true,
@@ -62,100 +63,21 @@
 				readOnly: false,
 				writeOnly: false,
 				default: ''
-			},
-
-			// media
-			url: {
-				type: 'string',
-				label: null,
-				attrs: {
-					placeholder: null,
-					format: null
-				},
-				readOnly: false,
-				default: ''
 			}
 		},
 		noHeader: true
 	}
 
-	let schemaLink = {
-		properties: {
-			// link
-			title_link: {
-				type: 'string',
-				label: null,
-				attrs: {
-					placeholder: null,
-					format: null
-				},
-				readOnly: false,
-				default: ''
-			},
-			href_link: {
-				type: 'string',
-				label: 'Link',
-				attrs: {
-					placeholder: null,
-					format: null
-				},
-				readOnly: false,
-				default: ''
-			},
-			external_link: {
-				type: 'boolean',
-				label: 'Open External',
-				attrs: {
-					placeholder: null,
-					format: null
-				},
-				readOnly: false,
-				default: false
-			},
-			icon_link: {
-				type: 'string',
-				label: null,
-				attrs: {
-					placeholder: null,
-					format: null
-				},
-				readOnly: false,
-				default: ''
-			},
-			description_link: {
-				type: 'string',
-				label: null,
-				attrs: {
-					placeholder: null,
-					format: null
-				},
-				format: 'textarea',
-				readOnly: false,
-				default: ''
-			}
-		}
-	}
-
-	schema = merge({}, schema, schemaLink)
-
 	$: {
 		if ($selectedWidgetSettings?.widget && $selectedWidgetSettings?.state === 'edit') {
 			widgetSettings = $selectedWidgetSettings.widget
+
+			schema = merge({}, schemaGeneralDefault, $widgetSettings?.schema || {})
 
 			// general
 			schema.properties.title.default = $widgetSettings?.title
 			schema.properties.icon.default = $widgetSettings?.attributes?.icon
 			schema.properties.description.default = $widgetSettings?.description
-
-			// media
-			schema.properties.url.default = $widgetSettings?.url
-
-			// TODO: Default by type widget
-			schema.properties.title_link.default = $widgetSettings?.format_definition?.title
-			schema.properties.href_link.default = $widgetSettings?.format_definition?.href
-			schema.properties.external_link.default = $widgetSettings?.format_definition?.external
-			schema.properties.icon_link.default = $widgetSettings?.format_definition?.icon
-			schema.properties.description_link.default = $widgetSettings?.format_definition?.description
 		}
 		setContext('widgetSettings', widgetSettings)
 	}
@@ -216,7 +138,7 @@
 					class=" inline-flex items-center text-base font-semibold text-gray-500 dark:text-gray-400"
 				>
 					<Icon icon="mdi:widgets-outline" classes="mr-1" size="20px" />
-					Widget
+					Widget Settings
 				</h5>
 				<CloseButton on:click={() => close()} class="dark:text-white" />
 			</div>

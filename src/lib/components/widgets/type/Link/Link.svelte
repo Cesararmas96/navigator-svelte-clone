@@ -3,15 +3,29 @@
 	import Icon from '$lib/components/common/Icon.svelte'
 	import type { Link } from './interface'
 	import { getContext } from 'svelte'
+	import schema from './setting'
 
 	const widget: any = getContext('widget')
+
+	const schemaLink = structuredClone(schema)
+
+	schemaLink.properties.title_link.default = $widget?.format_definition?.title
+	schemaLink.properties.href_link.default = $widget?.format_definition?.href
+	schemaLink.properties.external_link.default = $widget?.format_definition?.external
+	schemaLink.properties.icon_link.default = $widget?.format_definition?.icon
+	schemaLink.properties.description_link.default = $widget?.format_definition?.description
+
+	$widget.schema = schemaLink
+
 	let link: Link = $widget.format_definition
 	let hover = false
 
-	$: {
+	$: if ($widget?.saved) {
 		setTimeout(() => {
 			link = $widget.format_definition
 		}, 5)
+
+		$widget.saved = null
 	}
 </script>
 

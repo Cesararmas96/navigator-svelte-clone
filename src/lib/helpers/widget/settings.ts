@@ -7,7 +7,7 @@ const urlBase = import.meta.env.VITE_API_URL
 
 export const saveWidgetSettings = (widgetSettings: Writable<unknown>, payload) => {
 	widgetSettings.update((widget) => {
-		const widgetBD = merge({}, widget, payload)
+		const widgetBD = merge({}, widget, payload, { saved: true })
 
 		updateChangesBD(widgetBD)
 		sendSuccessNotification('Updated widget')
