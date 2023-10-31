@@ -16,9 +16,9 @@
 	let password = ''
 
 	let widget = {
-		widget_id: 'f5484f6e-a109-46b3-b09a-a2c09678179b',
-		widget_name: 'Model List Template',
-		title: 'Organization List',
+		widget_id: 'f1184f6e-a109-46b3-b09a-a2c09678179b',
+		widget_name: 'Identity',
+		title: 'Identity List',
 		url: null,
 		params: {
 			settings: {
@@ -30,11 +30,11 @@
 				method: 'GET'
 			},
 			model: {
-				meta: 'api/v1/organizations',
-				primaryKey: 'org_id'
+				meta: 'api/v1/user_identity',
+				primaryKey: 'identity_id'
 			},
 			query: {
-				slug: '{BASE_URL_API}/api/v1/organizations'
+				slug: '{BASE_URL_API}/api/v1/user_identity'
 			},
 			pqgrid: {
 				pageModel: {
@@ -46,7 +46,7 @@
 					sorter: [
 						{
 							dir: 'down',
-							dataIndx: 'org_id'
+							dataIndx: 'identity_id'
 						}
 					]
 				}
@@ -60,7 +60,7 @@
 					createModelWithFormBuilder: {
 						icon: 'fa fa-plus',
 						class: 'pull-right',
-						title: 'New Organization',
+						title: 'New Identity',
 						method: 'createModelWithFormBuilder',
 						classMain: 'mr-7'
 					}
@@ -80,58 +80,13 @@
 		cond_definition: null,
 		where_definition: null,
 		format_definition: {
-			oid: {
-				hidden: true
-			},
-			org_id: {
-				align: 'left',
-				order: 1,
-				title: 'ID',
-				format: '####'
-			},
 			actions: {
 				order: 10,
 				title: 'Actions'
-			},
-			org_slug: {
-				order: 3,
-				title: 'Organization Slug'
-			},
-			is_active: {
-				align: 'center',
-				order: 8,
-				title: 'Active',
-				render: 'isActive'
-			},
-			attributes: {
-				order: 6,
-				title: 'Attributes',
-				render: 'jsonPretty',
-				minWidth: '220'
-			},
-			created_at: {
-				hidden: true
-			},
-			created_by: {
-				hidden: true
-			},
-			updated_at: {
-				align: 'center',
-				order: 9,
-				title: 'Updated At',
-				render: 'dateAndTime'
-			},
-			description: {
-				order: 4,
-				title: 'Description'
-			},
-			organization: {
-				order: 2,
-				title: 'Name'
 			}
 		},
 		query_slug: {
-			slug: '{BASE_URL_API}/api/v1/organizations'
+			slug: '{BASE_URL_API}/api/v1/user_identity'
 		},
 		filtering_show: null,
 		master_filtering: true,

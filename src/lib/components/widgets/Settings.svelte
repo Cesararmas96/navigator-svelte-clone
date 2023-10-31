@@ -68,7 +68,10 @@
 				default: ''
 			}
 		},
-		// groups: [{ name: 'general', title: 'General' }],
+		// groups: [
+		// 	{ name: 'general', title: 'General' },
+		// 	{ name: 'design', title: 'Design' }
+		// ],
 		noHeader: true
 	}
 
