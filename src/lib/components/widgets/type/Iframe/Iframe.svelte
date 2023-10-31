@@ -1,35 +1,24 @@
 <script lang="ts">
-	import { getWidgetAction } from '$lib/helpers'
 	import { getContext, onMount } from 'svelte'
-	import type { Writable } from 'svelte/store'
+	import { createMediaSettings } from '../../base/settings/media'
 
-	export let data: Record<string, any>
+	const widget: any = getContext('widget')
+	let url: string = ''
 
-	const patternUrl =
-		/(https:\/\/www\.|http:\/\/www\.|https:\/\/|http:\/\/)?[a-zA-Z]{2,}(\.[a-zA-Z]{2,})(\.[a-zA-Z]{2,})?\/[a-zA-Z0-9]{2,}|((https:\/\/www\.|http:\/\/www\.|https:\/\/|http:\/\/)?[a-zA-Z]{2,}(\.[a-zA-Z]{2,})(\.[a-zA-Z]{2,})?)|(https:\/\/www\.|http:\/\/www\.|https:\/\/|http:\/\/)?[a-zA-Z0-9]{2,}\.[a-zA-Z0-9]{2,}\.[a-zA-Z0-9]{2,}(\.[a-zA-Z0-9]{2,})?/
+	function loadIframe() {
+		createMediaSettings(widget)
 
-	let url: string
-
-	$: {
-		url = data?.url
-		if (url && !url.includes('https://') && !url.includes('http://')) {
-			url = 'https://' + url
-		}
+		url = $widget.url
 	}
 
-	const widgetActions = getContext<Writable<any[]>>('widgetActions')
-	const widget = getContext<Writable<any>>('widget')
-	const resizeAction = getWidgetAction($widgetActions, 'resize')
+	$: if ($widget?.saved) {
+		loadIframe()
+		$widget.saved = null
+	}
 
 	onMount(() => {
-		if ($widget.resize_on_load) resizeAction.action()
-	})
-	onMount(() => {
-		if ($widget.resize_on_load) resizeAction.action()
+		loadIframe()
 	})
 </script>
 
-{#if url && url.match(patternUrl)}
-	<!-- svelte-ignore a11y-missing-attribute -->
-	<iframe src={url} class="w-full" />
-{/if}
+<iframe src={url} title={$widget.title} class="w-full" />
