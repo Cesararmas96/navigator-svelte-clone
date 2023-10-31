@@ -1,90 +1,13 @@
 export const schema = {
 	properties: {
-		// link
-		title_link: {
-			type: 'string',
-			label: null,
-			attrs: {
-				placeholder: null,
-				format: null
-			},
-			readOnly: false,
-			default: ''
-		},
-		href_link: {
-			type: 'string',
-			label: 'Link',
-			attrs: {
-				placeholder: null,
-				format: null
-			},
-			readOnly: false,
-			default: ''
-		},
-		external_link: {
-			type: 'boolean',
-			label: 'Open External',
-			attrs: {
-				placeholder: null,
-				format: null
-			},
-			readOnly: false,
-			default: false
-		},
-		icon_link: {
-			type: 'string',
-			label: null,
-			attrs: {
-				placeholder: null,
-				format: null
-			},
-			readOnly: false,
-			default: ''
-		},
-		description_link: {
-			type: 'string',
-			label: null,
-			attrs: {
-				placeholder: null,
-				format: null
-			},
-			format: 'textarea',
-			readOnly: false,
-			default: ''
-		}
-	}
-}
-
-// TODO: form builder interprete schema real
-export const link = {
-	properties: {
 		format_definition: {
 			$ref: '/schemas/format_definition'
-		},
-		title_link: {
-			type: 'string',
-			label: null,
-			attrs: {
-				placeholder: null,
-				format: null
-			},
-			readOnly: false,
-			default: ''
-		},
-		description_link: {
-			type: 'string',
-			label: null,
-			attrs: {
-				placeholder: null,
-				format: null
-			},
-			format: 'textarea',
-			readOnly: false,
-			default: ''
+			// _group: 'design'
 		}
 	},
 	$defs: {
 		format_definition: {
+			id: '/schemas/format_definition',
 			title: 'Link',
 			type: 'object',
 			properties: {
@@ -106,6 +29,7 @@ export const link = {
 						format: null
 					},
 					readOnly: false,
+					required: true,
 					default: ''
 				},
 				external: {
@@ -142,4 +66,5 @@ export const link = {
 			}
 		}
 	}
+	// groups: [{ name: 'design', title: 'Design' }]
 }

@@ -6,7 +6,6 @@
 	import PasswordStrength from '$lib/components/forms/PasswordStrength.svelte'
 	import PasswordInput from '$lib/components/forms/PasswordInput.svelte'
 	import Widget from '$lib/components/widgets/Widget.svelte'
-	import { writable } from 'svelte/store'
 	import WidgetBox from '$lib/components/widgets/WidgetBox.svelte'
 
 	export let data: any
