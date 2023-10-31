@@ -17,6 +17,7 @@
     import {getApiData} from "$lib/services/getData";
 
     export let widgets;
+    export let dashboard;
 
     console.log(widgets);
     $: console.log(widgets);
@@ -62,6 +63,25 @@
         }
 
         return widget;
+    };
+
+
+    const handleShareEntireWidget = () => {
+        const url = `/share/dashboard/${dashboard.program_id}/${dashboard.module_id}/${dashboard.dashboard_id}`;
+        const link = document.createElement("a");
+        link.href = url;
+        link.setAttribute("target", "_blank");
+        link.click();
+        // dropdownOpen = false;
+    };
+
+
+    const handleShareWidget = (widget) => {
+        const url = `/share/widget/${widget?.dashboard_id}/${widget?.widget_id}`;
+        const link = document.createElement("a");
+        link.href = url;
+        link.target = "_blank";
+        link.click();
     };
 
 
@@ -129,7 +149,7 @@
                                     <Icon icon={widget.like? 'twemoji:red-heart' : 'icon-park-outline:like'}
                                           size={'22px'}/>
                                 </button>
-                                <button class="ml-auto">
+                                <button class="ml-auto" on:click={() => handleShareWidget(widget)}>
                                     <Icon icon={"mdi:share-variant"} size={'21px'}/>
                                 </button>
                             </div>
@@ -206,7 +226,9 @@
 
 
     </TabItem>
-
+    <button class="ml-auto" on:click={handleShareEntireWidget}>
+        <Icon icon={"mdi:share-variant"} size={'21px'}/>
+    </button>
 </Tabs>
 
 

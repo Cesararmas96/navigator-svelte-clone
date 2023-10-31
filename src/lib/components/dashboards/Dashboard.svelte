@@ -350,7 +350,7 @@
 
 
 
-     <ListWidgetsPinnedLiked widgets={widgets}/>
+     <ListWidgetsPinnedLiked widgets={widgets} {dashboard}/>
 
 
 
