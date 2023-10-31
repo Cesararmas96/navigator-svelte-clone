@@ -17,8 +17,10 @@
     import {getApiData} from "$lib/services/getData";
 
     export let widgets;
-    export let dashboard;
+    export let data: any
 
+
+    console.log(data);
     console.log(widgets);
     $: console.log(widgets);
 
@@ -67,9 +69,9 @@
 
 
     const handleShareEntireWidget = () => {
-        const url = `/share/dashboard/${dashboard.program_id}/${dashboard.module_id}/${dashboard.dashboard_id}`;
+        // const url = `/share/dashboard/${dashboard.program_id}/${dashboard.module_id}/${dashboard.dashboard_id}`;
         const link = document.createElement("a");
-        link.href = url;
+        // link.href = url;
         link.setAttribute("target", "_blank");
         link.click();
         // dropdownOpen = false;
@@ -122,7 +124,7 @@
 
         <div class="flex-row gap-4">
             <div class="grid grid-cols-6 gap-5">
-                {#each widgets as widget}
+                {#each data as widget}
 
                     <Card padding="none">
 
@@ -191,7 +193,7 @@
 
             </TableHead>
             <TableBody class="divide-y">
-                {#each widgets as widget}
+                {#each data as widget}
                     <TableBodyRow>
                         <TableBodyCell>
                             <div class="p-8 rounded-t-lg flex mr-auto">
@@ -226,9 +228,7 @@
 
 
     </TabItem>
-    <button class="ml-auto" on:click={handleShareEntireWidget}>
-        <Icon icon={"mdi:share-variant"} size={'21px'}/>
-    </button>
+   
 </Tabs>
 
 

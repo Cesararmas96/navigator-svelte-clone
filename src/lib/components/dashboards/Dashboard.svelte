@@ -27,7 +27,6 @@
 	import { createEventDispatcher, setContext } from 'svelte'
 	import { onMount } from 'svelte'
 	import { openModal } from '$lib/helpers/common/modal'
-    import ListWidgetsPinnedLiked from "$lib/components/widgets/ListWidgetsPinnedLiked.svelte";
 
 	export let dashboard: any
 
@@ -72,6 +71,7 @@
 
 		try {
 			widgets = await getApiData(`${baseUrl}/api/v2/widgets?dashboard_id=${dashboardId}`, 'GET')
+			console.log({widgets});
 			if (!widgets) {
 				sendAlert({
 					id: 'dashboard-no-widgets',
@@ -295,64 +295,56 @@
 
 <Alerts />
 
-<!--<div id="grid" class="w-full">-->
-<!--	<Grid-->
-<!--		{itemSize}-->
-<!--		class="grid-container"-->
-<!--		gap={5}-->
-<!--		{cols}-->
-<!--		collision="compress"-->
-<!--		bind:controller={gridController}-->
-<!--		on:change={updateLocations}-->
-<!--	>-->
-<!--		{#each gridItems as item}-->
-<!--			<GridItem-->
-<!--				x={item.x}-->
-<!--				y={item.y}-->
-<!--				w={item.w}-->
-<!--				h={item.h}-->
-<!--				class="grid-item"-->
-<!--				activeClass="grid-item-active"-->
-<!--				previewClass="bg-red-500 rounded"-->
-<!--				on:change={(e) => {-->
-<!--					changeItemSize(item)-->
-<!--				}}-->
-<!--				let:active-->
-<!--				bind:id={item.slug}-->
-<!--			>-->
-<!--				<WidgetBox-->
-<!--					widget={item.data}-->
-<!--					resized={resizedSlug === item.slug && !active}-->
-<!--					let:fixed-->
-<!--					let:isOwner-->
-<!--					let:isToolbarVisible-->
-<!--					let:widget-->
-<!--					on:handleResize={() => handleResizable(item)}-->
-<!--					on:handleCloning={() => handleCloning(item)}-->
-<!--					on:handleRemove={() => handleRemove(item)}-->
-<!--					on:handleResizable={(e) => {-->
-<!--						item.data.params.settings.resizable = e.detail.resizable && !e.detail.fixed-->
-<!--					}}-->
-<!--				>-->
-<!--					&lt;!&ndash; bind:this={item.component} &ndash;&gt;-->
-<!--					<Widget-->
-<!--						{widget}-->
-<!--						{fixed}-->
-<!--						{isToolbarVisible}-->
-<!--						{isOwner}-->
-<!--						on:handleInstanceResize={() => handleResizable(item)}-->
-<!--					/>-->
-<!--				</WidgetBox>-->
-<!--			</GridItem>-->
-<!--		{/each}-->
-<!--	</Grid>-->
-<!--</div>-->
-
-
-
-     <ListWidgetsPinnedLiked widgets={widgets} {dashboard}/>
-
-
-
-
+<div id="grid" class="w-full">
+	<Grid
+		{itemSize}
+		class="grid-container"
+		gap={5}
+		{cols}
+		collision="compress"
+		bind:controller={gridController}
+		on:change={updateLocations}
+	>
+		{#each gridItems as item}
+			<GridItem
+				x={item.x}
+				y={item.y}
+				w={item.w}
+				h={item.h}
+				class="grid-item"
+				activeClass="grid-item-active"
+				previewClass="bg-red-500 rounded"
+				on:change={(e) => {
+					changeItemSize(item)
+				}}
+				let:active
+				bind:id={item.slug}
+			>
+				<WidgetBox
+					widget={item.data}
+					resized={resizedSlug === item.slug && !active}
+					let:fixed
+					let:isOwner
+					let:isToolbarVisible
+					let:widget
+					on:handleResize={() => handleResizable(item)}
+					on:handleCloning={() => handleCloning(item)}
+					on:handleRemove={() => handleRemove(item)}
+					on:handleResizable={(e) => {
+						item.data.params.settings.resizable = e.detail.resizable && !e.detail.fixed
+					}}
+				>
+					<!-- bind:this={item.component} -->
+					<Widget
+						{widget}
+						{fixed}
+						{isToolbarVisible}
+						{isOwner}
+						on:handleInstanceResize={() => handleResizable(item)}
+					/>
+				</WidgetBox>
+			</GridItem>
+		{/each}
+	</Grid>
+</div>
 
