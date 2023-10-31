@@ -20,7 +20,6 @@
 		const conditions = buildConditions()
 		try {
 			data = getApiData(slug, method, conditions)
-			console.log({data});
 		} catch (error) {
 			sendErrorNotification(error)
 		}

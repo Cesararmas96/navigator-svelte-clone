@@ -76,7 +76,7 @@
 
 			Object.keys(jsonSchema.properties).map((property) => {
 				if (
-					jsonSchema.properties[property]?.$ref &&
+					jsonSchema.properties[property]?.$ref?.api &&
 					jsonSchema.properties[property]?.type === 'object'
 				) {
 					jsonSchema.properties[property].type = 'select'
