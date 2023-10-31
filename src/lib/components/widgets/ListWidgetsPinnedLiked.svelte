@@ -73,15 +73,22 @@
                                 <h5 class="text-xl font-semibold tracking-tight text-gray-900 dark:text-white">{widget.title}</h5>
                             </a>
 
-                            <p class="mb-3 font-normal text-gray-700 dark:text-gray-400 leading-tight">{widget.description || widget.widget_name}</p>
+                            <p class="mb-3 font-normal text-gray-700 dark:text-gray-400 leading-tight">{widget.description || widget.widget_name || ''}</p>
                             <p class="mb-3 italic text-gray-700 dark:text-gray-400 leading-tight">{getWidgetCategory(widget)}</p>
 
-                            <button class="mt-2.5 mb-1" on:click={() => widget.pin =!widget.pin}>
-                                <Icon icon={widget.pin? 'tabler:pinned-off': 'tabler:pinned'} size={'22px'}/>
-                            </button>
-                            <button class="mt-2.5 mb-1" on:click={() => widget.like =!widget.like}>
-                                <Icon icon={widget.like? 'twemoji:red-heart' : 'icon-park-outline:like'} size={'22px'}/>
-                            </button>
+                            <div class="mt-2.5 mb-1">
+
+                                <button on:click={() => widget.pin =!widget.pin}>
+                                    <Icon icon={widget.pin? 'tabler:pinned-off': 'tabler:pinned'} size={'22px'}/>
+                                </button>
+                                <button on:click={() => widget.like =!widget.like}>
+                                    <Icon icon={widget.like? 'twemoji:red-heart' : 'icon-park-outline:like'}
+                                          size={'22px'}/>
+                                </button>
+                                <button class="ml-auto">
+                                    <Icon icon={"mdi:share-variant"} size={'21px'}/>
+                                </button>
+                            </div>
 
 
                         </div>
@@ -111,6 +118,13 @@
                 <TableHeadCell>
                     <Icon icon={'tabler:pinned'} size={'20px'}/>
                 </TableHeadCell>
+                <TableHeadCell>
+                    <button>
+                        <Icon icon={"mdi:share-variant"} size={'21px'}/>
+                    </button>
+                </TableHeadCell>
+
+
             </TableHead>
             <TableBody class="divide-y">
                 {#each widgets as widget}
@@ -133,6 +147,11 @@
                         <TableBodyCell>
                             <button class="mt-2.5 mb-1" on:click={() => widget.pin =!widget.pin}>
                                 <Icon icon={widget.pin? 'tabler:pinned-off': 'tabler:pinned'} size={'20px'}/>
+                            </button>
+                        </TableBodyCell>
+                        <TableBodyCell>
+                            <button>
+                                <Icon icon={"mdi:share-variant"} size={'21px'}/>
                             </button>
                         </TableBodyCell>
                     </TableBodyRow>
