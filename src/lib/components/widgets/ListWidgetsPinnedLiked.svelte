@@ -2,7 +2,16 @@
 
     // import widgetsDataJson from '../../../../data/widgetsData.json'
     import type {Writable} from "svelte/store";
-    import {Card, Table, TableBody, TableBodyCell, TableBodyRow, TableHead, TableHeadCell} from "flowbite-svelte";
+    import {
+        Card,
+        Checkbox,
+        Table,
+        TableBody,
+        TableBodyCell,
+        TableBodyRow,
+        TableHead,
+        TableHeadCell
+    } from "flowbite-svelte";
     import Header from "$lib/components/widgets/settings/Header.svelte";
     import Toolbar from "$lib/components/widgets/type/AgGrid/Toolbar.svelte";
     import Footer from "$lib/components/widgets/settings/Footer.svelte";
@@ -71,20 +80,38 @@
 
     <Table>
         <TableHead>
+            <TableHeadCell class="!p-4">
+                <Checkbox/>
+            </TableHeadCell>
             <TableHeadCell>Icon</TableHeadCell>
             <TableHeadCell>Widget Name</TableHeadCell>
-            <TableHeadCell>Category</TableHeadCell>
-            <TableHeadCell>Price</TableHeadCell>
+            <TableHeadCell>
+                <Icon icon={'icon-park-outline:like'} size={'18px'}/>
+            </TableHeadCell>
+            <TableHeadCell>
+                <Icon icon={'tabler:pinned'} size={'20px'}/>
+            </TableHeadCell>
         </TableHead>
         <TableBody class="divide-y">
             {#each widgets as widget}
                 <TableBodyRow>
+                    <TableHeadCell class="!p-4">
+                        <Checkbox/>
+                    </TableHeadCell>
                     <TableBodyCell>
                         <Icon icon={widget?.attributes?.icon || ''} size={"48px"}/>
                     </TableBodyCell>
                     <TableBodyCell>{widget.title}</TableBodyCell>
-                    <TableBodyCell>Laptop</TableBodyCell>
-                    <TableBodyCell>$2999</TableBodyCell>
+                    <TableBodyCell>
+                        <button class="mt-2.5 mb-1">
+                            <Icon icon={widget.like? 'twemoji:red-heart' : 'icon-park-outline:like'} size={'18px'}/>
+                        </button>
+                    </TableBodyCell>
+                    <TableBodyCell>
+                        <button class="mt-2.5 mb-1">
+                            <Icon icon={widget.pin? 'tabler:pinned-off': 'tabler:pinned'} size={'20px'}/>
+                        </button>
+                    </TableBodyCell>
                 </TableBodyRow>
             {/each}
             <!--    <TableBodyRow>-->
