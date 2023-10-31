@@ -1,29 +1,31 @@
 <script lang="ts">
 	import Icon from '$lib/components/common/Icon.svelte'
 	import { Button } from 'flowbite-svelte'
-	import { createEventDispatcher } from 'svelte'
+	import { getContext } from 'svelte'
 	import Filter from './Filter.svelte'
+	import type { Writable } from 'svelte/store'
+	import { getWidgetAction } from '$lib/helpers'
 
-	const dispatch = createEventDispatcher()
+	const widgetActions = getContext<Writable<any[]>>('widgetActions')
 
 	export let position: string
 	export let widgetID: string
 	export let btnsActions: any
-	export let filterCallback: ((inputId: string) => void) | undefined = undefined
+	export let filterCallback: string | undefined = undefined
+	export let btnCallback: string | undefined = undefined
+
+	const fCallback = filterCallback ? getWidgetAction($widgetActions, filterCallback) : null
+	const bCallback = btnCallback ? getWidgetAction($widgetActions, btnCallback) : null
 
 	const buttons =
 		btnsActions && btnsActions[position]
 			? Object.entries(btnsActions[position]).map(([key, value]: [string, any]) => value)
 			: []
-
-	const handleClick = (method: string) => {
-		dispatch('click', method)
-	}
 </script>
 
 <div id={`aggrid-toolbar-${widgetID}-${position}`} class="flex flex-row justify-between">
-	{#if filterCallback}
-		<Filter {filterCallback} />
+	{#if fCallback}
+		<Filter filterCallback={fCallback} />
 	{/if}
 	<div
 		class={'widget-toolbar flex w-full flex-row justify-end px-3 py-3'}
@@ -34,7 +36,7 @@
 				class={btn.class}
 				variant="primary"
 				size="sm"
-				on:click={() => handleClick(btn.method)}
+				on:click={() => bCallback.action(btn.method)}
 			>
 				<Icon icon={btn.icon} />
 				{btn.title}

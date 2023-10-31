@@ -8,11 +8,11 @@
 <div class="mx-auto w-full flex-row">
 	<div class="mx-auto w-full">
 		<div class="flex h-[calc(100vh-4rem)] flex-col justify-between" data-simplebar>
-			<main class="pt-10">
+			<main>
 				<slot />
-				<div class="mx-4">
-					<Footer />
-				</div>
+				<!-- <div class="mx-4">
+                    <Footer/>
+                </div> -->
 			</main>
 		</div>
 	</div>

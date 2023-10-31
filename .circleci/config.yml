@@ -12,6 +12,7 @@ branch_filters: &branch_filters
     branches:
       only:
         - main
+        - develop
 
 parameters:
   env-tag:
@@ -84,6 +85,9 @@ jobs:
         type: string
       kubeconfig-secret:
         type: string
+      vpn-target: # used to check if the vpn connection is active
+        type: string
+        default: "https://redash.internal-dev.trocdigital.io"
     steps:
       - checkout
       - run: 
@@ -111,6 +115,11 @@ jobs:
       - run:
           name: rollout-restart-kubernetes-service
           command: |
+            until curl --silent --connect-timeout 10 <<parameters.vpn-target>> >/dev/null; do 
+              sleep 1; echo 'Restart VPN connection'; 
+              sudo ps ax | grep openvpn | awk '{print$1'} | xargs sudo kill -9 || true
+              sudo openvpn --dev tun0 --config /tmp/config.ovpn --up /etc/openvpn/update-systemd-resolved --script-security 2 --route 169.254.0.0 255.255.0.0 net_gateway --route 10.0.0.0 255.255.0.0 vpn_gateway &
+            done; 
             kubectl -n <<parameters.env-tag>> rollout restart deployment/<<pipeline.parameters.service>>-<<parameters.env-tag>>
       - telegram/notify:
           message: Finish Build and Deploy <<pipeline.parameters.service>>-<<parameters.env-tag>>:$CIRCLE_BUILD_NUM
@@ -142,6 +151,7 @@ workflows:
           name: "deploy-navigator-svelte-dev"
           kubeconfig-secret: "troc-services-kubeconfig"
           env-tag: "dev"
+          vpn-target: "https://redash.internal-dev.trocdigital.io"
           context:
             - navigator-dev
           requires: 
@@ -165,6 +175,7 @@ workflows:
           name: "deploy-navigator-svelte-qa"
           kubeconfig-secret: "troc-services-kubeconfig"
           env-tag: "qa"
+          vpn-target: "https://redash.internal-dev.trocdigital.io"
           context: 
             - navigator-dev
           requires:
@@ -211,6 +222,7 @@ workflows:
           name: "deploy-navigator-svelte-production"
           kubeconfig-secret: "troc-services-kubeconfig"
           env-tag: "production"
+          vpn-target: "https://redash.internal.trocdigital.io"
           context: 
             - navigator-dev
           requires:

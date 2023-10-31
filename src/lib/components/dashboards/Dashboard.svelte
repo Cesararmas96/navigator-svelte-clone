@@ -47,7 +47,7 @@
 	let widgets: any[] = []
     $: widgets
 
-	$: if ($storeDashboard?.attributes?.user_id === $storeUser.user_id) {
+	$: if ($storeDashboard?.attributes?.user_id === $storeUser?.user_id) {
 		const alert: AlertMessage = {
 			id: 'dashboard-system-msg',
 			title: `Customizing a system dashboard`,
@@ -82,7 +82,7 @@
 				return
 			}
 			widgets = widgets.map((widget: any) => {
-				widget.widget_slug = generateUniqueSlug(widget.title, widgets)
+				widget.widget_slug = widget?.widget_slug || generateUniqueSlug(widget.title, widgets)
 				return widget
 			})
 
@@ -121,7 +121,7 @@
 		setTimeout(async () => {
 			isChanging = false
 			saveLocations(dashboard, gridItems, gridController.gridParams)
-			if (dashboard?.attributes?.user_id !== $storeUser.user_id) return
+			if (dashboard?.attributes?.user_id !== $storeUser?.user_id) return
 			const payload = { widget_location: { ...gridController.gridParams.items } }
 			await postData(
 				`${baseUrl}/api/v2/dashboard/widgets/location/${dashboard.dashboard_id}`,
@@ -173,7 +173,7 @@
 				dashboard_id,
 				title: tempTitle,
 				widget_id,
-				user_id: $storeUser.user_id
+				user_id: $storeUser?.user_id
 			}
 
 			const item = gridItems.find((item: any) => item.slug === copiedWidget.widget_slug)
@@ -230,21 +230,17 @@
 	const handleWidgetInsert = async (widgetUid: string, widgetId: string) => {
 		const token = $storeUser.token
 
-
 		try {
 			const payload = {
 				program_id: dashboard.program_id,
 				dashboard_id: dashboard.dashboard_id,
-				title: "My new Widget",
-				widget_id: widgetId,
+				title: 'My new Widget',
+				widget_id: widgetId
 			}
-			console.log(payload);
 
-
-
-
-				// const resp = await fetch(`https://api.dev.navigator.mobileinsight.com/api/v2/widgets-template/b13b619a-847e-4734-a3d2-fa198f0531b7`,
-				const resp = await fetch(`https://api.dev.navigator.mobileinsight.com/api/v2/widgets/${widgetUid}`,
+			// const resp = await fetch(`https://api.dev.navigator.mobileinsight.com/api/v2/widgets-template/b13b619a-847e-4734-a3d2-fa198f0531b7`,
+			const resp = await fetch(
+				`https://api.dev.navigator.mobileinsight.com/api/v2/widgets/${widgetUid}`,
 				{
 					method: 'PUT',
 					headers: {

@@ -43,7 +43,7 @@
 	aria-expanded="false"
 	class="icon relative grid h-9 w-9 place-content-center rounded text-2xl font-light hover:bg-white/10 aria-expanded:bg-white/20"
 >
-	<Icon icon="tabler:settings" size="20px" />
+	<Icon icon="line-md:cog-loop" size="20px" />
 </button>
 
 <Dropdown
@@ -52,11 +52,7 @@
 	class="flex grid h-full grid-cols-3 flex-col gap-3 p-4"
 >
 	<div slot="header" class="py-2 text-center font-bold">Preferences</div>
-	<PreferenceItem
-		name="Toggle Fullscreen"
-		icon="icon-park:full-screen-one"
-		id="fullscreen-toggle"
-	/>
+	<PreferenceItem name="Toggle Fullscreen" icon="tabler:arrows-maximize" id="fullscreen-toggle" />
 	<PreferenceItem
 		name="Toggle Dark Mode"
 		icon={$themeMode === 'dark' ? 'tabler:sun' : 'tabler:moon'}

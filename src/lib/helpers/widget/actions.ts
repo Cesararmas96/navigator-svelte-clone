@@ -3,7 +3,7 @@ import { get, writable, type Writable } from 'svelte/store';
 
 type Action = {
   name: string,
-  action: () => void
+  action: (props?: any) => void
 }
 
 export const initWidgetActions = (): Writable<any[]> => {
