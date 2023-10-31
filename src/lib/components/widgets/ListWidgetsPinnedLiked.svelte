@@ -13,6 +13,7 @@
         Tabs
     } from "flowbite-svelte";
     import Icon from "$lib/components/common/Icon.svelte";
+    import {getWidgetCategory} from "$lib/helpers/widgets/actions";
 
     export let widgets;
 
@@ -49,14 +50,15 @@
                             </a>
 
                             <p class="mb-3 font-normal text-gray-700 dark:text-gray-400 leading-tight">{widget.description || widget.widget_name}</p>
+                            <p class="mb-3 italic text-gray-700 dark:text-gray-400 leading-tight">{getWidgetCategory(widget)}</p>
 
-
-                            <button class="mt-2.5 mb-1">
-                                <Icon icon={widget.pin? 'tabler:pinned-off': 'tabler:pinned-filled'} size={'22px'}/>
+                            <button class="mt-2.5 mb-1" on:click={() => widget.pin =!widget.pin}>
+                                <Icon icon={widget.pin? 'tabler:pinned-off': 'tabler:pinned'} size={'22px'}/>
                             </button>
-                            <button class="mt-2.5 mb-1">
+                            <button class="mt-2.5 mb-1" on:click={() => widget.like =!widget.like}>
                                 <Icon icon={widget.like? 'twemoji:red-heart' : 'icon-park-outline:like'} size={'22px'}/>
                             </button>
+
 
                         </div>
                     </Card>
@@ -75,37 +77,36 @@
         </div>
         <Table>
             <TableHead>
-                <TableHeadCell class="!p-4">
-                    <Checkbox/>
-                </TableHeadCell>
                 <TableHeadCell>Icon</TableHeadCell>
                 <TableHeadCell>Title</TableHeadCell>
+                <TableHeadCell>Type</TableHeadCell>
                 <TableHeadCell>Description</TableHeadCell>
                 <TableHeadCell>
                     <Icon icon={'icon-park-outline:like'} size={'18px'}/>
                 </TableHeadCell>
                 <TableHeadCell>
-                    <Icon icon={'tabler:pinned'} size={'20px'}/>
+                    <Icon icon={'tabler:pinned'} size={'20px'} />
                 </TableHeadCell>
             </TableHead>
             <TableBody class="divide-y">
                 {#each widgets as widget}
                     <TableBodyRow>
-                        <TableHeadCell class="!p-4">
-                            <Checkbox/>
-                        </TableHeadCell>
                         <TableBodyCell>
+                                    <span style="color:{widget?.attributes?.fg_color}">
                             <Icon icon={widget?.attributes?.icon || ''} size={"48px"}/>
+                                    </span>
                         </TableBodyCell>
                         <TableBodyCell>{widget.title}</TableBodyCell>
+                        <TableBodyCell>{getWidgetCategory(widget)}</TableBodyCell>
+
                         <TableBodyCell>{widget.description || widget.widget_name}</TableBodyCell>
                         <TableBodyCell>
-                            <button class="mt-2.5 mb-1">
+                            <button class="mt-2.5 mb-1"  on:click={() => widget.like =!widget.like}>
                                 <Icon icon={widget.like? 'twemoji:red-heart' : 'icon-park-outline:like'} size={'18px'}/>
                             </button>
                         </TableBodyCell>
                         <TableBodyCell>
-                            <button class="mt-2.5 mb-1">
+                            <button class="mt-2.5 mb-1"  on:click={() => widget.pin =!widget.pin}>
                                 <Icon icon={widget.pin? 'tabler:pinned-off': 'tabler:pinned'} size={'20px'}/>
                             </button>
                         </TableBodyCell>

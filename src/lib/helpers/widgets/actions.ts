@@ -61,3 +61,49 @@ export async function insertWidget(token: string, data: object) {
 		console.error('Error:', error)
 	}
 }
+
+export const getWidgetCategories = async (templates) => {
+	const uniqueIds = new Set()
+
+	templates.forEach((item) => {
+		if (item.widget_type_id.includes('api-')) {
+			item.widget_type_id = item.widget_type_id.replace('api-', '')
+		}
+		if (item.widget_type_id.includes('-')) {
+			item.widget_type_id = item.widget_type_id.replaceAll('-', ' ')
+		}
+
+		item.widget_type_id = item.widget_type_id
+			.split(' ')
+			.map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+			.join(' ')
+
+		uniqueIds.add(item.widget_type_id)
+	})
+
+	const categories = [...uniqueIds].sort()
+
+	console.log(categories)
+
+	return categories
+}
+
+export const getWidgetCategory = (template) => {
+	let widgetTypeId = template.widget_type_id
+
+	if (widgetTypeId.includes('api-')) {
+		widgetTypeId = widgetTypeId.replace('api-', '')
+	}
+	if (widgetTypeId.includes('-')) {
+		widgetTypeId = widgetTypeId.replaceAll('-', ' ')
+	}
+
+	widgetTypeId = widgetTypeId
+		.split(' ')
+		.map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+		.join(' ')
+
+	console.log(widgetTypeId)
+
+	return widgetTypeId
+}
