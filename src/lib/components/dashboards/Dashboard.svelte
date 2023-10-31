@@ -45,6 +45,7 @@
 	let gridItems: any[] = []
 	let gridController: GridController
 	let widgets: any[] = []
+    $: widgets
 
 	$: if ($storeDashboard?.attributes?.user_id === $storeUser?.user_id) {
 		const alert: AlertMessage = {
@@ -70,6 +71,7 @@
 
 		try {
 			widgets = await getApiData(`${baseUrl}/api/v2/widgets?dashboard_id=${dashboardId}`, 'GET')
+			console.log({widgets});
 			if (!widgets) {
 				sendAlert({
 					id: 'dashboard-no-widgets',
@@ -341,3 +343,4 @@
 		{/each}
 	</Grid>
 </div>
+
