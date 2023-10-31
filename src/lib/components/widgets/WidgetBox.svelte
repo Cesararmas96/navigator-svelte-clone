@@ -78,7 +78,7 @@
 
 	const dashboard = getContext<Writable<any>>('dashboard')
 
-	$: isOwner = $dashboard?.attributes?.user_id === $storeUser.user_id
+	$: isOwner = $dashboard?.attributes?.user_id === $storeUser?.user_id
 	setContext('isWidgetOwner', isOwner)
 
 	let widgetStore: any = writable(widget)

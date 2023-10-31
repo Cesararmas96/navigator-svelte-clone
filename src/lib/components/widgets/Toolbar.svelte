@@ -26,7 +26,7 @@
 	const patternUrl =
 		/(https:\/\/www\.|http:\/\/www\.|https:\/\/|http:\/\/)?[a-zA-Z]{2,}(\.[a-zA-Z]{2,})(\.[a-zA-Z]{2,})?\/[a-zA-Z0-9]{2,}|((https:\/\/www\.|http:\/\/www\.|https:\/\/|http:\/\/)?[a-zA-Z]{2,}(\.[a-zA-Z]{2,})(\.[a-zA-Z]{2,})?)|(https:\/\/www\.|http:\/\/www\.|https:\/\/|http:\/\/)?[a-zA-Z0-9]{2,}\.[a-zA-Z0-9]{2,}\.[a-zA-Z0-9]{2,}(\.[a-zA-Z0-9]{2,})?/
 
-	let isWidgetOwner: boolean = $dashboard?.attributes?.user_id === $storeUser.user_id
+	let isWidgetOwner: boolean = $dashboard?.attributes?.user_id === $storeUser?.user_id
 	let menuOpen = false
 
 	let bg: string
@@ -178,13 +178,13 @@
 							name: 'Unpin',
 							icon: 'tabler:pinned-off',
 							tooltipText: 'Unpin widget',
-							action: (status) => pin(status, $widget.widget_id, $storeUser.user_id)
+							action: (status) => pin(status, $widget.widget_id, $storeUser?.user_id)
 						},
 						inactive: {
 							name: 'Pin',
 							icon: 'tabler:pinned',
 							tooltipText: 'Pin widget',
-							action: (status) => pin(status, $widget.widget_id, $storeUser.user_id)
+							action: (status) => pin(status, $widget.widget_id, $storeUser?.user_id)
 						}
 					}
 				},

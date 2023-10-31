@@ -40,6 +40,7 @@
 					format: null
 				},
 				readOnly: false,
+				// _group: 'general',
 				default: ''
 			},
 			icon: {
@@ -50,6 +51,7 @@
 					format: null
 				},
 				readOnly: false,
+				// _group: 'general',
 				default: ''
 			},
 			description: {
@@ -62,9 +64,11 @@
 				format: 'textarea',
 				readOnly: false,
 				writeOnly: false,
+				// _group: 'general',
 				default: ''
 			}
 		},
+		// groups: [{ name: 'general', title: 'General' }],
 		noHeader: true
 	}
 
@@ -72,6 +76,8 @@
 		if ($selectedWidgetSettings?.widget && $selectedWidgetSettings?.state === 'edit') {
 			widgetSettings = $selectedWidgetSettings.widget
 
+			console.log(JSON.stringify(schemaGeneralDefault))
+			console.log(JSON.stringify($widgetSettings?.schema))
 			schema = merge({}, schemaGeneralDefault, $widgetSettings?.schema || {})
 
 			// general
@@ -97,16 +103,6 @@
 		if (!Array.isArray(payload)) {
 			// General
 			payload = merge({}, payload, { attributes: { icon: payload.icon } })
-			// Link Temporarily
-			payload = merge({}, payload, {
-				format_definition: {
-					title: payload.title_link,
-					href: payload.href_link,
-					external: payload.external_link,
-					icon: payload.icon_link,
-					description: payload.description_link
-				}
-			})
 
 			$selectedWidgetSettings.callback(widgetSettings, payload)
 		} else {

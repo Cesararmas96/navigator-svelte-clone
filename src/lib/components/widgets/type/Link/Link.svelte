@@ -2,20 +2,24 @@
 	import { Avatar } from 'flowbite-svelte'
 	import Icon from '$lib/components/common/Icon.svelte'
 	import type { Link } from './interface'
-	import { getContext } from 'svelte'
+	import { getContext, onMount } from 'svelte'
 	import { schema } from './setting'
 
 	const widget: any = getContext('widget')
 
-	const schemaLink = structuredClone(schema)
+	function createSettings() {
+		const schemaLink = structuredClone(schema)
 
-	schemaLink.properties.title_link.default = $widget?.format_definition?.title
-	schemaLink.properties.href_link.default = $widget?.format_definition?.href
-	schemaLink.properties.external_link.default = $widget?.format_definition?.external
-	schemaLink.properties.icon_link.default = $widget?.format_definition?.icon
-	schemaLink.properties.description_link.default = $widget?.format_definition?.description
+		schemaLink.$defs.format_definition.properties.title.default = $widget?.format_definition?.title
+		schemaLink.$defs.format_definition.properties.href.default = $widget?.format_definition?.href
+		schemaLink.$defs.format_definition.properties.external.default =
+			$widget?.format_definition?.external
+		schemaLink.$defs.format_definition.properties.icon.default = $widget?.format_definition?.icon
+		schemaLink.$defs.format_definition.properties.description.default =
+			$widget?.format_definition?.description
 
-	$widget.schema = schemaLink
+		$widget.schema = schemaLink
+	}
 
 	let link: Link = $widget.format_definition
 	let hover = false
@@ -27,6 +31,10 @@
 
 		$widget.saved = null
 	}
+
+	onMount(() => {
+		createSettings()
+	})
 </script>
 
 <a
