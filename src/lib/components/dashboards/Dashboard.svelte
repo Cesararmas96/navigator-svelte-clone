@@ -78,7 +78,7 @@
 				return
 			}
 			widgets = widgets.map((widget: any) => {
-				widget.widget_slug = generateUniqueSlug(widget.title, widgets)
+				widget.widget_slug = widget?.widget_slug || generateUniqueSlug(widget.title, widgets)
 				return widget
 			})
 
@@ -142,7 +142,10 @@
 	}
 	$: handleRemove = (item: any) => {
 		// item.data.component.$destroy()
-		gridItems = removeItem(item, gridItems, gridController.gridParams)
+		const items = [...removeItem(item, gridItems, gridController.gridParams)]
+		gridItems = []
+		updateLocations()
+		gridItems = [...items]
 		// gridItems.map((item: any) => {
 		// 	delete item.data.loaded
 		// 	return item

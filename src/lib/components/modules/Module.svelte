@@ -1,14 +1,5 @@
 <script lang="ts">
-	import {
-		Tabs,
-		TabItem,
-		Modal,
-		Button,
-		Dropdown,
-		DropdownItem,
-		MenuButton,
-		P
-	} from 'flowbite-svelte'
+	import { Tabs, TabItem, Modal, Button, Dropdown, DropdownItem } from 'flowbite-svelte'
 	import Dashboard from '../dashboards/Dashboard.svelte'
 	import {
 		hideDashboardSettings,
@@ -19,7 +10,7 @@
 	} from '$lib/stores/dashboards'
 	import Icon from '../common/Icon.svelte'
 	import { openConfirmModal, openModal } from '$lib/helpers/common/modal'
-	import { deleteData, getApiData, patchData, postData, putData } from '$lib/services/getData'
+	import { deleteData, getApiData, postData, putData } from '$lib/services/getData'
 	import { page } from '$app/stores'
 	import { sendErrorNotification, sendSuccessNotification } from '$lib/stores/toast'
 	import { clearAlerts, sendAlert, sendInfoAlert } from '$lib/helpers/common/alerts'
@@ -41,8 +32,6 @@
 	clearAlerts()
 
 	let currentDashboard
-
-	$: console.log('currentDashboard', currentDashboard)
 
 	$: if (!dashboards || dashboards?.length === 0)
 		sendInfoAlert(
