@@ -10,6 +10,7 @@
 	export let data: any
 
 	const widgetActions = getContext<Writable<any[]>>('widgetActions')
+
 	let classbase = $widget.classbase?.replace('Widget', '')
 
 	if (!classbase) {
@@ -43,7 +44,7 @@
 	})
 </script>
 
-{#if $widget.data}
+{#if $widget.data || $widget.params?.btnsActions}
 	<svelte:component this={Thing} data={$widget.data} />
 {:else}
 	<NoDataFound />
