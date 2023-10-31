@@ -14,11 +14,55 @@
     } from "flowbite-svelte";
     import Icon from "$lib/components/common/Icon.svelte";
     import {getWidgetCategory} from "$lib/helpers/widgets/actions";
+    import {getApiData} from "$lib/services/getData";
 
     export let widgets;
 
     console.log(widgets);
     $: console.log(widgets);
+
+
+    const urlBase = import.meta.env.VITE_API_URL;
+    const pinEndpoint = `${urlBase}/api/v1/interactions/pin`;
+    const likeEndpoint = `${urlBase}/api/v1/interactions/likes`;
+
+    const handlePinWidget = (widget) => {
+        try {
+            if (widget.pin) {
+                getApiData(pinEndpoint, "DELETE", {widget_id: widget.widget_id});
+                console.log("unpin");
+            } else if (!widget.pin) {
+                getApiData(pinEndpoint, "PUT", {widget_id: widget.widget_id, user_id: widget.user_id});
+                console.log("pin");
+            }
+
+        } catch (e) {
+            console.log(e.text);
+        }
+
+        return widget.pin = !widget.pin;
+
+    };
+
+
+    const handleLikeWidget = (widget) => {
+        try {
+            if (widget.like) {
+                getApiData(likeEndpoint, "PUT", {object_uuid: widget.widget_id, object_type: "widget"});
+                console.log("like");
+                widget.like = false;
+            } else {
+                getApiData(likeEndpoint, "DELETE", {object_uuid: widget.widget_id, object_type: "widget"});
+                console.log("remove like");
+                widget.like = true;
+            }
+        } catch (error) {
+            console.log(error);
+            // Handle error, revert state changes or retry the API call
+        }
+
+        return widget;
+    };
 
 
     const icons = {
@@ -78,10 +122,10 @@
 
                             <div class="mt-2.5 mb-1">
 
-                                <button on:click={() => widget.pin =!widget.pin}>
+                                <button on:click={() => handlePinWidget(widget)}>
                                     <Icon icon={widget.pin? 'tabler:pinned-off': 'tabler:pinned'} size={'22px'}/>
                                 </button>
-                                <button on:click={() => widget.like =!widget.like}>
+                                <button on:click={() => handleLikeWidget(widget)}>
                                     <Icon icon={widget.like? 'twemoji:red-heart' : 'icon-park-outline:like'}
                                           size={'22px'}/>
                                 </button>
