@@ -21,38 +21,35 @@
     $: console.log(widgets);
 
 
-
-    	const icons = {
-		'fa fa-bar-chart': `/img/icons/bar.png`,
-		'fa fa-area-chart': `/img/icons/area.png`,
-		'fa fa-table': `/img/icons/grid.png`,
-		'fa fa-circle-o-notch': `/img/icons/pie-2.png`,
-		'fa fa-tachometer': `/img/icons/speedometer.png`,
-		'fa fa-id-card-o': `/img/icons/id.png`,
-		'fa fa-map': `/img/icons/map.png`,
-		'fa fa-clock-o': `/img/icons/clock.png`,
-		'far fa-rss': `/img/icons/rss.png`,
-		'fa fa-desktop': `/img/icons/pc.png`,
-		'material-symbols:iframe': `/img/icons/pc.png`,
-		'fa fa-file-image-o': `/img/icons/photo.png`,
-		'fa fa-film': `/img/icons/cinema.png`,
-		'fa fa-youtube': `/img/icons/youtube.png`,
-		'tabler:brand-spotify': `/img/icons/spotify.svg`,
-		'tabler:carousel-horizontal': `/img/icons/gallery.png`,
-		'tabler:wash-dry-shade': `/img/icons/content.png`,
-		undefined: `/img/icons/loading.svg`,
-		loading: `/img/icons/loading.svg`,
-		'fa fa-flickr': `/img/icons/flickr.svg`
-	}
-
-
+    const icons = {
+        "fa fa-bar-chart": `/img/icons/bar.png`,
+        "fa fa-area-chart": `/img/icons/area.png`,
+        "fa fa-table": `/img/icons/grid.png`,
+        "fa fa-circle-o-notch": `/img/icons/pie-2.png`,
+        "fa fa-tachometer": `/img/icons/speedometer.png`,
+        "fa fa-id-card-o": `/img/icons/id.png`,
+        "fa fa-map": `/img/icons/map.png`,
+        "fa fa-clock-o": `/img/icons/clock.png`,
+        "far fa-rss": `/img/icons/rss.png`,
+        "fa fa-desktop": `/img/icons/pc.png`,
+        "material-symbols:iframe": `/img/icons/pc.png`,
+        "fa fa-file-image-o": `/img/icons/photo.png`,
+        "fa fa-film": `/img/icons/cinema.png`,
+        "fa fa-youtube": `/img/icons/youtube.png`,
+        "tabler:brand-spotify": `/img/icons/spotify.svg`,
+        "tabler:carousel-horizontal": `/img/icons/gallery.png`,
+        "tabler:wash-dry-shade": `/img/icons/content.png`,
+        undefined: `/img/icons/loading.svg`,
+        loading: `/img/icons/loading.svg`,
+        "fa fa-flickr": `/img/icons/flickr.svg`
+    };
 
 
 </script>
 
 
 <Tabs style="underline">
-<!--    Card View -->
+    <!--    Card View -->
     <TabItem open>
         <div slot="title" class="flex items-center gap-2">
             <Icon icon={'solar:widget-linear'} size="30px"></Icon>
@@ -60,14 +57,14 @@
         </div>
 
         <div class="flex-row gap-4">
-            <div class="grid grid-cols-5 gap-5">
+            <div class="grid grid-cols-6 gap-5">
                 {#each widgets as widget}
 
                     <Card padding="none">
 
-                        <div class="p-8 rounded-t-lg">
-<!--                            <Icon icon={widget?.attributes?.icon || ''} size={"48px"}/>-->
-                            	<img src={icons[widget?.attributes?.icon]} alt="" width="20" />
+                        <div class="p-8 rounded-t-lg flex mr-auto">
+                            <!--                            <Icon icon={widget?.attributes?.icon || ''} size={"48px"}/>-->
+                            <img src={icons[widget?.attributes?.icon]} alt="" width="60"/>
                         </div>
 
 
@@ -96,7 +93,7 @@
 
 
     </TabItem>
-<!--    Table view-->
+    <!--    Table view-->
     <TabItem>
         <div slot="title" class="flex items-center gap-2">
             <Icon icon={'lucide:sheet'} size="30px"></Icon>
@@ -112,28 +109,29 @@
                     <Icon icon={'icon-park-outline:like'} size={'18px'}/>
                 </TableHeadCell>
                 <TableHeadCell>
-                    <Icon icon={'tabler:pinned'} size={'20px'} />
+                    <Icon icon={'tabler:pinned'} size={'20px'}/>
                 </TableHeadCell>
             </TableHead>
             <TableBody class="divide-y">
                 {#each widgets as widget}
                     <TableBodyRow>
                         <TableBodyCell>
-                                    <span style="color:{widget?.attributes?.fg_color}">
-                            <Icon icon={widget?.attributes?.icon || ''} size={"48px"}/>
-                                    </span>
+                            <div class="p-8 rounded-t-lg flex mr-auto">
+                                <!--                            <Icon icon={widget?.attributes?.icon || ''} size={"48px"}/>-->
+                                <img src={icons[widget?.attributes?.icon]} alt="" width="50"/>
+                            </div>
                         </TableBodyCell>
                         <TableBodyCell>{widget.title}</TableBodyCell>
                         <TableBodyCell>{getWidgetCategory(widget)}</TableBodyCell>
 
                         <TableBodyCell>{widget.description || widget.widget_name}</TableBodyCell>
                         <TableBodyCell>
-                            <button class="mt-2.5 mb-1"  on:click={() => widget.like =!widget.like}>
+                            <button class="mt-2.5 mb-1" on:click={() => widget.like =!widget.like}>
                                 <Icon icon={widget.like? 'twemoji:red-heart' : 'icon-park-outline:like'} size={'18px'}/>
                             </button>
                         </TableBodyCell>
                         <TableBodyCell>
-                            <button class="mt-2.5 mb-1"  on:click={() => widget.pin =!widget.pin}>
+                            <button class="mt-2.5 mb-1" on:click={() => widget.pin =!widget.pin}>
                                 <Icon icon={widget.pin? 'tabler:pinned-off': 'tabler:pinned'} size={'20px'}/>
                             </button>
                         </TableBodyCell>
