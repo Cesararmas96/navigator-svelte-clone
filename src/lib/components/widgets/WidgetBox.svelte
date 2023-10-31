@@ -6,6 +6,7 @@
 	import { selectedWidgetSettings } from '$lib/stores/widgets'
 	import { storeUser } from '$lib/stores'
 	import { themeMode } from '$lib/stores/preferences'
+	import { initWidgetTop } from '$lib/helpers/widget/widget-top'
 
 	let isToolbarVisible: boolean = false
 	let fixed: boolean
@@ -127,6 +128,7 @@
 	}
 
 	initActions()
+	initWidgetTop()
 
 	onMount(() => {
 		$widgetStore.instances = []
