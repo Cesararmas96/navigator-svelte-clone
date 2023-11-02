@@ -10,9 +10,11 @@ const schema = {
 				format: null
 			},
 			readOnly: false,
+			_group: 'media',
 			default: ''
 		}
-	}
+	},
+	addGroups: [{ name: 'media', title: 'Media', open: true }]
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

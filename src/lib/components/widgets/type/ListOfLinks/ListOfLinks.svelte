@@ -1,49 +1,51 @@
 <script lang="ts">
-	import {
-		A,
-		Card,
-		P,
-		Table,
-		TableBody,
-		TableBodyCell,
-		TableBodyRow,
-		TableHead,
-		TableHeadCell
-	} from 'flowbite-svelte'
+	import { getContext, onMount } from 'svelte'
 	import Icon from '$lib/components/common/Icon.svelte'
-	import jsonData from '../../../../../data/widgetListOfLinks.json'
+	import { schema } from './setting'
 
-	const getWidgetCardData = (jsonData: any) => {
-		const data = jsonData
-		console.log(data)
-		return data
+	const widget: any = getContext('widget')
+	let data: any = $widget.format_definition || []
+
+	$: if ($widget?.saved) {
+		setTimeout(() => {
+			data = $widget.format_definition
+			createSettings()
+		}, 5)
+
+		$widget.saved = null
 	}
 
-	const data = getWidgetCardData(jsonData)
+	function createSettings() {
+		const schemaLink = structuredClone(schema)
+		schemaLink.$defs.format_definition.default = $widget?.format_definition
+		$widget.schema = schemaLink
+	}
+
+	onMount(() => {
+		createSettings()
+	})
 </script>
 
-<div class="mx-5">
-	<Table>
-		<TableBody>
-			{#each data as el, index}
-				<TableBodyRow>
-					<TableHeadCell>
-						<div class="flex flex-row text-primary">
-							<p class="mr-2 font-medium" style="font-size: 14px">{index + 1}</p>
+{#if data.length > 0}
+	<div class="m-3 my-5">
+		{#each data as item, idx}
+			<a href={item.href} target={item?.external ? '_blank' : ''}>
+				<div class="group flex cursor-pointer flex-wrap items-center text-heading">
+					<div
+						class="m-2 grid h-4 w-4 place-content-center rounded-full bg-gray-500 text-sm font-bold text-white group-hover:bg-primary-700"
+					>
+						{idx + 1}
+					</div>
+					<div class="flex-1 text-md font-bold group-hover:text-primary-700">{item?.title}</div>
+					<div class="font-bold group-hover:text-primary-700">
+						<Icon icon={'gg:external'} size="20px" />
+					</div>
 
-							<A class="font-medium hover:underline" href={el.href}>
-								<span style="font-size: 13px">
-									{el.title}
-								</span>
-
-								<span style="font-size: 13px" class="-pb-1 pl-0.5">
-									<Icon icon={'gg:external'} size="20px" />
-								</span>
-							</A>
-						</div>
-					</TableHeadCell>
-				</TableBodyRow>
-			{/each}
-		</TableBody>
-	</Table>
-</div>
+					<div class="my-2 h-0.5 w-full bg-light-200 dark:bg-dark-200">
+						<div class="h-0.5 rounded group-hover:bg-primary-700" style="width: 100%" />
+					</div>
+				</div>
+			</a>
+		{/each}
+	</div>
+{/if}

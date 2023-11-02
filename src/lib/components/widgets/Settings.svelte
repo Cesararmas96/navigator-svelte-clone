@@ -40,7 +40,7 @@
 					format: null
 				},
 				readOnly: false,
-				// _group: 'general',
+				_group: 'general',
 				default: ''
 			},
 			icon: {
@@ -51,7 +51,7 @@
 					format: null
 				},
 				readOnly: false,
-				// _group: 'general',
+				_group: 'general',
 				default: ''
 			},
 			description: {
@@ -64,24 +64,24 @@
 				format: 'textarea',
 				readOnly: false,
 				writeOnly: false,
-				// _group: 'general',
+				_group: 'general',
 				default: ''
 			}
 		},
-		// groups: [
-		// 	{ name: 'general', title: 'General' },
-		// 	{ name: 'design', title: 'Design' }
-		// ],
+		groups: [{ name: 'general', title: 'General', open: true }],
 		noHeader: true
 	}
+	let groups
 
 	$: {
 		if ($selectedWidgetSettings?.widget && $selectedWidgetSettings?.state === 'edit') {
 			widgetSettings = $selectedWidgetSettings.widget
 
-			console.log(JSON.stringify(schemaGeneralDefault))
-			console.log(JSON.stringify($widgetSettings?.schema))
-			schema = merge({}, schemaGeneralDefault, $widgetSettings?.schema || {})
+			if ($widgetSettings?.schema?.addGroups) {
+				groups = schemaGeneralDefault.groups.concat($widgetSettings?.schema?.addGroups)
+			}
+
+			schema = merge({}, schemaGeneralDefault, $widgetSettings?.schema || {}, { groups: groups })
 
 			// general
 			schema.properties.title.default = $widgetSettings?.title
@@ -108,15 +108,16 @@
 			payload = merge({}, payload, { attributes: { icon: payload.icon } })
 
 			$selectedWidgetSettings.callback(widgetSettings, payload)
+			close()
 		} else {
 			sendErrorNotification('There has been a problem...')
 		}
-		close()
 	}
 
 	const close = () => {
 		$selectedWidgetSettings = null
 		$hideWidgetSettings = true
+		groups = {}
 	}
 </script>
 
@@ -150,7 +151,7 @@
 		</div>
 
 		{#if schema}
-			<div class="px-4 pb-4">
+			<div class="px-2 pb-4">
 				<!-- <p class="text-sm text-gray-500 dark:text-gray-400">This is widget settings</p> -->
 				<Form {schema}>
 					<div slot="buttons-header" let:handleValidateForm>

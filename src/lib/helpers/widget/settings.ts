@@ -1,13 +1,13 @@
 import type { Writable } from 'svelte/store'
 import { getApiData } from '$lib/services/getData'
-import { merge } from 'lodash-es'
+// import { merge } from 'lodash-es'
 import { sendSuccessNotification } from '$lib/stores/toast'
 
 const urlBase = import.meta.env.VITE_API_URL
 
 export const saveWidgetSettings = (widgetSettings: Writable<unknown>, payload) => {
-	widgetSettings.update((widget) => {
-		const widgetBD = merge({}, widget, payload, { saved: true })
+	widgetSettings.update((widget: any) => {
+		const widgetBD = { ...widget, ...payload, saved: true }
 
 		updateChangesBD(widgetBD)
 		sendSuccessNotification('Updated widget')
