@@ -103,7 +103,5 @@ export const getWidgetCategory = (template) => {
 		.map((word) => word.charAt(0).toUpperCase() + word.slice(1))
 		.join(' ')
 
-	console.log(widgetTypeId)
-
 	return widgetTypeId
 }
