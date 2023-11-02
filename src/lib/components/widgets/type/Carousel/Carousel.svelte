@@ -1,37 +1,43 @@
 <script lang="ts">
-	import {
-		A,
-		Card,
-		P,
-		Table,
-		TableBody,
-		TableBodyCell,
-		TableBodyRow,
-		TableHead,
-		TableHeadCell
-	} from 'flowbite-svelte'
-	import Icon from '$lib/components/common/Icon.svelte'
-	import jsonData from '../../../../../data/widgetCarouselData.json'
-
-	const getWidgetCardData = (jsonData: any) => {
-		const data = jsonData
-		console.log(data)
-		return data
-	}
-
+	import { getContext, onMount } from 'svelte'
 	import ImageGallery from '@react2svelte/image-gallery'
 	import { browser } from '$app/environment'
+	import { schema } from './setting'
 
-	const data = getWidgetCardData(jsonData)
+	const widget: any = getContext('widget')
+	let data: any = $widget.format_definition || []
+	const props = {
+		// lazyLoad: true,
+		showFullscreenButton: true,
+		showPlayButton: true,
+		showBullets: true,
+		showIndex: true,
+		thumbnailPosition: 'left',
+		autoPlay: true
+	}
+
+	$: if ($widget?.saved) {
+		setTimeout(() => {
+			data = $widget.format_definition
+			createSettings()
+		}, 5)
+
+		$widget.saved = null
+	}
+
+	function createSettings() {
+		const schemaLink = structuredClone(schema)
+		schemaLink.$defs.format_definition.default = $widget?.format_definition
+		$widget.schema = schemaLink
+	}
+
+	onMount(() => {
+		createSettings()
+	})
 </script>
 
-{#if browser}
+{#if browser && data.length > 0}
 	<div class="w-full">
-		<ImageGallery
-			items={data}
-			showFullscreenButton={false}
-			showPlayButton={false}
-			showBullets={false}
-		/>
+		<ImageGallery items={data} {...props} />
 	</div>
 {/if}

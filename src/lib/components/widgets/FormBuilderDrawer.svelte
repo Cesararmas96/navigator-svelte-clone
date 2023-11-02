@@ -106,6 +106,15 @@
 		}
 	}
 
+	const update = (button) => {
+		try {
+			// @ts-ignore
+			document.querySelector(`#${button}`)?.click()
+		} catch (error) {
+			sendErrorNotification('An error occurred, please try again later')
+		}
+	}
+
 	async function getModelByID(
 		jsonSchema: Record<string, any>,
 		record: Record<string, any>,
@@ -188,17 +197,39 @@
 			</h5>
 			<CloseButton on:click={() => close()} class="dark:text-white" />
 		</div>
+		<div class="px-2 pb-2 text-sm text-gray-500 dark:text-gray-400">
+			{description}
+
+			{#if $selectedFormBuilderRecord?.action === 'new'}
+				<Button class=" mt-3 w-full rounded text-sm" on:click={() => update('formSaved')}>
+					<Icon icon="tabler:plus" classes="mr-2" /> Save Changes</Button
+				>
+			{:else}
+				<Button class=" mt-3 w-full rounded text-sm" on:click={() => update('formUpdated')}>
+					<Icon
+						icon="streamline:interface-edit-write-2-change-document-edit-modify-paper-pencil-write-writing"
+						classes="mr-2"
+					/> Update Changes</Button
+				>
+
+				<Button
+					class=" mt-1 w-full rounded text-sm"
+					outline
+					on:click={() => update('formSaveAsNew')}
+				>
+					<Icon icon="tabler:plus" classes="mr-2" /> Save as New</Button
+				>
+			{/if}
+		</div>
 	</div>
 
 	{#if schema}
 		<div class="px-4 pb-4">
-			<p class="text-sm text-gray-500 dark:text-gray-400">
-				{description}
-			</p>
 			<Form {schema}>
-				<div slot="buttons-header" let:handleValidateForm>
+				<div slot="buttons-header" let:handleValidateForm class="hidden">
 					{#if $selectedFormBuilderRecord?.action === 'new'}
 						<Button
+							id="formSaved"
 							class="mb-2 mt-3 w-full rounded p-2 text-sm "
 							on:click={() => {
 								handleSubmitForm(handleValidateForm, 'save')
@@ -208,6 +239,7 @@
 						</Button>
 					{:else}
 						<Button
+							id="formUpdated"
 							class="mb-2 mt-3 w-full rounded p-2 text-sm "
 							on:click={() => {
 								handleSubmitForm(handleValidateForm, 'update')
@@ -217,6 +249,7 @@
 						</Button>
 
 						<Button
+							id="formSaveAsNew"
 							class="mb-2 w-full rounded p-2 text-sm "
 							outline
 							on:click={() => {

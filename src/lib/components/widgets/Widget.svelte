@@ -52,7 +52,7 @@
 			<WidgetHeader {isToolbarVisible} />
 		{:else if isToolbarVisible && isOwner}
 			<div
-				class="absolute right-2 mt-1"
+				class="absolute right-1 z-10 -mt-1"
 				on:pointerdown={(event) => {
 					event.preventDefault()
 					event.stopPropagation()
