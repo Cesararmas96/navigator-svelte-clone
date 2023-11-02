@@ -1,6 +1,5 @@
 import type { GridParams } from "svelte-grid-extended/types"
 import { generateUID } from "../common/common"
-import { sl } from "date-fns/locale"
 
 const rowHeight = 12
 const minRowHeight = 14
@@ -126,13 +125,24 @@ export const saveLocations = (dashboard: any, gridItems: any[], gridParams: Grid
 
 }
 
-export const syncGridItems = (items: any[], gridParams: GridParams) => {
+export const syncGridItemsToItems = (items: any[], gridParams: GridParams) => {
   console.log('syncGridItems')
   items.map((item) => {
     item.y = gridParams.items[item.slug].y
     item.h = gridParams.items[item.slug].h
     item.w = gridParams.items[item.slug].w
     item.x = gridParams.items[item.slug].x
+  });
+}
+
+export const syncItemsToGridItems = (items: any[], gridParams: GridParams) => {
+  console.log('syncItemsToGridItems');
+  
+  items.forEach((item) => {
+    gridParams.items[item.slug].y = item.y;
+    gridParams.items[item.slug].h = item.h;
+    gridParams.items[item.slug].w = item.w;
+    gridParams.items[item.slug].x = item.x;
   });
 }
 

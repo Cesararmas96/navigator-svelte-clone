@@ -12,8 +12,8 @@
 		pasteItem,
 		saveLocations,
 		loadLocalStoredLocations,
-		syncGridItems,
-		reorderLines
+		reorderLines,
+		syncGridItemsToItems
 	} from '$lib/helpers/dashboard/grid'
 	import { deleteData, getApiData, postData, putData } from '$lib/services/getData'
 	import Alerts from '../widgets/type/Alert/Alerts.svelte'
@@ -138,6 +138,7 @@
 
 	$: handleResizable = (item: any) => {
 		gridItems = resizeItem(item, gridItems)
+		syncGridItemsToItems(gridItems, gridController.gridParams)
 	}
 	$: handleCloning = (item: any) => {
 		const clonedItem = cloneItem(item, gridItems)
