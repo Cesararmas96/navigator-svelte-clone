@@ -6,6 +6,7 @@
 	import { onMount } from 'svelte'
 
 	export let props
+	console.log(props)
 	let data: any[] = []
 	const baseUrl = import.meta.env.VITE_API_URL
 	let active = 'All'
@@ -162,7 +163,7 @@
 				{#each filteredTemplates as widget}
 					{#if widget.title}
 						<!-- svelte-ignore a11y-invalid-attribute -->
-						<a href="#" on:click={() => props.handleWidgetInsert(widget.uid, widget.widget_id)}>
+						<a href="#" on:click={() => props.handleWidgetInsert(widget)}>
 							<div
 								class="group my-1 flex flex-row items-center rounded-lg bg-gray-50 p-2.5 text-base font-bold text-gray-900 hover:bg-gray-100 hover:shadow dark:bg-gray-600 dark:text-white dark:hover:bg-gray-500"
 							>

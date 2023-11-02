@@ -94,6 +94,7 @@ export const loadLocalStoredLocations = (_dashboard: any, _widgets: any[], isMob
 
 export const saveLocations = (dashboard: any, gridItems: any[], gridParams: GridParams) => {
   console.log('saveLocations')
+  const deletedItems: string[] = []
   const items = Object.entries(gridParams.items).reduce((acc, [key, item]) => {
     const gridItem = gridItems.find((i) => i.slug === key)
     if (gridItem) {
@@ -101,10 +102,18 @@ export const saveLocations = (dashboard: any, gridItems: any[], gridParams: Grid
       gridItem.y = item.y
       gridItem.w = item.w
       gridItem.h = item.h
+    } else {
+      deletedItems.push(key)
     }
     acc[key] = { x: item.x, y: item.y, w: item.w, h: item.h };
     return acc;
   }, {});
+
+  if (deletedItems.length > 0) {
+    deletedItems.forEach((key) => {
+      delete gridParams.items[key];
+    });
+  }
 
   const grid = localStorage.getItem('grid')
   if (grid) {

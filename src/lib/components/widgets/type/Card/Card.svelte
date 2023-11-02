@@ -59,7 +59,7 @@
 	}
 
 	onMount(() => {
-		if ($widget.resize_on_load) resizeAction.action()
+		resizeAction.action()
 	})
 </script>
 

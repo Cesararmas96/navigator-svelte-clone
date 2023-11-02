@@ -29,6 +29,12 @@
 	import { openModal } from '$lib/helpers/common/modal'
 
 	export let dashboard: any
+	export let newWidget: any
+
+	$: if (newWidget) {
+		handleWidgetInsert({ ...newWidget })
+		newWidget = null
+	}
 
 	const dispatch = createEventDispatcher()
 
@@ -138,7 +144,7 @@
 
 	$: handleResizable = (item: any) => {
 		gridItems = resizeItem(item, gridItems)
-		syncGridItemsToItems(gridItems, gridController.gridParams)
+		// syncGridItemsToItems(gridItems, gridController.gridParams)
 	}
 	$: handleCloning = (item: any) => {
 		const clonedItem = cloneItem(item, gridItems)
@@ -147,6 +153,7 @@
 	$: handleRemove = (item: any) => {
 		// item.data.component.$destroy()
 		gridItems = removeItem(item, gridItems, gridController.gridParams)
+		updateLocations()
 		// gridItems.map((item: any) => {
 		// 	delete item.data.loaded
 		// 	return item
@@ -227,51 +234,51 @@
 
 	let displayModal = false
 
-	const handleWidgetInsert = async (widgetUid: string, widgetId: string) => {
-		const token = $storeUser.token
-
+	const handleWidgetInsert = async (_widget: any) => {
 		try {
 			const payload = {
 				program_id: dashboard.program_id,
 				dashboard_id: dashboard.dashboard_id,
 				title: 'My new Widget',
-				widget_id: widgetId
+				widget_id: _widget.widget_id
 			}
 
+			const resp = await putData(`${baseUrl}/api/v2/widgets/${_widget.widget_id}`, payload)
+			console.log(resp)
 			// const resp = await fetch(`https://api.dev.navigator.mobileinsight.com/api/v2/widgets-template/b13b619a-847e-4734-a3d2-fa198f0531b7`,
-			const resp = await fetch(
-				`https://api.dev.navigator.mobileinsight.com/api/v2/widgets/${widgetUid}`,
-				{
-					method: 'PUT',
-					headers: {
-						Authorization: `Bearer ${token}`,
-						'Content-Type': 'application/json'
-					},
-					body: JSON.stringify(payload)
-				}
-			)
+			// const resp = await fetch(
+			// 	`https://api.dev.navigator.mobileinsight.com/api/v2/widgets/${widgetUid}`,
+			// 	{
+			// 		method: 'PUT',
+			// 		headers: {
+			// 			Authorization: `Bearer ${token}`,
+			// 			'Content-Type': 'application/json'
+			// 		},
+			// 		body: JSON.stringify(payload)
+			// 	}
+			// )
 
-			if (!resp.ok) {
-				const errorMessage = `Failed to fetch data: ${resp.status} - ${resp.statusText}`
-				throw new Error(errorMessage)
-			}
-			const widget = await resp.json()
+			// if (!resp.ok) {
+			// 	const errorMessage = `Failed to fetch data: ${resp.status} - ${resp.statusText}`
+			// 	throw new Error(errorMessage)
+			// }
+			// const widget = await resp.json()
 
-			widget.resize_load = true
-			const newItem = Object.create({})
-			newItem.data = widget.data
-			newItem.w = 6
-			newItem.h = 12
-			const position = addNewItem(newItem, gridController)
-			newItem.x = position.x
-			newItem.y = position.y
+			// widget.resize_load = true
+			// const newItem = Object.create({})
+			// newItem.data = widget.data
+			// newItem.w = 6
+			// newItem.h = 12
+			// const position = addNewItem(newItem, gridController)
+			// newItem.x = position.x
+			// newItem.y = position.y
 
-			console.log(newItem)
+			// console.log(newItem)
 
-			gridItems = pasteItem(newItem, gridItems)
+			// gridItems = pasteItem(newItem, gridItems)
 
-			displayModal = false
-			return widget
+			// displayModal = false
+			// return widget
 		} catch (error: any) {
 			console.error('An error occurred:', error.message)
 			// Handle the error as needed, e.g., display an error message or log it.
