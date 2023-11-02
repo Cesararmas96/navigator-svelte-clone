@@ -298,10 +298,11 @@
 	$: if ($storeCCPDashboard) addDashboardCopyAlert()
 
 	let showInsertWidgetItem = false
-	let insertWidgetCallback: any
-	const handleWidgetInsert = (e: any) => {
+	let newWidget: any
+	const handleWidgetInsert = (widget: any) => {
+		console.log(widget)
 		showInsertWidgetItem = true
-		insertWidgetCallback = e.detail
+		newWidget = widget
 	}
 
 	const insertWidget = () => {
@@ -420,7 +421,11 @@
 									</Dropdown>
 								</div>
 							</div>
-							<Dashboard {dashboard} on:handleCustomize={(e) => confirmCustomize(e.detail)} />
+							<Dashboard
+								{dashboard}
+								{newWidget}
+								on:handleCustomize={(e) => confirmCustomize(e.detail)}
+							/>
 						</TabItem>
 					{/each}
 				{/if}

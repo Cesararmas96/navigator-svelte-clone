@@ -34,9 +34,9 @@
 			<div class="min-h-[calc(100vh-240px)]">
 				<slot />
 			</div>
-			<div class="ml-[5px] mr-[10px]">
+			<!-- <div class="ml-[5px] mr-[10px]">
 				<Footer />
-			</div>
+			</div> -->
 		</main>
 	</div>
 </div>
