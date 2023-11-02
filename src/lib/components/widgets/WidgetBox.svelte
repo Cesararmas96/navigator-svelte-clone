@@ -6,6 +6,7 @@
 	import { selectedWidgetSettings } from '$lib/stores/widgets'
 	import { storeUser } from '$lib/stores'
 	import { themeMode } from '$lib/stores/preferences'
+	import { initWidgetTop } from '$lib/helpers/widget/widget-top'
 
 	let isToolbarVisible: boolean = false
 	let fixed: boolean
@@ -78,7 +79,7 @@
 
 	const dashboard = getContext<Writable<any>>('dashboard')
 
-	$: isOwner = $dashboard?.attributes?.user_id === $storeUser.user_id
+	$: isOwner = $dashboard?.attributes?.user_id === $storeUser?.user_id
 	setContext('isWidgetOwner', isOwner)
 
 	let widgetStore: any = writable(widget)
@@ -127,6 +128,7 @@
 	}
 
 	initActions()
+	initWidgetTop()
 
 	onMount(() => {
 		$widgetStore.instances = []

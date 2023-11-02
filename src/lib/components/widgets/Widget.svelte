@@ -38,7 +38,7 @@
 <div
 	id={`widget-${$widget.widget_id}`}
 	class:h-[calc(100%-0.5rem)]={!$widget.temp && !$widget.collapse}
-	class:absolute={!$widget.temp && !$widget.collapse}
+	class:absolute={!$widget?.temp && !$widget?.collapse && !$widget?.layout}
 	class:-ml-1={!$widget.temp && !$widget.collapse}
 	class:p-1={!$widget.temp && !$widget.collapse}
 	class="w-full"

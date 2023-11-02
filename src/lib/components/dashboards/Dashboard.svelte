@@ -44,7 +44,7 @@
 	let gridController: GridController
 	let widgets: any[] = []
 
-	$: if ($storeDashboard?.attributes?.user_id === $storeUser.user_id) {
+	$: if ($storeDashboard?.attributes?.user_id === $storeUser?.user_id) {
 		const alert: AlertMessage = {
 			id: 'dashboard-system-msg',
 			title: `Customizing a system dashboard`,
@@ -68,6 +68,7 @@
 
 		try {
 			widgets = await getApiData(`${baseUrl}/api/v2/widgets?dashboard_id=${dashboardId}`, 'GET')
+
 			if (!widgets) {
 				sendAlert({
 					id: 'dashboard-no-widgets',
@@ -78,6 +79,7 @@
 				return
 			}
 			widgets = widgets.map((widget: any) => {
+				widget.widget_slug = widget?.widget_slug || generateUniqueSlug(widget.title, widgets)
 				widget.widget_slug = widget?.widget_slug || generateUniqueSlug(widget.title, widgets)
 				return widget
 			})
@@ -117,7 +119,7 @@
 		setTimeout(async () => {
 			isChanging = false
 			saveLocations(dashboard, gridItems, gridController.gridParams)
-			if (dashboard?.attributes?.user_id !== $storeUser.user_id) return
+			if (dashboard?.attributes?.user_id !== $storeUser?.user_id) return
 			const payload = { widget_location: { ...gridController.gridParams.items } }
 			await postData(
 				`${baseUrl}/api/v2/dashboard/widgets/location/${dashboard.dashboard_id}`,
@@ -172,7 +174,7 @@
 				dashboard_id,
 				title: tempTitle,
 				widget_id,
-				user_id: $storeUser.user_id
+				user_id: $storeUser?.user_id
 			}
 
 			const item = gridItems.find((item: any) => item.slug === copiedWidget.widget_slug)

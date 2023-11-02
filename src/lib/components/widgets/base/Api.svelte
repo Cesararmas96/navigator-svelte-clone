@@ -28,16 +28,16 @@
 	function buildConditions() {
 		const conditions = conditionsRaw
 
-		if (conditions.firstdate) {
-			conditions.firstdate = returnValidateDate(conditions.firstdate)
+		if (conditions?.firstdate) {
+			conditions.firstdate = returnValidateDate(conditions?.firstdate)
 		}
 
-		if (conditions.lastdate) {
-			conditions.lastdate = returnValidateDate(conditions.lastdate)
+		if (conditions?.lastdate) {
+			conditions.lastdate = returnValidateDate(conditions?.lastdate)
 		}
 
-		if (conditions.filterdate && !Array.isArray(conditions.filterdate)) {
-			conditions.filterdate = returnValidateDate(conditions.filterdate)
+		if (conditions?.filterdate && !Array.isArray(conditions?.filterdate)) {
+			conditions.filterdate = returnValidateDate(conditions?.filterdate)
 		}
 
 		return conditions

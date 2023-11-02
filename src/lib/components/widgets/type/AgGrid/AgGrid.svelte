@@ -11,28 +11,26 @@
 		generateColumnDefsByDefinition,
 		gridFunctionsMap,
 		gridHeight,
-		recordsPerPage,
-		setMainContentHeight
+		recordsPerPage
 	} from '$lib/helpers/widget/aggrid'
 	import {
 		hideFormBuilderDrawer,
 		selectedFormBuilderRecord,
 		selectedFormBuilderWidget
 	} from '$lib/stores/widgets'
-	import Toolbar from './Toolbar.svelte'
 	import { addWidgetAction, getWidgetAction } from '$lib/helpers'
 	import { openConfirmModal } from '$lib/helpers/common/modal'
-	import Modal from '$lib/components/common/Modal.svelte'
 	import { deleteData, postData } from '$lib/services/getData'
 	import { sendErrorNotification, sendSuccessNotification } from '$lib/stores/toast'
-	import Filter from './Filter.svelte'
-	import type { as } from 'vitest/dist/reporters-5f784f42'
 	import { setContentHeight } from '$lib/helpers/widget/widget'
+	import { setWidgetTop } from '$lib/helpers/widget/widget-top'
+	import NoDataFound from '../../NoDataFound.svelte'
 
 	export let data: any
 	export let simpleTable: boolean = false
 
 	const widget = getContext<Writable<any>>('widget')
+
 	const formatDefinitionKeys = $widget.format_definition
 		? Object.keys($widget.format_definition).map((key: string) => key)
 		: []
@@ -183,7 +181,7 @@
 		pagination: !simpleTable,
 		paginationPageSize: recordsPerPage($widget.params),
 		columnDefs,
-		rowData: data,
+		rowData: data ? data : null,
 		rowHeight: 25,
 		animateRows: true,
 		getRowClass: (params) => {
@@ -211,6 +209,24 @@
 
 	const widgetActions = getContext<Writable<any[]>>('widgetActions')
 	const resizeAction = getWidgetAction($widgetActions, 'resize')
+	const reloadAction = getWidgetAction($widgetActions, 'reloadFetchData')
+
+	onMount(() => {
+		const eGridDiv: HTMLElement = document.querySelector(`#grid-${$widget.widget_id}`)!
+		new Grid(eGridDiv, gridOptions)
+		if (!data) eGridDiv.classList.add('hidden')
+		// eGridDiv.style.height = gridHeight($widget.widget_id, $widget.params)
+		if ($widget.temp) {
+			const instanceLoadedAction = getWidgetAction($widgetActions, 'instanceLoaded')
+			instanceLoadedAction.action()
+		}
+		resizeAction.action()
+		setTimeout(() => {
+			resizeAgGridContent()
+		}, 1000)
+	})
+
+	$: isDark = $themeMode === 'dark'
 
 	/**
 	 * @description Actualiza el tamaño de la tabla cuando se cambia el tamaño del widget
@@ -254,6 +270,8 @@
 	const newItem = (obj: any) => {
 		gridOptions.api!.applyTransaction({ add: [obj.dataModel] })
 		gridOptions.api!.refreshCells({ force: true })
+		// gridOptions.api!.redrawRows() //.refreshClientSideRowModel()
+		if (gridOptions.api!.getDisplayedRowCount() === 1) reloadAction.action()
 	}
 
 	const updateItem = (obj: any) => {
@@ -272,19 +290,37 @@
 		}
 	}
 	function onFilterTextBoxChanged(elementId: any) {
-		console.log(elementId)
 		gridOptions.api!.setQuickFilter((document.getElementById(elementId)! as HTMLInputElement).value)
 	}
+
+	addWidgetAction(widgetActions, {
+		name: 'agGridFilterTextBox',
+		action: (elementId) => onFilterTextBoxChanged(elementId)
+	})
+
+	addWidgetAction(widgetActions, {
+		name: 'agGridBtnMap',
+		action: (method) => actionBtnMap[method](method)
+	})
+
+	const widgetTop = getContext<Writable<any>>('WidgetTop')
+	setWidgetTop(widgetTop, './type/AgGrid/Toolbar.svelte', {
+		position: 'top',
+		widgetID: $widget.widget_id,
+		btnsActions: $widget.params.btnsActions,
+		filterCallback: 'agGridFilterTextBox',
+		btnCallback: 'agGridBtnMap'
+	})
 </script>
 
 <div id="aggrid-container-{$widget.widget_id}" class="grid-container flex flex-col">
-	<Toolbar
+	<!-- <Toolbar
 		position="top"
 		widgetID={$widget.widget_id}
 		btnsActions={$widget.params.btnsActions}
 		filterCallback={onFilterTextBoxChanged}
 		on:click={(e) => actionBtnMap[e.detail](e)}
-	/>
+	/> -->
 	<div
 		id="grid-{$widget.widget_id}"
 		style="width: 100%"
@@ -292,11 +328,15 @@
 		class:ag-theme-balham={!isDark}
 		class:ag-theme-balham-dark={isDark}
 	/>
-	<Toolbar
+	{#if !data}
+		<NoDataFound />
+	{/if}
+
+	<!-- <Toolbar
 		position="bottom"
 		widgetID={$widget.widget_id}
 		btnsActions={$widget.params.btnsActions}
-	/>
+	/> -->
 </div>
 
 <style>
@@ -311,9 +351,4 @@
 	.grid-container {
 		min-height: 300px; /* O la altura que desees */
 	}
-
-	/* Estilo para ag-Grid */
-	/* .aggrid {
-		min-height: 300px;
-	} */
 </style>

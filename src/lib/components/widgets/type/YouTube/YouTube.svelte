@@ -1,19 +1,32 @@
 <script lang="ts">
 	import { YouTube } from 'sveltekit-embed'
+	import { getContext, onMount } from 'svelte'
+	import { createMediaSettings } from '../../base/settings/media'
 
-	export let data: Record<string, any>
-
+	const widget: any = getContext('widget')
 	const regExp = /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/
-
 	let youTubeId: string = ''
 
-	$: {
-		let url = data?.url
-		console.log(url)
-		console.log('ACAAAA')
-		const match = url.match(regExp)
-		youTubeId = match && match[2].length == 11 ? match[2] : ''
+	function loadVideo() {
+		createMediaSettings(widget)
+
+		const match = $widget?.url.match(regExp)
+
+		youTubeId = ''
+		setTimeout(() => {
+			console.log('Load youtube ID')
+			youTubeId = match && match[2].length == 11 ? match[2] : ''
+		}, 5)
 	}
+
+	$: if ($widget?.saved) {
+		loadVideo()
+		$widget.saved = null
+	}
+
+	onMount(() => {
+		loadVideo()
+	})
 </script>
 
 {#if youTubeId}

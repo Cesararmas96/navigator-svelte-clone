@@ -1,15 +1,22 @@
 <script lang="ts">
 	import { SoundCloud } from 'sveltekit-embed'
+	import { getContext, onMount } from 'svelte'
+	import { createMediaSettings } from '../../base/settings/media'
 
-	export let data: string
-
+	const widget: any = getContext('widget')
 	let soundcloudLink: string = ''
 
-	$: async () => {
-		let url = data
+	async function loadMusic() {
+		createMediaSettings(widget)
+
+		const url = $widget?.url
 		if (url.includes('on.soundcloud.com')) await resolveShortUrl(url)
 
-		soundcloudLink = url
+		soundcloudLink = ''
+		setTimeout(() => {
+			console.log('Load soundcloud ID')
+			soundcloudLink = url
+		}, 5)
 	}
 
 	const resolveShortUrl = async (url: string) => {
@@ -25,6 +32,15 @@
 			})
 			.catch(console.error)
 	}
+
+	$: if ($widget?.saved) {
+		loadMusic()
+		$widget.saved = null
+	}
+
+	onMount(() => {
+		loadMusic()
+	})
 </script>
 
 {#if soundcloudLink}
