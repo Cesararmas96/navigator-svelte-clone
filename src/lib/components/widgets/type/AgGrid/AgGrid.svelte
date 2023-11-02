@@ -249,24 +249,6 @@
 	// 	$widget.resized = false
 	// }
 
-	onMount(() => {
-		const eGridDiv: HTMLElement = document.querySelector(`#grid-${$widget.widget_id}`)!
-		new Grid(eGridDiv, gridOptions)
-		// eGridDiv.style.height = gridHeight($widget.widget_id, $widget.params)
-		if ($widget.temp) {
-			$widget.instance_loading = true
-			const instanceLoaded = getWidgetAction($widgetActions, 'instanceLoaded')
-			instanceLoaded.action()
-		} else {
-			resizeAction.action()
-		}
-		setTimeout(() => {
-			resizeAgGridContent()
-		}, 1000)
-	})
-
-	$: isDark = $themeMode === 'dark'
-
 	const newItem = (obj: any) => {
 		gridOptions.api!.applyTransaction({ add: [obj.dataModel] })
 		gridOptions.api!.refreshCells({ force: true })
