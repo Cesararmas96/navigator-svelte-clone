@@ -2,20 +2,22 @@
 	import { onMount } from 'svelte'
 	import { fetchFolders } from '$lib/helpers/widget/filemanager'
 	import TreeViewItem from './TreeViewItem.svelte'
+	import { page } from '$app/stores'
 
 	export let path: string
 
 	let pathFolders: string[] = []
 	let indexFolder: number = 0
-	$: pathFolders = path !== '/' ? path.split('/').filter((p) => p !== '') : []
 	let folders: string[] = []
 
+	$: pathFolders = path !== '/' ? path.split('/').filter((p) => p !== '') : []
+
 	onMount(() => {
-		fetchFolders('').then((data: any[]) => (folders = data))
+		fetchFolders($page.data.tenant, path).then((data: any[]) => (folders = data))
 	})
 
 	const isNextFolder = (folder: string) => {
-		return pathFolders[indexFolder] === folder.split('/')[0]
+		return pathFolders[indexFolder] === folder.split('/')[folder.split('/').length - 1]
 	}
 </script>
 

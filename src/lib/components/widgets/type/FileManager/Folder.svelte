@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { page } from '$app/stores'
 	import Icon from '$lib/components/common/Icon.svelte'
 	import { createEventDispatcher } from 'svelte'
 
@@ -6,6 +7,8 @@
 
 	export let path: string
 	export let selected: any
+
+	const tenant = $page.data.tenant
 
 	$: isSelected = selected && selected.type === 'folder' && selected.path === path
 
@@ -17,7 +20,7 @@
 	}
 
 	const handleDblClick = () => {
-		dispatch('dblclick', path)
+		dispatch('dblclick', path.split(tenant)[1])
 	}
 </script>
 

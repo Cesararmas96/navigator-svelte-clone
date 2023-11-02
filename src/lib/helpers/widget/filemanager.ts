@@ -1,12 +1,13 @@
 const API_URL = import.meta.env.VITE_API_URL;
 
-export const fetchFolders = async (path: string): Promise<string[]> => {
+export const fetchFolders = async (tenant: string, path: string): Promise<string[]> => {
   try {
-    const response = await fetch(`${API_URL}/api/v2/files/${path}`);
+    const response = await fetch(`${API_URL}/api/v2/files/symbits/${tenant}${path}`);
     if (!response.ok) throw new Error('Error fetching folders');
     let folders = await response.json();
 
-    return folders.filter((folder) => typeof folder === 'string').map(path => {
+    return folders.filter((folder) => typeof folder === 'string')
+    .map(path => {
       const parts = path.split('/');
       const index = parts.indexOf('symbits');
       if (index !== -1 && index + 1 < parts.length) {
@@ -31,13 +32,29 @@ export const fetchFiles = async () => {
     // }
 }
 
-export const fetchFolderDetails = async (path: string) => {
+export const fetchFolderDetails = async (tenant: string, path: string) => {
   try {
-    const response = await fetch(`${API_URL}/api/v2/files/${path}`);
+    const response = await fetch(`${API_URL}/api/v2/files/symbits/${tenant}${path}`);
     if (!response.ok) throw new Error('Error fetching folders');
     return await response.json();
   } catch (error) {
-    console.error('Error:', error);
+    return [];
+  }
+}
+
+export const downloadFile = async (tenant: string, path: string) => {
+  try {
+    const response = await fetch(`${API_URL}/api/v2/files/symbits/${tenant}${path.split(tenant)[1]}`);
+    if (!response.ok) throw new Error('Error fetching folders');
+    const blob = await response.blob();
+
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = path.split('/')[path.split('/').length -1]; 
+    document.body.appendChild(link); 
+    link.click();
+    document.body.removeChild(link); 
+  } catch (error) {
     return [];
   }
 }

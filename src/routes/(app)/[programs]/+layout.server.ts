@@ -1,9 +1,10 @@
+import { extractSubdomain } from '$lib/helpers/login/login.js'
 import { getApiData } from '$lib/services/getData'
 import { redirect } from '@sveltejs/kit'
 
 // export const ssr = false;
 
-export const load = async ({ params, fetch, locals }) => {
+export const load = async ({ params, fetch, locals, url }) => {
 	if (!locals.user) throw redirect(302, '/login')
 
 	const urlBase = import.meta.env.VITE_API_URL
@@ -26,5 +27,8 @@ export const load = async ({ params, fetch, locals }) => {
     { headers },
     fetch
   )
-  return { programs, trocModule, dashboards, menu, user: locals.user }
+
+  const tenant = url.hostname.split('.')[0]
+
+  return { programs, trocModule, dashboards, menu, user: locals.user, tenant }
 }

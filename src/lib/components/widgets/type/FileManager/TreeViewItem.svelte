@@ -3,6 +3,7 @@
 	import { fetchFolders } from '$lib/helpers/widget/filemanager'
 	import TreeViewItem from './TreeViewItem.svelte'
 	import Icon from '$lib/components/common/Icon.svelte'
+	import { page } from '$app/stores'
 
 	export let folder: string
 	export let pathFolders: string[]
@@ -14,13 +15,14 @@
 	let currentFolder: string = ''
 	let folders: string[] = []
 	let open: boolean = false
+	const tenant = $page.data.tenant
 
 	$: {
 		path = pathFolders.slice(0, indexFolder + 1).join('/')
 		currentFolder = pathFolders[indexFolder]
 		if (currentFolder === folder) {
 			open = true
-			fetchFolders(`${path}/`).then((data: any[]) => (folders = data))
+			fetchFolders(tenant, `/${path}`).then((data: any[]) => (folders = data))
 		}
 	}
 
@@ -35,16 +37,15 @@
 	class="ml-2 flex cursor-pointer flex-col"
 	on:click={(e) => {
 		e.stopPropagation()
-		const _path = indexFolder === 0 ? '' : `/${path}`
-		const _folder = currentFolder === folder ? '' : `/${folder}`
-		const newPath = `${_path}${_folder}/`.replace(/\/\//g, '/')
+		const _folder = currentFolder === folder ? '' : folder
+		const newPath = indexFolder !== 0 ? `/${path}/${_folder}/`.replace(/\/\//g, '/') : `/${folder}`
 		dispatch('select', newPath)
 		open = !open
 	}}
 >
 	<div
 		class="folder flex flex-row rounded p-2"
-		class:active={open && currentFolder === folder && pathFolders.length - 1 === indexFolder}
+		class:active={currentFolder === folder && pathFolders.length - 1 === indexFolder}
 	>
 		<Icon
 			icon={open ? 'flat-color-icons:opened-folder' : 'flat-color-icons:folder'}

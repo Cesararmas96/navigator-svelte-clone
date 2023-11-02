@@ -44,7 +44,10 @@
 	</Input>
 	<Dropdown bind:open={dropdownOpen} placement="bottom-start">
 		{#each items as item}
-			<DropdownItem on:click={(e) => handleClick(e, item)}>{item.label}</DropdownItem>
+			<DropdownItem
+				defaultClass="min-w-[200px] p-2 hover:bg-gray-100"
+				on:click={(e) => handleClick(e, item)}>{item.label}</DropdownItem
+			>
 		{/each}
 	</Dropdown>
 </div>

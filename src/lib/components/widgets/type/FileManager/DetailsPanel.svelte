@@ -4,8 +4,11 @@
 	import File from './File.svelte'
 	import Folder from './Folder.svelte'
 	import { loading } from '$lib/stores/preferences'
+	import { page } from '$app/stores'
 
-	export let path
+	export let path: string
+	export let refreshFolder: boolean
+
 	let folders: any[] = []
 	let files: any[] = []
 	let selected: any
@@ -13,27 +16,26 @@
 	const dispatch = createEventDispatcher()
 
 	$: if (path) {
+		loadFolderDetails()
+	}
+
+	$: if (refreshFolder) {
+		refreshFolder = false
+		loadFolderDetails()
+	}
+
+	const loadFolderDetails = () => {
 		loading.set(true)
-		fetchFolderDetails(path.slice(1)).then((data: any) => {
+		fetchFolderDetails($page.data.tenant, path).then((data: any) => {
 			files = data.filter((file) => typeof file === 'object')
-			folders = data
-				.filter((folder) => typeof folder === 'string')
-				.map((path) => {
-					const parts = path.split('/')
-					const index = parts.indexOf('symbits')
-					if (index !== -1 && index + 1 < parts.length) {
-						return parts.slice(index + 1).join('/')
-					}
-					return null
-				})
-				.filter(Boolean)
+			folders = data.filter((folder) => typeof folder === 'string')
 			loading.set(false)
 		})
 	}
 
 	const handleFolderDblClick = (e: CustomEvent) => {
 		selected = null
-		dispatch('select', `/${e.detail}`)
+		dispatch('select', `${e.detail}`)
 	}
 	const handleFileSelection = (e: CustomEvent) => {
 		selected = e.detail
