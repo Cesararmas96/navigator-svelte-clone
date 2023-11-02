@@ -4,6 +4,8 @@
 	import { DropdownItem } from 'flowbite-svelte'
 	import { getContext } from 'svelte'
 	import { createEventDispatcher } from 'svelte'
+	import { saveWidgetSettings } from '$lib/helpers/widget/settings'
+
 	const dispatch = createEventDispatcher()
 
 	let widget: any = getContext('widget')
@@ -11,11 +13,12 @@
 	export let inMenu: boolean = true
 
 	const handleWidgetSettings = (e: Event) => {
-		e.preventDefault()
-		e.stopPropagation()
-		dispatch('itemClick', { click: true })
-		$selectedWidgetSettings = { widget: $widget, state: 'edit' }
-		$hideWidgetSettings = !hideWidgetSettings
+		$selectedWidgetSettings = {
+			widget: widget,
+			state: 'edit',
+			callback: saveWidgetSettings
+		}
+		$hideWidgetSettings = false
 	}
 </script>
 

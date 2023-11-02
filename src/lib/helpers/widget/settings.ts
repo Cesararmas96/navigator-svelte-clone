@@ -10,8 +10,6 @@ export const saveWidgetSettings = (widgetSettings: Writable<unknown>, payload) =
 		const widgetBD = { ...widget, ...payload, saved: true }
 
 		updateChangesBD(widgetBD)
-		sendSuccessNotification('Updated widget')
-
 		return widgetBD
 	})
 }
@@ -25,5 +23,6 @@ async function updateChangesBD(widgetSettings) {
 
 	if (response) {
 		console.log(response)
+		sendSuccessNotification('Updated widget')
 	}
 }
