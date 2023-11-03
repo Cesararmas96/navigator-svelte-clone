@@ -137,9 +137,9 @@
 								comments: true
 							},
 							header: {
-								show: payload.params_header.show,
-								icon: payload.params_header.icon,
-								title: payload.params_header.title
+								show: payload?.params_header?.show === (undefined || false) ? false : true,
+								icon: payload?.params_header?.icon || true,
+								title: payload?.params_header?.title || true
 							},
 							general: {
 								fixed: false,
