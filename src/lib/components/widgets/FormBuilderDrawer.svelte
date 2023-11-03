@@ -51,7 +51,7 @@
 		if ($selectedFormBuilderWidget?.params?.model?.primaryKey) {
 			keys.unshift($selectedFormBuilderWidget.params.model.primaryKey)
 		}
-		console.log(data, keys)
+
 		data &&
 			keys.map((key) => {
 				if (data[key]) {
@@ -82,7 +82,12 @@
 					jsonSchema.properties[property].type = 'select'
 
 					jsonSchema.properties[property].$ref['_fetch'] = {
-						baseUrl: `${baseUrl}/${jsonSchema.properties[property].$ref?.url || 'api/v1/'}`,
+						baseUrl: `${baseUrl}/${
+							$selectedFormBuilderWidget?.params?.model?.schema?.properties &&
+							$selectedFormBuilderWidget?.params?.model?.schema?.properties[property]
+								? $selectedFormBuilderWidget?.params?.model?.schema?.properties[property]?.$ref?.url
+								: 'api/v1/'
+						}`,
 						headers: {
 							authorization: `Bearer ${token}`
 						}
@@ -135,6 +140,10 @@
 	}
 
 	function getSchemaComputed(jsonSchema: Record<string, any>) {
+		if ($selectedFormBuilderWidget?.params?.model?.schema?.$withoutDefs && jsonSchema?.$defs) {
+			delete jsonSchema.$defs
+		}
+
 		return merge({}, jsonSchema, $selectedFormBuilderWidget?.params?.model?.schema || {})
 	}
 

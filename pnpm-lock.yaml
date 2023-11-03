@@ -5,11 +5,11 @@ dependencies:
     specifier: ^1.4.5
     version: 1.4.5
   '@mixoo/form':
-    specifier: ^2.0.0
-    version: 2.0.0(@mixoo/ui@1.1.0)(svelte@4.1.1)
+    specifier: ^2.0.2
+    version: 2.0.2(@mixoo/ui@1.1.2)(svelte@4.1.1)
   '@mixoo/ui':
-    specifier: ^1.1.0
-    version: 1.1.0(monaco-editor@0.44.0)(svelte@4.1.1)
+    specifier: ^1.1.2
+    version: 1.1.2(monaco-editor@0.44.0)(svelte@4.1.1)
   '@nextlint/core':
     specifier: ^1.2.0
     version: 1.2.0
@@ -612,8 +612,8 @@ packages:
       svelte: 4.1.1
     dev: false
 
-  /@mixoo-ui/button@1.0.6(svelte@4.1.1):
-    resolution: {integrity: sha512-4h/Q2qvBgs6ssRe7CpTBeuT77ugIyEm0sWPwLX8CmUQKX3uAdimKdbrx+Os7OHJbSpvvYcTWOuTyHz9mryLM/Q==}
+  /@mixoo-ui/button@1.0.7(svelte@4.1.1):
+    resolution: {integrity: sha512-yZgvzC19t8tpINy0ZbeHqZIoNuYAm+dy87KgbZj+YmbGbWL7qb9xkE0r54m5h21RXLugpn368/r7yjNYL31zjg==}
     peerDependencies:
       svelte: ^4
     dependencies:
@@ -711,15 +711,15 @@ packages:
       svelte: 4.1.1
     dev: false
 
-  /@mixoo/form@2.0.0(@mixoo/ui@1.1.0)(svelte@4.1.1):
-    resolution: {integrity: sha512-fCcN6NYx5s1+Le4leXDjplyY5Kb66QNGVBGsfwqd7vQY4USq5a7etnVEyxWQP/Vmcws5lf5BP5U9tLWegY0Mog==}
+  /@mixoo/form@2.0.2(@mixoo/ui@1.1.2)(svelte@4.1.1):
+    resolution: {integrity: sha512-TKn00foyZWLcJSuLmD4tdynHxFb45lhC1yQB+PfVW1zXaYeA9LkjSeqwIm0AudkeEjf6tizn0EKlgQ5utnToAQ==}
     peerDependencies:
-      '@mixoo/ui': ^1.1.0
+      '@mixoo/ui': ^1.1.2
       svelte: ^4
     dependencies:
       '@mixoo-ui/core': 1.0.5
       '@mixoo/stores': 1.0.2
-      '@mixoo/ui': 1.1.0(monaco-editor@0.44.0)(svelte@4.1.1)
+      '@mixoo/ui': 1.1.2(monaco-editor@0.44.0)(svelte@4.1.1)
       jsonschema: 1.4.1
       svelte: 4.1.1
       url: 0.11.3
@@ -731,13 +731,13 @@ packages:
       nanostores: 0.9.3
     dev: false
 
-  /@mixoo/ui@1.1.0(monaco-editor@0.44.0)(svelte@4.1.1):
-    resolution: {integrity: sha512-YYqVqOp3Q4FkPq4Vt8lQJxhXF7b5V5alUXrwOEcgufJkYuKA1A8PhwL2hH6f10iHy78aQwmfOX5TnbV/UA7mzA==}
+  /@mixoo/ui@1.1.2(monaco-editor@0.44.0)(svelte@4.1.1):
+    resolution: {integrity: sha512-v8zgul5nDl4jtITn/VhEyvyh/ivuZ4TeL1BPdeawDH0XG8pfxSMl7BPSEHLHx0uX+DlRBQbzPNrT50tNb8D3rg==}
     peerDependencies:
       svelte: ^4
     dependencies:
       '@mixoo-ui/accordion': 2.0.0(svelte@4.1.1)
-      '@mixoo-ui/button': 1.0.6(svelte@4.1.1)
+      '@mixoo-ui/button': 1.0.7(svelte@4.1.1)
       '@mixoo-ui/checkbox': 1.0.5(svelte@4.1.1)
       '@mixoo-ui/editor': 1.0.6(monaco-editor@0.44.0)(svelte@4.1.1)
       '@mixoo-ui/input': 1.0.6(svelte@4.1.1)
