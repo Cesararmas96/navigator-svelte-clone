@@ -9,6 +9,7 @@
 	import { Form } from '@mixoo/form'
 	import Loading from '$lib/components/common/Loading.svelte'
 	import { merge } from 'lodash-es'
+	import { schemaGeneral, schemaToolbar } from './settings/general'
 
 	import '@mixoo/ui/css/theme/default.css'
 	import '@mixoo/form/css/theme/default.css'
@@ -21,72 +22,88 @@
 	}
 
 	let schema
-	let schemaGeneralDefault = {
-		$schema: 'https://json-schema.org/draft/2020-12/schema',
-		$id: '/schemas/settings',
-		additionalProperties: true,
-		title: 'Settings',
-		description: 'Settings',
-		type: 'object',
-		table: 'settings',
-		schema: 'settings',
-		properties: {
-			// general
-			title: {
-				type: 'string',
-				label: null,
-				attrs: {
-					placeholder: null,
-					format: null
-				},
-				readOnly: false,
-				// _group: 'general',
-				default: ''
-			},
-			icon: {
-				type: 'string',
-				label: null,
-				attrs: {
-					placeholder: null,
-					format: null
-				},
-				readOnly: false,
-				// _group: 'general',
-				default: ''
-			},
-			description: {
-				type: 'string',
-				nullable: true,
-				label: null,
-				attrs: {
-					placeholder: null
-				},
-				format: 'textarea',
-				readOnly: false,
-				writeOnly: false,
-				// _group: 'general',
-				default: ''
-			}
-		},
-		// groups: [
-		// 	{ name: 'general', title: 'General' },
-		// 	{ name: 'design', title: 'Design' }
-		// ],
-		noHeader: true
-	}
+	let schemaGeneralDefault = structuredClone(schemaGeneral)
+	let schemaToolbarDefault = structuredClone(schemaToolbar)
+	// let schemaGeneralDefault = {
+	// 	$schema: 'https://json-schema.org/draft/2020-12/schema',
+	// 	$id: '/schemas/settings',
+	// 	additionalProperties: true,
+	// 	title: 'Settings',
+	// 	description: 'Settings',
+	// 	type: 'object',
+	// 	table: 'settings',
+	// 	schema: 'settings',
+	// 	properties: {
+	// 		// general
+	// 		title: {
+	// 			type: 'string',
+	// 			label: null,
+	// 			attrs: {
+	// 				placeholder: null,
+	// 				format: null
+	// 			},
+	// 			readOnly: false,
+	// 			_group: 'general',
+	// 			default: ''
+	// 		},
+	// 		icon: {
+	// 			type: 'string',
+	// 			label: null,
+	// 			attrs: {
+	// 				placeholder: null,
+	// 				format: null
+	// 			},
+	// 			readOnly: false,
+	// 			_group: 'general',
+	// 			default: ''
+	// 		},
+	// 		description: {
+	// 			type: 'string',
+	// 			nullable: true,
+	// 			label: null,
+	// 			attrs: {
+	// 				placeholder: null
+	// 			},
+	// 			format: 'textarea',
+	// 			readOnly: false,
+	// 			writeOnly: false,
+	// 			_group: 'general',
+	// 			default: ''
+	// 		}
+	// 	},
+	// 	groups: [{ name: 'general', title: 'General', open: true }],
+	// 	noHeader: true
+	// }
+	let groups
 
 	$: {
 		if ($selectedWidgetSettings?.widget && $selectedWidgetSettings?.state === 'edit') {
 			widgetSettings = $selectedWidgetSettings.widget
 
-			console.log(JSON.stringify(schemaGeneralDefault))
-			console.log(JSON.stringify($widgetSettings?.schema))
-			schema = merge({}, schemaGeneralDefault, $widgetSettings?.schema || {})
+			if ($widgetSettings?.schema?.addGroups) {
+				groups = schemaGeneralDefault.groups.concat($widgetSettings?.schema?.addGroups)
+			}
+
+			schema = merge(
+				{},
+				schemaGeneralDefault,
+				$widgetSettings?.schema || {},
+				{ groups: groups },
+				schemaToolbarDefault
+			)
 
 			// general
 			schema.properties.title.default = $widgetSettings?.title
 			schema.properties.icon.default = $widgetSettings?.attributes?.icon
 			schema.properties.description.default = $widgetSettings?.description
+
+			//toolbar - header
+			schema.$defs.params_header.properties.show.default =
+				$widgetSettings?.params?.settings?.header?.show || false
+			// schema.$defs.params_header.properties.icon.default =
+			// 	$widgetSettings?.params?.settings?.header?.icon || false
+			// schema.$defs.params_header.properties.title.default =
+			// 	$widgetSettings?.params?.settings?.header?.title || false
 		}
 		setContext('widgetSettings', widgetSettings)
 	}
@@ -105,18 +122,72 @@
 		console.log(payload)
 		if (!Array.isArray(payload)) {
 			// General
-			payload = merge({}, payload, { attributes: { icon: payload.icon } })
+			payload = merge(
+				{},
+				payload,
+				{ attributes: { icon: payload.icon } },
+				// { params: { settings: { toolbar: { show: payload.show } } } }
+				{
+					params: {
+						settings: {
+							footer: {
+								like: true,
+								show: true,
+								share: true,
+								comments: true
+							},
+							header: {
+								show: payload.params_header.show,
+								icon: payload.params_header.icon,
+								title: payload.params_header.title
+							},
+							general: {
+								fixed: false,
+								draggable: true,
+								resizable: true,
+								scrollable: true
+							},
+							toolbar: {
+								cut: false,
+								max: false,
+								pin: false,
+								copy: false,
+								help: false,
+								like: false,
+								show: true,
+								clone: false,
+								close: false,
+								share: false,
+								export: false,
+								reload: false,
+								collapse: false,
+								comments: false,
+								filtering: false,
+								screenshot: false
+							},
+							appearance: {
+								color: '#37507f',
+								border: true,
+								opacity: 100,
+								background: '#ffffff',
+								backgroundRGB: '255, 255, 255'
+							}
+						}
+					}
+				}
+			)
 
 			$selectedWidgetSettings.callback(widgetSettings, payload)
+			close()
 		} else {
 			sendErrorNotification('There has been a problem...')
 		}
-		close()
 	}
 
 	const close = () => {
 		$selectedWidgetSettings = null
 		$hideWidgetSettings = true
+		groups = {}
 	}
 </script>
 
@@ -150,7 +221,7 @@
 		</div>
 
 		{#if schema}
-			<div class="px-4 pb-4">
+			<div class="px-2 pb-4">
 				<!-- <p class="text-sm text-gray-500 dark:text-gray-400">This is widget settings</p> -->
 				<Form {schema}>
 					<div slot="buttons-header" let:handleValidateForm>

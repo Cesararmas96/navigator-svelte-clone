@@ -6,6 +6,7 @@
 	import { schema } from './setting'
 
 	const widget: any = getContext('widget')
+	let link: Link = $widget.format_definition
 
 	function createSettings() {
 		const schemaLink = structuredClone(schema)
@@ -21,12 +22,10 @@
 		$widget.schema = schemaLink
 	}
 
-	let link: Link = $widget.format_definition
-	let hover = false
-
 	$: if ($widget?.saved) {
 		setTimeout(() => {
 			link = $widget.format_definition
+			createSettings()
 		}, 5)
 
 		$widget.saved = null
@@ -37,25 +36,20 @@
 	})
 </script>
 
-<a
-	href={link?.href}
-	target={link?.external ? '_blank' : ''}
-	on:mouseenter={() => {
-		hover = true
-	}}
-	on:mouseleave={() => {
-		hover = false
-	}}
->
+<a href={link?.href} target={link?.external ? '_blank' : ''}>
 	<!-- <Card href={link?.href}> -->
 	<div
-		class="animate__animated animate__zoomIn mt-6 flex flex-1 justify-between hover:-translate-y-0.5 hover:scale-100"
+		class="animate__animated animate__zoomIn group mt-6 flex flex-1 justify-between hover:-translate-y-0.5 hover:scale-100"
 	>
 		<div class="mx-5">
-			<h5 class=" text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
+			<h5
+				class=" text-2xl font-bold tracking-tight text-gray-900 group-hover:text-primary-700 dark:text-white"
+			>
 				{link?.title}
 			</h5>
-			<p class=" text-lg leading-tight text-gray-700 dark:text-gray-400">
+			<p
+				class=" text-lg leading-tight text-gray-700 group-hover:text-primary-400 dark:text-gray-400"
+			>
 				{link?.description}
 			</p>
 
@@ -68,10 +62,7 @@
 			{#if link?.image}
 				<Avatar size="lg" src={link.image} />
 			{:else}
-				<Avatar
-					size="lg"
-					class={hover ? 'dark:bg-primary-900 bg-primary-700 text-white dark:text-white' : ''}
-				>
+				<Avatar size="lg" class="  group-hover:bg-primary-700 group-hover:text-white ">
 					<Icon icon={link?.icon || 'tabler:external-link'} size="40px" />
 				</Avatar>
 			{/if}

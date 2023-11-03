@@ -1,6 +1,7 @@
 export const schema = {
 	properties: {
 		format_definition: {
+			type: 'recursive',
 			$ref: '/schemas/format_definition',
 			_group: 'design'
 		}
@@ -8,8 +9,6 @@ export const schema = {
 	$defs: {
 		format_definition: {
 			id: '/schemas/format_definition',
-			title: 'Link',
-			type: 'object',
 			properties: {
 				title: {
 					type: 'string',
@@ -21,9 +20,9 @@ export const schema = {
 					readOnly: false,
 					default: ''
 				},
-				href: {
+				original: {
 					type: 'string',
-					label: 'Link',
+					label: 'Imagen',
 					attrs: {
 						placeholder: null,
 						format: null
@@ -32,38 +31,17 @@ export const schema = {
 					required: true,
 					default: ''
 				},
-				external: {
-					type: 'boolean',
-					label: 'Open External',
+				thumbnail: {
+					type: 'string',
 					attrs: {
 						placeholder: null,
 						format: null
 					},
 					readOnly: false,
 					default: false
-				},
-				icon: {
-					type: 'string',
-					label: null,
-					attrs: {
-						placeholder: null,
-						format: null
-					},
-					readOnly: false,
-					default: ''
-				},
-				description: {
-					type: 'string',
-					label: null,
-					attrs: {
-						placeholder: null,
-						format: null
-					},
-					format: 'textarea',
-					readOnly: false,
-					default: ''
 				}
-			}
+			},
+			default: []
 		}
 	},
 	addGroups: [{ name: 'design', title: 'Design' }]
