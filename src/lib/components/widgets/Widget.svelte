@@ -47,7 +47,12 @@
 		<Spinner fullScreen={false} />
 	{/if}
 	<!-- Widget Header -->
-	<div id={`widget-header-${$widget.widget_id}`} class:mt-1={$widget.temp} class="min-h-8">
+	<div
+		id={`widget-header-${$widget.widget_id}`}
+		class:mt-1={$widget.temp}
+		class:cursor-move={$widget?.params?.settings?.general?.draggable}
+		class="min-h-8"
+	>
 		{#if !fixed && header}
 			<WidgetHeader {isToolbarVisible} />
 		{:else if isToolbarVisible && isOwner}

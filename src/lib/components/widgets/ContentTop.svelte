@@ -8,7 +8,7 @@
 	const widgetTop = getContext<Writable<any>>('WidgetTop')
 
 	$: if ($widgetTop) {
-		import($widgetTop.component).then((value: any) => {
+		import(`./top/${$widgetTop.component}.svelte`).then((value: any) => {
 			Thing = value.default
 		})
 	}

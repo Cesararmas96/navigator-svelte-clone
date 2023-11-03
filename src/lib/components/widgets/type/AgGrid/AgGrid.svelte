@@ -219,8 +219,9 @@
 		if ($widget.temp) {
 			const instanceLoadedAction = getWidgetAction($widgetActions, 'instanceLoaded')
 			instanceLoadedAction.action()
+		} else {
+			resizeAction.action()
 		}
-		resizeAction.action()
 		setTimeout(() => {
 			resizeAgGridContent()
 		}, 1000)
@@ -286,7 +287,7 @@
 	})
 
 	const widgetTop = getContext<Writable<any>>('WidgetTop')
-	setWidgetTop(widgetTop, './type/AgGrid/Toolbar.svelte', {
+	setWidgetTop(widgetTop, 'AgGridToolbar', {
 		position: 'top',
 		widgetID: $widget.widget_id,
 		btnsActions: $widget.params.btnsActions,
