@@ -11,11 +11,9 @@
 		addNewItem,
 		pasteItem,
 		saveLocations,
-		loadLocalStoredLocations,
-		syncGridItems,
-		reorderLines
+		loadLocalStoredLocations
 	} from '$lib/helpers/dashboard/grid'
-	import { deleteData, getApiData, postData, putData } from '$lib/services/getData'
+	import { deleteData, getApiData, patchData, postData, putData } from '$lib/services/getData'
 	import Alerts from '../widgets/type/Alert/Alerts.svelte'
 	import { dismissAlert, sendAlert, sendErrorAlert } from '$lib/helpers/common/alerts'
 	import { AlertType, type AlertMessage } from '$lib/interfaces/Alert'
@@ -27,15 +25,21 @@
 	import { createEventDispatcher, setContext } from 'svelte'
 	import { onMount } from 'svelte'
 	import { openModal } from '$lib/helpers/common/modal'
+	import { loading } from '$lib/stores/preferences'
 
 	export let dashboard: any
+
+	$: if (dashboard.newWidget) {
+		handleWidgetInsert({ ...dashboard.newWidget })
+		dashboard.newWidget = null
+	}
 
 	const dispatch = createEventDispatcher()
 
 	const storeDashboard: any = writable(dashboard)
 	setContext('dashboard', storeDashboard)
 	$: $storeDashboard = dashboard
-	$: widgetLocation = { ...dashboard.widget_location }
+
 	const baseUrl = import.meta.env.VITE_API_URL
 
 	const cols = 12
@@ -46,7 +50,10 @@
 	let gridController: GridController
 	let widgets: any[] = []
 
-	$: if ($storeDashboard?.attributes?.user_id === $storeUser?.user_id) {
+	$: if (
+		$storeDashboard?.attributes?.user_id === $storeUser?.user_id &&
+		$storeDashboard?.user_id === null
+	) {
 		const alert: AlertMessage = {
 			id: 'dashboard-system-msg',
 			title: `Customizing a system dashboard`,
@@ -60,26 +67,28 @@
 		dismissAlert('dashboard-system-msg')
 	}
 
+	$: if (!widgets || widgets.length === 0) {
+		sendAlert({
+			id: 'dashboard-no-widgets',
+			title: 'No widgets',
+			message: 'There are no widgets in this dashboard',
+			type: AlertType.INFO
+		})
+	} else {
+		dismissAlert('dashboard-no-widgets')
+	}
+
 	const isMobile = (): boolean => {
 		return innerWidth < 500
 	}
 
 	const setGridItems = async (dashboardId: string): Promise<void> => {
+		$storeDashboard.loaded = true
 		gridItems = []
-		dismissAlert('dashboard-no-widgets')
 
 		try {
 			widgets = await getApiData(`${baseUrl}/api/v2/widgets?dashboard_id=${dashboardId}`, 'GET')
-
-			if (!widgets) {
-				sendAlert({
-					id: 'dashboard-no-widgets',
-					title: 'No widgets',
-					message: 'There are no widgets in this dashboard',
-					type: AlertType.INFO
-				})
-				return
-			}
+			if (!widgets) return
 			widgets = widgets.map((widget: any) => {
 				widget.widget_slug = widget?.widget_slug || generateUniqueSlug(widget.title, widgets)
 				return widget
@@ -98,8 +107,8 @@
 
 			items =
 				dashboard.attributes.explorer === 'v3' || setNewLocations
-					? loadV3Locations(widgetLocation, widgets, cols, isMobile())
-					: loadV2Locations(widgetLocation, dashboard, widgets, cols, isMobile())
+					? loadV3Locations(dashboard.widget_location, widgets, cols, isMobile())
+					: loadV2Locations(dashboard.widget_location, dashboard, widgets, cols, isMobile())
 
 			gridItems = [...items]
 		} catch (error: any) {
@@ -121,15 +130,15 @@
 			isChanging = false
 			saveLocations(dashboard, gridItems, gridController.gridParams)
 			if (dashboard?.attributes?.user_id !== $storeUser?.user_id) return
-			const payload = { widget_location: { ...gridController.gridParams.items } }
+			const payload = { widget_location: dashboard.widget_location }
 			await postData(
 				`${baseUrl}/api/v2/dashboard/widgets/location/${dashboard.dashboard_id}`,
 				payload
 			)
 
-			if (dashboard.attributes.explorer !== 'v3') {
+			if (!dashboard.attributes.explorer || dashboard.attributes.explorer !== 'v3') {
 				const attributes = { ...dashboard.attributes, explorer: 'v3' }
-				postData(`${baseUrl}/api/v2/dashboards/${dashboard.dashboard_id}`, {
+				patchData(`${baseUrl}/api/v2/dashboards/${dashboard.dashboard_id}`, {
 					attributes
 				})
 			}
@@ -138,18 +147,23 @@
 
 	$: handleResizable = (item: any) => {
 		gridItems = resizeItem(item, gridItems)
+		// syncGridItemsToItems(gridItems, gridController.gridParams)
 	}
 	$: handleCloning = (item: any) => {
 		const clonedItem = cloneItem(item, gridItems)
 		gridItems = [...gridItems, clonedItem]
 	}
 	$: handleRemove = (item: any) => {
-		// item.data.component.$destroy()
-		gridItems = removeItem(item, gridItems, gridController.gridParams)
-		// gridItems.map((item: any) => {
-		// 	delete item.data.loaded
-		// 	return item
-		// })
+		const temp = [...removeItem(item, gridItems, gridController.gridParams)]
+		delete dashboard.widget_location[item.slug]
+		widgets = widgets.filter((widget: any) => widget.widget_slug !== item.slug)
+		gridItems = []
+		setTimeout(() => {
+			gridItems = temp
+			gridController.gridParams.unregisterItem(item)
+			gridController.gridParams.updateGrid()
+			updateLocations()
+		}, 100)
 	}
 
 	let resizedSlug = ''
@@ -157,7 +171,7 @@
 		resizedSlug = item.slug
 	}
 
-	$: setGridItems($storeDashboard.dashboard_id)
+	// $: setGridItems($storeDashboard.dashboard_id)
 
 	const handleWidgetPaste = async () => {
 		try {
@@ -224,66 +238,60 @@
 
 	$: if ($storeCCPWidget) addWidgetCopyAlert()
 
-	let displayModal = false
-
-	const handleWidgetInsert = async (widgetUid: string, widgetId: string) => {
-		const token = $storeUser.token
-
+	const handleWidgetInsert = async (_widget: any) => {
+		loading.set(true)
 		try {
 			const payload = {
 				program_id: dashboard.program_id,
 				dashboard_id: dashboard.dashboard_id,
-				title: 'My new Widget',
-				widget_id: widgetId
-			}
-
-			// const resp = await fetch(`https://api.dev.navigator.mobileinsight.com/api/v2/widgets-template/b13b619a-847e-4734-a3d2-fa198f0531b7`,
-			const resp = await fetch(
-				`https://api.dev.navigator.mobileinsight.com/api/v2/widgets/${widgetUid}`,
-				{
-					method: 'PUT',
-					headers: {
-						Authorization: `Bearer ${token}`,
-						'Content-Type': 'application/json'
-					},
-					body: JSON.stringify(payload)
+				title: `New Widget - ${_widget.title}`,
+				template_id: _widget.template_id,
+				user_id: $storeUser?.user_id,
+				attributes: {
+					user_id: $storeUser?.user_id
 				}
-			)
-
-			if (!resp.ok) {
-				const errorMessage = `Failed to fetch data: ${resp.status} - ${resp.statusText}`
-				throw new Error(errorMessage)
 			}
-			const widget = await resp.json()
+
+			const resp = await putData(`${baseUrl}/api/v2/widgets`, payload)
+
+			const widget = await getApiData(`${baseUrl}/api/v2/widgets/${resp.widget_id}`, 'GET')
 
 			widget.resize_load = true
 			const newItem = Object.create({})
-			newItem.data = widget.data
+			newItem.data = widget
 			newItem.w = 6
 			newItem.h = 12
 			const position = addNewItem(newItem, gridController)
 			newItem.x = position.x
 			newItem.y = position.y
+			newItem.slug = widget.widget_slug
 
-			console.log(newItem)
-
-			gridItems = pasteItem(newItem, gridItems)
-
-			displayModal = false
-			return widget
+			dashboard.widget_location = {
+				...dashboard.widget_location,
+				[widget.widget_slug]: {
+					x: newItem.x,
+					y: newItem.y,
+					w: newItem.w,
+					h: newItem.h
+				}
+			}
+			gridItems = [...gridItems, newItem]
+			widgets = [...widgets, widget]
+			updateLocations()
+			// await postData(`${baseUrl}/api/v2/dashboard/widgets/location/${dashboard.dashboard_id}`, {
+			// 	widget_location: dashboard.widget_location
+			// })
 		} catch (error: any) {
-			console.error('An error occurred:', error.message)
-			// Handle the error as needed, e.g., display an error message or log it.
+			sendErrorNotification('An error occurred:', error.message)
 		}
+		loading.set(false)
 	}
+
+	$: if (!$storeDashboard.loaded) setGridItems($storeDashboard.dashboard_id)
 
 	onMount(() => {
-		dispatch('handleWidgetInsert', insertWidget)
+		setGridItems($storeDashboard.dashboard_id)
 	})
-
-	const insertWidget = () => {
-		openModal('Insert Widget', 'AddWidgetModal', { dashboard, handleWidgetInsert })
-	}
 </script>
 
 <svelte:window bind:innerWidth />
@@ -329,7 +337,6 @@
 						item.data.params.settings.resizable = e.detail.resizable && !e.detail.fixed
 					}}
 				>
-					<!-- bind:this={item.component} -->
 					<Widget
 						{widget}
 						{fixed}

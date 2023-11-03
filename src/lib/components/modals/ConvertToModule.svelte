@@ -110,7 +110,6 @@
 		type: string = 'create'
 	) {
 		$loading = true
-		console.log(params)
 		try {
 			const resp = await postData(`${import.meta.env.VITE_API_URL}/api/v2/modules`, params)
 			if (resp) {

@@ -1,11 +1,12 @@
 <script lang="ts">
-	import { Popover } from 'flowbite-svelte'
+	import { Button, Popover } from 'flowbite-svelte'
 	import { fade } from 'svelte/transition'
 	import Loading from '$lib/components/common/Loading.svelte'
 	import { getApiData } from '$lib/services/getData'
 	import { onMount } from 'svelte'
 
 	export let props
+
 	let data: any[] = []
 	const baseUrl = import.meta.env.VITE_API_URL
 	let active = 'All'
@@ -91,6 +92,10 @@
 		active = 'All'
 	}
 
+	const handleClick = (widget) => {
+		props.handleWidgetInsert(widget)
+	}
+
 	onMount(() => {
 		loadData()
 	})
@@ -161,15 +166,14 @@
 			{:else if filteredTemplates}
 				{#each filteredTemplates as widget}
 					{#if widget.title}
-						<!-- svelte-ignore a11y-invalid-attribute -->
-						<a href="#" on:click={() => props.handleWidgetInsert(widget.uid, widget.widget_id)}>
+						<button class="flex w-full" on:click={() => handleClick(widget)}>
 							<div
-								class="group my-1 flex flex-row items-center rounded-lg bg-gray-50 p-2.5 text-base font-bold text-gray-900 hover:bg-gray-100 hover:shadow dark:bg-gray-600 dark:text-white dark:hover:bg-gray-500"
+								class="group my-1 flex w-full flex-row items-center rounded-lg bg-gray-50 p-2.5 text-base font-bold text-gray-900 hover:bg-gray-100 hover:shadow dark:bg-gray-600 dark:text-white dark:hover:bg-gray-500"
 							>
 								<!-- {widget.attributes.icon} -->
 
 								<img src={icons[widget.attributes.icon]} alt="" width="20" />
-								<span class="ml-3 flex-1 flex-wrap">{widget.title}</span>
+								<span class="ml-3 flex-1 flex-wrap text-left">{widget.title}</span>
 
 								<Popover class="w-64 text-sm " transition={fade} params={{ duration: 200 }}>
 									{#if widget.description}
@@ -179,20 +183,19 @@
 									{/if}
 								</Popover>
 							</div>
-						</a>
+						</button>
 					{/if}
 				{/each}
 			{:else}
 				{#each data as widget}
 					{#if widget.title}
-						<!-- svelte-ignore a11y-invalid-attribute -->
-						<a href="#" on:click={() => props.handleWidgetInsert(widget.uid, widget.widget_id)}>
+						<button class="flex w-full" on:click={() => props.handleWidgetInsert(widget)}>
 							<div
-								class="group my-1 flex flex-row items-center rounded-lg bg-gray-50 p-2.5 text-base font-bold text-gray-900 hover:bg-gray-100 hover:shadow dark:bg-gray-600 dark:text-white dark:hover:bg-gray-500"
+								class="group my-1 flex w-full flex-row items-start rounded-lg bg-gray-50 p-2.5 text-base font-bold text-gray-900 hover:bg-gray-100 hover:shadow dark:bg-gray-600 dark:text-white dark:hover:bg-gray-500"
 							>
 								<img src={icons[widget.attributes.icon]} alt="" width="20" />
 								<!-- {widget.attributes.icon} -->
-								<span class="ml-3 flex-1 flex-wrap">{widget.title}</span>
+								<span class="ml-3 flex-1 flex-wrap text-left">{widget.title}</span>
 
 								<Popover class="w-64 text-sm " transition={fade} params={{ duration: 200 }}>
 									{#if widget.description}
@@ -202,7 +205,7 @@
 									{/if}
 								</Popover>
 							</div>
-						</a>
+						</button>
 					{/if}
 				{/each}
 			{/if}

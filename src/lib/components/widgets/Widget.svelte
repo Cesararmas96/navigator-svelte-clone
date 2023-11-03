@@ -47,7 +47,12 @@
 		<Spinner fullScreen={false} />
 	{/if}
 	<!-- Widget Header -->
-	<div id={`widget-header-${$widget.widget_id}`} class:mt-1={$widget.temp} class="min-h-8">
+	<div
+		id={`widget-header-${$widget.widget_id}`}
+		class:mt-1={$widget.temp}
+		class:cursor-move={$widget?.params?.settings?.general?.draggable}
+		class="min-h-8"
+	>
 		{#if !fixed && header}
 			<WidgetHeader {isToolbarVisible} />
 		{:else if isToolbarVisible && isOwner}
@@ -65,7 +70,7 @@
 
 	<!-- Widget Content -->
 	<div
-		id={`widget-main-content-${$widget.widget_id}`}
+		id={`widget-main-${$widget.widget_id}`}
 		class:overflow-hidden={!scrollableBox}
 		class:overflow-y-auto={scrollableBox}
 		class:hidden={$widget.collapse}
@@ -75,7 +80,7 @@
 			event.stopPropagation()
 		}}
 	>
-		<div class="w-full">
+		<div id={`widget-main-content-${$widget.widget_id}`} class="w-full">
 			<ContentTop {widget} />
 
 			<Content {widget} />

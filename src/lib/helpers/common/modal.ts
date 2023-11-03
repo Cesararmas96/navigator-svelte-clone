@@ -41,3 +41,7 @@ export const openConfirmModal = (
 	const instanceConfig = { component: 'Confirm', props }
 	modal.update((m) => (m = instanceConfig))
 }
+
+export const closeModal = () => {
+	modal.update((m) => (m = null))
+}

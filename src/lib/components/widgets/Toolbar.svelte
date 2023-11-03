@@ -26,7 +26,9 @@
 	const patternUrl =
 		/(https:\/\/www\.|http:\/\/www\.|https:\/\/|http:\/\/)?[a-zA-Z]{2,}(\.[a-zA-Z]{2,})(\.[a-zA-Z]{2,})?\/[a-zA-Z0-9]{2,}|((https:\/\/www\.|http:\/\/www\.|https:\/\/|http:\/\/)?[a-zA-Z]{2,}(\.[a-zA-Z]{2,})(\.[a-zA-Z]{2,})?)|(https:\/\/www\.|http:\/\/www\.|https:\/\/|http:\/\/)?[a-zA-Z0-9]{2,}\.[a-zA-Z0-9]{2,}\.[a-zA-Z0-9]{2,}(\.[a-zA-Z0-9]{2,})?/
 
-	let isWidgetOwner: boolean = $dashboard?.attributes?.user_id === $storeUser?.user_id
+	let isWidgetOwner: boolean =
+		$dashboard?.attributes?.user_id === $storeUser?.user_id ||
+		$dashboard?.user_id === $storeUser?.user_id
 	let menuOpen = false
 
 	let bg: string

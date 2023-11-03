@@ -2,7 +2,7 @@
 	import Icon from '$lib/components/common/Icon.svelte'
 	import { Button } from 'flowbite-svelte'
 	import { getContext } from 'svelte'
-	import Filter from './Filter.svelte'
+	import AgGridFilter from './AgGridFilter.svelte'
 	import type { Writable } from 'svelte/store'
 	import { getWidgetAction } from '$lib/helpers'
 
@@ -25,7 +25,7 @@
 
 <div id={`aggrid-toolbar-${widgetID}-${position}`} class="flex flex-row justify-between">
 	{#if fCallback}
-		<Filter filterCallback={fCallback} />
+		<AgGridFilter filterCallback={fCallback} />
 	{/if}
 	<div
 		class={'widget-toolbar flex w-full flex-row justify-end px-3 py-3'}

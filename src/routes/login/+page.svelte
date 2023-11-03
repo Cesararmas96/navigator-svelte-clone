@@ -59,9 +59,7 @@
 	<main>
 		<div class="main-container dark:text-white-dark min-h-screen text-black">
 			<div class="flex min-h-screen bg-white">
-				<div
-					class=" width-full w-4/5 flex-col items-center justify-center text-white dark:text-black lg:flex"
-				>
+				<div class=" width-full w-4/5 flex-col text-white dark:text-black lg:flex">
 					<Carousel images={data.slideshowCarouselData} />
 				</div>
 				<div class="relative flex w-full items-center justify-center lg:w-2/5">

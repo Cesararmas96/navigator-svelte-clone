@@ -6,6 +6,6 @@ export const contentHeight = (id: string): any => {
 }
 
 export const setContentHeight = (id: string) => {
-  const mainContent: HTMLElement = document.querySelector(`#widget-main-content-${id}`)!
+  const mainContent: HTMLElement = document.querySelector(`#widget-main-${id}`)!
   mainContent.style.height = contentHeight(id)
 }

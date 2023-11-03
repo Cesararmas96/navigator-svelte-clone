@@ -219,8 +219,9 @@
 		if ($widget.temp) {
 			const instanceLoadedAction = getWidgetAction($widgetActions, 'instanceLoaded')
 			instanceLoadedAction.action()
+		} else {
+			resizeAction.action()
 		}
-		resizeAction.action()
 		setTimeout(() => {
 			resizeAgGridContent()
 		}, 1000)
@@ -241,6 +242,13 @@
 		name: 'resizeContent',
 		action: resizeAgGridContent
 	})
+
+	// const resizeAgGridInstanceContent = () => {
+	// 	setContentHeight($widget.widget_id)
+	// 	const eGridDiv: HTMLElement = document.querySelector(`#grid-${$widget.widget_id}`)!
+	// 	eGridDiv.style.height = gridHeight($widget.widget_id, $widget.params)
+	// 	$widget.resized = false
+	// }
 
 	const newItem = (obj: any) => {
 		gridOptions.api!.applyTransaction({ add: [obj.dataModel] })
@@ -279,7 +287,7 @@
 	})
 
 	const widgetTop = getContext<Writable<any>>('WidgetTop')
-	setWidgetTop(widgetTop, './type/AgGrid/Toolbar.svelte', {
+	setWidgetTop(widgetTop, 'AgGridToolbar', {
 		position: 'top',
 		widgetID: $widget.widget_id,
 		btnsActions: $widget.params.btnsActions,

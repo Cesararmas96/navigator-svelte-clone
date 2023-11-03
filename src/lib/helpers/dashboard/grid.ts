@@ -1,12 +1,10 @@
 import type { GridParams } from "svelte-grid-extended/types"
 import { generateUID } from "../common/common"
-import { sl } from "date-fns/locale"
 
 const rowHeight = 12
 const minRowHeight = 14
 
 export const loadV2Locations = (widgetLocation: Record<string, any>, _dashboard: any, _widgets: any[], cols: number, isMobile: boolean) => {
-  console.log('loadV2Locations')
   let widgets: any[] = []
   let x: number = 0
   let y: number = 0
@@ -36,16 +34,7 @@ export const loadV2Locations = (widgetLocation: Record<string, any>, _dashboard:
 }
 
 export const loadV3Locations = (widgetLocation: Record<string, any>, _widgets: any[], cols: number, isMobile: boolean) => {
-  console.log('loadV3Locations')
-  if (!widgetLocation || Object.keys(widgetLocation).length === 0) {
-    let row = 0
-    widgetLocation = {};
-    _widgets.forEach((widget: any) => {
-      widget.resize_on_load = true
-      widgetLocation[widget.widget_slug] = { x: 0, y: row, w: cols, h: minRowHeight };
-      row += minRowHeight;
-    });
-  }
+  if (!widgetLocation) return [] 
 
   if (isMobile) {
     let y = 0
@@ -61,11 +50,9 @@ export const loadV3Locations = (widgetLocation: Record<string, any>, _widgets: a
         return { slug: key, ...item, data }
       })
   }
-  // _dashboard.attributes.explorer = 'v3' 
 }
 
 export const loadLocalStoredLocations = (_dashboard: any, _widgets: any[], isMobile) => {
-  console.log('loadLocalStoredLocations')
   const grid = localStorage.getItem('grid')
   if (!grid) return []
 
@@ -94,7 +81,7 @@ export const loadLocalStoredLocations = (_dashboard: any, _widgets: any[], isMob
 }
 
 export const saveLocations = (dashboard: any, gridItems: any[], gridParams: GridParams) => {
-  console.log('saveLocations')
+  const deletedItems: string[] = []
   const items = Object.entries(gridParams.items).reduce((acc, [key, item]) => {
     const gridItem = gridItems.find((i) => i.slug === key)
     if (gridItem) {
@@ -102,10 +89,18 @@ export const saveLocations = (dashboard: any, gridItems: any[], gridParams: Grid
       gridItem.y = item.y
       gridItem.w = item.w
       gridItem.h = item.h
+    } else {
+      deletedItems.push(key)
     }
     acc[key] = { x: item.x, y: item.y, w: item.w, h: item.h };
     return acc;
   }, {});
+
+  if (deletedItems.length > 0) {
+    deletedItems.forEach((key) => {
+      delete gridParams.items[key];
+    });
+  }
 
   const grid = localStorage.getItem('grid')
   if (grid) {
@@ -126,8 +121,7 @@ export const saveLocations = (dashboard: any, gridItems: any[], gridParams: Grid
 
 }
 
-export const syncGridItems = (items: any[], gridParams: GridParams) => {
-  console.log('syncGridItems')
+export const syncGridItemsToItems = (items: any[], gridParams: GridParams) => {
   items.map((item) => {
     item.y = gridParams.items[item.slug].y
     item.h = gridParams.items[item.slug].h
@@ -136,8 +130,17 @@ export const syncGridItems = (items: any[], gridParams: GridParams) => {
   });
 }
 
+export const syncItemsToGridItems = (items: any[], gridParams: GridParams) => {
+  
+  items.forEach((item) => {
+    gridParams.items[item.slug].y = item.y;
+    gridParams.items[item.slug].h = item.h;
+    gridParams.items[item.slug].w = item.w;
+    gridParams.items[item.slug].x = item.x;
+  });
+}
+
 export const reloadLocations = (widgetLocation: Record<string, any>, gridParams: GridParams, isMobile: boolean) => {
-  console.log('reloadLocations')
   let y = 0
   // gridParams.itemSize = {height: 10, width: 300}
   // gridParams.cols = 1
@@ -226,12 +229,12 @@ export const pasteItem = (item: any, items: any[]) => {
 
 export const resizeItem = (item: any, items: any[]) => {
   const header = document.getElementById(`widget-header-${item.data.widget_id}`)?.clientHeight || 0
-  const content = document.getElementById(`widget-main-content-${item.data.widget_id}`)?.clientHeight || 0
+  const content = document.getElementById(`widget-main-${item.data.widget_id}`)?.clientHeight || 0
   // const widgetInstances =
   //   document.getElementById(`widget-instances-${item.uid}`)?.clientHeight || 0
   const height = header + content //+ widgetInstances
   const prevousHeight = maxHeight(item.y, items)
-  item.h = Math.ceil(height / rowHeight)
+  item.h = Math.ceil(height / (rowHeight+1))
   return reorderAfterResize(item, prevousHeight, items)
 }
 

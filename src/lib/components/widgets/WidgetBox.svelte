@@ -32,8 +32,8 @@
 			component: 'Parent',
 			settings: {
 				general: {
-					draggable: true,
-					resizable: true,
+					draggable: false,
+					resizable: false,
 					scrollable: true,
 					fixed: false
 				},

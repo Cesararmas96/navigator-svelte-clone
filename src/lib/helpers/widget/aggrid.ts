@@ -134,11 +134,21 @@ export const headerClass = (formatDefinition: any): string => {
 
 export const setMainContentHeight = (id: string): any => {
   const gridHeight = document.getElementById(`grid-${id}`)!.offsetHeight
-  document.getElementById(`widget-main-content-${id}`)?.setAttribute('style', `height: ${gridHeight}px`)
+  document.getElementById(`widget-main-${id}`)?.setAttribute('style', `height: ${gridHeight}px`)
 }
 
 export const gridHeight = (id: string, formatDefinition: any): any => {
-  const mainHeight = document.getElementById(`widget-main-content-${id}`)!.offsetHeight
+  const mainHeight = document.getElementById(`widget-main-${id}`)!.offsetHeight
+  const toolbarTopEL = document.getElementById(`aggrid-toolbar-${id}-top`)
+  const toolbarTop = toolbarTopEL ? toolbarTopEL.offsetHeight : 0
+	const toolbarBottomEL = document.getElementById(`aggrid-toolbar-${id}-bottom`)
+  const toolbarBottom = toolbarBottomEL ? toolbarBottomEL.offsetHeight : 0
+	const contentHeight = mainHeight - toolbarTop - toolbarBottom
+  return `${contentHeight}px`
+}
+
+export const gridInstanceHeight = (id: string): any => {
+  const mainHeight = document.getElementById(`widget-main-${id}`)!.offsetHeight
   const toolbarTopEL = document.getElementById(`aggrid-toolbar-${id}-top`)
   const toolbarTop = toolbarTopEL ? toolbarTopEL.offsetHeight : 0
 	const toolbarBottomEL = document.getElementById(`aggrid-toolbar-${id}-bottom`)

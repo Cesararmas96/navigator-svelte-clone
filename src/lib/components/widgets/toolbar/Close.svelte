@@ -6,7 +6,7 @@
 	import { getWidgetAction } from '$lib/helpers'
 	import { deleteData } from '$lib/services/getData'
 	import { sendErrorNotification } from '$lib/stores/toast'
-	import { openConfirmModal, openModal } from '$lib/helpers/common/modal'
+	import { openConfirmModal } from '$lib/helpers/common/modal'
 
 	const widget = getContext<Writable<any>>('widget')
 

@@ -11,6 +11,7 @@ declare global {
 			module: any, 
 			user: any,
 			token: string
+			tenant: string
 		}
 		// interface Error {}
 		// interface Locals {}
