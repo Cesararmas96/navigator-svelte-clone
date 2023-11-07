@@ -69,7 +69,7 @@
 		'tabler:brand-spotify': `/img/icons/spotify.svg`,
 		'tabler:carousel-horizontal': `/img/icons/gallery.png`,
 		'tabler:wash-dry-shade': `/img/icons/content.png`,
-		undefined: `/img/icons/loading.svg`,
+		undefined: `/img/icons/pc.png`,
 		loading: `/img/icons/loading.svg`,
 		'fa fa-flickr': `/img/icons/flickr.svg`
 	}
@@ -163,20 +163,22 @@
 						<img src={icons[widget?.attributes?.icon]} alt="" width="20 " />
 					</div>
 					<div class="flex-1">
-						<!-- svelte-ignore a11y-invalid-attribute -->
-						<a href="" class="font-bold text-heading hover:underline">{widget.title}</a>
+						<div class="font-bold text-heading hover:underline">{widget.title}</div>
 						<div class="text-md text-muted">{widget.description || widget.widget_name || ''}</div>
 					</div>
-					<div class="icon btn mx-8 gap-4">
-						<button on:click={() => (widget.like = handleLikeWidget(widget))}>
+					<div class="icon btn z-50 mx-8 gap-4">
+						<button
+							on:click={(event) => {
+								event.preventDefault()
+								event.stopPropagation()
+								widget.like = handleLikeWidget(widget)
+							}}
+						>
 							<Icon
 								icon={widget.like ? 'twemoji:red-heart' : 'icon-park-outline:like'}
 								size={'16px'}
 							/>
 						</button>
-						<!-- <button on:click={() => handlePinWidget(widget)}>
-							<Icon icon={widget.pin ? 'tabler:pinned-off' : 'tabler:pinned'} size={'16px'} />
-						</button> -->
 
 						<button class="ml-auto" on:click={() => handleShareWidget(widget)}>
 							<Icon icon={'mdi:share-variant'} size={'16px'} />

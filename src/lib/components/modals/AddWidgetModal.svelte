@@ -28,7 +28,7 @@
 		'tabler:brand-spotify': `/img/icons/spotify.svg`,
 		'tabler:carousel-horizontal': `/img/icons/gallery.png`,
 		'tabler:wash-dry-shade': `/img/icons/content.png`,
-		undefined: `/img/icons/loading.svg`,
+		undefined: `/img/icons/pc.png`,
 		loading: `/img/icons/loading.svg`,
 		'fa fa-flickr': `/img/icons/flickr.svg`
 	}
