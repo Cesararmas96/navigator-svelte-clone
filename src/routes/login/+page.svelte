@@ -63,6 +63,13 @@
 			'User Not Found: The email you entered does not exist. Please check your entry for any errors and try again.',
 		'403': 'Incorrect Password: Please double-check your credentials and try again.'
 	}
+
+	const keyDownEnter = (e) => {
+		if (e.key === 'Enter') {
+			e.preventDefault()
+			document.getElementById('form')?.dispatchEvent(new Event('submit'))
+		}
+	}
 </script>
 
 {#if data}
@@ -73,7 +80,7 @@
 					<Carousel images={data.slideshowCarouselData} />
 				</div>
 				<div class="relative flex w-full items-center justify-center lg:w-2/5">
-					<div class="w-auto md:p-10">
+					<div class="w-96 md:p-10">
 						<!--                    <h2 class="mb-3 text-3xl font-bold">Navigator</h2>-->
 						<img
 							src={data.logoClientUrl}
@@ -82,7 +89,7 @@
 							class="ml-auto mr-auto flex"
 						/>
 
-						<form class="mt-4 space-y-5" action="?/login" method="POST" use:enhance>
+						<form id="form" class="mt-4 space-y-5" action="?/login" method="POST" use:enhance>
 							<p class="mb-7">Sign in with Basic User/Password authentication</p>
 
 							<div>
@@ -94,6 +101,7 @@
 									name="email"
 									placeholder="email@email.com"
 									required
+									on:keydown={keyDownEnter}
 								/>
 							</div>
 							<div>
@@ -105,6 +113,7 @@
 									name="password"
 									placeholder="**********"
 									required
+									on:keydown={keyDownEnter}
 								>
 									<button
 										slot="right"
@@ -194,5 +203,6 @@
 		color: red;
 		padding: 0.5rem;
 		border-radius: 5px;
+		max-width: fit-content;
 	}
 </style>
