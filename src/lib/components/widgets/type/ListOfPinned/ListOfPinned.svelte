@@ -8,51 +8,39 @@
 	let view: boolean = true
 
 	const urlBase = import.meta.env.VITE_API_URL
-	const pinEndpoint = `${urlBase}/api/v1/interactions/pin`
+	// const pinEndpoint = `${urlBase}/api/v1/interactions/pin`
 	const likeEndpoint = `${urlBase}/api/v1/interactions/likes`
 
-	const handlePinWidget = (widget) => {
-		try {
-			if (widget.pin) {
-				getApiData(pinEndpoint, 'DELETE', { widget_id: widget.widget_id })
-				console.log('unpin')
-			} else if (!widget.pin) {
-				getApiData(pinEndpoint, 'PUT', { widget_id: widget.widget_id, user_id: widget.user_id })
-				console.log('pin')
-			}
-		} catch (e) {
-			console.log(e.text)
-		}
+	// const handlePinWidget = (widget) => {
+	// 	try {
+	// 		if (widget.pin) {
+	// 			getApiData(pinEndpoint, 'DELETE', { widget_id: widget.widget_id })
+	// 			console.log('unpin')
+	// 		} else if (!widget.pin) {
+	// 			getApiData(pinEndpoint, 'PUT', { widget_id: widget.widget_id, user_id: widget.user_id })
+	// 			console.log('pin')
+	// 		}
+	// 	} catch (e) {
+	// 		console.log(e)
+	// 	}
 
-		return (widget.pin = !widget.pin)
-	}
+	// 	return (widget.pin = !widget.pin)
+	// }
 
 	const handleLikeWidget = (widget) => {
 		try {
 			if (widget.like) {
 				getApiData(likeEndpoint, 'PUT', { object_uuid: widget.widget_id, object_type: 'widget' })
-				console.log('like')
 				widget.like = false
 			} else {
 				getApiData(likeEndpoint, 'DELETE', { object_uuid: widget.widget_id, object_type: 'widget' })
-				console.log('remove like')
 				widget.like = true
 			}
 		} catch (error) {
 			console.log(error)
-			// Handle error, revert state changes or retry the API call
 		}
 
-		return widget
-	}
-
-	const handleShareEntireWidget = () => {
-		// const url = `/share/dashboard/${dashboard.program_id}/${dashboard.module_id}/${dashboard.dashboard_id}`;
-		const link = document.createElement('a')
-		// link.href = url;
-		link.setAttribute('target', '_blank')
-		link.click()
-		// dropdownOpen = false;
+		return widget.like
 	}
 
 	const handleShareWidget = (widget) => {
@@ -108,7 +96,7 @@
 		<Icon icon={'tabler:layout-list'} size="14px" classes="mx-1" /> Table View
 	</button>
 </div>
-<!-- <Tabs style="underline"> -->
+
 <div class="flex">
 	{#if view}
 		<div class="mx-6 w-full flex-row gap-2">
@@ -118,8 +106,10 @@
 			>
 				{#each data as widget}
 					<Card padding="none" class="group">
-						<!-- svelte-ignore a11y-invalid-attribute -->
-						<a href="" class="p-1 text-primary-700">
+						<button
+							class="p-1 text-start text-primary-700"
+							on:click={() => handleShareWidget(widget)}
+						>
 							<div class="relative h-20">
 								<i class="group block h-20 rounded bg-current opacity-30" />
 								<span
@@ -136,23 +126,26 @@
 								<div class="text-md text-muted group-hover:text-link">
 									{getWidgetCategory(widget)}
 								</div>
-								<div class="items-end text-sm text-muted group-hover:text-link">
-									<button on:click={() => handleLikeWidget(widget)}>
-										<Icon
-											icon={widget.like ? 'twemoji:red-heart' : 'icon-park-outline:like'}
-											size={'16px'}
-										/>
-									</button>
-									<button on:click={() => handlePinWidget(widget)}>
-										<Icon icon={widget.pin ? 'tabler:pinned-off' : 'tabler:pinned'} size={'16px'} />
-									</button>
-
-									<button class="ml-auto" on:click={() => handleShareWidget(widget)}>
-										<Icon icon={'mdi:share-variant'} size={'16px'} />
-									</button>
-								</div>
 							</div>
-						</a>
+						</button>
+
+						<div
+							class=" flex flex-auto cursor-pointer items-end justify-between p-2 text-sm text-muted group-hover:text-link"
+						>
+							<button on:click={() => (widget.like = handleLikeWidget(widget))}>
+								<Icon
+									icon={widget.like ? 'twemoji:red-heart' : 'icon-park-outline:like'}
+									size={'16px'}
+								/>
+							</button>
+							<!-- <button on:click={() => handlePinWidget(widget)}>
+					<Icon icon={widget.pin ? 'tabler:pinned-off' : 'tabler:pinned'} size={'16px'} />
+				</button> -->
+
+							<button class="ml-auto" on:click={() => handleShareWidget(widget)}>
+								<Icon icon={'mdi:share-variant'} size={'16px'} />
+							</button>
+						</div>
 					</Card>
 				{/each}
 			</div>
@@ -160,28 +153,30 @@
 	{:else}
 		<div class="mx-6 w-full flex-row gap-2">
 			{#each data as widget}
+				<!-- svelte-ignore a11y-click-events-have-key-events -->
+				<!-- svelte-ignore a11y-no-static-element-interactions -->
 				<div
-					class="mb-1 flex items-center rounded-md border border-light-200 bg-primary-50 p-2 px-4 py-3 hover:bg-primary-100 dark:border-dark-200 dark:bg-dark-200 dark:hover:bg-dark-300"
+					class="mb-1 flex cursor-pointer items-center rounded-md border border-light-200 bg-primary-50 p-2 px-4 py-3 hover:bg-primary-100 dark:border-dark-200 dark:bg-dark-200 dark:hover:bg-dark-300"
+					on:click={() => handleShareWidget(widget)}
 				>
-					<!-- svelte-ignore a11y-invalid-attribute -->
-					<a href="" class="mr-3 flex-shrink-0">
+					<div class="mr-3 flex-shrink-0">
 						<img src={icons[widget?.attributes?.icon]} alt="" width="20 " />
-					</a>
+					</div>
 					<div class="flex-1">
 						<!-- svelte-ignore a11y-invalid-attribute -->
 						<a href="" class="font-bold text-heading hover:underline">{widget.title}</a>
 						<div class="text-md text-muted">{widget.description || widget.widget_name || ''}</div>
 					</div>
-					<div class="icon btn mx-8 gap-2 hover:bg-light-100 dark:hover:bg-dark-200">
-						<button on:click={() => handleLikeWidget(widget)}>
+					<div class="icon btn mx-8 gap-4">
+						<button on:click={() => (widget.like = handleLikeWidget(widget))}>
 							<Icon
 								icon={widget.like ? 'twemoji:red-heart' : 'icon-park-outline:like'}
 								size={'16px'}
 							/>
 						</button>
-						<button on:click={() => handlePinWidget(widget)}>
+						<!-- <button on:click={() => handlePinWidget(widget)}>
 							<Icon icon={widget.pin ? 'tabler:pinned-off' : 'tabler:pinned'} size={'16px'} />
-						</button>
+						</button> -->
 
 						<button class="ml-auto" on:click={() => handleShareWidget(widget)}>
 							<Icon icon={'mdi:share-variant'} size={'16px'} />
