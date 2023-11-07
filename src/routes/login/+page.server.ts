@@ -47,7 +47,7 @@ const login: Action = async ({ cookies, request }) => {
       maxAge: 60 * 60 * 24 * 30,
     })
   } else {
-    return fail(400, { credentials: true })
+    return fail(400, { credentials: true, message: await response.json() })
   }
   // redirect the user
   throw redirect(302, '/')

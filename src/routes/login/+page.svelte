@@ -11,6 +11,7 @@
 	import type { ActionData } from './$types'
 	import Carousel from '$lib/components/common/Carousel.svelte'
 	import { getApiData } from '$lib/services/getData'
+	import Icon from '$lib/components/common/Icon.svelte'
 
 	export let form: ActionData
 
@@ -18,6 +19,7 @@
 
 	//TODO: Agregar esta variable en las variables de entorno
 	const baseProdUrl = 'https://api.trocdigital.io'
+	let showPassword: boolean = false
 
 	const getLoginData = async () => {
 		try {
@@ -53,6 +55,14 @@
 		data = await getLoginData()
 		importLoginMethods(data)
 	})
+
+	const errorCodes = {
+		'400':
+			'Bad Request. Please double-check your credentials and try again. For persistent issues contact support.',
+		'401':
+			'User Not Found: The email you entered does not exist. Please check your entry for any errors and try again.',
+		'403': 'Incorrect Password: Please double-check your credentials and try again.'
+	}
 </script>
 
 {#if data}
@@ -89,13 +99,25 @@
 							<div>
 								<Label for="password" class="mb-1 !text-gray-900">Password</Label>
 								<Input
-									type="password"
 									id="password"
-									defaultClass="block w-full p-2.5 !focus:border-primary-500 !focus:ring-primary-500 !bg-gray-50 !text-gray-900 !border-gray-300 text-sm rounded-lg"
+									type={showPassword ? 'text' : 'password'}
+									defaultClass="block w-full p-2.5 !focus:border-primary-500 !focus:ring-primary-500 !bg-gray-50 !text-gray-900 !border-gray-300 text-sm rounded"
 									name="password"
 									placeholder="**********"
 									required
-								/>
+								>
+									<button
+										slot="right"
+										on:click|preventDefault={() => (showPassword = !showPassword)}
+										class="pointer-events-auto mt-1"
+									>
+										{#if showPassword}
+											<Icon icon="mdi:eye-outline" size="18" />
+										{:else}
+											<Icon icon="mdi:eye-off-outline" size="18" />
+										{/if}
+									</button>
+								</Input>
 							</div>
 
 							{#if form?.invalid}
@@ -103,7 +125,11 @@
 							{/if}
 
 							{#if form?.credentials}
-								<p class="error">You have entered the wrong credentials.</p>
+								<p class="error">
+									{errorCodes[form?.message?.status]
+										? errorCodes[form?.message?.status]
+										: form?.message?.reason}
+								</p>
 							{/if}
 
 							<div class="flex justify-end">
@@ -114,10 +140,10 @@
 						</form>
 
 						<div
-							class="relative my-7 h-5 text-center before:absolute before:inset-0 before:m-auto before:h-[1px] before:w-full before:bg-[#ebedf2] dark:before:bg-[#253b5c]"
+							class="relative my-7 flex h-5 flex-col text-center before:absolute before:inset-0 before:m-auto before:h-[1px] before:w-full before:bg-[#ebedf2] dark:before:bg-[#253b5c]"
 						>
 							<div class="text-white-dark relative z-[1] inline-block px-2 font-bold">
-								<span>OR</span>
+								<span class="bg-white px-2">OR sign in with SSO</span>
 							</div>
 						</div>
 
