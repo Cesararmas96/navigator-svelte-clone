@@ -3,6 +3,7 @@
 	import Icon from '$lib/components/common/Icon.svelte'
 	import { getWidgetCategory } from '$lib/helpers/widgets/actions'
 	import { getApiData } from '$lib/services/getData'
+	import { icons } from '$lib/helpers/common/icons'
 
 	export let data: any
 	let view: boolean = true
@@ -49,29 +50,6 @@
 		link.href = url
 		link.target = '_blank'
 		link.click()
-	}
-
-	const icons = {
-		'fa fa-bar-chart': `/img/icons/bar.png`,
-		'fa fa-area-chart': `/img/icons/area.png`,
-		'fa fa-table': `/img/icons/grid.png`,
-		'fa fa-circle-o-notch': `/img/icons/pie-2.png`,
-		'fa fa-tachometer': `/img/icons/speedometer.png`,
-		'fa fa-id-card-o': `/img/icons/id.png`,
-		'fa fa-map': `/img/icons/map.png`,
-		'fa fa-clock-o': `/img/icons/clock.png`,
-		'far fa-rss': `/img/icons/rss.png`,
-		'fa fa-desktop': `/img/icons/pc.png`,
-		'material-symbols:iframe': `/img/icons/pc.png`,
-		'fa fa-file-image-o': `/img/icons/photo.png`,
-		'fa fa-film': `/img/icons/cinema.png`,
-		'fa fa-youtube': `/img/icons/youtube.png`,
-		'tabler:brand-spotify': `/img/icons/spotify.svg`,
-		'tabler:carousel-horizontal': `/img/icons/gallery.png`,
-		'tabler:wash-dry-shade': `/img/icons/content.png`,
-		undefined: `/img/icons/pc.png`,
-		loading: `/img/icons/loading.svg`,
-		'fa fa-flickr': `/img/icons/flickr.svg`
 	}
 </script>
 

@@ -4,34 +4,13 @@
 	import Loading from '$lib/components/common/Loading.svelte'
 	import { getApiData } from '$lib/services/getData'
 	import { onMount } from 'svelte'
+	import { icons } from '$lib/helpers/common/icons'
 
 	export let props
 
 	let data: any[] = []
 	const baseUrl = import.meta.env.VITE_API_URL
 	let active = 'All'
-	const icons = {
-		'fa fa-bar-chart': `/img/icons/bar.png`,
-		'fa fa-area-chart': `/img/icons/area.png`,
-		'fa fa-table': `/img/icons/grid.png`,
-		'fa fa-circle-o-notch': `/img/icons/pie-2.png`,
-		'fa fa-tachometer': `/img/icons/speedometer.png`,
-		'fa fa-id-card-o': `/img/icons/id.png`,
-		'fa fa-map': `/img/icons/map.png`,
-		'fa fa-clock-o': `/img/icons/clock.png`,
-		'far fa-rss': `/img/icons/rss.png`,
-		'fa fa-desktop': `/img/icons/pc.png`,
-		'material-symbols:iframe': `/img/icons/pc.png`,
-		'fa fa-file-image-o': `/img/icons/photo.png`,
-		'fa fa-film': `/img/icons/cinema.png`,
-		'fa fa-youtube': `/img/icons/youtube.png`,
-		'tabler:brand-spotify': `/img/icons/spotify.svg`,
-		'tabler:carousel-horizontal': `/img/icons/gallery.png`,
-		'tabler:wash-dry-shade': `/img/icons/content.png`,
-		undefined: `/img/icons/pc.png`,
-		loading: `/img/icons/loading.svg`,
-		'fa fa-flickr': `/img/icons/flickr.svg`
-	}
 
 	async function loadData() {
 		try {
