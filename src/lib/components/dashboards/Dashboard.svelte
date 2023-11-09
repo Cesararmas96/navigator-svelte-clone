@@ -23,7 +23,7 @@
 	import { storeUser } from '$lib/stores'
 	import { generateRandomString, generateSlug } from '$lib/helpers/common/common'
 	import { sendErrorNotification, sendSuccessNotification } from '$lib/stores/toast'
-	import { readable, writable } from 'svelte/store'
+	import { writable } from 'svelte/store'
 	import { createEventDispatcher, setContext } from 'svelte'
 	import { loading } from '$lib/stores/preferences'
 
@@ -32,7 +32,7 @@
 		handleWidgetInsert({ ...dashboard.newWidget })
 		dashboard.newWidget = null
 	}
-
+	$: console.log(dashboard)
 	const dispatch = createEventDispatcher()
 
 	const storeDashboard: any = writable(dashboard)
@@ -240,7 +240,7 @@
 					user_id: $storeUser?.user_id
 				}
 			}
-
+			console.log(_widget.template_id)
 			const resp = await putData(`${baseUrl}/api/v2/widgets`, payload)
 
 			const widget = await getApiData(`${baseUrl}/api/v2/widgets/${resp.widget_id}`, 'GET')
@@ -248,13 +248,13 @@
 			widget.resize_load = true
 			const newItem = Object.create({})
 			newItem.data = widget
-			newItem.w = 6
-			newItem.h = 12
+			newItem.w = _widget.attributes.width || 6
+			newItem.h = _widget.attributes.height || 10
 			const position = addNewItem(newItem, gridController)
 			newItem.x = position.x
 			newItem.y = position.y
 			newItem.title = widget.title
-
+			console.log(newItem)
 			dashboard.widget_location = {
 				...dashboard.widget_location,
 				[widget.title]: {

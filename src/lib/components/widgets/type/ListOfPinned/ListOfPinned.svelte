@@ -3,9 +3,6 @@
 	import Icon from '$lib/components/common/Icon.svelte'
 	import { getWidgetCategory } from '$lib/helpers/widgets/actions'
 	import { getApiData } from '$lib/services/getData'
-	import { getContext, onMount } from 'svelte'
-	import type { Writable } from 'svelte/store'
-	import { getWidgetAction } from '$lib/helpers'
 
 	export let data: any
 	let view: boolean = true
@@ -88,13 +85,6 @@
 		loading: `/img/icons/loading.svg`,
 		'fa fa-flickr': `/img/icons/flickr.svg`
 	}
-
-	const widgetActions = getContext<Writable<any[]>>('widgetActions')
-
-	onMount(() => {
-		const resizeAction = getWidgetAction($widgetActions, 'resize')
-		resizeAction.action()
-	})
 </script>
 
 <div

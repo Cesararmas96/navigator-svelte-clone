@@ -10,8 +10,8 @@
 	const data = { ...$widget }
 
 	onMount(() => {
-		const resizeAction = getWidgetAction($widgetActions, 'resize')
-		resizeAction.action()
+		// const resizeAction = getWidgetAction($widgetActions, 'resize')
+		// resizeAction.action()
 	})
 </script>
 

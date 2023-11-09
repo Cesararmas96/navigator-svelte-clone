@@ -28,15 +28,10 @@
 	const user = $storeUser
 
 	let currentDashboard
-
+	$: console.log('currentDashboard', currentDashboard?.loaded)
 	let storeDashboards: Writable<any[]>
 	$: if ($page.data.dashboards) {
 		storeDashboards = writable($page.data.dashboards)
-		console.log('storeDashboards', { ...$page.data.dashboards })
-		$storeDashboards.map((d: any) => {
-			d.loaded = false
-			return d
-		})
 	} else {
 		storeDashboards = writable([])
 	}

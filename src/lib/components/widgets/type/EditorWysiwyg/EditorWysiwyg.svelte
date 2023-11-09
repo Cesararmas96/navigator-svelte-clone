@@ -1,13 +1,6 @@
 <script lang="ts">
 	import type { Editor } from '@tiptap/core'
 	import { EditorTheme, SvelteEditor } from '@nextlint/svelte'
-	import { renderHTML } from '@nextlint/core'
-	import { getContext, onMount } from 'svelte'
-	import { getWidgetAction } from '$lib/helpers'
-	import type { Writable } from 'svelte/store'
-
-	const widgetActions = getContext<Writable<any[]>>('widgetActions')
-	const resizeAction = getWidgetAction($widgetActions, 'resize')
 
 	// import Devtool from './_components/Devtool.svelte'
 	const showcaseContent = {
@@ -712,10 +705,6 @@
 		const previewUrl = URL.createObjectURL(blob)
 		return previewUrl
 	}
-
-	onMount(() => {
-		resizeAction.action()
-	})
 </script>
 
 <div class="editor">
@@ -803,7 +792,6 @@
 	}
 	.editor {
 		max-width: 90%;
-		max-height: 700px;
 		width: 100%;
 		margin: auto;
 	}
