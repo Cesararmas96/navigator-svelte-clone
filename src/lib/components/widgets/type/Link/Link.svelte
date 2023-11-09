@@ -4,8 +4,6 @@
 	import type { Link } from './interface'
 	import { getContext, onMount } from 'svelte'
 	import { schema } from './setting'
-	import type { Writable } from 'svelte/store'
-	import { getWidgetAction } from '$lib/helpers'
 
 	const widget: any = getContext('widget')
 	let link: Link = $widget.format_definition
@@ -33,12 +31,8 @@
 		$widget.saved = null
 	}
 
-	const widgetActions = getContext<Writable<any[]>>('widgetActions')
-
 	onMount(() => {
 		createSettings()
-		const resizeAction = getWidgetAction($widgetActions, 'resize')
-		resizeAction.action()
 	})
 </script>
 

@@ -1,20 +1,7 @@
 <script lang="ts">
-	import {
-		A,
-		Card,
-		P,
-		Table,
-		TableBody,
-		TableBodyCell,
-		TableBodyRow,
-		TableHead,
-		TableHeadCell
-	} from 'flowbite-svelte'
+	import { Table, TableBody, TableBodyRow, TableHeadCell } from 'flowbite-svelte'
 	import Icon from '$lib/components/common/Icon.svelte'
 	import jsonData from '../../../../../data/widgetListOfDocuments.json'
-	import { getContext, onMount } from 'svelte'
-	import { getWidgetAction } from '$lib/helpers'
-	import type { Writable } from 'svelte/store'
 
 	const getWidgetCardData = (jsonData: any) => {
 		const data = jsonData
@@ -23,13 +10,6 @@
 	}
 
 	const data = getWidgetCardData(jsonData)
-
-	const widgetActions = getContext<Writable<any[]>>('widgetActions')
-
-	onMount(() => {
-		const resizeAction = getWidgetAction($widgetActions, 'resize')
-		resizeAction.action()
-	})
 </script>
 
 <Table class="m-3 h-full w-full">
