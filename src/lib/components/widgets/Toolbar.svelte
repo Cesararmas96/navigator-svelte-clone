@@ -16,6 +16,7 @@
 	import { saveWidgetSettings } from '$lib/helpers/widget/settings'
 	import { openExportDataModal } from '$lib/helpers/common/modal'
 	import { hideWidgetSettings, selectedWidgetSettings } from '$lib/stores/widgets'
+	import { sendSuccessNotification } from '$lib/stores/toast'
 
 	export let isToolbarVisible: boolean
 
@@ -201,7 +202,8 @@
 					tooltipText: 'Copy Widget',
 					action: () => {
 						storeCCPWidget.set($widget)
-						storeCCPWidgetBehavior.set('copy')
+						storeCCPWidgetBehavior.set({ type: 'copy', dashboard_id: $widget.dashboard_id })
+						sendSuccessNotification('Widget copied to clipboard')
 					}
 				},
 				hide: toolbar['copy'] || $widget['shared'],
@@ -215,7 +217,8 @@
 					tooltipText: 'Cut Widget',
 					action: () => {
 						storeCCPWidget.set($widget)
-						storeCCPWidgetBehavior.set('cut')
+						storeCCPWidgetBehavior.set({ type: 'cut', dashboard_id: $widget.dashboard_id })
+						sendSuccessNotification('Widget cut to clipboard')
 					}
 				},
 				hide: !isWidgetOwner || $widget['temp'] || $widget['cloned'] || $widget['shared'],

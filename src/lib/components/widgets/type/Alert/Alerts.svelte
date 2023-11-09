@@ -4,12 +4,13 @@
 
 	type Position = 'top' | 'content'
 
+	export let dashboardId: string | undefined = undefined
 	export let position: Position = 'content'
-
 	$: _alerts = $alerts.filter((alert) => {
 		return (
-			(position === 'top' && alert.id?.includes(position)) ||
-			(position === 'content' && !alert.id?.includes('top'))
+			(!alert.dashboardId || alert.dashboardId === dashboardId) &&
+			((position === 'top' && alert.id?.includes(position)) ||
+				(position === 'content' && !alert.id?.includes('top')))
 		)
 	})
 </script>

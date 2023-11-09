@@ -3,6 +3,8 @@
 	import ImageGallery from '@react2svelte/image-gallery'
 	import { browser } from '$app/environment'
 	import { schema } from './setting'
+	import type { Writable } from 'svelte/store'
+	import { getWidgetAction } from '$lib/helpers'
 
 	const widget: any = getContext('widget')
 	let data: any = $widget.format_definition || []
@@ -31,8 +33,12 @@
 		$widget.schema = schemaLink
 	}
 
+	const widgetActions = getContext<Writable<any[]>>('widgetActions')
+
 	onMount(() => {
 		createSettings()
+		const resizeAction = getWidgetAction($widgetActions, 'resize')
+		resizeAction.action()
 	})
 </script>
 

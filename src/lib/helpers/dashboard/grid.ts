@@ -14,7 +14,7 @@ export const loadV2Locations = (widgetLocation: Record<string, any>, _dashboard:
     Object.keys(widgetLocation).forEach(function callback(value: any, index: number) {
       Object.entries(widgetLocation[value]).map(([key, item]: [string, any]) => {
         const data = _widgets.find((item) => item.widget_id === key) || {}
-        const slug = data.widget_slug
+        const title = data.title
         data.resize_on_load = true
         let w = !isMobile ? parseInt(locations[index]) * (cols / 12) : cols
         w = Number(w)? w : cols
@@ -22,13 +22,13 @@ export const loadV2Locations = (widgetLocation: Record<string, any>, _dashboard:
           x = 0
           y += minRowHeight
         }
-        widgets.push({ slug, x, y, w, h: minRowHeight, data })
+        widgets.push({ title, x, y, w, h: minRowHeight, data })
         x += w
       })
     })
   } else {
     const data = _widgets[0]
-    widgets.push({ slug: data.widget_slug, x: 0, y: 0, w: cols, h: minRowHeight, data })
+    widgets.push({ title: data.title, x: 0, y: 0, w: cols, h: minRowHeight, data })
   }
   return widgets
 }
@@ -40,15 +40,16 @@ export const loadV3Locations = (widgetLocation: Record<string, any>, _widgets: a
     let y = 0
     return Object.entries(widgetLocation)
   		.map(([key, item]: [string, any]) => {
-        const data = _widgets.find((i) => i.widget_slug === key) || {}
-        return { slug: key, x: 0, w: cols, h: item.h, y: ++y, data }
+        const data = _widgets.find((i) => i.title === key || i.widget_slug === key) || {}
+        return { title: data.title, x: 0, w: cols, h: item.h, y: ++y, data }
       })
   } else {
     return Object.entries(widgetLocation)
       .map(([key, item]: [string, any]) => {
-        const data = _widgets.find((item) => item.widget_slug === key) || {}
-        return { slug: key, ...item, data }
-      })
+        const data = _widgets.find((item) => item.title === key || item.widget_slug === key) || null
+        if (!data) return null
+        return { title: data.title, ...item, data }
+      }).filter((item) => item !== null)
   }
 }
 
@@ -67,23 +68,30 @@ export const loadLocalStoredLocations = (_dashboard: any, _widgets: any[], isMob
       if ((itemA as any).y > (itemB as any).y) return 1;
       return 0;
     }).map(([key, item]: [string, any]) => {
-      const data = _widgets.find((item) => item.widget_slug === key) || {}
+      const data = _widgets.find((item) => item.title === key) || {}
 
       if (isMobile) {
         data.resize_on_load = true
-        const ret = { slug: key, x: 0, w: 12, h: item.h, y, data }
+        const ret = { title: key, x: 0, w: 12, h: item.h, y, data }
         y = y + item.h
         return ret
       }
-      return { slug: key, ...item, data }
+      return { title: key, ...item, data }
     })
   }
+}
+
+export const getControllerItemsLocations = (gridParams: GridParams) => {
+  return Object.entries(gridParams.items).reduce((acc, [key, item]) => {
+    acc[key] = { x: item.x, y: item.y, w: item.w, h: item.h };
+    return acc;
+  }, {});
 }
 
 export const saveLocations = (dashboard: any, gridItems: any[], gridParams: GridParams) => {
   const deletedItems: string[] = []
   const items = Object.entries(gridParams.items).reduce((acc, [key, item]) => {
-    const gridItem = gridItems.find((i) => i.slug === key)
+    const gridItem = gridItems.find((i) => i.title === key)
     if (gridItem) {
       gridItem.x = item.x
       gridItem.y = item.y
@@ -95,6 +103,8 @@ export const saveLocations = (dashboard: any, gridItems: any[], gridParams: Grid
     acc[key] = { x: item.x, y: item.y, w: item.w, h: item.h };
     return acc;
   }, {});
+
+  // dashboard.widget_location = items
 
   if (deletedItems.length > 0) {
     deletedItems.forEach((key) => {
@@ -118,25 +128,34 @@ export const saveLocations = (dashboard: any, gridItems: any[], gridParams: Grid
       }
     }))
   }
+}
 
+export const removeWidgetLocalstore = (dashboardId: string, widgetId: string) => {
+  const grid = localStorage.getItem('grid')
+  if (!grid) return 
+  const gridData = JSON.parse(grid)
+  if (gridData.widget_location[dashboardId] && gridData.widget_location[dashboardId][widgetId]) {
+    delete gridData.widget_location[dashboardId][widgetId]
+    localStorage.setItem('grid', JSON.stringify(gridData))
+  }
 }
 
 export const syncGridItemsToItems = (items: any[], gridParams: GridParams) => {
   items.map((item) => {
-    item.y = gridParams.items[item.slug].y
-    item.h = gridParams.items[item.slug].h
-    item.w = gridParams.items[item.slug].w
-    item.x = gridParams.items[item.slug].x
+    item.y = gridParams.items[item.title].y
+    item.h = gridParams.items[item.title].h
+    item.w = gridParams.items[item.title].w
+    item.x = gridParams.items[item.title].x
   });
 }
 
 export const syncItemsToGridItems = (items: any[], gridParams: GridParams) => {
   
   items.forEach((item) => {
-    gridParams.items[item.slug].y = item.y;
-    gridParams.items[item.slug].h = item.h;
-    gridParams.items[item.slug].w = item.w;
-    gridParams.items[item.slug].x = item.x;
+    gridParams.items[item.title].y = item.y;
+    gridParams.items[item.title].h = item.h;
+    gridParams.items[item.title].w = item.w;
+    gridParams.items[item.title].x = item.x;
   });
 }
 
@@ -170,7 +189,7 @@ export const reloadLocations = (widgetLocation: Record<string, any>, gridParams:
 
 export const cloneItem = (item: any, items: any[]) => {
   const clones = items
-    .filter((i) => i.data.parent?.widget_slug === item.slug)
+    .filter((i) => i.data.parent?.widget_slug === item.data.widget_slug)
     .sort((a, b) => a.data.parent.order - b.data.parent.order)
 
   const lastCloned =
@@ -198,7 +217,7 @@ export const cloneItem = (item: any, items: any[]) => {
   delete widget.instance_loaded
   delete widget.loaded
   delete widget.fetch
-  const newItem = { slug: widget.widget_slug, x, y, w, h, data: { ...widget } }
+  const newItem = { title: widget.title, x, y, w, h, data: { ...widget } }
 
   if (!haveSpaceAvailable(newItem, items)) items = insertLineInGrid(lastCloned ? lastCloned : item, items)
 
@@ -214,16 +233,15 @@ export const pasteItem = (item: any, items: any[]) => {
   const y = item.y
 
 
-  widget.widget_id = `widget-ccp-${generateUID()}`
-  widget.title = widget.title + ' - Copy'
-  widget.widget_slug = `${widget.widget_slug}-copy`
+  // widget.widget_id = `widget-ccp-${generateUID()}`
+  // widget.title = `${widget.title}-copy`
   widget.master_filtering = true
   delete widget.clone
   delete widget.temp
   delete widget.instance_loaded
   delete widget.loaded
   delete widget.fetch
-  const newItem = { slug: widget.widget_slug, x, y, w, h, data: { ...widget } }
+  const newItem = { title: widget.title, x, y, w, h, data: { ...widget } }
   return [...items, newItem]
 }
 
@@ -240,7 +258,7 @@ export const resizeItem = (item: any, items: any[]) => {
 
 export const removeItem = (item: any, items: any[], gridParams: GridParams) => {  
   if (item.data.parent) items = reorderLines(item, items, gridParams)
-  items = items.filter((gridItem) => gridItem.slug !== item.slug)
+  items = items.filter((gridItem) => gridItem.title !== item.title)
   return items
 }
 
@@ -282,7 +300,7 @@ const reorderAfterResize = (item: any, prevousHeight: number, items: any[]) => {
 
 export const reorderLines = (item: any, items: any[], gridParams: GridParams) => {
   const height = maxHeight(item.y, items)
-  return reorderAfterResize(item, 0, items)
+  return reorderAfterResize(item, height, items)
 }
 
 export const addNewItem = (item, gridController: any) => {
