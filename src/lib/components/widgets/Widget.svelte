@@ -4,19 +4,22 @@
 	import ContentTop from './ContentTop.svelte'
 	import ContentBottom from './ContentBottom.svelte'
 	import Content from './Content.svelte'
-	import { createEventDispatcher } from 'svelte'
+	import { createEventDispatcher, onMount } from 'svelte'
 	import type { Writable } from 'svelte/store'
 	import Instances from './Instances.svelte'
 	import Spinner from '../common/Spinner.svelte'
+	import { storeDashboard } from '$lib/stores/dashboards'
+	import { storeUser } from '$lib/stores'
 
 	const dispatch = createEventDispatcher()
 
 	export let isToolbarVisible: boolean
 	export let fixed: boolean
 	export let isOwner: boolean
+	export let isDraggable: boolean = false
 
 	let scrollable: boolean
-	let scrollableBox: boolean
+	let scrollableBox: boolean = true
 	let header: boolean
 	let footer: boolean
 
@@ -50,7 +53,7 @@
 	<div
 		id={`widget-header-${$widget.widget_id}`}
 		class:mt-1={$widget.temp}
-		class:cursor-move={$widget?.params?.settings?.general?.draggable}
+		class:cursor-move={isDraggable}
 		class="min-h-8"
 	>
 		{#if !fixed && header}

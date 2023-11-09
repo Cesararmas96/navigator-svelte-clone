@@ -109,7 +109,7 @@
 				<svelte:fragment slot="subtext">
 					<Icon
 						icon="carbon:radio-button{!$sidebarMin ? '-checked' : ''}"
-						classes="max-xl:hidden"
+						classes="max-xl:hidden p-2"
 					/>
 				</svelte:fragment>
 			</SidebarItem>

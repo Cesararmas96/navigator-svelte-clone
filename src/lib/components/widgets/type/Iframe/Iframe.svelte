@@ -21,4 +21,4 @@
 	})
 </script>
 
-<iframe src={url} title={$widget.title} class="w-full" />
+<iframe src={url} title={$widget.title} class="h-full w-full" />

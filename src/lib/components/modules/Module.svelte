@@ -9,7 +9,7 @@
 	} from '$lib/stores/dashboards'
 	import Icon from '../common/Icon.svelte'
 	import { closeModal, openConfirmModal, openModal } from '$lib/helpers/common/modal'
-	import { deleteData, getApiData, postData, putData } from '$lib/services/getData'
+	import { deleteData, getApiData, patchData, postData, putData } from '$lib/services/getData'
 	import { page } from '$app/stores'
 	import { sendErrorNotification, sendSuccessNotification } from '$lib/stores/toast'
 	import { clearAlerts, dismissAlert, sendAlert } from '$lib/helpers/common/alerts'
@@ -20,6 +20,7 @@
 	import { storeUser } from '$lib/stores'
 	import { onMount } from 'svelte'
 	import { writable, type Writable } from 'svelte/store'
+	import { generateRandomString } from '$lib/helpers/common/common'
 
 	export let trocModule: any
 	const baseUrl = import.meta.env.VITE_API_URL
@@ -27,7 +28,7 @@
 	const user = $storeUser
 
 	let currentDashboard
-
+	$: console.log('currentDashboard', currentDashboard?.loaded)
 	let storeDashboards: Writable<any[]>
 	$: if ($page.data.dashboards) {
 		storeDashboards = writable($page.data.dashboards)
@@ -48,9 +49,7 @@
 		dismissAlert('no-dashboard')
 	}
 
-	$: isOwner =
-		currentDashboard?.attributes?.user_id === $storeUser.user_id ||
-		currentDashboard?.user_id === $storeUser.user_id
+	$: isOwner = currentDashboard?.attributes?.user_id === $storeUser.user_id
 
 	let popupRemoveModal = false
 	let selectedDashboardID: string
@@ -73,18 +72,15 @@
 		loading.set(true)
 
 		let count = $storeDashboards?.length + 1 || 1
-		while ($storeDashboards?.some((dashboard) => dashboard.name === `New dashboard (${count})`)) {
-			count++
-		}
 
 		try {
 			const tab = await putData(`${baseUrl}/api/v2/dashboards`, {
-				name: `New dashboard (${count})`,
+				name: `New dashboard #${generateRandomString()}`,
 				attributes: {
 					icon: 'tabler:device-desktop-analytics',
 					color: '#1E90FF',
 					row_header: 'false',
-					user_id: user.user_id,
+					// user_id: user.user_id,
 					explorer: 'v3'
 				},
 				params: {
@@ -98,7 +94,6 @@
 				enabled: true,
 				position: count
 			})
-			console.log(tab.dashboard_id)
 			currentDashboard = await getCurrentDashboard(tab.dashboard_id)
 		} catch (e: any) {
 			console.log(e)
@@ -111,10 +106,12 @@
 		$hideDashboardSettings = false
 		$selectedDashboard = dashboard
 	}
+
 	const handleDashboardRemove = (dashboardID: string) => {
 		selectedDashboardID = dashboardID
 		popupRemoveModal = true
 	}
+
 	const handleRemoveConfirm = async () => {
 		loading.set(true)
 		try {
@@ -141,14 +138,14 @@
 		loading.set(true)
 		try {
 			const user = impersonation ? { user_id: $storeUser?.user_id } : { user_id: null }
-			const resp = await postData(
+			const resp = await patchData(
 				`${import.meta.env.VITE_API_URL}/api/v2/dashboards/${currentDashboard.dashboard_id}`,
 				{
 					attributes: { ...currentDashboard.attributes, ...user }
 				}
 			)
-			if (resp['0'] && resp['0'].dashboard_id) {
-				currentDashboard = { ...resp['0'] }
+			if (resp && resp.dashboard_id) {
+				currentDashboard = { ...resp }
 				$storeDashboards = $storeDashboards.map((item) => {
 					if (item.dashboard_id === currentDashboard.dashboard_id) {
 						return currentDashboard
@@ -172,7 +169,7 @@
 		let description =
 			'Are you sure that you want to customizable this dashboard?\nThis action cannot be undone.'
 
-		if (currentDashboard?.attributes?.user_id) {
+		if (currentDashboard?.attributes?.user_id === $storeUser?.user_id) {
 			impersonation = false
 			description =
 				'Are you sure that you want to publish this dashboard?\nThis action cannot be undone.'
@@ -195,7 +192,7 @@
 
 	const handleDashboardCopy = (behavior: string) => {
 		storeCCPDashboard.set(currentDashboard)
-		storeCCPDashboardBehavior.set(behavior)
+		storeCCPDashboardBehavior.set({ type: behavior, dashboard_id: currentDashboard.dashboard_id })
 		addDashboardCopyAlert()
 		dropdownOpen = false
 	}
@@ -213,18 +210,19 @@
 			sendErrorNotification(e)
 		}
 
-		if ($storeCCPDashboardBehavior === 'cut') {
+		if ($storeCCPDashboardBehavior.type === 'cut') {
 			try {
-				await getApiData(`${baseUrl}/api/v2/dashboards/${currentDashboard.dashboard_id}`, 'DELETE')
-				$storeDashboards = $storeDashboards.filter(
-					(d: any) => d.dashboard_id !== currentDashboard.dashboard_id
-				)
+				await getApiData(`${baseUrl}/api/v2/dashboards/${dashboard_id}`, 'DELETE')
+				if ($storeCCPDashboardBehavior.dashboard_id === currentDashboard.dashboard_id) {
+					$storeDashboards = $storeDashboards.filter(
+						(d: any) => d.dashboard_id !== currentDashboard.dashboard_id
+					)
+				}
 			} catch (e: any) {
 				sendErrorNotification(e)
 			}
 		}
 
-		// $storeDashboards = dashboards
 		currentDashboard = { ...$storeDashboards[$storeDashboards.length - 1] }
 		clearCopyDashboard()
 		loading.set(false)
@@ -236,7 +234,7 @@
 	}
 
 	const addDashboardCopyAlert = () => {
-		const behavior = $storeCCPDashboardBehavior
+		const behavior = $storeCCPDashboardBehavior.type
 		const alert: AlertMessage = {
 			id: 'top-dashboard-copied',
 			title: `Dashboard ${behavior === 'copy' ? 'copied' : 'cut'}`,
@@ -293,8 +291,9 @@
 	$: if (
 		$storeDashboards &&
 		$storeDashboards.length > 0 &&
-		currentDashboard &&
-		!$storeDashboards.some((d) => d.dashboard_id === currentDashboard.dashboard_id)
+		(!currentDashboard ||
+			(currentDashboard &&
+				!$storeDashboards.some((d) => d.dashboard_id === currentDashboard.dashboard_id)))
 	) {
 		currentDashboard = { ...$storeDashboards[0] }
 	}
@@ -374,7 +373,7 @@
 											Cut dashboard</DropdownItem
 										>
 									{/if}
-									{#if user.superuser && currentDashboard.user_id === null}
+									{#if user.superuser || $storeUser.user_id === currentDashboard.user_id}
 										<DropdownItem
 											on:click={handleCustomize}
 											defaultClass="flex flex-row font-medium py-2 pl-2 pr-4 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"

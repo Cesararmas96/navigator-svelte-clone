@@ -30,11 +30,7 @@
 	}
 </script>
 
-<Alert
-	border
-	{color}
-	class="animate__animated animate__fadeIn sticky top-1 z-10 mb-2 ml-[5px] mr-[12px] px-4 py-2"
->
+<Alert border {color} class="animate__animated animate__fadeIn mb-2 ml-[5px] mr-[12px] px-4 py-2">
 	<div class="flex flex-row justify-between">
 		<div class="flex flex-col items-start justify-center">
 			<div class="flex items-center gap-3">

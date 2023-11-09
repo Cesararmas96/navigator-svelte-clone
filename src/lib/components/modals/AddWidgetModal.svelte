@@ -19,8 +19,7 @@
 				`${baseUrl}/api/v2/widgets-template?program_id=${program_id}`,
 				'GET'
 			)
-
-			if (response) data = response
+			if (response) data = response.filter((widget) => widget.attributes?.explorer === 'v3')
 		} catch (error: any) {
 			console.error('An error occurred:', error.message)
 		}

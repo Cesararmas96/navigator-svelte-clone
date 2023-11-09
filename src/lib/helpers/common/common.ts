@@ -41,12 +41,7 @@ export const deepClone = (obj: any) => {
 };
 
 export const generateUniqueSlug = (str: string, widgets: any[]): string => {
-  let baseSlug = str
-      .trim()  
-      .toLowerCase()  
-      .replace(/[^\w\s-]/g, '') 
-      .replace(/[\s_-]+/g, '-') 
-      .replace(/^-+|-+$/g, '');
+  let baseSlug = generateSlug(str)
 
   let uniqueSlug = baseSlug;
   let suffix = 1;
@@ -58,3 +53,45 @@ export const generateUniqueSlug = (str: string, widgets: any[]): string => {
 
   return uniqueSlug;
 }
+
+export const generateSlug = (str: string): string => {
+  let slug = str
+      .trim()  
+      .toLowerCase()  
+      .replace(/[^\w\s-]/g, '') 
+      .replace(/[\s_-]+/g, '-') 
+      .replace(/^-+|-+$/g, '');
+
+  return slug;
+}
+
+export const generateRandomString = (numOfChar: number = 5) => {
+  let result = '';
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  const charactersLength = characters.length;
+  for (let i = 0; i < numOfChar; i++) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+  }
+  return result;
+}
+
+export const compare = (obj1: Record<string, any>, obj2: Record<string, any>) => {
+  if (obj1 === obj2) {
+    return true;
+  }
+  if (typeof obj1 !== 'object' || obj1 === null || typeof obj2 !== 'object' || obj2 === null) {
+    return false;
+  }
+  const keys1 = Object.keys(obj1);
+  const keys2 = Object.keys(obj2);
+  if (keys1.length !== keys2.length) {
+    return false;
+  }
+  for (const key of keys1) {
+    if (!keys2.includes(key) || !compare(obj1[key], obj2[key])) {
+      return false;
+    }
+  }
+  return true;
+}
+
