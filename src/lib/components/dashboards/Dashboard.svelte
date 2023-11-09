@@ -28,7 +28,6 @@
 	import { loading } from '$lib/stores/preferences'
 
 	export let dashboard: any
-
 	$: if (dashboard.newWidget) {
 		handleWidgetInsert({ ...dashboard.newWidget })
 		dashboard.newWidget = null
@@ -56,7 +55,6 @@
 	}
 
 	const setGridItems = async (dashboardId: string): Promise<void> => {
-		$storeDashboard.loaded = true
 		$storeDashboard.gridItems = []
 
 		try {
@@ -91,6 +89,8 @@
 				'Error loading the widgets',
 				`There was a problem with the server. Please try again later or contact technical support if the issue persists. (${error.message})`
 			)
+		} finally {
+			$storeDashboard.loaded = true
 		}
 	}
 
@@ -338,7 +338,6 @@
 	} else {
 		dismissAlert('dashboard-no-widgets', $storeDashboard.dashboard_id)
 	}
-
 	$: if (!$storeDashboard.loaded) {
 		setGridItems($storeDashboard.dashboard_id)
 	}

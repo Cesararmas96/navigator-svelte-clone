@@ -38,7 +38,9 @@
 	onMount(() => {
 		createSettings()
 		const resizeAction = getWidgetAction($widgetActions, 'resize')
-		resizeAction.action()
+		setTimeout(() => {
+			resizeAction.action()
+		}, 500)
 	})
 </script>
 
