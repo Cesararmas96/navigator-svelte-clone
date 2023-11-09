@@ -11,20 +11,20 @@
 		addNewItem,
 		pasteItem,
 		saveLocations,
-		loadLocalStoredLocations
+		loadLocalStoredLocations,
+		removeWidgetLocalstore,
+		getControllerItemsLocations
 	} from '$lib/helpers/dashboard/grid'
-	import { deleteData, getApiData, patchData, postData, putData } from '$lib/services/getData'
+	import { getApiData, patchData, postData, putData } from '$lib/services/getData'
 	import Alerts from '../widgets/type/Alert/Alerts.svelte'
 	import { dismissAlert, sendAlert, sendErrorAlert } from '$lib/helpers/common/alerts'
 	import { AlertType, type AlertMessage } from '$lib/interfaces/Alert'
-	import { storeCCPWidget, storeCCPWidgetBehavior } from '$lib/stores/dashboards'
+	import { storeCCPWidget, storeCCPWidgetBehavior, storeDashboards } from '$lib/stores/dashboards'
 	import { storeUser } from '$lib/stores'
-	import { generateUniqueSlug } from '$lib/helpers/common/common'
-	import { sendErrorNotification } from '$lib/stores/toast'
-	import { writable } from 'svelte/store'
+	import { generateRandomString, generateSlug } from '$lib/helpers/common/common'
+	import { sendErrorNotification, sendSuccessNotification } from '$lib/stores/toast'
+	import { readable, writable } from 'svelte/store'
 	import { createEventDispatcher, setContext } from 'svelte'
-	import { onMount } from 'svelte'
-	import { openModal } from '$lib/helpers/common/modal'
 	import { loading } from '$lib/stores/preferences'
 
 	export let dashboard: any
@@ -46,37 +46,10 @@
 	const itemSize = { height: 10 }
 
 	let innerWidth: number
-	let gridItems: any[] = []
 	let gridController: GridController
 	let widgets: any[] = []
-
-	$: if (
-		$storeDashboard?.attributes?.user_id === $storeUser?.user_id &&
-		$storeDashboard?.user_id === null
-	) {
-		const alert: AlertMessage = {
-			id: 'dashboard-system-msg',
-			title: `Customizing a system dashboard`,
-			message: `Don't forget that you are customizing a system dashboard, please publish it again`,
-			type: AlertType.WARNING,
-			callback1Btn: 'Publish',
-			callback1: () => dispatch('handleCustomize', false)
-		}
-		sendAlert(alert)
-	} else {
-		dismissAlert('dashboard-system-msg')
-	}
-
-	$: if (!widgets || widgets.length === 0) {
-		sendAlert({
-			id: 'dashboard-no-widgets',
-			title: 'No widgets',
-			message: 'There are no widgets in this dashboard',
-			type: AlertType.INFO
-		})
-	} else {
-		dismissAlert('dashboard-no-widgets')
-	}
+	let isChanging = false
+	let resizedTitle = ''
 
 	const isMobile = (): boolean => {
 		return innerWidth < 500
@@ -84,13 +57,14 @@
 
 	const setGridItems = async (dashboardId: string): Promise<void> => {
 		$storeDashboard.loaded = true
-		gridItems = []
+		$storeDashboard.gridItems = []
 
 		try {
 			widgets = await getApiData(`${baseUrl}/api/v2/widgets?dashboard_id=${dashboardId}`, 'GET')
 			if (!widgets) return
+
 			widgets = widgets.map((widget: any) => {
-				widget.widget_slug = widget?.widget_slug || generateUniqueSlug(widget.title, widgets)
+				widget.widget_slug = widget?.widget_slug || generateSlug(widget.title)
 				return widget
 			})
 
@@ -98,7 +72,7 @@
 
 			items = loadLocalStoredLocations(dashboard, widgets, isMobile())!
 			if (items && items.length > 0) {
-				gridItems = [...items]
+				$storeDashboard.gridItems = [...items]
 				return
 			}
 
@@ -110,9 +84,8 @@
 					? loadV3Locations(dashboard.widget_location, widgets, cols, isMobile())
 					: loadV2Locations(dashboard.widget_location, dashboard, widgets, cols, isMobile())
 
-			gridItems = [...items]
+			$storeDashboard.gridItems = [...items]
 		} catch (error: any) {
-			console.error(error)
 			sendErrorNotification(error)
 			sendErrorAlert(
 				'Error loading the widgets',
@@ -121,114 +94,132 @@
 		}
 	}
 
-	let isChanging = false
+	const updateWidgetLocation = async () => {
+		if (dashboard?.attributes?.user_id !== $storeUser?.user_id) return
+
+		const payload = { widget_location: getControllerItemsLocations(gridController.gridParams) }
+		await postData(
+			`${baseUrl}/api/v2/dashboard/widgets/location/${dashboard.dashboard_id}`,
+			payload
+		)
+		if (!dashboard.attributes.explorer || dashboard.attributes.explorer !== 'v3') {
+			const attributes = { ...dashboard.attributes, explorer: 'v3' }
+			patchData(`${baseUrl}/api/v2/dashboards/${dashboard.dashboard_id}`, {
+				attributes
+			})
+		}
+	}
 
 	const updateLocations = async () => {
 		if (isChanging || isMobile()) return
 		isChanging = true
 		setTimeout(async () => {
 			isChanging = false
-			saveLocations(dashboard, gridItems, gridController.gridParams)
-			if (dashboard?.attributes?.user_id !== $storeUser?.user_id) return
-			const payload = { widget_location: dashboard.widget_location }
-			await postData(
-				`${baseUrl}/api/v2/dashboard/widgets/location/${dashboard.dashboard_id}`,
-				payload
-			)
-
-			if (!dashboard.attributes.explorer || dashboard.attributes.explorer !== 'v3') {
-				const attributes = { ...dashboard.attributes, explorer: 'v3' }
-				patchData(`${baseUrl}/api/v2/dashboards/${dashboard.dashboard_id}`, {
-					attributes
-				})
-			}
+			saveLocations(dashboard, $storeDashboard.gridItems, gridController.gridParams)
 		}, 2000)
 	}
 
-	$: handleResizable = (item: any) => {
-		gridItems = resizeItem(item, gridItems)
-		// syncGridItemsToItems(gridItems, gridController.gridParams)
-	}
-	$: handleCloning = (item: any) => {
-		const clonedItem = cloneItem(item, gridItems)
-		gridItems = [...gridItems, clonedItem]
-	}
-	$: handleRemove = (item: any) => {
-		const temp = [...removeItem(item, gridItems, gridController.gridParams)]
-		delete dashboard.widget_location[item.slug]
-		widgets = widgets.filter((widget: any) => widget.widget_slug !== item.slug)
-		gridItems = []
-		setTimeout(() => {
-			gridItems = temp
-			gridController.gridParams.unregisterItem(item)
-			gridController.gridParams.updateGrid()
-			updateLocations()
-		}, 100)
-	}
-
-	let resizedSlug = ''
-	$: changeItemSize = (item: any) => {
-		resizedSlug = item.slug
-	}
-
-	// $: setGridItems($storeDashboard.dashboard_id)
-
 	const handleWidgetPaste = async () => {
+		loading.set(true)
 		try {
 			const copiedWidget = $storeCCPWidget
+			let newWidget: any
+			let response: any
+			let item: any
+			const { dashboard_id } = dashboard
 
-			const { program_id, dashboard_id } = dashboard // Assuming dashboard is defined somewhere
-			const widget_id = copiedWidget.widget_id // TODO: Check if widget_id is defined
-			const tempTitle = copiedWidget.title + ($storeCCPWidgetBehavior === 'copy' ? ' - Copy' : '')
+			if ($storeCCPWidgetBehavior.type === 'copy') {
+				const payload = {
+					program_id: dashboard.program_id,
+					dashboard_id,
+					title: `${copiedWidget.title.split(' #')[0]} #${generateRandomString()}`,
+					attributes: copiedWidget.attributes,
+					description: copiedWidget.description,
+					params: copiedWidget.params,
+					url: copiedWidget.url,
+					conditions: copiedWidget.conditions,
+					cond_definition: copiedWidget.cond_definition,
+					where_definition: copiedWidget.where_definition,
+					format_definition: copiedWidget.format_definition,
+					query_slug: copiedWidget.query_slug,
+					save_filtering: copiedWidget.save_filtering,
+					master_filtering: copiedWidget.master_filtering,
+					module_id: copiedWidget.module_id,
+					template_id: copiedWidget.template_id,
+					allow_filtering: copiedWidget.allow_filtering,
+					filtering_show: copiedWidget.filtering_show,
+					widget_type_id: copiedWidget.widget_type_id,
+					user_id: $storeUser?.user_id
+				}
 
-			const payload = {
-				program_id,
-				dashboard_id,
-				title: tempTitle,
-				widget_id,
-				user_id: $storeUser?.user_id
+				response = await putData(`${baseUrl}/api/v2/widgets`, payload)
+				const _dashboard = $storeDashboards.find(
+					(d: any) => d.dashboard_id === $storeCCPWidgetBehavior.dashboard_id
+				)
+				item = _dashboard.gridItems.find((item: any) => item.title === copiedWidget.title)
+			} else {
+				let payload: Record<string, any> = { dashboard_id }
+				if (dashboard.gridItems.some((item: any) => item.title === copiedWidget.title)) {
+					payload = {
+						...payload,
+						title: `${copiedWidget.title.split(' #')[0]} #${generateRandomString()}`
+					}
+				}
+				response = await patchData(`${baseUrl}/api/v2/widgets/${copiedWidget.widget_id}`, payload)
+
+				removeWidgetLocalstore($storeCCPWidgetBehavior.dashboard_id, copiedWidget.title)
+
+				const _dashboard = $storeDashboards.find(
+					(d: any) => d.dashboard_id === $storeCCPWidgetBehavior.dashboard_id
+				)
+
+				delete _dashboard.widget_location[copiedWidget.title]
+				await postData(`${baseUrl}/api/v2/dashboard/widgets/location/${_dashboard.dashboard_id}`, {
+					widget_location: _dashboard.widget_location
+				})
+				item = { ..._dashboard.gridItems.find((item: any) => item.title === copiedWidget.title) }
+				_dashboard.gridItems = _dashboard.gridItems.filter(
+					(item: any) => item.title !== copiedWidget.title
+				)
 			}
 
-			const item = gridItems.find((item: any) => item.slug === copiedWidget.widget_slug)
-			const response = await putData(`${baseUrl}/api/v2/widgets`, payload)
-			item.data = response.data
+			response = await getApiData(`${baseUrl}/api/v2/widgets/${response.widget_id}`, 'GET')
+			newWidget = { ...response }
+
 			const newItem = structuredClone(item)
 			const position = addNewItem(newItem, gridController)
-			newItem.data = copiedWidget
+			newItem.data = newWidget
 			newItem.x = position.x
 			newItem.y = position.y
 
-			const behavior = $storeCCPWidgetBehavior
-			if (behavior === 'cut') {
-				await deleteData(`${baseUrl}/api/v2/widgets/${copiedWidget.widget_id}`)
-				gridItems = gridItems.filter((item: any) => item.slug !== copiedWidget.widget_slug)
-			}
-
-			gridItems = pasteItem(newItem, gridItems)
-			saveLocations(dashboard, gridItems, gridController.gridParams)
+			$storeDashboard.gridItems = pasteItem(newItem, $storeDashboard.gridItems)
+			await setTimeout(async () => {
+				updateLocations()
+			}, 2000)
+			sendSuccessNotification('Widget pasted successfully')
 		} catch (error: any) {
-			console.error(`An error occurred: ${error.message}`)
-			// TODO: Handle error and display an appropriate message to the user if needed.
+			sendErrorNotification(error)
+		} finally {
+			clearCopyWidgets()
+			loading.set(false)
 		}
-
-		clearCopyWidgets()
 	}
 
 	const clearCopyWidgets = () => {
-		storeCCPWidget.set(null)
-		storeCCPWidgetBehavior.set(null)
+		$storeCCPWidget = null
+		$storeCCPWidgetBehavior = null
 	}
 
-	const addWidgetCopyAlert = () => {
-		const behavior = $storeCCPWidgetBehavior
+	const addWidgetCopyAlert = (isOwner: boolean) => {
+		const behavior = $storeCCPWidgetBehavior.type
 		const alert: AlertMessage = {
 			id: 'widget-copied',
 			title: `Widget ${behavior === 'copy' ? 'copied' : 'cut'}`,
-			message: `You have a widget ${
-				behavior === 'copy' ? 'copied' : 'cut'
-			} in clipboard. Use Paste Widget button to paste it`,
+			message: `You have a widget ${behavior === 'copy' ? 'copied' : 'cut'} in clipboard. ${
+				isOwner ? 'Use Paste Widget button to paste it' : 'Customize this dashboard to paste it'
+			}`,
 			type: AlertType.INFO,
-			callback1Btn: 'Paste Widget',
+			callback1Btn: isOwner ? 'Paste Widget' : '',
 			callback1: handleWidgetPaste,
 			callback2Btn: 'Clear',
 			callback2: clearCopyWidgets
@@ -236,15 +227,13 @@
 		sendAlert(alert)
 	}
 
-	$: if ($storeCCPWidget) addWidgetCopyAlert()
-
 	const handleWidgetInsert = async (_widget: any) => {
 		loading.set(true)
 		try {
 			const payload = {
 				program_id: dashboard.program_id,
 				dashboard_id: dashboard.dashboard_id,
-				title: `New Widget - ${_widget.title}`,
+				title: `New Widget - ${_widget.title} #${generateRandomString()}`,
 				template_id: _widget.template_id,
 				user_id: $storeUser?.user_id,
 				attributes: {
@@ -264,18 +253,18 @@
 			const position = addNewItem(newItem, gridController)
 			newItem.x = position.x
 			newItem.y = position.y
-			newItem.slug = widget.widget_slug
+			newItem.title = widget.title
 
 			dashboard.widget_location = {
 				...dashboard.widget_location,
-				[widget.widget_slug]: {
+				[widget.title]: {
 					x: newItem.x,
 					y: newItem.y,
 					w: newItem.w,
 					h: newItem.h
 				}
 			}
-			gridItems = [...gridItems, newItem]
+			$storeDashboard.gridItems = [...$storeDashboard.gridItems, newItem]
 			widgets = [...widgets, widget]
 			updateLocations()
 			// await postData(`${baseUrl}/api/v2/dashboard/widgets/location/${dashboard.dashboard_id}`, {
@@ -287,16 +276,77 @@
 		loading.set(false)
 	}
 
-	$: if (!$storeDashboard.loaded) setGridItems($storeDashboard.dashboard_id)
+	$: handleResizable = (item: any) => {
+		$storeDashboard.gridItems = resizeItem(item, $storeDashboard.gridItems)
+		// syncGridItemsToItems($storeDashboard.gridItems, gridController.gridParams)
+	}
+	$: handleCloning = (item: any) => {
+		const clonedItem = cloneItem(item, $storeDashboard.gridItems)
+		$storeDashboard.gridItems = [...$storeDashboard.gridItems, clonedItem]
+	}
+	$: handleRemove = (item: any) => {
+		const temp = [...removeItem(item, $storeDashboard.gridItems, gridController.gridParams)]
+		$storeDashboard.gridItems = []
+		delete dashboard.widget_location[item.title]
+		widgets = widgets.filter((widget: any) => widget.title !== item.title)
+		setTimeout(() => {
+			$storeDashboard.gridItems = temp
+			gridController.gridParams.unregisterItem(item)
+			gridController.gridParams.updateGrid()
+			updateLocations()
+		}, 100)
+	}
 
-	onMount(() => {
+	$: changeItemSize = (item: any) => {
+		resizedTitle = item.title
+	}
+
+	$: if ($storeCCPWidget) {
+		addWidgetCopyAlert($storeDashboard?.attributes?.user_id === $storeUser?.user_id)
+	} else {
+		dismissAlert('widget-copied')
+	}
+
+	$: if ($storeDashboard?.attributes?.user_id === $storeUser?.user_id) {
+		const alert: AlertMessage = {
+			id: 'dashboard-system-msg',
+			title: `Customizing ${$storeDashboard?.user_id === null ? 'a system' : ''} dashboard`,
+			message: `Don't forget that you are customizing a ${
+				$storeDashboard?.user_id === null ? 'system' : ''
+			}  dashboard, please publish it again`,
+			dashboardId: $storeDashboard.dashboard_id,
+			type: AlertType.WARNING,
+			callback1Btn: 'Publish',
+			callback1: () => {
+				updateWidgetLocation()
+				dispatch('handleCustomize', false)
+			}
+		}
+		sendAlert(alert)
+	} else {
+		dismissAlert('dashboard-system-msg', $storeDashboard.dashboard_id)
+	}
+
+	$: if (!$storeDashboard.gridItems || $storeDashboard.gridItems.length === 0) {
+		sendAlert({
+			id: 'dashboard-no-widgets',
+			title: 'No widgets',
+			message: 'There are no widgets in this dashboard',
+			dashboardId: $storeDashboard.dashboard_id,
+			type: AlertType.INFO
+		})
+	} else {
+		dismissAlert('dashboard-no-widgets', $storeDashboard.dashboard_id)
+	}
+
+	$: if (!$storeDashboard.loaded) {
 		setGridItems($storeDashboard.dashboard_id)
-	})
+	}
 </script>
 
 <svelte:window bind:innerWidth />
 
-<Alerts />
+<Alerts dashboardId={$storeDashboard.dashboard_id} />
 
 <div id="grid" class="w-full">
 	<Grid
@@ -308,7 +358,7 @@
 		bind:controller={gridController}
 		on:change={updateLocations}
 	>
-		{#each gridItems as item}
+		{#each $storeDashboard.gridItems as item}
 			<GridItem
 				x={item.x}
 				y={item.y}
@@ -317,15 +367,17 @@
 				class="grid-item"
 				activeClass="grid-item-active"
 				previewClass="bg-red-500 rounded"
+				resizable={dashboard?.attributes?.user_id === $storeUser?.user_id}
+				movable={dashboard?.attributes?.user_id === $storeUser?.user_id}
 				on:change={(e) => {
 					changeItemSize(item)
 				}}
 				let:active
-				bind:id={item.slug}
+				bind:id={item.title}
 			>
 				<WidgetBox
 					widget={item.data}
-					resized={resizedSlug === item.slug && !active}
+					resized={resizedTitle === item.title && !active}
 					let:fixed
 					let:isOwner
 					let:isToolbarVisible
@@ -342,6 +394,7 @@
 						{fixed}
 						{isToolbarVisible}
 						{isOwner}
+						isDraggable={dashboard?.attributes?.user_id === $storeUser?.user_id}
 						on:handleInstanceResize={() => handleResizable(item)}
 					/>
 				</WidgetBox>

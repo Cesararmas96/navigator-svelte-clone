@@ -2,6 +2,8 @@
 	import { YouTube } from 'sveltekit-embed'
 	import { getContext, onMount } from 'svelte'
 	import { createMediaSettings } from '../../base/settings/media'
+	import type { Writable } from 'svelte/store'
+	import { getWidgetAction } from '$lib/helpers'
 
 	const widget: any = getContext('widget')
 	const regExp = /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/
@@ -24,8 +26,12 @@
 		$widget.saved = null
 	}
 
+	const widgetActions = getContext<Writable<any[]>>('widgetActions')
+
 	onMount(() => {
 		loadVideo()
+		const resizeAction = getWidgetAction($widgetActions, 'resize')
+		resizeAction.action()
 	})
 </script>
 

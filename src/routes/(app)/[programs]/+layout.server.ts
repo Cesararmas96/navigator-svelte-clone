@@ -27,8 +27,8 @@ export const load = async ({ params, fetch, locals, url }) => {
     { headers },
     fetch
   )
-
   const tenant = url.hostname.split('.')[0]
+  const [client] = await getApiData(`${urlBase}/api/v1/clients?subdomain_prefix=${tenant}`, 'GET', {}, {}, { headers }, fetch)
 
-  return { programs, trocModule, dashboards, menu, user: locals.user, tenant }
+  return { programs, trocModule, dashboards, menu, user: locals.user, tenant, client }
 }

@@ -10,6 +10,7 @@ export interface AlertMessage {
   type: AlertType,
   title: string,
   message?: string,
+  dashboardId?: string,
   callback1Btn?: string,
   callback1?: () => void,
   callback2Btn?: string,

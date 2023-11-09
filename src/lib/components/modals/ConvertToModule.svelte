@@ -1,11 +1,14 @@
 <script lang="ts">
 	import { Button, Input, Toggle, Select } from 'flowbite-svelte'
 	import { storePrograms } from '$lib/stores/programs'
-	import { postData } from '$lib/services/getData'
+	import { patchData, postData } from '$lib/services/getData'
 	import { sendErrorNotification, sendSuccessNotification } from '$lib/stores/toast'
 	import { loading } from '$lib/stores/preferences'
 	import { storeModule, storeModules } from '$lib/stores/modules'
 	import { goto } from '$app/navigation'
+	import { page } from '$app/stores'
+
+	const { client } = $page.data
 
 	export let props: {
 		title?: string
@@ -28,8 +31,8 @@
 	})
 
 	const defaultModule: Record<string, any> = {
-		client_id: 1, //TODO: Improve client id
-		client_slug: 'navigator', //tenant?.client_slug || 'navigator',
+		client_id: 1, //client.client_id,
+		client_slug: 'navigator', //client.client_slug,
 		program_slug: program?.program_slug,
 		module: {
 			program_id: program?.program_id,
@@ -56,7 +59,6 @@
 
 	const handleSaveChanges = async () => {
 		if (newOrExisting && defaultModule.module.description !== '') {
-			console.log(defaultModule, program)
 			// This code is for create new module and assign current dashboard
 			let nameAux = ''
 			const description: string = defaultModule.module.description
@@ -86,28 +88,23 @@
 			defaultModule.module.module_name = name
 			defaultModule.module.module_slug = name
 
-			await saveModule(defaultModule, name, 'create')
+			await saveModule(defaultModule, name)
 		} else if (selectedModule) {
-			// This code is to move current dashboard
 			const moduleSlug = $storeModules.find((element: any) => {
 				return element?.module_id === selectedModule
 			})
 
-			await saveModule(
-				{
-					module_id: selectedModule,
-					dashboard_id: props.dashboard.dashboard_id
-				},
-				moduleSlug!.module_slug,
-				'update'
+			await patchData(
+				`${import.meta.env.VITE_API_URL}/api/v2/dashboards/${props.dashboard.dashboard_id}`,
+				{ module_id: selectedModule }
 			)
+			goto(`/${program!.program_slug}/${moduleSlug!.module_slug}`)
 		}
 	}
 
 	async function saveModule(
 		params: Record<string, any>,
-		redirect: string | undefined = program?.program_slug,
-		type: string = 'create'
+		redirect: string | undefined = program?.program_slug
 	) {
 		$loading = true
 		try {

@@ -3,6 +3,9 @@
 	import Icon from '$lib/components/common/Icon.svelte'
 	import { getWidgetCategory } from '$lib/helpers/widgets/actions'
 	import { getApiData } from '$lib/services/getData'
+	import { getContext, onMount } from 'svelte'
+	import type { Writable } from 'svelte/store'
+	import { getWidgetAction } from '$lib/helpers'
 
 	export let data: any
 	let view: boolean = true
@@ -20,7 +23,7 @@
 				getApiData(pinEndpoint, 'PUT', { widget_id: widget.widget_id, user_id: widget.user_id })
 				console.log('pin')
 			}
-		} catch (e) {
+		} catch (e: any) {
 			console.log(e.text)
 		}
 
@@ -85,6 +88,13 @@
 		loading: `/img/icons/loading.svg`,
 		'fa fa-flickr': `/img/icons/flickr.svg`
 	}
+
+	const widgetActions = getContext<Writable<any[]>>('widgetActions')
+
+	onMount(() => {
+		const resizeAction = getWidgetAction($widgetActions, 'resize')
+		resizeAction.action()
+	})
 </script>
 
 <div

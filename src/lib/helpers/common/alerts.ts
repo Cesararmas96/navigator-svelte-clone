@@ -13,8 +13,8 @@ export const sendAlert = (alert: AlertMessage) => {
 
 const generateId = () => Math.floor(Math.random() * 10000).toString();
 
-export const dismissAlert = (id: string) => {
-  alerts.update((all) => all.filter((t: AlertMessage) => t.id !== id));
+export const dismissAlert = (id: string, dashboardId?: string) => {
+  alerts.update((all) => all.filter((t: AlertMessage) => !(t.id === id && (!t.dashboardId || t.dashboardId === dashboardId))));
 };
 
 export const sendSuccessAlert = (title: string, message?: string, callback1Btn?: string, callback1?: () => void, callback2Btn?: string, callback2?: () => void) => {
