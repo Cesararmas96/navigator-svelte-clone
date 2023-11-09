@@ -9,24 +9,24 @@
 	let view: boolean = true
 
 	const urlBase = import.meta.env.VITE_API_URL
-	const pinEndpoint = `${urlBase}/api/v1/interactions/pin`
+	// const pinEndpoint = `${urlBase}/api/v1/interactions/pin`
 	const likeEndpoint = `${urlBase}/api/v1/interactions/likes`
 
-	const handlePinWidget = (widget) => {
-		try {
-			if (widget.pin) {
-				getApiData(pinEndpoint, 'DELETE', { widget_id: widget.widget_id })
-				console.log('unpin')
-			} else if (!widget.pin) {
-				getApiData(pinEndpoint, 'PUT', { widget_id: widget.widget_id, user_id: widget.user_id })
-				console.log('pin')
-			}
-		} catch (e) {
-			console.log(e)
-		}
+	// const handlePinWidget = (widget) => {
+	// 	try {
+	// 		if (widget.pin) {
+	// 			getApiData(pinEndpoint, 'DELETE', { widget_id: widget.widget_id })
+	// 			console.log('unpin')
+	// 		} else if (!widget.pin) {
+	// 			getApiData(pinEndpoint, 'PUT', { widget_id: widget.widget_id, user_id: widget.user_id })
+	// 			console.log('pin')
+	// 		}
+	// 	} catch (e) {
+	// 		console.log(e)
+	// 	}
 
-		return (widget.pin = !widget.pin)
-	}
+	// 	return (widget.pin = !widget.pin)
+	// }
 
 	const handleLikeWidget = (widget) => {
 		try {
