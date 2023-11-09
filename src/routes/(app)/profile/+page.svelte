@@ -145,7 +145,7 @@
 							/>
 						</div>
 					</TabItem>
-					<TabItem>
+					<!-- <TabItem>
 						<div slot="title" class="flex w-full items-center gap-2">
 							<Icon icon="mdi:world" size="20px" />
 							Accounts
@@ -162,7 +162,7 @@
 								class="mt-6 flex items-center rounded border border-light-100 font-bold text-heading dark:border-dark-200"
 							/>
 						</div>
-					</TabItem>
+					</TabItem> -->
 
 					<TabItem>
 						<div slot="title" class="flex w-full items-center gap-2">

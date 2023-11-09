@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Icon from '$lib/components/common/Icon.svelte'
 
-	const categories = [
+	const categories: any[] = [
 		{
 			id: 1,
 			name: 'Manage your Users',
@@ -9,10 +9,12 @@
 			icon2: '',
 			models: [
 				{
-					model: 'Users'
+					name: 'Users',
+					model: 'users'
 				},
 				{
-					model: 'Users Groups'
+					name: 'Users Groups',
+					model: 'user_groups'
 				}
 			]
 		},
@@ -23,7 +25,8 @@
 			icon2: '',
 			models: [
 				{
-					model: 'Groups'
+					name: 'Groups',
+					model: 'groups'
 				}
 			]
 		},
@@ -34,10 +37,12 @@
 			icon2: '',
 			models: [
 				{
-					model: 'Organizations'
+					name: 'Organizations',
+					model: 'organizations'
 				},
 				{
-					model: 'Organizations Groups'
+					name: 'Organizations Groups',
+					model: 'groups_organizations'
 				}
 			]
 		},
@@ -48,14 +53,17 @@
 			icon2: '',
 			models: [
 				{
-					model: 'Clients'
+					name: 'Clients',
+					model: 'organizations'
 				},
 
 				{
-					model: 'Programs Clients'
+					name: 'Programs Clients',
+					model: 'organizations'
 				},
 				{
-					model: 'Clients Groups'
+					name: 'Clients Groups',
+					model: 'organizations'
 				}
 			]
 		},
@@ -66,14 +74,16 @@
 			icon2: '',
 			models: [
 				{
-					model: 'Programs'
-				},
-
-				{
-					model: 'Programs Clients'
+					name: 'Programs',
+					model: 'organizations'
 				},
 				{
-					model: 'Programs Groups'
+					name: 'Programs Clients',
+					model: 'organizations'
+				},
+				{
+					name: 'Programs Groups',
+					model: 'organizations'
 				}
 			]
 		},
@@ -84,14 +94,17 @@
 			icon2: '',
 			models: [
 				{
-					model: 'Modules'
+					name: 'Modules',
+					model: 'organizations'
 				},
 
 				{
-					model: 'Modules Clients'
+					name: 'Modules Clients',
+					model: 'organizations'
 				},
 				{
-					model: 'Modules Groups'
+					name: 'Modules Groups',
+					model: 'organizations'
 				}
 			]
 		}
@@ -103,7 +116,7 @@
 		searchTerm = searchTerm.toLowerCase()
 		filteredCategories = categories.filter((category) => {
 			return category.models.some((model) => {
-				return model.model.toLowerCase().includes(searchTerm)
+				return model.name.toLowerCase().includes(searchTerm)
 			})
 		})
 	}
@@ -111,28 +124,79 @@
 	$: results = filteredCategories.reduce((total, category) => {
 		return (
 			total +
-			category.models.filter((model) => model.model.toLowerCase().includes(searchTerm)).length
+			category.models.filter((model) => model.name.toLowerCase().includes(searchTerm)).length
 		)
 	}, 0)
 </script>
 
-<div>
-	<div class="faq-header h-52 px-5 py-10 text-center">
-		<h2 class="mb-1 text-2xl font-bold text-heading">Navigator Admin</h2>
-		<div class="mb-7 text-lg">
-			Navigator Admin makes it easier to build better web apps more quickly and with less code.
-		</div>
-
-		<form class="mx-auto max-w-md">
-			<input
-				type="text"
-				class="form-control h-11 rounded-md bg-white/75 text-center text-base placeholder:text-muted dark:bg-dark-100/50"
-				placeholder="Type keywords to find model..."
-				bind:value={searchTerm}
-				on:input={filterCategories}
-			/>
-		</form>
+<div class="mx-auto mb-8 max-w-none p-5 md:max-w-7xl">
+	<h2 class="mb-1 text-2xl font-bold text-heading">Navigator Reports</h2>
+	<div class="mb-7 text-lg">
+		Navigator Reports streamlines the creation of comprehensive web app reporting tools, enabling
+		faster development with minimal coding.
 	</div>
+
+	<div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+		<div class="card cursor-pointer p-1 hover:bg-slate-50 dark:hover:bg-gray-700">
+			<img
+				class="mb-3 w-full rounded-tl rounded-tr"
+				src="https://images.pexels.com/photos/186461/pexels-photo-186461.jpeg"
+				alt=""
+			/>
+
+			<div class="p-5 text-center">
+				<h3 class="mb-1 font-bold text-heading">IT &amp; Engineering</h3>
+				<div class="mb-5 text-muted">Elit irure laboris tempor veniam velit exercitation</div>
+
+				<div class="text-sm text-muted">View</div>
+			</div>
+		</div>
+		<div class="card p-1">
+			<img
+				class="mb-3 w-full rounded-tl rounded-tr"
+				src="https://images.pexels.com/photos/257904/pexels-photo-257904.jpeg"
+				alt=""
+			/>
+
+			<div class="p-5 text-center">
+				<h3 class="mb-1 font-bold text-heading">UI and Design</h3>
+				<div class="mb-5 text-muted">Voluptate laboris fugiat fugiat laboris exercitation</div>
+
+				<div class="text-sm text-muted">View</div>
+			</div>
+		</div>
+		<div class="card p-1">
+			<img
+				class="mb-3 w-full rounded-tl rounded-tr"
+				src="https://images.pexels.com/photos/6770610/pexels-photo-6770610.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
+				alt=""
+			/>
+
+			<div class="p-5 text-center">
+				<h3 class="mb-1 font-bold text-heading">Sales &amp; Marketing</h3>
+				<div class="mb-5 text-muted">Cillum ipsumad pariatur proident minim eiusmod</div>
+
+				<div class="text-sm text-muted">View</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div>
+	<h2 class="mb-1 text-2xl font-bold text-heading">Navigator Admin</h2>
+	<div class="mb-7 text-lg">
+		Navigator Admin makes it easier to build better web apps more quickly and with less code.
+	</div>
+
+	<form class="mx-auto max-w-md">
+		<input
+			type="text"
+			class="form-control h-11 rounded-md bg-white/75 text-center text-base placeholder:text-muted dark:bg-dark-100/50"
+			placeholder="Type keywords to find model..."
+			bind:value={searchTerm}
+			on:input={filterCategories}
+		/>
+	</form>
 
 	{#if !searchTerm}
 		<div class="mx-auto max-w-7xl p-5">
@@ -146,9 +210,15 @@
 						<div>
 							{#each category.models as model}
 								<a
-									href="/admin"
+									href="/admin/{model?.model}"
 									class="flex items-center border-b border-dashed border-light-200 py-2 hover:text-link dark:border-dark-200 dark:hover:text-heading"
-									>{model.model} <i class="icon ml-auto font-light">east</i>
+									>{model.name}
+
+									<Icon
+										icon="material-symbols:arrow-right-alt"
+										size="16px"
+										classes="icon ml-auto font-light"
+									/>
 								</a>
 							{/each}
 						</div>
@@ -161,12 +231,12 @@
 			<div class="mb-2 px-3 text-muted">A total of {results} results</div>
 			<div>
 				{#each filteredCategories as category (category.id)}
-					{#each category.models as model (model.model)}
+					{#each category.models as model (model.name)}
 						<a
 							href="/admin"
 							class="mb-1 block rounded-md border border-light-200 bg-white px-4 py-3 hover:border-light-300 hover:bg-light-100/75 dark:border-none dark:bg-dark-100 dark:hover:bg-dark-200"
 						>
-							<div class="mb-1 truncate font-bold text-heading">{model.model}</div>
+							<div class="mb-1 truncate font-bold text-heading">{model.name}</div>
 							<div class="truncate text-sm text-muted">Last update 2023-10-23</div>
 						</a>
 					{/each}
