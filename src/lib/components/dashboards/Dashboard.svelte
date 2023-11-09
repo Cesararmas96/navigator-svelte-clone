@@ -32,7 +32,6 @@
 		handleWidgetInsert({ ...dashboard.newWidget })
 		dashboard.newWidget = null
 	}
-	$: console.log(dashboard)
 	const dispatch = createEventDispatcher()
 
 	const storeDashboard: any = writable(dashboard)
@@ -240,7 +239,6 @@
 					user_id: $storeUser?.user_id
 				}
 			}
-			console.log(_widget.template_id)
 			const resp = await putData(`${baseUrl}/api/v2/widgets`, payload)
 
 			const widget = await getApiData(`${baseUrl}/api/v2/widgets/${resp.widget_id}`, 'GET')
@@ -254,7 +252,6 @@
 			newItem.x = position.x
 			newItem.y = position.y
 			newItem.title = widget.title
-			console.log(newItem)
 			dashboard.widget_location = {
 				...dashboard.widget_location,
 				[widget.title]: {
