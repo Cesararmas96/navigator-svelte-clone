@@ -2,6 +2,7 @@
 	import { storeUser } from '$lib/stores'
 	import Widget from '$lib/components/widgets/Widget.svelte'
 	import WidgetBox from '$lib/components/widgets/WidgetBox.svelte'
+	import Icon from '$lib/components/common/Icon.svelte'
 
 	export let data: any
 
@@ -103,20 +104,24 @@
 	}
 </script>
 
-<div class="card m-3 p-5">
-	<div class="mb-8 flex items-start">
-		<h4 class="font-bold leading-none text-heading">Device Sessions</h4>
-		<!-- <nav class="-mr-2.5 -mt-2.5 ml-auto flex items-center">dasdassd</nav>
-
-		<div class="flex-1 items-start justify-start">
-			<div class="font-bold text-heading">Identity List</div>
-			<div class="text-sm text-muted">Description here</div>
-		</div> -->
+<div class="card m-3 h-screen p-5">
+	<div class="mb-4 flex items-center justify-between">
+		<h4 class="font-bold leading-none text-heading">Admin</h4>
+		<a href="/admin" class="btn h-8 text-primary-500 hover:bg-primary-500/10">
+			<Icon icon="tabler:arrow-back-up" size="18" />
+			<span class="pl-1 font-bold">Go Back</span>
+		</a>
 	</div>
-	<WidgetBox {widget} resized={false} let:fixed let:isOwner let:isToolbarVisible let:widget>
-		<Widget {widget} {fixed} isToolbarVisible={false} {isOwner} />
-	</WidgetBox>
-	<div
-		class="mt-6 flex items-center rounded border border-light-100 font-bold text-heading dark:border-dark-200"
-	/>
+	<div class=" h-full pb-6">
+		<WidgetBox {widget} resized={false} let:fixed let:isOwner let:isToolbarVisible let:widget>
+			<Widget {widget} {fixed} isToolbarVisible={false} {isOwner} />
+		</WidgetBox>
+
+		<!-- <div
+			class="mt-auto flex items-center rounded border border-light-100 font-bold text-heading dark:border-dark-200"
+		/> -->
+	</div>
+	<!-- <div
+		class="mt-auto flex items-center rounded border border-light-100 font-bold text-heading dark:border-dark-200"
+	/> -->
 </div>

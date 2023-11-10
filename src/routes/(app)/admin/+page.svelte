@@ -1,6 +1,30 @@
 <script lang="ts">
 	import Icon from '$lib/components/common/Icon.svelte'
 
+	const reports: any[] = [
+		{
+			id: 1,
+			name: 'Report 1',
+			description: 'Description Report 1',
+			image: '/img/admin/1.jpeg',
+			url: 'report_1'
+		},
+		{
+			id: 2,
+			name: 'Report 2',
+			description: 'Description Report 2',
+			image: '/img/admin/2.jpeg',
+			url: 'report_2'
+		},
+		{
+			id: 3,
+			name: 'Report 3',
+			description: 'Description Report 3',
+			image: '/img/admin/3.jpeg',
+			url: 'report_3'
+		}
+	]
+
 	const categories: any[] = [
 		{
 			id: 1,
@@ -137,48 +161,22 @@
 	</div>
 
 	<div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-		<div class="card cursor-pointer p-1 hover:bg-slate-50 dark:hover:bg-gray-700">
-			<img
-				class="mb-3 w-full rounded-tl rounded-tr"
-				src="https://images.pexels.com/photos/186461/pexels-photo-186461.jpeg"
-				alt=""
-			/>
+		{#each reports as report}
+			<a href="/admin/reports/{report.url}">
+				<div class="card group cursor-pointer p-1 hover:bg-neutral-50 dark:hover:bg-primary-50">
+					<img class="mb-3 w-full rounded-tl rounded-tr" src={report.image} alt="" />
 
-			<div class="p-5 text-center">
-				<h3 class="mb-1 font-bold text-heading">IT &amp; Engineering</h3>
-				<div class="mb-5 text-muted">Elit irure laboris tempor veniam velit exercitation</div>
+					<div class="p-5 text-center">
+						<h3 class="mb-1 font-bold text-heading">{report.name}</h3>
+						<div class="mb-5 text-muted">{report?.description}</div>
 
-				<div class="text-sm text-muted">View</div>
-			</div>
-		</div>
-		<div class="card p-1">
-			<img
-				class="mb-3 w-full rounded-tl rounded-tr"
-				src="https://images.pexels.com/photos/257904/pexels-photo-257904.jpeg"
-				alt=""
-			/>
-
-			<div class="p-5 text-center">
-				<h3 class="mb-1 font-bold text-heading">UI and Design</h3>
-				<div class="mb-5 text-muted">Voluptate laboris fugiat fugiat laboris exercitation</div>
-
-				<div class="text-sm text-muted">View</div>
-			</div>
-		</div>
-		<div class="card p-1">
-			<img
-				class="mb-3 w-full rounded-tl rounded-tr"
-				src="https://images.pexels.com/photos/6770610/pexels-photo-6770610.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
-				alt=""
-			/>
-
-			<div class="p-5 text-center">
-				<h3 class="mb-1 font-bold text-heading">Sales &amp; Marketing</h3>
-				<div class="mb-5 text-muted">Cillum ipsumad pariatur proident minim eiusmod</div>
-
-				<div class="text-sm text-muted">View</div>
-			</div>
-		</div>
+						<div class="text-sm text-muted group-hover:text-primary-500 group-hover:underline">
+							View
+						</div>
+					</div>
+				</div>
+			</a>
+		{/each}
 	</div>
 </div>
 
@@ -233,11 +231,16 @@
 				{#each filteredCategories as category (category.id)}
 					{#each category.models as model (model.name)}
 						<a
-							href="/admin"
-							class="mb-1 block rounded-md border border-light-200 bg-white px-4 py-3 hover:border-light-300 hover:bg-light-100/75 dark:border-none dark:bg-dark-100 dark:hover:bg-dark-200"
+							href="/admin/{model?.model}"
+							class="mb-1 flex justify-between rounded-md border border-light-200 bg-white px-4 py-3 hover:border-light-300 hover:bg-light-100/75 dark:border-none dark:bg-dark-100 dark:hover:bg-dark-200"
 						>
 							<div class="mb-1 truncate font-bold text-heading">{model.name}</div>
-							<div class="truncate text-sm text-muted">Last update 2023-10-23</div>
+							<!-- <div class="truncate text-sm text-muted">Last update 2023-10-23</div> -->
+							<Icon
+								icon="material-symbols:arrow-right-alt"
+								size="16px"
+								classes="icon ml-auto font-light"
+							/>
 						</a>
 					{/each}
 				{/each}
