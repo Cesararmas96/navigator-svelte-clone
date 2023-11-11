@@ -1,18 +1,17 @@
 <script lang="ts">
-	import { storeUser } from '$lib/stores'
-	import Widget from '$lib/components/widgets/Widget.svelte'
 	import WidgetBox from '$lib/components/widgets/WidgetBox.svelte'
+	import Widget from '$lib/components/widgets/Widget.svelte'
 	import Icon from '$lib/components/common/Icon.svelte'
 
 	export let data: any
 
-	$storeUser = data.user
+	const { report } = data
 
 	let widget = {
 		widget_id: 'f1184f6e-a109-46b3-b09a-a2c19678179b',
 		widget_name: 'Report',
 		title: '',
-		url: 'https://snapshots.raintank.io/dashboard/snapshot/6vmEi6Rc0YvGAgm6tjBKge0f02Qp11Em?orgId=2&refresh=2h',
+		url: report?.url,
 		params: {
 			settings: {
 				appearance: {
@@ -58,7 +57,7 @@
 
 <div class="card m-3 h-screen p-5">
 	<div class="mb-4 flex items-center justify-between">
-		<h4 class="font-bold leading-none text-heading">Reports</h4>
+		<h4 class="font-bold leading-none text-heading">{report.name}</h4>
 		<a href="/admin" class="btn h-8 text-primary-500 hover:bg-primary-500/10">
 			<Icon icon="tabler:arrow-back-up" size="18" />
 			<span class="pl-1 font-bold">Go Back</span>
