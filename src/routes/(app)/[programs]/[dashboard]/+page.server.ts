@@ -5,6 +5,7 @@ export const ssr = false;
 
 export const load: PageServerLoad = async ({ locals }) => {
   if (!locals.user)  throw redirect(302, '/login')
+	if (import.meta.env.VITE_ADMIN) throw redirect(302, '/admin')
 }
 
 export const actions: Actions = {
