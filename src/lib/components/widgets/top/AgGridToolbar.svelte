@@ -25,7 +25,7 @@
 
 <div id={`aggrid-toolbar-${widgetID}-${position}`} class="flex flex-row justify-between">
 	{#if fCallback}
-		<AgGridFilter filterCallback={fCallback} />
+		<AgGridFilter filterCallback={fCallback.action} />
 	{/if}
 	<div
 		class={'widget-toolbar flex w-full flex-row justify-end px-3 py-3'}

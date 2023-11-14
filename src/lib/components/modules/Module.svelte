@@ -5,7 +5,8 @@
 		hideDashboardSettings,
 		selectedDashboard,
 		storeCCPDashboard,
-		storeCCPDashboardBehavior
+		storeCCPDashboardBehavior,
+		storeDashboards
 	} from '$lib/stores/dashboards'
 	import Icon from '../common/Icon.svelte'
 	import { closeModal, openConfirmModal, openModal } from '$lib/helpers/common/modal'
@@ -18,8 +19,6 @@
 	import html2canvas from 'html2canvas'
 	import { loading } from '$lib/stores/preferences'
 	import { storeUser } from '$lib/stores'
-	import { onMount } from 'svelte'
-	import { writable, type Writable } from 'svelte/store'
 	import { generateRandomString } from '$lib/helpers/common/common'
 
 	export let trocModule: any
@@ -28,12 +27,20 @@
 	const user = $storeUser
 
 	let currentDashboard
-	$: console.log('currentDashboard', currentDashboard?.loaded)
-	let storeDashboards: Writable<any[]>
+	let popupRemoveModal = false
+	let selectedDashboardID: string
+
 	$: if ($page.data.dashboards) {
-		storeDashboards = writable($page.data.dashboards)
+		loadDashboards($page.data.dashboards)
 	} else {
-		storeDashboards = writable([])
+		loadDashboards([])
+	}
+
+	const loadDashboards = (dashboards: any[]) => {
+		$storeDashboards = [...dashboards]
+		if ($storeDashboards.length > 0) {
+			currentDashboard = { ...$storeDashboards[0] }
+		}
 	}
 
 	clearAlerts()
@@ -47,12 +54,18 @@
 		})
 	} else {
 		dismissAlert('no-dashboard')
+		if (
+			!Boolean(currentDashboard) ||
+			(Boolean(currentDashboard) &&
+				!$storeDashboards.some((d) => d.dashboard_id === currentDashboard?.dashboard_id))
+		) {
+			currentDashboard = { ...$storeDashboards[0] }
+		}
 	}
 
 	$: isOwner = currentDashboard?.attributes?.user_id === $storeUser.user_id
 
-	let popupRemoveModal = false
-	let selectedDashboardID: string
+	$: if ($storeCCPDashboard) addDashboardCopyAlert()
 
 	const getCurrentDashboard = async (id: string) => {
 		const dashboards = await getApiData(
@@ -96,7 +109,6 @@
 			})
 			currentDashboard = await getCurrentDashboard(tab.dashboard_id)
 		} catch (e: any) {
-			console.log(e)
 			sendErrorNotification(e)
 		}
 		loading.set(false)
@@ -145,13 +157,16 @@
 				}
 			)
 			if (resp && resp.dashboard_id) {
-				currentDashboard = { ...resp }
-				$storeDashboards = $storeDashboards.map((item) => {
-					if (item.dashboard_id === currentDashboard.dashboard_id) {
-						return currentDashboard
-					}
-					return item
-				})
+				currentDashboard = structuredClone(resp)
+
+				storeDashboards.update((dashboards) =>
+					dashboards.map((item) => {
+						if (item.dashboard_id === currentDashboard.dashboard_id) {
+							return currentDashboard
+						}
+						return item
+					})
+				)
 				sendSuccessNotification(
 					impersonation ? 'You can customize this dashboard' : 'Dashboard published'
 				)
@@ -281,24 +296,6 @@
 			dropdownOpen = false
 		}, 700)
 	}
-
-	onMount(() => {
-		if ($storeDashboards && $storeDashboards.length > 0) {
-			currentDashboard = { ...$storeDashboards[0] }
-		}
-	})
-
-	$: if (
-		$storeDashboards &&
-		$storeDashboards.length > 0 &&
-		(!currentDashboard ||
-			(currentDashboard &&
-				!$storeDashboards.some((d) => d.dashboard_id === currentDashboard.dashboard_id)))
-	) {
-		currentDashboard = { ...$storeDashboards[0] }
-	}
-
-	$: if ($storeCCPDashboard) addDashboardCopyAlert()
 
 	const handleWidgetInsert = (widget: any) => {
 		closeModal()

@@ -2,8 +2,6 @@
 	import { Input, Label } from 'flowbite-svelte'
 
 	export let filterCallback: (inputId: string) => void
-
-	let showFilter: boolean = false
 </script>
 
 <!-- {#if showFilter} -->
@@ -18,7 +16,7 @@
 			e.preventDefault()
 			e.stopPropagation()
 		}}
-		on:focus={() => console.log('focus')}
+		on:focus={() => {}}
 		on:keypress={() => filterCallback('filter-text-box')}
 	/>
 </div>

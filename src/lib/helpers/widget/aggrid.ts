@@ -48,7 +48,7 @@ export const generateColumnDefsByData = (widget: any, simpleTable: boolean) => {
           for (const [fnName, indices] of Object.entries(def)) {
             if (indices.includes(idx)) {     
               const fn = formats[fnName]; 
-              return fn(value);
+              return fn(params.value);
             }
           }
         } else {

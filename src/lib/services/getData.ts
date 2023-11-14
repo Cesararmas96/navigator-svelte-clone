@@ -72,6 +72,8 @@ export async function getData(
 
 		if (response?.status === 204) return null
 
+		if (response?.status === 500) throw new Error(`500 Internal Server Error<br>Server got itself in trouble`)
+
 		if (!response?.ok) {
 			let statusText = ''
 			const responseError = await response.json()

@@ -28,15 +28,7 @@
 	import { loading } from '$lib/stores/preferences'
 
 	export let dashboard: any
-	$: if (dashboard.newWidget) {
-		handleWidgetInsert({ ...dashboard.newWidget })
-		dashboard.newWidget = null
-	}
 	const dispatch = createEventDispatcher()
-
-	const storeDashboard: any = writable(dashboard)
-	setContext('dashboard', storeDashboard)
-	$: $storeDashboard = dashboard
 
 	const baseUrl = import.meta.env.VITE_API_URL
 
@@ -49,6 +41,81 @@
 	let isChanging = false
 	let resizedTitle = ''
 
+	const storeDashboard = writable(dashboard)
+	setContext('dashboard', storeDashboard)
+	$: $storeDashboard = dashboard
+
+	$: if (!$storeDashboard.loaded) {
+		setGridItems($storeDashboard.dashboard_id)
+	}
+
+	$: if (dashboard.newWidget) {
+		handleWidgetInsert({ ...dashboard.newWidget })
+		dashboard.newWidget = null
+	}
+
+	$: if ($storeCCPWidget) {
+		addWidgetCopyAlert($storeDashboard?.attributes?.user_id === $storeUser?.user_id)
+	} else {
+		dismissAlert('widget-copied')
+	}
+
+	$: if ($storeDashboard?.attributes?.user_id === $storeUser?.user_id) {
+		const alert: AlertMessage = {
+			id: 'dashboard-system-msg',
+			title: `Customizing ${$storeDashboard?.user_id === null ? 'a system' : ''} dashboard`,
+			message: `Don't forget that you are customizing a ${
+				$storeDashboard?.user_id === null ? 'system' : ''
+			}  dashboard, please publish it again`,
+			dashboardId: $storeDashboard.dashboard_id,
+			type: AlertType.WARNING,
+			callback1Btn: 'Publish',
+			callback1: () => {
+				updateWidgetLocation()
+				dispatch('handleCustomize', false)
+			}
+		}
+		sendAlert(alert)
+	} else {
+		dismissAlert('dashboard-system-msg', $storeDashboard.dashboard_id)
+	}
+
+	$: if (!$storeDashboard.gridItems || $storeDashboard.gridItems.length === 0) {
+		sendAlert({
+			id: 'dashboard-no-widgets',
+			title: 'No widgets',
+			message: 'There are no widgets in this dashboard',
+			dashboardId: $storeDashboard.dashboard_id,
+			type: AlertType.INFO
+		})
+	} else {
+		dismissAlert('dashboard-no-widgets', $storeDashboard.dashboard_id)
+	}
+
+	$: handleResizable = (item: any) => {
+		$storeDashboard.gridItems = resizeItem(item, $storeDashboard.gridItems)
+	}
+	$: handleCloning = (item: any) => {
+		const clonedItem = cloneItem(item, $storeDashboard.gridItems)
+		$storeDashboard.gridItems = [...$storeDashboard.gridItems, clonedItem]
+	}
+	$: handleRemove = (item: any) => {
+		const temp = [...removeItem(item, $storeDashboard.gridItems, gridController.gridParams)]
+		$storeDashboard.gridItems = []
+		delete dashboard.widget_location[item.title]
+		widgets = widgets.filter((widget: any) => widget.title !== item.title)
+		setTimeout(() => {
+			$storeDashboard.gridItems = temp
+			gridController.gridParams.unregisterItem(item)
+			gridController.gridParams.updateGrid()
+			updateLocations()
+		}, 100)
+	}
+
+	$: changeItemSize = (item: any) => {
+		resizedTitle = item.title
+	}
+
 	const isMobile = (): boolean => {
 		return innerWidth < 500
 	}
@@ -59,7 +126,6 @@
 		try {
 			widgets = await getApiData(`${baseUrl}/api/v2/widgets?dashboard_id=${dashboardId}`, 'GET')
 			if (!widgets) return
-
 			widgets = widgets.map((widget: any) => {
 				widget.widget_slug = widget?.widget_slug || generateSlug(widget.title)
 				return widget
@@ -72,7 +138,6 @@
 				$storeDashboard.gridItems = [...items]
 				return
 			}
-
 			const setNewLocations =
 				!dashboard.widget_location || Object.keys(dashboard.widget_location).length === 0
 
@@ -93,17 +158,17 @@
 		}
 	}
 
-	const updateWidgetLocation = async () => {
-		if (dashboard?.attributes?.user_id !== $storeUser?.user_id) return
+	const updateWidgetLocation = async (_dashboard: any = $storeDashboard) => {
+		if (_dashboard?.attributes?.user_id !== $storeUser?.user_id) return
 
 		const payload = { widget_location: getControllerItemsLocations(gridController.gridParams) }
 		await postData(
-			`${baseUrl}/api/v2/dashboard/widgets/location/${dashboard.dashboard_id}`,
+			`${baseUrl}/api/v2/dashboard/widgets/location/${_dashboard.dashboard_id}`,
 			payload
 		)
-		if (!dashboard.attributes.explorer || dashboard.attributes.explorer !== 'v3') {
-			const attributes = { ...dashboard.attributes, explorer: 'v3' }
-			patchData(`${baseUrl}/api/v2/dashboards/${dashboard.dashboard_id}`, {
+		if (!_dashboard.attributes.explorer || _dashboard.attributes.explorer !== 'v3') {
+			const attributes = { ..._dashboard.attributes, explorer: 'v3' }
+			patchData(`${baseUrl}/api/v2/dashboards/${_dashboard.dashboard_id}`, {
 				attributes
 			})
 		}
@@ -120,88 +185,106 @@
 
 	const handleWidgetPaste = async () => {
 		loading.set(true)
-		try {
-			const copiedWidget = $storeCCPWidget
-			let newWidget: any
-			let response: any
-			let item: any
-			const { dashboard_id } = dashboard
+		// try {
+		const copiedWidget = $storeCCPWidget
+		let newWidget: any
+		let response: any
+		let item: any
+		const { dashboard_id } = dashboard
 
-			if ($storeCCPWidgetBehavior.type === 'copy') {
-				const payload = {
-					program_id: dashboard.program_id,
-					dashboard_id,
-					title: `${copiedWidget.title.split(' #')[0]} #${generateRandomString()}`,
-					attributes: copiedWidget.attributes,
-					description: copiedWidget.description,
-					params: copiedWidget.params,
-					url: copiedWidget.url,
-					conditions: copiedWidget.conditions,
-					cond_definition: copiedWidget.cond_definition,
-					where_definition: copiedWidget.where_definition,
-					format_definition: copiedWidget.format_definition,
-					query_slug: copiedWidget.query_slug,
-					save_filtering: copiedWidget.save_filtering,
-					master_filtering: copiedWidget.master_filtering,
-					module_id: copiedWidget.module_id,
-					template_id: copiedWidget.template_id,
-					allow_filtering: copiedWidget.allow_filtering,
-					filtering_show: copiedWidget.filtering_show,
-					widget_type_id: copiedWidget.widget_type_id,
-					user_id: $storeUser?.user_id
-				}
-
-				response = await putData(`${baseUrl}/api/v2/widgets`, payload)
-				const _dashboard = $storeDashboards.find(
-					(d: any) => d.dashboard_id === $storeCCPWidgetBehavior.dashboard_id
-				)
-				item = _dashboard.gridItems.find((item: any) => item.title === copiedWidget.title)
-			} else {
-				let payload: Record<string, any> = { dashboard_id }
-				if (dashboard.gridItems.some((item: any) => item.title === copiedWidget.title)) {
-					payload = {
-						...payload,
-						title: `${copiedWidget.title.split(' #')[0]} #${generateRandomString()}`
-					}
-				}
-				response = await patchData(`${baseUrl}/api/v2/widgets/${copiedWidget.widget_id}`, payload)
-
-				removeWidgetLocalstore($storeCCPWidgetBehavior.dashboard_id, copiedWidget.title)
-
-				const _dashboard = $storeDashboards.find(
-					(d: any) => d.dashboard_id === $storeCCPWidgetBehavior.dashboard_id
-				)
-
-				delete _dashboard.widget_location[copiedWidget.title]
-				await postData(`${baseUrl}/api/v2/dashboard/widgets/location/${_dashboard.dashboard_id}`, {
-					widget_location: _dashboard.widget_location
-				})
-				item = { ..._dashboard.gridItems.find((item: any) => item.title === copiedWidget.title) }
-				_dashboard.gridItems = _dashboard.gridItems.filter(
-					(item: any) => item.title !== copiedWidget.title
-				)
+		if ($storeCCPWidgetBehavior.type === 'copy') {
+			const payload = {
+				program_id: dashboard.program_id,
+				dashboard_id,
+				title: `${copiedWidget.title.split(' #')[0]} #${generateRandomString()}`,
+				attributes: copiedWidget.attributes,
+				description: copiedWidget.description,
+				params: copiedWidget.params,
+				url: copiedWidget.url,
+				conditions: copiedWidget.conditions,
+				cond_definition: copiedWidget.cond_definition,
+				where_definition: copiedWidget.where_definition,
+				format_definition: copiedWidget.format_definition,
+				query_slug: copiedWidget.query_slug,
+				save_filtering: copiedWidget.save_filtering,
+				master_filtering: copiedWidget.master_filtering,
+				module_id: copiedWidget.module_id,
+				template_id: copiedWidget.template_id,
+				allow_filtering: copiedWidget.allow_filtering,
+				filtering_show: copiedWidget.filtering_show,
+				widget_type_id: copiedWidget.widget_type_id,
+				user_id: $storeUser?.user_id
 			}
 
-			response = await getApiData(`${baseUrl}/api/v2/widgets/${response.widget_id}`, 'GET')
-			newWidget = { ...response }
+			response = await putData(`${baseUrl}/api/v2/widgets`, payload)
+			const _dashboard = $storeDashboards.find(
+				(d: any) => d.dashboard_id === $storeCCPWidgetBehavior.dashboard_id
+			)
+			item = _dashboard.gridItems.find((item: any) => item.title === copiedWidget.title)
+		} else {
+			let payload: Record<string, any> = { dashboard_id }
+			if (dashboard.gridItems.some((item: any) => item.title === copiedWidget.title)) {
+				payload = {
+					...payload,
+					title: `${copiedWidget.title.split(' #')[0]} #${generateRandomString()}`
+				}
+			}
+			response = await patchData(`${baseUrl}/api/v2/widgets/${copiedWidget.widget_id}`, payload)
 
-			const newItem = structuredClone(item)
-			const position = addNewItem(newItem, gridController)
-			newItem.data = newWidget
-			newItem.x = position.x
-			newItem.y = position.y
+			removeWidgetLocalstore($storeCCPWidgetBehavior.dashboard_id, copiedWidget.title)
 
-			$storeDashboard.gridItems = pasteItem(newItem, $storeDashboard.gridItems)
-			await setTimeout(async () => {
-				updateLocations()
-			}, 2000)
-			sendSuccessNotification('Widget pasted successfully')
-		} catch (error: any) {
-			sendErrorNotification(error)
-		} finally {
-			clearCopyWidgets()
-			loading.set(false)
+			const _dashboard = $storeDashboards.find(
+				(d: any) => d.dashboard_id === $storeCCPWidgetBehavior.dashboard_id
+			)
+
+			if (_dashboard.widget_location && _dashboard.widget_location[copiedWidget.title]) {
+				delete _dashboard.widget_location[copiedWidget.title]
+			}
+			await postData(`${baseUrl}/api/v2/dashboard/widgets/location/${_dashboard.dashboard_id}`, {
+				widget_location: _dashboard.widget_location
+			})
+
+			_dashboard.gridItems = _dashboard.gridItems
+				.map((i: any) => {
+					if (i.title === copiedWidget.title) {
+						item = { ...i }
+					} else return i
+				})
+				.filter((i: any) => i !== undefined)
+
+			storeDashboards.update((dashboards) =>
+				dashboards.map((item) => {
+					if (item.dashboard_id === _dashboard.dashboard_id) {
+						return _dashboard
+					}
+					return item
+				})
+			)
 		}
+
+		response = await getApiData(`${baseUrl}/api/v2/widgets/${response.widget_id}`, 'GET')
+		newWidget = { ...response }
+
+		const newItem = structuredClone(item)
+		const position = addNewItem(newItem, gridController)
+		newItem.data = newWidget
+		newItem.x = position.x
+		newItem.y = position.y
+
+		$storeDashboard.gridItems = pasteItem(newItem, $storeDashboard.gridItems)
+		await setTimeout(async () => {
+			updateLocations()
+			updateWidgetLocation()
+		}, 500)
+		sendSuccessNotification('Widget pasted successfully')
+		// } catch (error: any) {
+		// 	sendErrorNotification(error)
+		// } finally {
+		// 	clearCopyWidgets()
+		// 	loading.set(false)
+		// }
+		clearCopyWidgets()
+		loading.set(false)
 	}
 
 	const clearCopyWidgets = () => {
@@ -272,72 +355,6 @@
 		}
 		loading.set(false)
 	}
-
-	$: handleResizable = (item: any) => {
-		$storeDashboard.gridItems = resizeItem(item, $storeDashboard.gridItems)
-		// syncGridItemsToItems($storeDashboard.gridItems, gridController.gridParams)
-	}
-	$: handleCloning = (item: any) => {
-		const clonedItem = cloneItem(item, $storeDashboard.gridItems)
-		$storeDashboard.gridItems = [...$storeDashboard.gridItems, clonedItem]
-	}
-	$: handleRemove = (item: any) => {
-		const temp = [...removeItem(item, $storeDashboard.gridItems, gridController.gridParams)]
-		$storeDashboard.gridItems = []
-		delete dashboard.widget_location[item.title]
-		widgets = widgets.filter((widget: any) => widget.title !== item.title)
-		setTimeout(() => {
-			$storeDashboard.gridItems = temp
-			gridController.gridParams.unregisterItem(item)
-			gridController.gridParams.updateGrid()
-			updateLocations()
-		}, 100)
-	}
-
-	$: changeItemSize = (item: any) => {
-		resizedTitle = item.title
-	}
-
-	$: if ($storeCCPWidget) {
-		addWidgetCopyAlert($storeDashboard?.attributes?.user_id === $storeUser?.user_id)
-	} else {
-		dismissAlert('widget-copied')
-	}
-
-	$: if ($storeDashboard?.attributes?.user_id === $storeUser?.user_id) {
-		const alert: AlertMessage = {
-			id: 'dashboard-system-msg',
-			title: `Customizing ${$storeDashboard?.user_id === null ? 'a system' : ''} dashboard`,
-			message: `Don't forget that you are customizing a ${
-				$storeDashboard?.user_id === null ? 'system' : ''
-			}  dashboard, please publish it again`,
-			dashboardId: $storeDashboard.dashboard_id,
-			type: AlertType.WARNING,
-			callback1Btn: 'Publish',
-			callback1: () => {
-				updateWidgetLocation()
-				dispatch('handleCustomize', false)
-			}
-		}
-		sendAlert(alert)
-	} else {
-		dismissAlert('dashboard-system-msg', $storeDashboard.dashboard_id)
-	}
-
-	$: if (!$storeDashboard.gridItems || $storeDashboard.gridItems.length === 0) {
-		sendAlert({
-			id: 'dashboard-no-widgets',
-			title: 'No widgets',
-			message: 'There are no widgets in this dashboard',
-			dashboardId: $storeDashboard.dashboard_id,
-			type: AlertType.INFO
-		})
-	} else {
-		dismissAlert('dashboard-no-widgets', $storeDashboard.dashboard_id)
-	}
-	$: if (!$storeDashboard.loaded) {
-		setGridItems($storeDashboard.dashboard_id)
-	}
 </script>
 
 <svelte:window bind:innerWidth />
@@ -369,7 +386,7 @@
 					changeItemSize(item)
 				}}
 				let:active
-				bind:id={item.title}
+				bind:id={item.data.title}
 			>
 				<WidgetBox
 					widget={item.data}

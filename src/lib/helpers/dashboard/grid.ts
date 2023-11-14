@@ -28,13 +28,23 @@ export const loadV2Locations = (widgetLocation: Record<string, any>, _dashboard:
     })
   } else {
     const data = _widgets[0]
+    console.log('data', data)
     widgets.push({ title: data.title, x: 0, y: 0, w: cols, h: minRowHeight, data })
   }
   return widgets
 }
 
 export const loadV3Locations = (widgetLocation: Record<string, any>, _widgets: any[], cols: number, isMobile: boolean) => {
-  if (!widgetLocation) return [] 
+  if (!widgetLocation || Object.keys(widgetLocation).length === 0) {
+    let row = 0
+    widgetLocation = {};
+    return _widgets.map((widget: any) => {
+      widget.resize_on_load = true
+      widgetLocation[widget.title] = { title: widget.title, x: 0, y: row, w: cols, h: minRowHeight, data: widget };
+      row += minRowHeight;
+      return {...widgetLocation[widget.title]}
+    });
+  }
 
   if (isMobile) {
     let y = 0
@@ -90,6 +100,7 @@ export const getControllerItemsLocations = (gridParams: GridParams) => {
 
 export const saveLocations = (dashboard: any, gridItems: any[], gridParams: GridParams) => {
   const deletedItems: string[] = []
+  console.log(gridParams.items)
   const items = Object.entries(gridParams.items).reduce((acc, [key, item]) => {
     const gridItem = gridItems.find((i) => i.title === key)
     if (gridItem) {
@@ -103,7 +114,6 @@ export const saveLocations = (dashboard: any, gridItems: any[], gridParams: Grid
     acc[key] = { x: item.x, y: item.y, w: item.w, h: item.h };
     return acc;
   }, {});
-
   // dashboard.widget_location = items
 
   if (deletedItems.length > 0) {
