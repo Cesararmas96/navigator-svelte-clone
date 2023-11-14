@@ -8,6 +8,7 @@
 	export let data: any
 
 	const widget: any = getContext('widget')
+	const dashboard = getContext<Writable<any>>('dashboard')
 	const widgetActions = getContext<Writable<any[]>>('widgetActions')
 	const resizeAction = getWidgetAction($widgetActions, 'resize')
 
@@ -59,7 +60,10 @@
 	}
 
 	onMount(() => {
-		resizeAction.action()
+		if ($dashboard?.attributes?.explorer === 'v2') {
+			console.log('resizeAction')
+			resizeAction.action()
+		}
 	})
 </script>
 
