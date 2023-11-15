@@ -2,7 +2,15 @@ export const widgets = {
 	params: {
 		model: {
 			meta: 'api/v2/widgets',
-			primaryKey: 'id'
+			primaryKey: 'widget_id',
+			schema: {
+				properties: {
+					inserted_at: { attrs: { visible: false } },
+					inserted_by: { attrs: { visible: false } },
+					updated_at: { attrs: { visible: false } },
+					updated_by: { attrs: { visible: false } }
+				}
+			}
 		},
 		btnsActions: {
 			top: {
@@ -22,7 +30,15 @@ export const widgets_template = {
 	params: {
 		model: {
 			meta: 'api/v2/widgets-template',
-			primaryKey: 'uid'
+			primaryKey: 'template_id',
+			schema: {
+				properties: {
+					inserted_at: { attrs: { visible: false } },
+					inserted_by: { attrs: { visible: false } },
+					updated_at: { attrs: { visible: false } },
+					updated_by: { attrs: { visible: false } }
+				}
+			}
 		},
 		btnsActions: {
 			top: {
@@ -42,7 +58,7 @@ export const widgets_types = {
 	params: {
 		model: {
 			meta: 'api/v2/widget-types',
-			primaryKey: 'name'
+			primaryKey: 'widget_type'
 		},
 		btnsActions: {
 			top: {

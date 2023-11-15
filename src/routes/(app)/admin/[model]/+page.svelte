@@ -11,8 +11,6 @@
 
 	const { model } = data
 
-	console.log('MODEL', model)
-
 	let widget = merge(
 		{},
 		{
@@ -100,8 +98,6 @@
 		},
 		model?.widget
 	)
-
-	console.log(JSON.stringify(widget))
 </script>
 
 <div class="card m-3 h-screen p-5">

@@ -96,10 +96,13 @@ export const program_groups = {
 	params: {
 		model: {
 			meta: 'api/v1/program_groups',
-			primaryKey: 'program_id'
-		},
-		query_slug: {
-			slug: `{BASE_URL_API}/api/v1/program_groups`
+			keys: ['program_id', 'group_id'],
+			schema: {
+				properties: {
+					created_at: { attrs: { visible: false } },
+					created_by: { attrs: { visible: false } }
+				}
+			}
 		},
 		btnsActions: {
 			top: {
@@ -108,6 +111,9 @@ export const program_groups = {
 				}
 			}
 		}
+	},
+	query_slug: {
+		slug: `{BASE_URL_API}/api/v1/program_groups`
 	},
 	format_definition: {}
 }

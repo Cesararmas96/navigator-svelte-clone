@@ -2,7 +2,12 @@ export const groups = {
 	params: {
 		model: {
 			meta: 'api/v1/groups',
-			primaryKey: 'id'
+			primaryKey: 'group_id',
+			schema: {
+				properties: {
+					description: { format: 'textarea' }
+				}
+			}
 		},
 		btnsActions: {
 			top: {

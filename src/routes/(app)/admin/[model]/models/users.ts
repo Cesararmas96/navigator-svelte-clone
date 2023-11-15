@@ -158,9 +158,15 @@ export const usergroups = {
 	params: {
 		model: {
 			meta: 'api/v1/usergroups',
-			secondKey: 'group_id',
-			primaryKey: 'user_id'
+			keys: ['user_id', 'group_id'],
+			schema: {
+				properties: {
+					created_at: { attrs: { visible: false } },
+					created_by: { attrs: { visible: false } }
+				}
+			}
 		},
+
 		btnsActions: {
 			top: {
 				createModelWithFormBuilder: {

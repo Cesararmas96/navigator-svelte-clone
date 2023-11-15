@@ -92,8 +92,13 @@ export const program_clients = {
 	params: {
 		model: {
 			meta: 'api/v1/program_clients',
-			secondKey: 'client_id',
-			primaryKey: 'program_id'
+			keys: ['program_id', 'client_id'],
+			schema: {
+				properties: {
+					created_at: { attrs: { visible: false } },
+					created_by: { attrs: { visible: false } }
+				}
+			}
 		},
 		btnsActions: {
 			top: {
@@ -153,8 +158,9 @@ export const module_clients = {
 	params: {
 		model: {
 			meta: 'api/v1/module_clients',
-			secondKey: 'module_id',
-			primaryKey: 'client_id'
+			// secondKey: 'module_id',
+			// primaryKey: 'client_id'
+			keys: ['client_id', 'program_id', 'module_id']
 		},
 		btnsActions: {
 			top: {
