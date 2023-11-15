@@ -55,7 +55,7 @@
 	}
 </script>
 
-<div class="card m-3 h-screen p-5">
+<div class="card m-3 mb-20 h-[200rem] p-5">
 	<div class="mb-4 flex items-center justify-between">
 		<h4 class="font-bold leading-none text-heading">{report.name}</h4>
 		<a href="/admin" class="btn h-8 text-primary-500 hover:bg-primary-500/10">
