@@ -5,9 +5,11 @@
 	import Footer from '$lib/components/layouts/Footer.svelte'
 	import { sidebarMin } from '$lib/stores/sidebar.js'
 	import { storeDashboards } from '$lib/stores/dashboards.js'
-	import { storeModule, storeModules } from '$lib/stores/modules'
+	import { storeModule, storeModules, storeStores } from '$lib/stores/modules'
 	import { storePrograms } from '$lib/stores/programs.js'
 	import { storeUser } from '$lib/stores/session.js'
+	import { page } from '$app/stores'
+	import { postData } from '$lib/services/getData.js'
 
 	export let data
 
@@ -16,6 +18,19 @@
 	$storeDashboards = data.dashboards
 	$storePrograms = data.programs
 	$storeUser = data.user
+
+	const setStores = async () => {
+		console.log('fetching stores')
+		const stores = await postData(
+			`${import.meta.env.VITE_API_URL}/api/v2/services/queries/${
+				$page.params.programs
+			}_stores?refresh=1`,
+			{}
+		)
+		$storeStores = { ...$storeStores, [$page.params.programs]: Object.values(stores) }
+	}
+
+	if (!$storeStores || !$storeStores[$page.params.programs]) setStores()
 
 	let width: number
 </script>

@@ -26,6 +26,8 @@
 	import { writable } from 'svelte/store'
 	import { createEventDispatcher, setContext } from 'svelte'
 	import { loading } from '$lib/stores/preferences'
+	import DashboardFilters from './DashboardFilters.svelte'
+	import { page } from '$app/stores'
 
 	export let dashboard: any
 	const dispatch = createEventDispatcher()
@@ -358,6 +360,10 @@
 </script>
 
 <svelte:window bind:innerWidth />
+
+{#if $storeDashboard?.allow_filtering}
+	<DashboardFilters open={$storeDashboard?.attributes?.collapse_shows} />
+{/if}
 
 <Alerts dashboardId={$storeDashboard.dashboard_id} />
 

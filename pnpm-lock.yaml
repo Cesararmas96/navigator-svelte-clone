@@ -1,5 +1,9 @@
 lockfileVersion: '6.0'
 
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
 dependencies:
   '@floating-ui/dom':
     specifier: ^1.4.5
@@ -70,6 +74,9 @@ dependencies:
   jsvectormap:
     specifier: ^1.5.3
     version: 1.5.3
+  lodash:
+    specifier: ^4.17.21
+    version: 4.17.21
   lodash-es:
     specifier: ^4.17.21
     version: 4.17.21
@@ -97,6 +104,9 @@ dependencies:
   svelte-exmarkdown:
     specifier: ^3.0.0
     version: 3.0.0(svelte@4.1.1)
+  svelte-flatpickr:
+    specifier: ^3.3.3
+    version: 3.3.3(svelte@4.1.1)
   svelte-grid-extended:
     specifier: ^1.1.1
     version: 1.1.1
@@ -2718,6 +2728,10 @@ packages:
       flatted: 3.2.7
       rimraf: 3.0.2
     dev: true
+
+  /flatpickr@4.6.13:
+    resolution: {integrity: sha512-97PMG/aywoYpB4IvbvUJi0RQi8vearvU0oov1WW3k0WZPBMrTQVqekSX5CjSG/M4Q3i6A/0FKXC7RyAoAUUSPw==}
+    dev: false
 
   /flatted@3.2.7:
     resolution: {integrity: sha512-5nqDSxl8nn5BSNxyR3n4I6eDmbolI6WT+QqR547RwxQapgjQBmtktdP+HTBb/a/zLsbzERTONyUB5pefh5TtjQ==}
@@ -5471,6 +5485,15 @@ packages:
       - supports-color
     dev: false
 
+  /svelte-flatpickr@3.3.3(svelte@4.1.1):
+    resolution: {integrity: sha512-ZollniPUOXyRrY+ZMJvp8yovYExOuPed5bDx4fG0SRwAaQ88o9PP/CiW21PR3ndt4qDvu/LMpxkaSbp2obD0tg==}
+    peerDependencies:
+      svelte: '>= 3.31.0 < 5.0'
+    dependencies:
+      flatpickr: 4.6.13
+      svelte: 4.1.1
+    dev: false
+
   /svelte-grid-extended@1.1.1:
     resolution: {integrity: sha512-WwoaK69W2OfpXqrzdZU705Fl/326J3gcgGuAN7qv5MDpasMTIiqJuSmD7GrdgrgTfDuKIPqKSzVstlrkMlzTMg==}
     dev: false
@@ -6292,7 +6315,3 @@ packages:
   /zwitch@2.0.4:
     resolution: {integrity: sha512-bXE4cR/kVZhKZX/RjPEflHaKVhUVl85noU3v6b8apfQEc1x4A+zBxjZ4lN8LqGd6WZ3dl98pY4o717VFmoPp+A==}
     dev: false
-
-settings:
-  autoInstallPeers: true
-  excludeLinksFromLockfile: false
