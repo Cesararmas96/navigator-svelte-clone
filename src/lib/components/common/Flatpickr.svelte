@@ -34,7 +34,7 @@
 			merge(
 				{},
 				{
-					inline: true,
+					// inline: true,
 					// altInput: true,
 					// altFormat: altFormat,
 					// dateFormat: format,
@@ -55,9 +55,14 @@
 							config.onChange(selectedDates, dateStr, instance)
 
 							const dates = instance.selectedDates
-							value = `${moment(dates[0]).format('YYYY-MM-DD')} - ${moment(dates[1]).format(
-								'YYYY-MM-DD'
-							)}`
+
+							if (dates[1]) {
+								value = `${moment(dates[0]).format('YYYY-MM-DD')} - ${moment(dates[1]).format(
+									'YYYY-MM-DD'
+								)}`
+							} else {
+								value = `${moment(dates[0]).format('YYYY-MM-DD')}`
+							}
 						} else {
 							value = dateStr
 						}
@@ -68,4 +73,4 @@
 	})
 </script>
 
-<input {...$$restProps} bind:this={flatpickrElement} />
+<input {...$$restProps} bind:this={flatpickrElement} class="hidden" />

@@ -6,7 +6,7 @@
 	import { sidebarMin } from '$lib/stores/sidebar.js'
 	import { storeDashboards } from '$lib/stores/dashboards.js'
 	import { storeModule, storeModules, storeStores } from '$lib/stores/modules'
-	import { storePrograms } from '$lib/stores/programs.js'
+	import { storePrograms, variablesOperationalProgram } from '$lib/stores/programs.js'
 	import { storeUser } from '$lib/stores/session.js'
 	import { page } from '$app/stores'
 	import { postData } from '$lib/services/getData.js'
@@ -18,6 +18,7 @@
 	$storeDashboards = data.dashboards
 	$storePrograms = data.programs
 	$storeUser = data.user
+	$variablesOperationalProgram = data.variablesOperational
 
 	const setStores = async () => {
 		console.log('fetching stores')

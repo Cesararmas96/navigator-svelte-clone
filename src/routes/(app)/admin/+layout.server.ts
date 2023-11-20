@@ -24,14 +24,21 @@ export const load = async ({ locals }) => {
 			name: 'Report 2',
 			description: 'Description Report 2',
 			image: '/img/admin/2.jpeg',
-			url: 'https://github.com/'
+			url: 'https://grafana.production.navigator.mobileinsight.com/public-dashboards/731ad992081f41a79daa410f1e7bad6e?orgId=1&refresh=5m&from=now-3h&to=now'
 		},
 		{
 			id: 'report_3',
 			name: 'Report 3',
 			description: 'Description Report 3',
 			image: '/img/admin/3.jpeg',
-			url: 'https://github.com/'
+			url: 'https://grafana.production.navigator.mobileinsight.com/public-dashboards/d86fc23514a44a508f98055bdf92d37e?orgId=1&allow_embedding=true'
+		},
+		{
+			id: 'report_3',
+			name: 'Report 4',
+			description: 'Description Report 3',
+			image: '/img/admin/3.jpeg',
+			url: 'https://grafana.production.navigator.mobileinsight.com/public-dashboards/0021a162327844ff864c18a459cd108c?orgId=1&refresh=1h'
 		}
 	]
 

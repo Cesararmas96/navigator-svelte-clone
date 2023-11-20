@@ -1,37 +1,34 @@
 <script lang="ts">
 	import { onMount, getContext } from 'svelte'
-	// import Flatpickr from 'svelte-flatpickr'
-	// import Flatpickr from 'flatpickr'
 	import monthSelectPlugin from 'flatpickr/dist/plugins/monthSelect'
 	import { variablesOperationalProgram } from '$lib/stores/programs'
-	import Flatpickr from './Flatpickr.svelte'
-	import { Label, Dropdown, Select, DropdownItem } from 'flowbite-svelte'
+	import Flatpickr from '../../common/Flatpickr.svelte'
+	import { Label, Dropdown, Select } from 'flowbite-svelte'
 	import { merge } from 'lodash-es'
 	import moment from 'moment'
-	import 'flatpickr/dist/plugins/monthSelect/style.css'
 	import { page } from '$app/stores'
+	import type { Writable } from 'svelte/store'
+	import 'flatpickr/dist/plugins/monthSelect/style.css'
 
-	let selected
-	let updateDate
-	let countries = [
-		{ value: 'us', name: 'United States' },
-		{ value: 'ca', name: 'Canada' },
-		{ value: 'fr', name: 'France' }
-	]
 	// const date = ref<string>(modelValue || '')
 
+	const dashboard: Writable<any> = getContext('dashboard')
 	let flatpickr
 	let params: Record<string, any> = {
 		period: 'mtd',
 		dateRange: ['mtd', 'current_week', 'daily', 'fullMonth', 'custom']
 	}
 	const operationalDate: any = handleOperationalDate()
-	let date: any = ['2023-09-01', '2023-09-09']
+	console.log('operationalDate', operationalDate)
+	let date: any = [
+		moment(operationalDate).startOf('month').format('YYYY-MM-DD'),
+		operationalDate || moment().format('YYYY-MM-DD')
+	]
 	let changeAux: boolean = false
 	let config: Record<string, any> = {}
 	const configDefault: Record<string, any> = {
 		// wrap: true,
-		// inline: true,
+		inline: true,
 		mode: 'range',
 		minDate: '2016-10-01',
 		weekNumbers: true,
@@ -45,7 +42,7 @@
 		// 	operationalDate || moment().format('YYYY-MM-DD')
 		// ],
 		onChange: handleOnChangeMtd,
-		// onReady: handleOnReadyMtd,
+		onReady: handleOnReadyMtd,
 		getWeek: getWeek
 	}
 	let configAux: Record<string, any> = {}
@@ -55,16 +52,62 @@
 		comparison: true,
 		period: params.period || 'custom'
 	}
+	const optionsDateRangeDefinitions = [
+		{
+			value: 'daily',
+			name: 'Daily'
+		},
+		{
+			value: 'weekly',
+			name: 'Weekly'
+		},
+		{
+			value: 'current_week',
+			name: 'Weekly'
+		},
+		{
+			value: 'mtd',
+			name: 'Month to Date'
+		},
+		// {
+		// 	value: 'monthly',
+		// 	name: 'Monthly'
+		// },
+		{
+			value: 'fullMonth',
+			name: 'Full Month'
+		},
+		// {
+		// 	value: 'fullMonthLast',
+		// 	name: 'Last Full Month'
+		// },
+		// {
+		// 	value: 'fiscalMonth',
+		// 	name: 'Fiscal Month'
+		// },
+		// {
+		// 	value: 'fullFiscalMonthLast',
+		// 	name: 'Last Fiscal Month'
+		// },
+		// {
+		// 	value: 'yearly',
+		// 	name: 'Yearly'
+		// },
+		{
+			value: 'custom',
+			name: 'Custom'
+		}
+		// {
+		// 	value: 'quarter',
+		// 	name: 'Quarter'
+		// },
+		// {
+		// 	value: 'quarterFM',
+		// 	name: 'Fiscal Quarter'
+		// }
+	]
 
 	onMount(() => {
-		configDatepicker()
-
-		console.log(document.querySelector('#flacpickr'))
-	})
-
-	// $: console.log(flatpickr, date)
-
-	function configDatepicker() {
 		setMomentWeek(true)
 
 		if (params.defaultDate) {
@@ -107,14 +150,17 @@
 		}
 
 		setMomentWeek(false)
-	}
+	})
 
 	function showDatepicker(e) {
 		// if (e.detail) {
 		// 	// configDatepicker()
-		// 	setTimeout(() => {
-		// 		// flatpickr = Flatpickr('#flatpickr', config)
-		// 	}, 10)
+		// 	// setTimeout(() => {
+		// 	// flatpickr = Flatpickr('#flatpickr', config)
+		// 	// }, 10)
+		// 	visible = true
+		// } else {
+		// 	visible = false
 		// }
 	}
 
@@ -124,7 +170,6 @@
 			configAux = {}
 			let options = {}
 
-			console.log('PERIOD', settings.period)
 			switch (settings.period) {
 				case 'custom':
 					options = {
@@ -135,7 +180,7 @@
 					break
 				case 'current_week':
 					options = {
-						defaultDate: handleDefaultDateCurrentWeek,
+						// defaultDate: handleDefaultDateCurrentWeek,
 						onReady: handleOnReadyCurrentWeek,
 						onChange: handleOnChangeCurrentWeek
 					}
@@ -143,7 +188,7 @@
 				case 'daily':
 					options = {
 						mode: 'single',
-						defaultDate: operationalDate || moment().format('YYYY-MM-DD'),
+						// defaultDate: operationalDate || moment().format('YYYY-MM-DD'),
 						onChange() {},
 						onReady() {}
 					}
@@ -161,7 +206,7 @@
 						altInput: true,
 						weekNumbers: false,
 						conjunction: ' - ',
-						// onChange: handleOnChangeFullMonth,
+						onChange: handleOnChangeFullMonth,
 						// onReady: handleOnReadyFullMonth,
 						locale: {
 							rangeSeparator: ' - '
@@ -295,8 +340,12 @@
 				case 'weekly':
 					options = {
 						// defaultDate: handleDefaultDateWeek,
-						// onChange: handleOnChangeWeekly,
-						// onReady: handleOnReadyWeekly
+						maxDate:
+							operationalDate === moment(operationalDate).day(6).format('YYYY-MM-DD')
+								? moment(operationalDate).day(6).format('YYYY-MM-DD')
+								: moment(operationalDate).subtract(1, 'weeks').endOf('week').format('YYYY-MM-DD'),
+						onChange: handleOnChangeWeekly,
+						onReady: handleOnReadyWeekly
 					}
 					break
 				case 'quarter':
@@ -324,12 +373,11 @@
 
 			config = merge({}, configDefault, configAux, options, params.picker || {})
 
-			console.log('config', config)
 			if (changeSelect) {
-				// visible = false
-				// setTimeout(() => {
-				// 	visible = true
-				// }, 400)
+				visible = false
+				setTimeout(() => {
+					visible = true
+				}, 400)
 			}
 		} catch (error) {
 			console.log(error)
@@ -345,17 +393,17 @@
 
 	function handleOnChangeMtd(selectedDates: any, dateStr: any, instance: any) {
 		if (selectedDates.length === 1) {
-			instance.setDate([moment(dateStr).startOf('month').format('YYYY-MM-DD'), dateStr])
-			// date = [moment(dateStr).startOf('month').format('YYYY-MM-DD'), dateStr]
+			flatpickr.pickr.setDate([moment(dateStr).startOf('month').format('YYYY-MM-DD'), dateStr])
+
+			// setTimeout(() => {
+			// 	visible = true
+			// }, 100)
 		} else if (selectedDates.length === 2) {
-			instance.setDate([moment(date[0]).startOf('month').format('YYYY-MM-DD'), date[1]])
-			// const datee = dateStr.split(' - ')
-			// date = [moment(datee[0]).startOf('month').format('YYYY-MM-DD'), datee[1]]
+			flatpickr.pickr.setDate([moment(date[0]).startOf('month').format('YYYY-MM-DD'), date[1]])
 		}
 	}
 
 	function handleOnReadyMtd() {
-		console.log('handleOnReadyMtd', changeAux)
 		if (changeAux) {
 			setTimeout(() => {
 				flatpickr.pickr.setDate([
@@ -370,23 +418,62 @@
 		}
 	}
 
-	// function handleDefaultDateCurrentWeek() {
-	// 	let date = []
-	// 	if (
-	// 		moment(moment(operationalDate).endOf('week').format('YYYY-MM-DD')).isAfter(operationalDate)
-	// 	) {
-	// 		date = [
-	// 			moment(operationalDate).startOf('week').format('YYYY-MM-DD'),
-	// 			moment(operationalDate).format('YYYY-MM-DD')
-	// 		]
-	// 	} else {
-	// 		date = [
-	// 			moment(operationalDate).startOf('week').format('YYYY-MM-DD'),
-	// 			moment(operationalDate).endOf('week').format('YYYY-MM-DD')
-	// 		]
-	// 	}
-	// 	return date
-	// }
+	function handleOnChangeFullMonth(selectedDates: any, dateStr: any, instance: any) {
+		if (moment(operationalDate).format('YYYY-MM') === moment(dateStr).format('YYYY-MM')) {
+			flatpickr.pickr.setDate([
+				moment(dateStr).startOf('month').format('YYYY-MM-DD'),
+				moment(operationalDate).format('YYYY-MM-DD')
+			])
+			date = `${moment(dateStr).startOf('month').format('YYYY-MM-DD')} - ${moment(
+				operationalDate
+			).format('YYYY-MM-DD')}`
+		} else {
+			flatpickr.pickr.setDate([
+				moment(dateStr).startOf('month').format('YYYY-MM-DD'),
+				moment(dateStr).endOf('month').format('YYYY-MM-DD')
+			])
+
+			date = `${moment(dateStr).startOf('month').format('YYYY-MM-DD')} - ${moment(dateStr)
+				.endOf('month')
+				.format('YYYY-MM-DD')}`
+		}
+	}
+
+	function handleOnChangeWeekly(selectedDates: any, dateStr: any, instance: any) {
+		if (dateStr.split(' - ').length < 2) {
+			flatpickr.pickr.setDate([
+				moment(dateStr).startOf('week').format('YYYY-MM-DD'),
+				moment(dateStr).endOf('week').format('YYYY-MM-DD')
+			])
+		}
+	}
+
+	function handleOnReadyWeekly() {
+		if (changeAux) {
+			let initial = ''
+			let end = ''
+			setTimeout(() => {
+				if (operationalDate === moment(operationalDate).day(6).format('YYYY-MM-DD')) {
+					initial = moment(operationalDate).startOf('week').format('YYYY-MM-DD')
+					end = moment(operationalDate).endOf('week').format('YYYY-MM-DD')
+					flatpickr.pickr.setDate([initial, end])
+				} else {
+					initial = moment(operationalDate)
+						.subtract(1, 'weeks')
+						.startOf('week')
+						.format('YYYY-MM-DD')
+					end = moment(operationalDate).subtract(1, 'weeks').endOf('week').format('YYYY-MM-DD')
+					flatpickr.pickr.setDate([initial, end])
+					config.maxDate = moment(operationalDate)
+						.subtract(1, 'weeks')
+						.endOf('week')
+						.format('YYYY-MM-DD')
+				}
+				date = `${initial} - ${end}`
+			}, 50)
+		}
+		changeAux = false
+	}
 
 	function handleOnReadyCurrentWeek() {
 		if (changeAux) {
@@ -412,28 +499,7 @@
 		changeAux = false
 	}
 
-	function handleDefaultDateCurrentWeek() {
-		let date = []
-		if (
-			moment(moment(operationalDate).endOf('week').format('YYYY-MM-DD')).isAfter(operationalDate)
-		) {
-			date = [
-				moment(operationalDate).startOf('week').format('YYYY-MM-DD'),
-				moment(operationalDate).format('YYYY-MM-DD')
-			]
-		} else {
-			date = [
-				moment(operationalDate).startOf('week').format('YYYY-MM-DD'),
-				moment(operationalDate).endOf('week').format('YYYY-MM-DD')
-			]
-		}
-		return date
-	}
-
 	function handleOnChangeCurrentWeek(selectedDates: any, dateStr: any, instance: any) {
-		console.log(selectedDates)
-		console.log(dateStr)
-		console.log(instance)
 		if (dateStr.split(' - ').length < 2) {
 			if (moment(moment(dateStr).endOf('week').format('YYYY-MM-DD')).isAfter(operationalDate)) {
 				flatpickr.pickr.setDate([
@@ -474,36 +540,28 @@
 
 	function handleOperationalDate() {
 		const module = $page.data.trocModule
-		const dashboard = getContext('dashboard')
 		const variables = $variablesOperationalProgram
 
-		console.log('module', module)
-		console.log('dashboard', dashboard)
-		console.log('variables', variables)
-		console.log('variablesOperationalProgram', variablesOperationalProgram)
+		let moduleOperationalDate = null
+		let dashboardOperationalDate = null
+		try {
+			moduleOperationalDate =
+				module && module.attributes ? module.attributes.operational_date : null
+			dashboardOperationalDate =
+				$dashboard && $dashboard?.attributes ? $dashboard?.attributes?.operational_date : null
+		} catch (error) {
+			console.log(error)
+		}
 
-		// let moduleOperationalDate = null
-		// let dashboardOperationalDate = null
-		// try {
-		// 	moduleOperationalDate =
-		// 		module && module.attributes ? module.attributes.operational_date : null
-		// 	dashboardOperationalDate =
-		// 		dashboard && dashboard?.attributes ? dashboard?.attributes.operational_date : null
-		// } catch (error) {
-		// 	console.log(error)
-		// }
-
-		// return dashboardOperationalDate && moment(dashboardOperationalDate).isValid()
-		// 	? dashboardOperationalDate
-		// 	: moduleOperationalDate && moment(moduleOperationalDate).isValid()
-		// 	? moduleOperationalDate
-		// 	: dashboardOperationalDate && variables[dashboardOperationalDate]
-		// 	? variables[dashboardOperationalDate]
-		// 	: moduleOperationalDate && variables[moduleOperationalDate]
-		// 	? variables[moduleOperationalDate]
-		// 	: moment().format('YYYY-MM-DD')
-
-		return moment().format('YYYY-MM-DD')
+		return dashboardOperationalDate && moment(dashboardOperationalDate).isValid()
+			? dashboardOperationalDate
+			: moduleOperationalDate && moment(moduleOperationalDate).isValid()
+			? moduleOperationalDate
+			: dashboardOperationalDate && variables[dashboardOperationalDate]
+			? variables[dashboardOperationalDate]
+			: moduleOperationalDate && variables[moduleOperationalDate]
+			? variables[moduleOperationalDate]
+			: moment().format('YYYY-MM-DD')
 	}
 
 	function newValue(_date) {
@@ -513,44 +571,58 @@
 			return _date
 		}
 	}
-
-	function handleChange(selectedDates, dateString, instance) {
-		console.log(selectedDates)
-	}
 </script>
 
 <main>
-	<Label class="block text-left ">Pick a date range</Label>
+	<Label class="block text-left ">Pick a date range {visible}</Label>
 	<input
 		type="text"
 		value={newValue(date)}
 		readonly
 		on:click={() => {
-			visible = !visible
+			// visible = !visible
 		}}
-		class=" w-full cursor-pointer !rounded border-gray-300 bg-gray-50 px-2 py-1 pr-10 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500"
+		class="dots-menu w-full cursor-pointer !rounded border-gray-300 bg-gray-50 px-2 py-1 pr-10 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500"
 	/>
 	<!-- {#if visible} -->
-	<Dropdown class="flatpickr-container w-full space-y-1 p-3">
+	<Dropdown
+		triggeredBy=".dots-menu"
+		class="flatpickr-container w-full space-y-1 p-3"
+		bind:open={visible}
+	>
 		<!-- on:show={showDatepicker} -->
+
+		<!-- svelte-ignore a11y-click-events-have-key-events -->
+		<!-- svelte-ignore a11y-no-static-element-interactions -->
+		<!-- <DropdownItem
+			on:click={(e) => {
+				e.preventDefault()
+				// e.stopPropagation()
+			}}
+		> -->
 		<div class="grid grid-cols-2 gap-4">
 			<div>
 				<Flatpickr
 					bind:value={date}
 					{config}
-					bind:updateDate
 					bind:this={flatpickr}
 					class="w-full cursor-pointer !rounded border-gray-300 bg-gray-50 px-2 py-1 pr-10 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500"
 				/>
-				<!-- <Flatpickr options={config} bind:value={date} bind:this={flatpickr} name="date" /> -->
 			</div>
 			<div>
 				<Label>
 					Date Range
-					<Select class="mt-2 w-72" size="sm" items={countries} bind:value={selected} />
+					<Select
+						class="mt-2 w-72"
+						size="sm"
+						items={optionsDateRangeDefinitions}
+						bind:value={settings.period}
+						on:change={() => configure(true)}
+					/>
 				</Label>
 			</div>
 		</div>
+		<!-- </DropdownItem> -->
 	</Dropdown>
 	<!-- {/if} -->
 </main>
