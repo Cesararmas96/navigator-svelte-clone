@@ -248,6 +248,6 @@ workflows:
           env-tag: "production"
           vpn-target: "https://redash.internal.trocdigital.io"
           context: 
-            - navigator-dev
+            - navigator-production
           requires:
             - tag-image-with-production
