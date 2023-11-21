@@ -68,6 +68,7 @@
 		"date-fns": "^2.30.0",
 		"echarts": "^5.4.3",
 		"embla-carousel": "^8.0.0-rc07",
+		"flatpickr": "^4.6.13",
 		"flowbite": "^1.7.0",
 		"flowbite-svelte": "^0.40.2",
 		"html2canvas": "^1.4.1",

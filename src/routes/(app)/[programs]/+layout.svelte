@@ -5,7 +5,7 @@
 	import { sidebarMin } from '$lib/stores/sidebar.js'
 	import { storeDashboards } from '$lib/stores/dashboards.js'
 	import { storeModule, storeModules, storeStores } from '$lib/stores/modules'
-	import { storePrograms } from '$lib/stores/programs.js'
+	import { storePrograms, variablesOperationalProgram } from '$lib/stores/programs.js'
 	import { storeUser } from '$lib/stores/session.js'
 	import { page } from '$app/stores'
 	import { postData } from '$lib/services/getData.js'
@@ -23,6 +23,7 @@
 		}
 		return dashboard
 	})
+	$variablesOperationalProgram = data.variablesOperational
 
 	const setStores = async () => {
 		const stores = await postData(
