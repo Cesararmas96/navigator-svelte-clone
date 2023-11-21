@@ -19,7 +19,12 @@
 	import Alerts from '../widgets/type/Alert/Alerts.svelte'
 	import { dismissAlert, sendAlert, sendErrorAlert } from '$lib/helpers/common/alerts'
 	import { AlertType, type AlertMessage } from '$lib/interfaces/Alert'
-	import { storeCCPWidget, storeCCPWidgetBehavior, storeDashboards } from '$lib/stores/dashboards'
+	import {
+		hideDashboardFilters,
+		storeCCPWidget,
+		storeCCPWidgetBehavior,
+		storeDashboards
+	} from '$lib/stores/dashboards'
 	import { storeUser } from '$lib/stores'
 	import { generateRandomString, generateSlug } from '$lib/helpers/common/common'
 	import { sendErrorNotification, sendSuccessNotification } from '$lib/stores/toast'
@@ -28,6 +33,9 @@
 	import { loading } from '$lib/stores/preferences'
 	import DashboardFilters from './DashboardFilters.svelte'
 	import { page } from '$app/stores'
+	import DrawerFilters from './DrawerFilters.svelte'
+	import { Button, SpeedDial, Tooltip } from 'flowbite-svelte'
+	import Icon from '../common/Icon.svelte'
 
 	export let dashboard: any
 	const dispatch = createEventDispatcher()
@@ -45,6 +53,7 @@
 
 	const storeDashboard = writable(dashboard)
 	setContext('dashboard', storeDashboard)
+
 	$: $storeDashboard = dashboard
 
 	$: if (!$storeDashboard.loaded) {
@@ -421,3 +430,16 @@
 		{/each}
 	</Grid>
 </div>
+
+{#if $storeDashboard?.allow_filtering && $hideDashboardFilters}
+	<Button
+		pill={true}
+		class="fixed bottom-6 right-6 !p-3 shadow-md"
+		on:click={() => hideDashboardFilters.set(false)}><Icon icon="tabler:filter" size="20" /></Button
+	>
+	<Tooltip placement="left">Filters</Tooltip>
+{/if}
+
+{#if $storeDashboard?.allow_filtering}
+	<DrawerFilters />
+{/if}

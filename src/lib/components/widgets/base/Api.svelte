@@ -9,7 +9,9 @@
 	import { sendErrorNotification } from '$lib/stores/toast'
 
 	export let widget: Writable<any>
-	let widgetActions: any = getContext('widgetActions')
+
+	const widgetActions: any = getContext('widgetActions')
+	const dashboard: Writable<any> = getContext('dashboard')
 
 	const slug = $widget.query_slug?.slug || $widget.params.query?.slug
 	const conditionsRaw = $widget.conditions
@@ -38,6 +40,10 @@
 
 		if (conditions?.filterdate && !Array.isArray(conditions?.filterdate)) {
 			conditions.filterdate = returnValidateDate(conditions?.filterdate)
+		}
+
+		if ($dashboard.where_cond) {
+			conditions.where_cond = { ...$dashboard.where_cond }
 		}
 
 		return conditions

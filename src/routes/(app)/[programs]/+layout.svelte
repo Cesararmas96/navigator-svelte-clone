@@ -2,7 +2,6 @@
 	import Sidebar from '$lib/components/layouts/Sidebar.svelte'
 	import Breadcrumb from '$lib/components/layouts/Breadcrumb.svelte'
 	import Header from '$lib/components/layouts/Header.svelte'
-	import Footer from '$lib/components/layouts/Footer.svelte'
 	import { sidebarMin } from '$lib/stores/sidebar.js'
 	import { storeDashboards } from '$lib/stores/dashboards.js'
 	import { storeModule, storeModules, storeStores } from '$lib/stores/modules'
@@ -15,12 +14,17 @@
 
 	$storeModules = data.menu
 	$storeModule = data.trocModule
-	$storeDashboards = data.dashboards
 	$storePrograms = data.programs
 	$storeUser = data.user
+	$storeDashboards = data.dashboards.map((dashboard) => {
+		dashboard.where_cond = {
+			...dashboard.where_cond,
+			...$storeUser.aux.filtering_fixed
+		}
+		return dashboard
+	})
 
 	const setStores = async () => {
-		console.log('fetching stores')
 		const stores = await postData(
 			`${import.meta.env.VITE_API_URL}/api/v2/services/queries/${
 				$page.params.programs
@@ -29,7 +33,6 @@
 		)
 		$storeStores = { ...$storeStores, [$page.params.programs]: Object.values(stores) }
 	}
-
 	if (!$storeStores || !$storeStores[$page.params.programs]) setStores()
 
 	let width: number

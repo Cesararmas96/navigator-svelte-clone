@@ -25,6 +25,8 @@ export const handle: Handle = async ({ event, resolve }) => {
 
     if (session) {
       event.locals.user = session.session
+      event.locals.user.aux = session
+      delete event.locals.user.aux.session
       event.locals.user.token = token
     }
   } catch (error) {
