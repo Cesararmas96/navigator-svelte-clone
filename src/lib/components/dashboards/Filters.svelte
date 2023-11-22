@@ -152,7 +152,7 @@
 						on:change={(e) => selectItem(key, e.detail)}
 					/>
 				{:else if value.type === 'date'}
-					<Date on:change={(e) => selectItem(key, e.detail)} />
+					<Date on:change={(e) => selectItem(key, e.detail)} params={value?.params} />
 				{/if}
 			</div>
 			{#if value.jump}<div class="col-span-{cols - idx - 1}" />{/if}
