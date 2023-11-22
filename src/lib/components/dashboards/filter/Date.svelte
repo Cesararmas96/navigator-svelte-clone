@@ -10,6 +10,7 @@
 	import type { Writable } from 'svelte/store'
 	import 'flatpickr/dist/plugins/monthSelect/style.css'
 
+	export let selectedValue: string
 	// const date = ref<string>(modelValue || '')
 	const dispatch = createEventDispatcher()
 
@@ -19,11 +20,22 @@
 	}
 	const dashboard: Writable<any> = getContext('dashboard')
 	let flatpickr
-	const operationalDate: any = handleOperationalDate()
-	let date: any = [
-		moment(operationalDate).startOf('month').format('YYYY-MM-DD'),
-		operationalDate || moment().format('YYYY-MM-DD')
-	]
+	let operationalDate: any
+	let date: any
+
+	let _selectedValue: string
+
+	$: if (!selectedValue || selectedValue !== _selectedValue) {
+		if (selectedValue) {
+			_selectedValue = selectedValue
+			selectedValue = selectedValue.split(' - ')[1] || selectedValue
+		}
+		operationalDate = handleOperationalDate(selectedValue)
+		date = [
+			moment(operationalDate).startOf('month').format('YYYY-MM-DD'),
+			operationalDate || moment().format('YYYY-MM-DD')
+		]
+	}
 	// dispatch('change', date.join(' - '))
 	let changeAux: boolean = false
 	let config: Record<string, any> = {}
@@ -539,7 +551,7 @@
 		return date
 	}
 
-	function handleOperationalDate() {
+	function handleOperationalDate(selected: string | undefined = undefined) {
 		const module = $page.data.trocModule
 		const variables = $variablesOperationalProgram
 
@@ -554,7 +566,9 @@
 			console.log(error)
 		}
 
-		return dashboardOperationalDate && moment(dashboardOperationalDate).isValid()
+		return selected && moment(selected).isValid()
+			? selected
+			: dashboardOperationalDate && moment(dashboardOperationalDate).isValid()
 			? dashboardOperationalDate
 			: moduleOperationalDate && moment(moduleOperationalDate).isValid()
 			? moduleOperationalDate
@@ -604,7 +618,7 @@
 			}}
 		> -->
 		<div
-			class="grid {params?.dateRange || params?.rangeCompare ? 'grid-col2' : 'grid-cols-1'} gap-4"
+			class="grid {params?.dateRange || params?.rangeCompare ? 'grid-cols-2' : 'grid-cols-1'} gap-4"
 		>
 			<div>
 				<Flatpickr

@@ -25,6 +25,7 @@
 	})
 
 	const loadData = () => {
+		console.log('loadData')
 		filters = $dashboard?.filtering_show
 			? { ...$dashboard?.filtering_show }
 			: trocModule.filtering_show
@@ -87,7 +88,10 @@
 	}
 
 	const selectItem = (key: string, selectedItem: any) => {
-		if (selectedItem.value !== '') {
+		if (
+			selectedItem &&
+			((typeof selectedItem === 'string' && selectedItem !== '') || selectedItem?.value !== '')
+		) {
 			filtersSorted[key].selected = selectedItem
 		} else {
 			delete filtersSorted[key].selected
@@ -101,8 +105,8 @@
 					delete filtersSorted[key].reset
 				}
 			}
+			fillDropdowns()
 		}
-		fillDropdowns()
 	}
 
 	const apply = () => {
@@ -126,7 +130,11 @@
 	let loadedDashboardId: string
 	$: if ($dashboard.where_cond) {
 		for (const key in $dashboard.where_cond) {
-			if (filtersSorted[key]) filtersSorted[key].selected = $dashboard.where_cond[key]
+			if (filtersSorted[key]) {
+				if (filtersSorted[key].type !== 'date') {
+					filtersSorted[key].selected = $dashboard.where_cond[key]
+				}
+			}
 		}
 		fillDropdowns()
 	} else if (loadedDashboardId !== $dashboard.dashboard_id) {
@@ -135,6 +143,11 @@
 		}
 		fillDropdowns()
 		loadedDashboardId = $dashboard.dashboard_id
+	}
+
+	$: if ($dashboard.where_date_cond) {
+		const _date = $dashboard.where_date_cond.split(' - ')[1] || $dashboard.where_date_cond
+		filtersSorted['date'].selected = _date
 	}
 
 	const cols = drawer ? 1 : 4 //_.filter(filtersSorted, { hierarchy: true }).length
@@ -151,7 +164,11 @@
 						on:change={(e) => selectItem(key, e.detail)}
 					/>
 				{:else if value.type === 'date'}
-					<Date on:change={(e) => selectItem(key, e.detail)} params={value?.params} />
+					<Date
+						selectedValue={value.selected}
+						params={value?.params}
+						on:change={(e) => selectItem(key, e.detail)}
+					/>
 				{/if}
 			</div>
 			{#if value.jump}<div class="col-span-{cols - idx - 1}" />{/if}

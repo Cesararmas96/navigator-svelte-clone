@@ -13,7 +13,7 @@
 	const widgetActions = getContext<Writable<any[]>>('widgetActions')
 	const resizeAction = getWidgetAction($widgetActions, 'resize')
 
-	export let id = 'chart'
+	export let id = 'chart' + $widget.widget_id
 	export let theme = 'macarons'
 	export let width = 200
 	export let height = 200

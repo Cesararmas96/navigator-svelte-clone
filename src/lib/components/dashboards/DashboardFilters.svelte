@@ -6,7 +6,7 @@
 	import Spinner from '../common/Spinner.svelte'
 
 	export let open = false
-
+	console.log('open', open)
 	const check = () => {
 		if (open) console.log('open')
 		open = !open

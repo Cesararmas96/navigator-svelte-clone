@@ -32,9 +32,8 @@
 	import { createEventDispatcher, setContext } from 'svelte'
 	import { loading } from '$lib/stores/preferences'
 	import DashboardFilters from './DashboardFilters.svelte'
-	import { page } from '$app/stores'
 	import DrawerFilters from './DrawerFilters.svelte'
-	import { Button, SpeedDial, Tooltip } from 'flowbite-svelte'
+	import { Button, Tooltip } from 'flowbite-svelte'
 	import Icon from '../common/Icon.svelte'
 
 	export let dashboard: any
@@ -63,9 +62,9 @@
 	$: if (!$storeDashboard.loaded) {
 		filterComponent = null
 		setGridItems($storeDashboard.dashboard_id)
-		if ($storeDashboard.attributes?.collapse_shows === undefined) {
-			$storeDashboard.attributes.collapse_shows = false
-		}
+		filtersOpen = $storeDashboard?.attributes?.collapse_shows
+		if (filtersOpen === undefined) filtersOpen = false
+
 		// filtersOpen = !!$storeDashboard?.attributes?.collapse_shows
 		filterComponent = DashboardFilters
 	}
@@ -381,7 +380,7 @@
 <svelte:window bind:innerWidth />
 
 {#if $storeDashboard?.allow_filtering}
-	<svelte:component this={filterComponent} bind:open={$storeDashboard.attributes.collapse_shows} />
+	<svelte:component this={filterComponent} bind:open={filtersOpen} />
 {/if}
 
 <Alerts dashboardId={$storeDashboard.dashboard_id} />
