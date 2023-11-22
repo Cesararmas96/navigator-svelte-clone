@@ -5,6 +5,8 @@
 	import { sineIn } from 'svelte/easing'
 	import Icon from '../common/Icon.svelte'
 	import Filters from './Filters.svelte'
+	import { storeStores } from '$lib/stores/modules'
+	import { page } from '$app/stores'
 
 	let transitionParams = {
 		x: 320,
@@ -41,7 +43,9 @@
 				</div>
 			</div>
 			<div>
-				<Filters drawer={true} />
+				{#if $storeStores && $storeStores[$page.params.programs]}
+					<Filters drawer={true} />
+				{/if}
 			</div>
 		</div>
 	</Drawer>

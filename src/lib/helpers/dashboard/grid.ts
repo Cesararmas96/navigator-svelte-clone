@@ -100,7 +100,6 @@ export const getControllerItemsLocations = (gridParams: GridParams) => {
 
 export const saveLocations = (dashboard: any, gridItems: any[], gridParams: GridParams) => {
   const deletedItems: string[] = []
-  console.log(gridParams.items)
   const items = Object.entries(gridParams.items).reduce((acc, [key, item]) => {
     const gridItem = gridItems.find((i) => i.title === key)
     if (gridItem) {
