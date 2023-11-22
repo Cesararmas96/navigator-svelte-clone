@@ -63,7 +63,6 @@
 	$: if (!$storeDashboard.loaded) {
 		filterComponent = null
 		setGridItems($storeDashboard.dashboard_id)
-		console.log($storeDashboard)
 		if ($storeDashboard.attributes?.collapse_shows === undefined) {
 			$storeDashboard.attributes.collapse_shows = false
 		}

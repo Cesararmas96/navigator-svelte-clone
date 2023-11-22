@@ -28,7 +28,6 @@
 	// $: console.log(flatpickrElement, pickr)
 
 	onMount(() => {
-		console.log('config', config)
 		pickr = flatpickr(
 			flatpickrElement,
 			merge(

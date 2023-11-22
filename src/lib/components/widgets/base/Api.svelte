@@ -60,7 +60,6 @@
 		}
 
 		if ($dashboard.where_cond) {
-			console.log('$dashboard.where_cond', $dashboard.where_cond)
 			conditions.where_cond = { ...$dashboard.where_cond }
 		}
 

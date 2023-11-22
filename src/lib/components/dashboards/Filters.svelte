@@ -102,7 +102,6 @@
 				}
 			}
 		}
-		console.log('filtersSorted', filtersSorted, drawer)
 		fillDropdowns()
 	}
 
