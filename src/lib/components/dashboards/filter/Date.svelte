@@ -13,12 +13,12 @@
 	// const date = ref<string>(modelValue || '')
 	const dispatch = createEventDispatcher()
 
+	export let params: Record<string, any> = {
+		period: 'custom'
+		// dateRange: ['mtd', 'current_week', 'daily', 'fullMonth', 'custom']
+	}
 	const dashboard: Writable<any> = getContext('dashboard')
 	let flatpickr
-	let params: Record<string, any> = {
-		period: 'mtd',
-		dateRange: ['mtd', 'current_week', 'daily', 'fullMonth', 'custom']
-	}
 	const operationalDate: any = handleOperationalDate()
 	let date: any = [
 		moment(operationalDate).startOf('month').format('YYYY-MM-DD'),
@@ -603,7 +603,9 @@
 				// e.stopPropagation()
 			}}
 		> -->
-		<div class="grid grid-cols-2 gap-4">
+		<div
+			class="grid {params?.dateRange || params?.rangeCompare ? 'grid-col2' : 'grid-cols-1'} gap-4"
+		>
 			<div>
 				<Flatpickr
 					bind:value={date}
@@ -612,18 +614,20 @@
 					class="w-full cursor-pointer !rounded border-gray-300 bg-gray-50 px-2 py-1 pr-10 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500"
 				/>
 			</div>
-			<div>
-				<Label>
-					Date Range
-					<Select
-						class="mt-2 w-72"
-						size="sm"
-						items={optionsDateRangeDefinitions}
-						bind:value={settings.period}
-						on:change={() => configure(true)}
-					/>
-				</Label>
-			</div>
+			{#if params?.dateRange || params?.rangeCompare}
+				<div>
+					<Label>
+						Date Range
+						<Select
+							class="mt-2 w-72"
+							size="sm"
+							items={optionsDateRangeDefinitions}
+							bind:value={settings.period}
+							on:change={() => configure(true)}
+						/>
+					</Label>
+				</div>
+			{/if}
 		</div>
 		<!-- </DropdownItem> -->
 	</Dropdown>
