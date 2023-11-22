@@ -7,9 +7,12 @@
 	import type { Writable } from 'svelte/store'
 	import { addWidgetAction } from '$lib/helpers'
 	import { sendErrorNotification } from '$lib/stores/toast'
+	import { deepClone } from '$lib/helpers/common/common'
 
 	export let widget: Writable<any>
-	let widgetActions: any = getContext('widgetActions')
+
+	const widgetActions: any = getContext('widgetActions')
+	const dashboard: Writable<any> = getContext('dashboard')
 
 	const slug = $widget.query_slug?.slug || $widget.params.query?.slug
 	const conditionsRaw = $widget.conditions
@@ -26,18 +29,38 @@
 	}
 
 	function buildConditions() {
-		const conditions = conditionsRaw
+		let conditions = conditionsRaw
+
+		const dateCondition = $dashboard.where_date_cond
 
 		if (conditions?.firstdate) {
 			conditions.firstdate = returnValidateDate(conditions?.firstdate)
+
+			if (dateCondition) {
+				conditions.firstdate = dateCondition.split(' - ')[0]
+			}
 		}
 
 		if (conditions?.lastdate) {
 			conditions.lastdate = returnValidateDate(conditions?.lastdate)
+
+			if (dateCondition) {
+				const _date = dateCondition.split(' - ')
+				conditions.lastdate = _date[1] || _date[0]
+			}
 		}
 
 		if (conditions?.filterdate && !Array.isArray(conditions?.filterdate)) {
 			conditions.filterdate = returnValidateDate(conditions?.filterdate)
+
+			if (dateCondition) {
+				const _date = dateCondition.split(' - ')
+				conditions.filterdate = _date[1] || _date[0]
+			}
+		}
+
+		if ($dashboard.where_cond) {
+			conditions.where_cond = { ...$dashboard.where_cond }
 		}
 
 		return conditions
@@ -65,8 +88,7 @@
 					break
 				case 'CURRENT_DATE':
 				case 'ENTRY_DATE':
-					// validateDate = moment(entryDate).format('YYYY-MM-DD')
-					validateDate = '2023-09-28'
+					validateDate = moment(entryDate).format('YYYY-MM-DD')
 					break
 				case 'YESTERDAY':
 					validateDate = moment(entryDate).subtract(1, 'days').format('YYYY-MM-DD')
@@ -75,8 +97,7 @@
 					validateDate = moment(entryDate).subtract(1, 'month').format('YYYY-MM-DD')
 					break
 				case 'FDOM':
-					// validateDate = moment(entryDate).startOf('month').format('YYYY-MM-DD')
-					validateDate = '2023-09-01'
+					validateDate = moment(entryDate).startOf('month').format('YYYY-MM-DD')
 					break
 				case 'FDOPW':
 					if (moment(entryDate).isSame(moment().day(6), 'd')) {

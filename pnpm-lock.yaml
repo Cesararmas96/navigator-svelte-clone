@@ -55,6 +55,9 @@ dependencies:
   embla-carousel:
     specifier: ^8.0.0-rc07
     version: 8.0.0-rc11
+  flatpickr:
+    specifier: ^4.6.13
+    version: 4.6.13
   flowbite:
     specifier: ^1.7.0
     version: 1.7.0
@@ -70,6 +73,9 @@ dependencies:
   jsvectormap:
     specifier: ^1.5.3
     version: 1.5.3
+  lodash:
+    specifier: ^4.17.21
+    version: 4.17.21
   lodash-es:
     specifier: ^4.17.21
     version: 4.17.21
@@ -97,6 +103,9 @@ dependencies:
   svelte-exmarkdown:
     specifier: ^3.0.0
     version: 3.0.0(svelte@4.1.1)
+  svelte-flatpickr:
+    specifier: ^3.3.3
+    version: 3.3.3(svelte@4.1.1)
   svelte-grid-extended:
     specifier: ^1.1.1
     version: 1.1.1
@@ -2718,6 +2727,10 @@ packages:
       flatted: 3.2.7
       rimraf: 3.0.2
     dev: true
+
+  /flatpickr@4.6.13:
+    resolution: {integrity: sha512-97PMG/aywoYpB4IvbvUJi0RQi8vearvU0oov1WW3k0WZPBMrTQVqekSX5CjSG/M4Q3i6A/0FKXC7RyAoAUUSPw==}
+    dev: false
 
   /flatted@3.2.7:
     resolution: {integrity: sha512-5nqDSxl8nn5BSNxyR3n4I6eDmbolI6WT+QqR547RwxQapgjQBmtktdP+HTBb/a/zLsbzERTONyUB5pefh5TtjQ==}
@@ -5469,6 +5482,15 @@ packages:
       unified: 10.1.2
     transitivePeerDependencies:
       - supports-color
+    dev: false
+
+  /svelte-flatpickr@3.3.3(svelte@4.1.1):
+    resolution: {integrity: sha512-ZollniPUOXyRrY+ZMJvp8yovYExOuPed5bDx4fG0SRwAaQ88o9PP/CiW21PR3ndt4qDvu/LMpxkaSbp2obD0tg==}
+    peerDependencies:
+      svelte: '>= 3.31.0 < 5.0'
+    dependencies:
+      flatpickr: 4.6.13
+      svelte: 4.1.1
     dev: false
 
   /svelte-grid-extended@1.1.1:

@@ -345,3 +345,14 @@
 #topBtn {
 	display: none !important;
 }
+
+.flatpickr-container .flatpickr-input {
+	display: none;
+}
+
+.flatpickr-calendar {
+	// display: none;
+	// background: red !important;
+	box-shadow: none !important;
+	-webkit-box-shadow: none !important;
+}

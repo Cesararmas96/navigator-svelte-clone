@@ -19,15 +19,27 @@
 	import Alerts from '../widgets/type/Alert/Alerts.svelte'
 	import { dismissAlert, sendAlert, sendErrorAlert } from '$lib/helpers/common/alerts'
 	import { AlertType, type AlertMessage } from '$lib/interfaces/Alert'
-	import { storeCCPWidget, storeCCPWidgetBehavior, storeDashboards } from '$lib/stores/dashboards'
+	import {
+		hideDashboardFilters,
+		storeCCPWidget,
+		storeCCPWidgetBehavior,
+		storeDashboards
+	} from '$lib/stores/dashboards'
 	import { storeUser } from '$lib/stores'
 	import { generateRandomString, generateSlug } from '$lib/helpers/common/common'
 	import { sendErrorNotification, sendSuccessNotification } from '$lib/stores/toast'
 	import { writable } from 'svelte/store'
 	import { createEventDispatcher, setContext } from 'svelte'
 	import { loading } from '$lib/stores/preferences'
+	import DashboardFilters from './DashboardFilters.svelte'
+	import { page } from '$app/stores'
+	import DrawerFilters from './DrawerFilters.svelte'
+	import { Button, SpeedDial, Tooltip } from 'flowbite-svelte'
+	import Icon from '../common/Icon.svelte'
 
 	export let dashboard: any
+
+	let filterComponent: any
 	const dispatch = createEventDispatcher()
 
 	const baseUrl = import.meta.env.VITE_API_URL
@@ -41,12 +53,21 @@
 	let isChanging = false
 	let resizedTitle = ''
 
+	let filtersOpen: boolean = false
+
 	const storeDashboard = writable(dashboard)
 	setContext('dashboard', storeDashboard)
+
 	$: $storeDashboard = dashboard
 
 	$: if (!$storeDashboard.loaded) {
+		filterComponent = null
 		setGridItems($storeDashboard.dashboard_id)
+		if ($storeDashboard.attributes?.collapse_shows === undefined) {
+			$storeDashboard.attributes.collapse_shows = false
+		}
+		// filtersOpen = !!$storeDashboard?.attributes?.collapse_shows
+		filterComponent = DashboardFilters
 	}
 
 	$: if (dashboard.newWidget) {
@@ -359,6 +380,10 @@
 
 <svelte:window bind:innerWidth />
 
+{#if $storeDashboard?.allow_filtering}
+	<svelte:component this={filterComponent} bind:open={$storeDashboard.attributes.collapse_shows} />
+{/if}
+
 <Alerts dashboardId={$storeDashboard.dashboard_id} />
 
 <div id="grid" class="w-full">
@@ -415,3 +440,16 @@
 		{/each}
 	</Grid>
 </div>
+
+{#if $storeDashboard?.allow_filtering && $hideDashboardFilters}
+	<Button
+		pill={true}
+		class="fixed bottom-6 right-6 !p-3 shadow-md"
+		on:click={() => hideDashboardFilters.set(false)}><Icon icon="tabler:filter" size="20" /></Button
+	>
+	<Tooltip placement="left">Filters</Tooltip>
+{/if}
+
+{#if $storeDashboard?.allow_filtering}
+	<DrawerFilters />
+{/if}
