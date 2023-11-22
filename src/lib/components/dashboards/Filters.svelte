@@ -123,7 +123,7 @@
 					on:change={(e) => selectItem(key, e.detail)}
 				/>
 			{:else if value.type === 'date'}
-				<Date />
+				<Date params={value?.params} />
 			{/if}
 		</div>
 	{/each}
