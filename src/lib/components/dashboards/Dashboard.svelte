@@ -38,6 +38,8 @@
 	import Icon from '../common/Icon.svelte'
 
 	export let dashboard: any
+
+	let filterComponent: any
 	const dispatch = createEventDispatcher()
 
 	const baseUrl = import.meta.env.VITE_API_URL
@@ -51,13 +53,22 @@
 	let isChanging = false
 	let resizedTitle = ''
 
+	let filtersOpen: boolean = false
+
 	const storeDashboard = writable(dashboard)
 	setContext('dashboard', storeDashboard)
 
 	$: $storeDashboard = dashboard
 
 	$: if (!$storeDashboard.loaded) {
+		filterComponent = null
 		setGridItems($storeDashboard.dashboard_id)
+		console.log($storeDashboard)
+		if ($storeDashboard.attributes?.collapse_shows === undefined) {
+			$storeDashboard.attributes.collapse_shows = false
+		}
+		// filtersOpen = !!$storeDashboard?.attributes?.collapse_shows
+		filterComponent = DashboardFilters
 	}
 
 	$: if (dashboard.newWidget) {
@@ -371,7 +382,7 @@
 <svelte:window bind:innerWidth />
 
 {#if $storeDashboard?.allow_filtering}
-	<DashboardFilters open={$storeDashboard?.attributes?.collapse_shows} />
+	<svelte:component this={filterComponent} bind:open={$storeDashboard.attributes.collapse_shows} />
 {/if}
 
 <Alerts dashboardId={$storeDashboard.dashboard_id} />

@@ -78,6 +78,7 @@
 	}
 
 	const filterItems = (term: string) => {
+		if (!items) return
 		filterdItems =
 			term !== ''
 				? items.filter((item: Item) => item.label.toLowerCase().includes(term.toLowerCase()))

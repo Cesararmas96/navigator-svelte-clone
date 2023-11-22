@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount, getContext } from 'svelte'
+	import { onMount, getContext, createEventDispatcher } from 'svelte'
 	import monthSelectPlugin from 'flatpickr/dist/plugins/monthSelect'
 	import { variablesOperationalProgram } from '$lib/stores/programs'
 	import Flatpickr from '../../common/Flatpickr.svelte'
@@ -11,6 +11,7 @@
 	import 'flatpickr/dist/plugins/monthSelect/style.css'
 
 	// const date = ref<string>(modelValue || '')
+	const dispatch = createEventDispatcher()
 
 	const dashboard: Writable<any> = getContext('dashboard')
 	let flatpickr
@@ -19,11 +20,11 @@
 		dateRange: ['mtd', 'current_week', 'daily', 'fullMonth', 'custom']
 	}
 	const operationalDate: any = handleOperationalDate()
-	console.log('operationalDate', operationalDate)
 	let date: any = [
 		moment(operationalDate).startOf('month').format('YYYY-MM-DD'),
 		operationalDate || moment().format('YYYY-MM-DD')
 	]
+	// dispatch('change', date.join(' - '))
 	let changeAux: boolean = false
 	let config: Record<string, any> = {}
 	const configDefault: Record<string, any> = {
@@ -566,15 +567,17 @@
 
 	function newValue(_date) {
 		if (_date && Array.isArray(_date)) {
+			dispatch('change', _date?.join(' - '))
 			return _date?.join(' - ')
 		} else {
+			dispatch('change', _date)
 			return _date
 		}
 	}
 </script>
 
 <main>
-	<Label class="block text-left ">Pick a date range {visible}</Label>
+	<Label class="block text-left ">Pick a date range</Label>
 	<input
 		type="text"
 		value={newValue(date)}

@@ -8,21 +8,41 @@
 	import { storeUser } from '$lib/stores'
 	import { Button } from 'flowbite-svelte'
 	import Icon from '../common/Icon.svelte'
-	import { getContext } from 'svelte'
+	import { getContext, onMount } from 'svelte'
 	import type { Writable } from 'svelte/store'
 
 	export let drawer: boolean = false
 
 	const dashboard = getContext<Writable<any>>('dashboard')
-
 	const { trocModule } = $page.data
 
-	let filters = $storeDashboard?.filtering_show || trocModule.filtering_show || {}
+	let filters: any
+	let filtersArray: any[]
+	let filtersSorted: Record<string, any>
 
-	const filtersArray: any[] = Object.entries(filters?.filtering)
-	const filtersSorted: Record<string, any> = Object.fromEntries(
-		filtersArray.sort((a, b) => a[1].order - b[1].order)
-	)
+	onMount(() => {
+		loadData()
+	})
+
+	const loadData = () => {
+		filters = $dashboard?.filtering_show
+			? { ...$dashboard?.filtering_show }
+			: trocModule.filtering_show
+			? { ...trocModule.filtering_show }
+			: {}
+
+		filtersArray = Object.entries(filters?.filtering || {})
+		filtersSorted = Object.fromEntries(filtersArray.sort((a, b) => a[1].order - b[1].order))
+
+		if ($dashboard.where_cond) {
+			for (const key in $dashboard.where_cond) {
+				if (filtersSorted[key]) {
+					filtersSorted[key].selected = $dashboard.where_cond[key]
+				}
+			}
+		}
+		fillDropdowns()
+	}
 
 	const fillDropdowns = () => {
 		if (!$storeStores || !$storeStores[$page.params.programs]) return
@@ -82,58 +102,69 @@
 				}
 			}
 		}
+		console.log('filtersSorted', filtersSorted, drawer)
 		fillDropdowns()
 	}
 
 	const apply = () => {
 		const whereConditions: Record<string, any> = {}
+		let dateConditions: string = ''
 		for (const key in filtersSorted) {
 			if (filtersSorted[key].selected) {
-				whereConditions[filtersSorted[key].id] = filtersSorted[key].selected.value
+				if (filtersSorted[key].type === 'date') {
+					dateConditions = filtersSorted[key].selected
+				} else {
+					whereConditions[filtersSorted[key].id] = filtersSorted[key].selected.value
+				}
 			}
 		}
 		$dashboard.where_cond = { ...$dashboard.where_cond, ...whereConditions }
+		$dashboard.where_date_cond = dateConditions
 		$dashboard.loaded = false
 		if (drawer) hideDashboardFilters.set(true)
 	}
 
-	$: if ($storeStores && $storeStores[$page.params.programs]) {
-		fillDropdowns()
-	}
-
+	let loadedDashboardId: string
 	$: if ($dashboard.where_cond) {
 		for (const key in $dashboard.where_cond) {
-			if (filtersSorted[key]) {
-				filtersSorted[key].selected = $dashboard.where_cond[key]
-			}
+			if (filtersSorted[key]) filtersSorted[key].selected = $dashboard.where_cond[key]
 		}
 		fillDropdowns()
+	} else if (loadedDashboardId !== $dashboard.dashboard_id) {
+		for (const key in filtersSorted) {
+			if (filtersSorted[key].selected) delete filtersSorted[key].selected
+		}
+		fillDropdowns()
+		loadedDashboardId = $dashboard.dashboard_id
 	}
 
-	const cols = drawer ? 1 : _.filter(filtersSorted, { hierarchy: true }).length
+	const cols = drawer ? 1 : 4 //_.filter(filtersSorted, { hierarchy: true }).length
 </script>
 
-<div class="grid grid-cols-{cols} gap-4 p-4">
-	{#each Object.entries(filtersSorted) as [key, value]}
-		<div class={value.jump ? `col-span-${cols}` : ''}>
-			{#if !value.type}
-				<Single
-					{value}
-					selectedValue={value.selected?.value}
-					on:change={(e) => selectItem(key, e.detail)}
-				/>
-			{:else if value.type === 'date'}
-				<Date />
-			{/if}
-		</div>
-	{/each}
-</div>
-<div class="border-gay-200 flex flex-row justify-end border-t-[1px] p-4 dark:border-dark-200">
-	<Button
-		class="flex flex-row items-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-white hover:opacity-80 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75"
-		on:click={() => apply()}
-	>
-		<Icon icon="mdi:filter" size="18" classes="mr-1" />
-		Apply
-	</Button>
-</div>
+{#if filtersSorted}
+	<div class="grid grid-cols-{cols} gap-4 p-4">
+		{#each Object.entries(filtersSorted) as [key, value], idx}
+			<div>
+				{#if !value.type}
+					<Single
+						{value}
+						selectedValue={value.selected?.value}
+						on:change={(e) => selectItem(key, e.detail)}
+					/>
+				{:else if value.type === 'date'}
+					<Date on:change={(e) => selectItem(key, e.detail)} />
+				{/if}
+			</div>
+			{#if value.jump}<div class="col-span-{cols - idx - 1}" />{/if}
+		{/each}
+	</div>
+	<div class="border-gay-200 flex flex-row justify-end border-t-[1px] p-4 dark:border-dark-200">
+		<Button
+			class="flex flex-row items-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-white hover:opacity-80 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75"
+			on:click={() => apply()}
+		>
+			<Icon icon="mdi:filter" size="18" classes="mr-1" />
+			Apply
+		</Button>
+	</div>
+{/if}

@@ -17,9 +17,11 @@
 	$storePrograms = data.programs
 	$storeUser = data.user
 	$storeDashboards = data.dashboards.map((dashboard) => {
-		dashboard.where_cond = {
-			...dashboard.where_cond,
-			...$storeUser.aux.filtering_fixed
+		if ($storeUser.aux.filtering_fixed) {
+			dashboard.where_cond = {
+				...dashboard.where_cond,
+				...$storeUser.aux.filtering_fixed
+			}
 		}
 		return dashboard
 	})
