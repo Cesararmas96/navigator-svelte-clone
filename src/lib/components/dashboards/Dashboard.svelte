@@ -113,7 +113,6 @@
 	}
 
 	$: handleResizable = (item: any) => {
-		console.log('handleResizable', item)
 		$storeDashboard.gridItems = resizeItem(item, $storeDashboard.gridItems)
 	}
 	$: handleCloning = (item: any) => {
