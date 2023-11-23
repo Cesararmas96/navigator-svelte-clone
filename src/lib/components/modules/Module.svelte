@@ -318,8 +318,9 @@
 </script>
 
 <Alerts position="top" />
-<Tabs style="pill" contentClass="p-0 mt-2">
-	<div class="card ml-[5px] mr-[10px] w-full p-1">
+
+<Tabs style="pill" contentClass="mt-0">
+	<div class="card my-2 ml-[5px] mr-[10px] w-full p-1">
 		<div class="nav-scroll gap-1 overflow-visible font-bold text-heading">
 			{#if $storeDashboards && $storeDashboards.length > 0 && currentDashboard}
 				{#each $storeDashboards as dashboard}

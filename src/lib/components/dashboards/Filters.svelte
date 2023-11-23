@@ -121,18 +121,18 @@
 				}
 			}
 		}
-		$dashboard.where_cond = { ...$dashboard.where_cond, ...whereConditions }
+		$dashboard.where_new_cond = { ...$dashboard.where_cond, ...whereConditions }
 		$dashboard.where_date_cond = dateConditions
 		$dashboard.loaded = false
 		if (drawer) hideDashboardFilters.set(true)
 	}
 
 	let loadedDashboardId: string
-	$: if ($dashboard.where_cond) {
-		for (const key in $dashboard.where_cond) {
+	$: if ($dashboard.where_new_cond) {
+		for (const key in $dashboard.where_new_cond) {
 			if (filtersSorted[key]) {
 				if (filtersSorted[key].type !== 'date') {
-					filtersSorted[key].selected = $dashboard.where_cond[key]
+					filtersSorted[key].selected = $dashboard.where_new_cond[key]
 				}
 			}
 		}

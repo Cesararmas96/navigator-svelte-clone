@@ -7,7 +7,6 @@
 	import type { Writable } from 'svelte/store'
 	import { addWidgetAction } from '$lib/helpers'
 	import { sendErrorNotification } from '$lib/stores/toast'
-	import { deepClone } from '$lib/helpers/common/common'
 
 	export let widget: Writable<any>
 
@@ -29,7 +28,7 @@
 	}
 
 	function buildConditions() {
-		let conditions = conditionsRaw
+		let conditions = { ...conditionsRaw }
 
 		const dateCondition = $dashboard.where_date_cond
 
@@ -58,9 +57,8 @@
 				conditions.filterdate = _date[1] || _date[0]
 			}
 		}
-
-		if ($dashboard.where_cond) {
-			conditions.where_cond = { ...$dashboard.where_cond }
+		if ($dashboard.where_new_cond && Object.keys($dashboard.where_new_cond).length > 0) {
+			conditions.where_cond = { ...$dashboard.where_new_cond }
 		}
 
 		return conditions
