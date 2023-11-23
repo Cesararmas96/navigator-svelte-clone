@@ -113,6 +113,7 @@
 	}
 
 	$: handleResizable = (item: any) => {
+		console.log('handleResizable', item)
 		$storeDashboard.gridItems = resizeItem(item, $storeDashboard.gridItems)
 	}
 	$: handleCloning = (item: any) => {
@@ -375,69 +376,83 @@
 		}
 		loading.set(false)
 	}
+
+	let clientHeight = 0
+
+	$: heightStyle = `height: calc(100vh - ${175 + clientHeight}px)`
 </script>
 
 <svelte:window bind:innerWidth />
 
-{#if $storeDashboard?.allow_filtering}
-	<svelte:component this={filterComponent} bind:open={filtersOpen} />
+{#if Boolean($storeDashboard?.allow_filtering) && Boolean($storeDashboard?.attributes?.sticky)}
+	<section bind:clientHeight>
+		<svelte:component this={filterComponent} bind:open={filtersOpen} />
+	</section>
 {/if}
 
-<Alerts dashboardId={$storeDashboard.dashboard_id} />
+<div id="grid" class="nav-scroll block w-full overflow-y-auto" style={heightStyle}>
+	{#if Boolean($storeDashboard?.allow_filtering) && !Boolean($storeDashboard?.attributes?.sticky)}
+		<section>
+			<svelte:component this={filterComponent} bind:open={filtersOpen} />
+		</section>
+	{/if}
 
-<div id="grid" class="w-full">
-	<Grid
-		{itemSize}
-		class="grid-container"
-		gap={5}
-		{cols}
-		collision="compress"
-		bind:controller={gridController}
-		on:change={updateLocations}
-	>
-		{#each $storeDashboard.gridItems as item}
-			<GridItem
-				x={item.x}
-				y={item.y}
-				w={item.w}
-				h={item.h}
-				class="grid-item"
-				activeClass="grid-item-active"
-				previewClass="bg-red-500 rounded"
-				resizable={dashboard?.attributes?.user_id === $storeUser?.user_id}
-				movable={dashboard?.attributes?.user_id === $storeUser?.user_id}
-				on:change={(e) => {
-					changeItemSize(item)
-				}}
-				let:active
-				bind:id={item.data.title}
-			>
-				<WidgetBox
-					widget={item.data}
-					resized={resizedTitle === item.title && !active}
-					let:fixed
-					let:isOwner
-					let:isToolbarVisible
-					let:widget
-					on:handleResize={() => handleResizable(item)}
-					on:handleCloning={() => handleCloning(item)}
-					on:handleRemove={() => handleRemove(item)}
-					on:handleResizable={(e) => {
-						item.data.params.settings.resizable = e.detail.resizable && !e.detail.fixed
+	<Alerts dashboardId={$storeDashboard.dashboard_id} />
+
+	{#if $storeDashboard.gridItems && $storeDashboard.gridItems.length > 0}
+		<Grid
+			{itemSize}
+			class="grid-container"
+			gap={5}
+			{cols}
+			collision="compress"
+			bind:controller={gridController}
+			on:change={updateLocations}
+		>
+			{#each $storeDashboard.gridItems as item}
+				<GridItem
+					x={item.x}
+					y={item.y}
+					w={item.w}
+					h={item.h}
+					class="grid-item"
+					activeClass="grid-item-active"
+					previewClass="bg-red-500 rounded"
+					resizable={dashboard?.attributes?.user_id === $storeUser?.user_id}
+					movable={dashboard?.attributes?.user_id === $storeUser?.user_id}
+					on:change={(e) => {
+						changeItemSize(item)
 					}}
+					let:active
+					bind:id={item.data.title}
 				>
-					<Widget
-						{widget}
-						{fixed}
-						{isToolbarVisible}
-						{isOwner}
-						isDraggable={dashboard?.attributes?.user_id === $storeUser?.user_id}
-						on:handleInstanceResize={() => handleResizable(item)}
-					/>
-				</WidgetBox>
-			</GridItem>
-		{/each}
-	</Grid>
+					<WidgetBox
+						widget={item.data}
+						resized={resizedTitle === item.title && !active}
+						let:fixed
+						let:isOwner
+						let:isToolbarVisible
+						let:widget
+						on:handleResize={() => handleResizable(item)}
+						on:handleCloning={() => handleCloning(item)}
+						on:handleRemove={() => handleRemove(item)}
+						on:handleResizable={(e) => {
+							item.data.params.settings.resizable = e.detail.resizable && !e.detail.fixed
+						}}
+					>
+						<Widget
+							{widget}
+							{fixed}
+							{isToolbarVisible}
+							{isOwner}
+							isDraggable={dashboard?.attributes?.user_id === $storeUser?.user_id}
+							on:handleInstanceResize={() => handleResizable(item)}
+						/>
+					</WidgetBox>
+				</GridItem>
+			{/each}
+		</Grid>
+	{/if}
 </div>
 
 {#if $storeDashboard?.allow_filtering && $hideDashboardFilters}
@@ -452,3 +467,9 @@
 {#if $storeDashboard?.allow_filtering}
 	<DrawerFilters />
 {/if}
+
+<style>
+	.inner-shadow {
+		box-shadow: inset 0 0 10px #000000;
+	}
+</style>

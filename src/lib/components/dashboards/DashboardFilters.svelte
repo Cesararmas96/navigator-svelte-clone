@@ -13,7 +13,7 @@
 	}
 </script>
 
-<div id="dashboard-filters-container" class="my-2 ml-[5px] mr-[10px]">
+<div id="dashboard-filters-container" class="ml-[5px] mr-[10px]">
 	<div
 		data-tb-collapse
 		class="rounded-md border border-gray-200 bg-white px-1 pt-1 dark:border-dark-200 dark:bg-dark-100"

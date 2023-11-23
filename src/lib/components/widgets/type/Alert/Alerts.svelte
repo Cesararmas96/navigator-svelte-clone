@@ -16,7 +16,9 @@
 </script>
 
 {#if _alerts && _alerts.length > 0}
-	{#each _alerts as alert}
-		<Alert {alert} />
-	{/each}
+	<div id="alerts" class="mt-2">
+		{#each _alerts as alert}
+			<Alert {alert} />
+		{/each}
+	</div>
 {/if}

@@ -51,10 +51,8 @@
 	<Breadcrumb />
 
 	<div data-simplebar>
-		<main class=" p-4">
-			<div class="min-h-[calc(100vh-240px)]">
-				<slot />
-			</div>
+		<main>
+			<slot />
 			<!-- <div class="ml-[5px] mr-[10px]">
 				<Footer />
 			</div> -->
