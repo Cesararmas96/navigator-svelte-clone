@@ -253,12 +253,10 @@
 		$widget.fetch = true
 	}
 
-	const headerCallback = () => {}
-
 	const widgetTop = getContext<Writable<any>>('WidgetTop')
 	setWidgetTop(widgetTop, 'FilterHeader', {
-		position: 'top',
-		widgetID: $widget.widget_id
+		// position: 'top',
+		widget: $widget
 	})
 </script>
 
