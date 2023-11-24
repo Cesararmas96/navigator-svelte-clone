@@ -114,6 +114,7 @@
 
 	$: handleResizable = (item: any) => {
 		$storeDashboard.gridItems = resizeItem(item, $storeDashboard.gridItems)
+		// $storeDashboard.gridItems = [...$storeDashboard.gridItems]
 	}
 	$: handleCloning = (item: any) => {
 		const clonedItem = cloneItem(item, $storeDashboard.gridItems)

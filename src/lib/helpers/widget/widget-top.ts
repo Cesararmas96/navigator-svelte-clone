@@ -6,14 +6,18 @@ type WidgetTop = {
   props: Record<string, any>
 }
 
-export const initWidgetTop = (): Writable<any> => {
-  const widgetTop = writable(null)
+export const initWidgetTop = (): Writable<WidgetTop[]> => {
+  const widgetTop = writable([])
   setContext('WidgetTop', widgetTop)
   return widgetTop
 }
 
-export const setWidgetTop = (widgetTop: Writable<any>, component: string, props: Record<string, any>) => {
+export const setWidgetTop = (widgetTop: Writable<WidgetTop[]>, component: string, props: Record<string, any>) => {
 	const newTopConfig = { component, props}
-	widgetTop.update((m) => (m = newTopConfig))
+
+	widgetTop.update((m: WidgetTop[]) => {
+    m.push(newTopConfig)
+    return m
+  })
 }
 

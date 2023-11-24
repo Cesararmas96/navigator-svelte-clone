@@ -10,3 +10,9 @@ export const setContentHeight = (id: string) => {
   mainContent.style.height = contentHeight(id)
 }
 
+export const resetContentHeight = (id: string) => {
+  const main: HTMLElement = document.querySelector(`#widget-main-${id}`)!
+  const mainContentHeight = document.getElementById(`widget-main-content-${id}`)!.offsetHeight
+  main.style.height = `${mainContentHeight}px`
+}
+

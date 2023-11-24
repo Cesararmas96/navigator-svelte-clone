@@ -13,7 +13,7 @@
 			const widgetContentEL = document.getElementById(`widget-content-${$widget.widget_id}`)!
 			const height = `${contentHeight($widget.widget_id)}`
 			widgetMainEL.style.height = height
-			widgetContentEL.style.height = height
+			// widgetContentEL.style.height = height
 		}, 500)
 	})
 </script>

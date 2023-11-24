@@ -11,6 +11,7 @@
 		generateColumnDefsByDefinition,
 		gridFunctionsMap,
 		gridHeight,
+		gridInstanceHeight,
 		recordsPerPage
 	} from '$lib/helpers/widget/aggrid'
 	import {
@@ -192,7 +193,17 @@
 		onGridReady: (params: GridReadyEvent<any, any>) => {
 			onGridSizeChanged(params)
 		},
-		onFirstDataRendered: function (event) {},
+		onFirstDataRendered: function (event) {
+			if ($widget.temp) {
+				const instanceLoadedAction = getWidgetAction($widgetActions, 'instanceLoaded')
+				instanceLoadedAction.action()
+			} else {
+				resizeAction.action()
+			}
+			setTimeout(() => {
+				resizeAgGridContent()
+			}, 1000)
+		},
 		onGridSizeChanged: onGridSizeChanged
 	}
 
@@ -216,15 +227,6 @@
 		new Grid(eGridDiv, gridOptions)
 		if (!data) eGridDiv.classList.add('hidden')
 		// eGridDiv.style.height = gridHeight($widget.widget_id, $widget.params)
-		if ($widget.temp) {
-			const instanceLoadedAction = getWidgetAction($widgetActions, 'instanceLoaded')
-			instanceLoadedAction.action()
-		} else {
-			resizeAction.action()
-		}
-		setTimeout(() => {
-			resizeAgGridContent()
-		}, 1000)
 	})
 
 	$: isDark = $themeMode === 'dark'
@@ -235,7 +237,10 @@
 	const resizeAgGridContent = () => {
 		setContentHeight($widget.widget_id)
 		const eGridDiv: HTMLElement = document.querySelector(`#grid-${$widget.widget_id}`)!
-		eGridDiv.style.height = gridHeight($widget.widget_id, $widget.params)
+		console.log('resizeAgGridContent', $widget)
+		eGridDiv.style['min-height'] = !$widget.temp
+			? gridHeight($widget.widget_id, $widget.params)
+			: gridInstanceHeight($widget.widget_id)
 		$widget.resized = false
 	}
 	addWidgetAction(widgetActions, {
@@ -332,6 +337,6 @@
 
 	/* Estilo para el contenedor */
 	.grid-container {
-		min-height: 300px; /* O la altura que desees */
+		min-height: 250px; /* O la altura que desees */
 	}
 </style>

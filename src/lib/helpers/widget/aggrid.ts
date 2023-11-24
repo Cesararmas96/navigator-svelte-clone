@@ -153,7 +153,8 @@ export const gridInstanceHeight = (id: string): any => {
   const toolbarTop = toolbarTopEL ? toolbarTopEL.offsetHeight : 0
 	const toolbarBottomEL = document.getElementById(`aggrid-toolbar-${id}-bottom`)
   const toolbarBottom = toolbarBottomEL ? toolbarBottomEL.offsetHeight : 0
-	const contentHeight = mainHeight - toolbarTop - toolbarBottom
+	const contentHeight = mainHeight - toolbarTop - toolbarBottom 
+  console.log('contentHeight', mainHeight, toolbarTop, toolbarBottom, contentHeight)
   return `${contentHeight}px`
 }
 

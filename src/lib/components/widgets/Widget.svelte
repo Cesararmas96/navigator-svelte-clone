@@ -4,14 +4,15 @@
 	import ContentTop from './ContentTop.svelte'
 	import ContentBottom from './ContentBottom.svelte'
 	import Content from './Content.svelte'
-	import { createEventDispatcher, onMount } from 'svelte'
+	import { createEventDispatcher, getContext } from 'svelte'
 	import type { Writable } from 'svelte/store'
 	import Instances from './Instances.svelte'
 	import Spinner from '../common/Spinner.svelte'
-	import { storeDashboard } from '$lib/stores/dashboards'
-	import { storeUser } from '$lib/stores'
+	import { getWidgetAction } from '$lib/helpers'
+	import { resetContentHeight } from '$lib/helpers/widget/widget'
 
 	const dispatch = createEventDispatcher()
+	const widgetActions: Writable<any[]> = getContext('widgetActions')
 
 	export let isToolbarVisible: boolean
 	export let fixed: boolean
@@ -30,9 +31,20 @@
 		footer = $widget?.params?.settings?.footer?.show
 	}
 
-	const handleInstanceResize = (event: Event) => {
+	const handleInstanceResize = (event: CustomEvent) => {
 		$widget.instance_loading = false
-		dispatch('handleInstanceResize', event)
+		if (event && event.detail && event.detail === 'close') {
+			resetContentHeight($widget.widget_id)
+			dispatch('handleInstanceResize', event)
+		} else if (event && event.detail && event.detail === 'loaded') {
+			console.log('loaded')
+			dispatch('handleInstanceResize', event)
+			console.log('handleInstanceResize PASO')
+			setTimeout(() => {
+				const resize = getWidgetAction($widgetActions, 'resizeContent')
+				resize.action()
+			}, 1000)
+		}
 	}
 
 	$: scrollable = !$widget.temp ? $widget?.params?.settings?.general?.scrollable : false

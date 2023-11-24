@@ -7,6 +7,7 @@
 	import type { Writable } from 'svelte/store'
 	import { addWidgetAction } from '$lib/helpers'
 	import { sendErrorNotification } from '$lib/stores/toast'
+	import { setWidgetTop } from '$lib/helpers/widget/widget-top'
 
 	export let widget: Writable<any>
 
@@ -251,6 +252,14 @@
 		}
 		$widget.fetch = true
 	}
+
+	const headerCallback = () => {}
+
+	const widgetTop = getContext<Writable<any>>('WidgetTop')
+	setWidgetTop(widgetTop, 'FilterHeader', {
+		position: 'top',
+		widgetID: $widget.widget_id
+	})
 </script>
 
 {#await data}
