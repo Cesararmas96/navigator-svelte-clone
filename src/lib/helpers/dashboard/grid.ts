@@ -28,7 +28,6 @@ export const loadV2Locations = (widgetLocation: Record<string, any>, _dashboard:
     })
   } else {
     const data = _widgets[0]
-    console.log('data', data)
     widgets.push({ title: data.title, x: 0, y: 0, w: cols, h: minRowHeight, data })
   }
   return widgets

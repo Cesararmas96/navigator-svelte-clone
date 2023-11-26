@@ -25,7 +25,6 @@
 	})
 
 	const loadData = () => {
-		console.log('loadData')
 		filters = $dashboard?.filtering_show
 			? { ...$dashboard?.filtering_show }
 			: trocModule.filtering_show

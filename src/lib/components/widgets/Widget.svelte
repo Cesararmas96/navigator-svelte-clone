@@ -37,9 +37,7 @@
 			resetContentHeight($widget.widget_id)
 			dispatch('handleInstanceResize', event)
 		} else if (event && event.detail && event.detail === 'loaded') {
-			console.log('loaded')
 			dispatch('handleInstanceResize', event)
-			console.log('handleInstanceResize PASO')
 			setTimeout(() => {
 				const resize = getWidgetAction($widgetActions, 'resizeContent')
 				resize.action()

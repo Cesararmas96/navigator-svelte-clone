@@ -114,7 +114,8 @@
 
 	$: handleResizable = (item: any) => {
 		$storeDashboard.gridItems = resizeItem(item, $storeDashboard.gridItems)
-		// $storeDashboard.gridItems = [...$storeDashboard.gridItems]
+		gridController.gridParams.updateGrid()
+		$storeDashboard.gridItems = [...$storeDashboard.gridItems]
 	}
 	$: handleCloning = (item: any) => {
 		const clonedItem = cloneItem(item, $storeDashboard.gridItems)
@@ -390,7 +391,7 @@
 	</section>
 {/if}
 
-<div id="grid" class="nav-scroll block w-full overflow-y-auto" style={heightStyle}>
+<div id="grid" class="block w-full overflow-y-auto" style={heightStyle}>
 	{#if Boolean($storeDashboard?.allow_filtering) && !Boolean($storeDashboard?.attributes?.sticky)}
 		<section>
 			<svelte:component this={filterComponent} bind:open={filtersOpen} />
