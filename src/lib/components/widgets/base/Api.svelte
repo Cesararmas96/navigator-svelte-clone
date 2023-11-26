@@ -253,11 +253,11 @@
 		$widget.fetch = true
 	}
 
-	const widgetTop = getContext<Writable<any>>('WidgetTop')
-	setWidgetTop(widgetTop, 'FilterHeader', {
-		// position: 'top',
-		widget: $widget
-	})
+	// const widgetTop = getContext<Writable<any>>('WidgetTop')
+	// setWidgetTop(widgetTop, 'FilterHeader', {
+	// 	// position: 'top',
+	// 	widget: $widget
+	// })
 </script>
 
 {#await data}
