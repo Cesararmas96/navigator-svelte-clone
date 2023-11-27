@@ -8,9 +8,8 @@
 	import moment from 'moment'
 	import { page } from '$app/stores'
 	import type { Writable } from 'svelte/store'
-	import 'flatpickr/dist/plugins/monthSelect/style.css'
 
-	export let selectedValue: string
+	// export let selectedValue: string
 	// const date = ref<string>(modelValue || '')
 	const dispatch = createEventDispatcher()
 
@@ -20,22 +19,28 @@
 	}
 	const dashboard: Writable<any> = getContext('dashboard')
 	let flatpickr
-	let operationalDate: any
+	let operationalDate: any = handleOperationalDate()
 	let date: any
 
-	let _selectedValue: string
+	// let _selectedValue: string
 
-	$: if (!selectedValue || selectedValue !== _selectedValue) {
-		if (selectedValue) {
-			_selectedValue = selectedValue
-			selectedValue = selectedValue.split(' - ')[1] || selectedValue
-		}
-		operationalDate = handleOperationalDate(selectedValue)
-		date = [
-			moment(operationalDate).startOf('month').format('YYYY-MM-DD'),
-			operationalDate || moment().format('YYYY-MM-DD')
-		]
-	}
+	// $: if (!selectedValue || selectedValue !== _selectedValue) {
+	// 	if (selectedValue) {
+	// 		_selectedValue = selectedValue
+	// 		selectedValue = selectedValue.split(' - ')[1] || selectedValue
+	// 	}
+
+	// 	operationalDate = handleOperationalDate(selectedValue)
+
+	// 	configure()
+
+	// 	// date = [
+	// 	// 	moment(operationalDate).startOf('month').format('YYYY-MM-DD'),
+	// 	// 	operationalDate || moment().format('YYYY-MM-DD')
+	// 	// ]
+
+	// 	// dateDefaults()
+	// }
 	// dispatch('change', date.join(' - '))
 	let changeAux: boolean = false
 	let config: Record<string, any> = {}
@@ -185,27 +190,32 @@
 
 			switch (settings.period) {
 				case 'custom':
+					date = [
+						moment(operationalDate).startOf('month').format('YYYY-MM-DD'),
+						operationalDate || moment().format('YYYY-MM-DD')
+					]
 					options = {
-						onChange() {},
+						onChange(selectedDates: any) {
+							if (selectedDates.length === 2) visible = false
+						},
 						onClose: handleOnCloseCustom,
 						onReady: handleOnReadyMtd
 					}
 					break
 				case 'current_week':
+					date = handleDefaultDateCurrentWeek()
 					options = {
-						// defaultDate: handleDefaultDateCurrentWeek,
 						onReady: handleOnReadyCurrentWeek,
 						onChange: handleOnChangeCurrentWeek
 					}
 					break
 				case 'daily':
+					date = operationalDate || moment().format('YYYY-MM-DD')
 					options = {
 						mode: 'single',
-						// defaultDate: operationalDate || moment().format('YYYY-MM-DD'),
 						onChange() {},
 						onReady() {}
 					}
-					date = `${operationalDate}`
 					break
 				case 'fullMonth':
 					options = {
@@ -332,6 +342,11 @@
 					}
 					break
 				case 'mtd':
+					date = [
+						moment(operationalDate).startOf('month').format('YYYY-MM-DD'),
+						operationalDate || moment().format('YYYY-MM-DD')
+					]
+
 					options = {
 						onReady: handleOnReadyMtd
 					}
@@ -351,8 +366,9 @@
 					}
 					break
 				case 'weekly':
+					date = handleDefaultDateWeek()
+
 					options = {
-						// defaultDate: handleDefaultDateWeek,
 						maxDate:
 							operationalDate === moment(operationalDate).day(6).format('YYYY-MM-DD')
 								? moment(operationalDate).day(6).format('YYYY-MM-DD')
@@ -450,6 +466,29 @@
 				.endOf('month')
 				.format('YYYY-MM-DD')}`
 		}
+
+		visible = false
+	}
+
+	function handleDefaultDateWeek() {
+		let datee: any = []
+		if (operationalDate === moment(operationalDate).day(6).format('YYYY-MM-DD')) {
+			datee = [
+				moment(operationalDate).startOf('week').format('YYYY-MM-DD'),
+				moment(operationalDate).endOf('week').format('YYYY-MM-DD')
+			]
+		} else {
+			datee = [
+				moment(operationalDate).subtract(1, 'weeks').startOf('week').format('YYYY-MM-DD'),
+				moment(operationalDate).subtract(1, 'weeks').endOf('week').format('YYYY-MM-DD')
+			]
+			configAux.maxDate = moment(operationalDate)
+				.subtract(1, 'weeks')
+				.endOf('week')
+				.format('YYYY-MM-DD')
+		}
+
+		return datee
 	}
 
 	function handleOnChangeWeekly(selectedDates: any, dateStr: any, instance: any) {
@@ -486,6 +525,24 @@
 			}, 50)
 		}
 		changeAux = false
+	}
+
+	function handleDefaultDateCurrentWeek() {
+		let datee: any = []
+		if (
+			moment(moment(operationalDate).endOf('week').format('YYYY-MM-DD')).isAfter(operationalDate)
+		) {
+			datee = [
+				moment(operationalDate).startOf('week').format('YYYY-MM-DD'),
+				moment(operationalDate).format('YYYY-MM-DD')
+			]
+		} else {
+			datee = [
+				moment(operationalDate).startOf('week').format('YYYY-MM-DD'),
+				moment(operationalDate).endOf('week').format('YYYY-MM-DD')
+			]
+		}
+		return datee
 	}
 
 	function handleOnReadyCurrentWeek() {
@@ -629,18 +686,22 @@
 				/>
 			</div>
 			{#if params?.dateRange || params?.rangeCompare}
-				<div>
-					<Label>
-						Date Range
-						<Select
-							class="mt-2 w-72"
-							size="sm"
-							items={optionsDateRangeDefinitions}
-							bind:value={settings.period}
-							on:change={() => configure(true)}
-						/>
-					</Label>
-				</div>
+				{#if params?.dateRange}
+					<div>
+						<Label>
+							Date Range
+							<Select
+								class="mt-2 w-72"
+								size="sm"
+								items={optionsDateRangeDefinitions.filter((option) =>
+									params.dateRange.includes(option)
+								)}
+								bind:value={settings.period}
+								on:change={() => configure(true)}
+							/>
+						</Label>
+					</div>
+				{/if}
 			{/if}
 		</div>
 		<!-- </DropdownItem> -->

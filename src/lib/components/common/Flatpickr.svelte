@@ -4,8 +4,9 @@
 	import { onMount } from 'svelte'
 	import flatpickr from 'flatpickr'
 	import { merge } from 'lodash-es'
-	import 'flatpickr/dist/flatpickr.css'
 	import moment from 'moment'
+	import 'flatpickr/dist/flatpickr.css'
+	import 'flatpickr/dist/plugins/monthSelect/style.css'
 
 	let flatpickrElement: HTMLElement
 	export let pickr: any = null
