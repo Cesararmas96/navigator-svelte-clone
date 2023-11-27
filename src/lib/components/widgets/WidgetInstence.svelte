@@ -1,9 +1,10 @@
 <script lang="ts">
-	import { addWidgetAction, initWidgetActions } from '$lib/helpers/widget/actions'
+	import { addWidgetAction, getWidgetAction, initWidgetActions } from '$lib/helpers/widget/actions'
 	import { initInstances } from '$lib/helpers/widget/instances'
 	import { createEventDispatcher, onMount, setContext } from 'svelte'
 	import { writable, type Writable } from 'svelte/store'
 	import Spinner from '../common/Spinner.svelte'
+	import { initWidgetTop } from '$lib/helpers/widget/widget-top'
 
 	export let widget: any
 	export let isToolbarVisible: boolean
@@ -35,7 +36,7 @@
 				instanceLoaded = true
 				$widgetStore.instance_loading = null
 				$widgetStore.instance_loaded = null
-				dispatch('handleInstanceResize')
+				dispatch('handleInstanceResize', 'loaded')
 			}
 		})
 
@@ -51,6 +52,7 @@
 
 	initActions()
 	initInstances()
+	initWidgetTop()
 
 	onMount(() => {
 		widget.params.settings.toolbar.clone = false

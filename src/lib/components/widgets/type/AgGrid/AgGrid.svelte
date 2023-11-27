@@ -11,7 +11,10 @@
 		generateColumnDefsByDefinition,
 		gridFunctionsMap,
 		gridHeight,
-		recordsPerPage
+		gridInstanceHeight,
+		recordsPerPage,
+		setInstancesContentHeight,
+		setMainContentHeight
 	} from '$lib/helpers/widget/aggrid'
 	import {
 		hideFormBuilderDrawer,
@@ -22,7 +25,7 @@
 	import { openConfirmModal } from '$lib/helpers/common/modal'
 	import { deleteData, postData } from '$lib/services/getData'
 	import { sendErrorNotification, sendSuccessNotification } from '$lib/stores/toast'
-	import { setContentHeight } from '$lib/helpers/widget/widget'
+	import { setContentHeight, setInstanceContentHeight } from '$lib/helpers/widget/widget'
 	import { setWidgetTop } from '$lib/helpers/widget/widget-top'
 	import NoDataFound from '../../NoDataFound.svelte'
 
@@ -192,7 +195,17 @@
 		onGridReady: (params: GridReadyEvent<any, any>) => {
 			onGridSizeChanged(params)
 		},
-		onFirstDataRendered: function (event) {},
+		onFirstDataRendered: function (event) {
+			if ($widget.temp) {
+				setInstanceContentHeight($widget.parent)
+				setInstancesContentHeight($widget.parent, $widget.widget_id)
+				const instanceLoadedAction = getWidgetAction($widgetActions, 'instanceLoaded')
+				instanceLoadedAction.action()
+			}
+			setTimeout(() => {
+				resizeAgGridToContent()
+			}, 500)
+		},
 		onGridSizeChanged: onGridSizeChanged
 	}
 
@@ -202,7 +215,7 @@
 	function onGridSizeChanged(event: any) {
 		gridOptions.api!.sizeColumnsToFit()
 		const scrollModel = $widget.params.pqgrid?.scrollModel
-		if (scrollModel?.autoFit && scrollModel?.autoFit === false) {
+		if (scrollModel && scrollModel?.autoFit === false) {
 			event.columnApi.autoSizeAllColumns(true)
 		}
 	}
@@ -216,15 +229,6 @@
 		new Grid(eGridDiv, gridOptions)
 		if (!data) eGridDiv.classList.add('hidden')
 		// eGridDiv.style.height = gridHeight($widget.widget_id, $widget.params)
-		if ($widget.temp) {
-			const instanceLoadedAction = getWidgetAction($widgetActions, 'instanceLoaded')
-			instanceLoadedAction.action()
-		} else {
-			resizeAction.action()
-		}
-		setTimeout(() => {
-			resizeAgGridContent()
-		}, 1000)
 	})
 
 	$: isDark = $themeMode === 'dark'
@@ -232,15 +236,26 @@
 	/**
 	 * @description Actualiza el tamaño de la tabla cuando se cambia el tamaño del widget
 	 */
-	const resizeAgGridContent = () => {
-		setContentHeight($widget.widget_id)
+	//  const setSizeOnLoadAgGridContent = () => {
+	// 	setContentHeight($widget.widget_id)
+	// 	const eGridDiv: HTMLElement = document.querySelector(`#grid-${$widget.widget_id}`)!
+	// 	eGridDiv.style['min-height'] = !$widget.temp
+	// 		? gridHeight($widget.widget_id, $widget.params)
+	// 		: gridInstanceHeight($widget.widget_id)
+	// 	$widget.resized = false
+	// }
+
+	const resizeAgGridToContent = () => {
 		const eGridDiv: HTMLElement = document.querySelector(`#grid-${$widget.widget_id}`)!
-		eGridDiv.style.height = gridHeight($widget.widget_id, $widget.params)
+		eGridDiv.style['min-height'] = !$widget.temp
+			? gridHeight($widget.widget_id, $widget.params)
+			: gridInstanceHeight($widget.widget_id)
+		eGridDiv.style['height'] = eGridDiv.style['min-height']
 		$widget.resized = false
 	}
 	addWidgetAction(widgetActions, {
 		name: 'resizeContent',
-		action: resizeAgGridContent
+		action: resizeAgGridToContent
 	})
 
 	// const resizeAgGridInstanceContent = () => {
@@ -297,13 +312,6 @@
 </script>
 
 <div id="aggrid-container-{$widget.widget_id}" class="grid-container flex flex-col">
-	<!-- <Toolbar
-		position="top"
-		widgetID={$widget.widget_id}
-		btnsActions={$widget.params.btnsActions}
-		filterCallback={onFilterTextBoxChanged}
-		on:click={(e) => actionBtnMap[e.detail](e)}
-	/> -->
 	<div
 		id="grid-{$widget.widget_id}"
 		style="width: 100%"
@@ -314,12 +322,6 @@
 	{#if !data}
 		<NoDataFound />
 	{/if}
-
-	<!-- <Toolbar
-		position="bottom"
-		widgetID={$widget.widget_id}
-		btnsActions={$widget.params.btnsActions}
-	/> -->
 </div>
 
 <style>
@@ -332,6 +334,6 @@
 
 	/* Estilo para el contenedor */
 	.grid-container {
-		min-height: 300px; /* O la altura que desees */
+		min-height: 250px; /* O la altura que desees */
 	}
 </style>

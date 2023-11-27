@@ -77,6 +77,7 @@
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <div
 	class={cardClass}
+	class:card-hover={card.drilldowns && !drilldownOpen}
 	class:cursor-pointer={card.drilldowns && !drilldownOpen}
 	class:drilldown-open={drilldownOpen}
 	on:click={handleClick}
@@ -105,10 +106,14 @@
 			<div class="text-sm font-normal text-gray-50">{card.footer}</div>
 		{/if}
 	</div>
+	{#if card.drilldowns && !drilldownOpen}
+		<div class="card-hover-message">Click for details</div>
+	{/if}
 </div>
-{#if card.drilldowns && !drilldownOpen}
-	<Tooltip placement="top">Click for details</Tooltip>
-{/if}
+
+<!-- {#if card.drilldowns && !drilldownOpen}
+	<div class="relative left-5 top-5">Click for details</div>
+{/if} -->
 
 <style>
 	.drilldown-open {
@@ -116,5 +121,29 @@
 		box-shadow: 0 0 9px 0 rgb(0 0 0 / 90%) !important;
 		transition: all 0.3s;
 		background-color: #000000 !important;
+	}
+
+	.card-hover {
+		position: relative;
+		transition: background-color 0.3s;
+	}
+
+	.card-hover-message {
+		display: none;
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		background-color: rgba(0, 0, 0, 0.8);
+		color: white;
+		padding: 10px;
+		border-radius: 8px;
+		z-index: 10;
+		padding: 10px 20px;
+		text-align: center;
+	}
+
+	.card-hover:hover .card-hover-message {
+		display: block;
 	}
 </style>
