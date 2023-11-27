@@ -197,13 +197,13 @@ export const reloadLocations = (widgetLocation: Record<string, any>, gridParams:
 
 export const cloneItem = (item: any, items: any[]) => {
   const clones = items
-    .filter((i) => i.data.parent?.widget_slug === item.data.widget_slug)
+    .filter((i) => i.data.parent?.widget_id === item.data.widget_id)
     .sort((a, b) => a.data.parent.order - b.data.parent.order)
 
   const lastCloned =
     clones.length > 0
       ? clones.reduce((accumulator, current) => {
-          return accumulator.data.parent?.widget_slug > current.data.parent?.widget_slug ? accumulator : current
+          return accumulator.data.parent?.widget_id > current.data.parent?.widget_id ? accumulator : current
         })
       : null
 
@@ -215,9 +215,9 @@ export const cloneItem = (item: any, items: any[]) => {
   const widget = structuredClone(item.data)
 
   widget.widget_id = `widget-clone-${generateUID()}`
-  widget.parent = { widget_slug: item.widget_slug, order: clones.length }
+  widget.parent = { widget_id: item.data.widget_id, order: clones.length }
   widget.title = widget.title + ' Copy' + (clones ? ` (${clones.length + 1})` : '')
-  widget.widget_slug = `${widget.widget_slug}-clone${clones ? clones.length + 1 : ''}`
+  widget.widget_slug = `${item.data.widget_id}-clone${clones ? clones.length + 1 : ''}`
   widget.master_filtering = true
   widget.cloned = true
   delete widget.clone
@@ -265,8 +265,8 @@ export const resizeItem = (item: any, items: any[]) => {
 }
 
 export const removeItem = (item: any, items: any[], gridParams: GridParams) => {  
-  if (item.data.parent) items = reorderLines(item, items, gridParams)
   items = items.filter((gridItem) => gridItem.title !== item.title)
+  if (item.data.parent) items = reorderAfterDelete(item, items)
   return items
 }
 
@@ -294,7 +294,8 @@ const insertLineInGrid = (item: any, items: any[]) => {
 }
 
 const maxHeight = (yPos: number, items: any[]) => {
-  return Math.max(...items.filter((i) => i.y === yPos).map((i) => i.h))
+  const max = Math.max(...items.filter((i) => i.y === yPos).map((i) => i.h))
+  return max === -Infinity ? 0 : max
 }
 
 const reorderAfterResize = (item: any, prevousHeight: number, items: any[]) => {
@@ -306,9 +307,20 @@ const reorderAfterResize = (item: any, prevousHeight: number, items: any[]) => {
   return [...items]
 }
 
+const reorderAfterDelete = (item: any, items: any[]) => {
+  let existInLine: boolean = false
+  items = items.sort((a, b) => a.y - b.y)
+  items.map((i) => {
+    if (i.y === item.y) existInLine = true
+    if (!existInLine && i.y > item.y) i.y = i.y - item.h
+    return i
+  })
+  return [...items]
+}
+
 export const reorderLines = (item: any, items: any[], gridParams: GridParams) => {
   const height = maxHeight(item.y, items)
-  return reorderAfterResize(item, height, items)
+  return reorderAfterDelete(item, items)
 }
 
 export const addNewItem = (item, gridController: any) => {

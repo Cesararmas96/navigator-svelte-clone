@@ -124,13 +124,15 @@
 	$: handleRemove = (item: any) => {
 		const temp = [...removeItem(item, $storeDashboard.gridItems, gridController.gridParams)]
 		$storeDashboard.gridItems = []
-		delete dashboard.widget_location[item.title]
+		if (!item.data.cloned) delete dashboard.widget_location[item.title]
 		widgets = widgets.filter((widget: any) => widget.title !== item.title)
 		setTimeout(() => {
 			$storeDashboard.gridItems = temp
-			gridController.gridParams.unregisterItem(item)
-			gridController.gridParams.updateGrid()
-			updateLocations()
+			if (!item.data.cloned) {
+				gridController.gridParams.unregisterItem(item)
+				gridController.gridParams.updateGrid()
+				updateLocations()
+			}
 		}, 100)
 	}
 
