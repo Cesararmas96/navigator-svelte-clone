@@ -9,7 +9,7 @@
 </script>
 
 <div id={`widget-content-top-${$widget.widget_id}`}>
-	{#each $widgetTop as item (item.component)}
+	{#each $widgetTop as item}
 		<ContentTopItem {item} />
 	{/each}
 </div>
