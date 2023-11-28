@@ -8,6 +8,7 @@
 	import { addWidgetAction } from '$lib/helpers'
 	import { sendErrorNotification } from '$lib/stores/toast'
 	import { setWidgetTop } from '$lib/helpers/widget/widget-top'
+	import { page } from '$app/stores'
 
 	export let widget: Writable<any>
 
@@ -20,18 +21,27 @@
 	let data: any
 
 	async function fetchData() {
+		const newSlug = $widget?.new_query_slug || slug
 		const conditions = buildConditions()
+
+		$widget['filter_conditions'] = conditions || {}
 		try {
-			data = getApiData(slug, method, conditions)
+			data = getApiData(newSlug, method, conditions)
 		} catch (error) {
 			sendErrorNotification(error)
 		}
 	}
 
 	function buildConditions() {
-		let conditions = { ...conditionsRaw }
+		let conditions = { ...conditionsRaw, ...$widget?.filter_conditions }
 
 		const dateCondition = $dashboard.where_date_cond
+
+		if ($widget?.customDate) {
+			delete $widget?.customDate
+
+			return conditions
+		}
 
 		if (conditions?.firstdate) {
 			conditions.firstdate = returnValidateDate(conditions?.firstdate)
@@ -58,6 +68,7 @@
 				conditions.filterdate = _date[1] || _date[0]
 			}
 		}
+
 		if ($dashboard.where_new_cond && Object.keys($dashboard.where_new_cond).length > 0) {
 			conditions.where_cond = { ...$dashboard.where_new_cond }
 		}
@@ -218,8 +229,29 @@
 	}
 
 	function handleOperationalDate() {
-		// TODO: handle operational date
-		return moment().format('YYYY-MM-DD')
+		const module = $page.data.trocModule
+		const variables = $variablesOperationalProgram
+
+		let moduleOperationalDate = null
+		let dashboardOperationalDate = null
+		try {
+			moduleOperationalDate =
+				module && module.attributes ? module.attributes.operational_date : null
+			dashboardOperationalDate =
+				$dashboard && $dashboard?.attributes ? $dashboard?.attributes?.operational_date : null
+		} catch (error) {
+			console.log(error)
+		}
+
+		return dashboardOperationalDate && moment(dashboardOperationalDate).isValid()
+			? dashboardOperationalDate
+			: moduleOperationalDate && moment(moduleOperationalDate).isValid()
+			? moduleOperationalDate
+			: dashboardOperationalDate && variables[dashboardOperationalDate]
+			? variables[dashboardOperationalDate]
+			: moduleOperationalDate && variables[moduleOperationalDate]
+			? variables[moduleOperationalDate]
+			: moment().format('YYYY-MM-DD')
 	}
 
 	function isDate(strDate: string) {
@@ -253,11 +285,13 @@
 		$widget.fetch = true
 	}
 
-	// const widgetTop = getContext<Writable<any>>('WidgetTop')
-	// setWidgetTop(widgetTop, 'FilterHeader', {
-	// 	// position: 'top',
-	// 	widget: $widget
-	// })
+	if ($widget?.params?.filter) {
+		const widgetTop = getContext<Writable<any>>('WidgetTop')
+		setWidgetTop(widgetTop, 'FilterHeader', {
+			// position: 'top',
+			widget: $widget
+		})
+	}
 </script>
 
 {#await data}
