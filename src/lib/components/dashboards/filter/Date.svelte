@@ -694,7 +694,7 @@
 								class="mt-2 w-72"
 								size="sm"
 								items={optionsDateRangeDefinitions.filter((option) =>
-									params.dateRange.includes(option)
+									params.dateRange.includes(option.value)
 								)}
 								bind:value={settings.period}
 								on:change={() => configure(true)}
