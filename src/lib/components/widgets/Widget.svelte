@@ -18,6 +18,13 @@
 	export let fixed: boolean
 	export let isOwner: boolean
 	export let isDraggable: boolean = false
+	export let reload: boolean = false
+
+	$: if (reload) {
+		const reloadAction = getWidgetAction($widgetActions, 'reloadFetchData')
+		reloadAction.action()
+		reload = false
+	}
 
 	let scrollable: boolean
 	let scrollableBox: boolean = true

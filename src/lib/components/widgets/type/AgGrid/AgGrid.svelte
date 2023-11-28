@@ -179,7 +179,8 @@
 	/**
 	 * @description Genera la configuración de la tabla
 	 */
-	let gridOptions: GridOptions = {
+	let gridOptions: any = {
+		//GridOptions = {
 		defaultColDef,
 		pagination: !simpleTable,
 		paginationPageSize: recordsPerPage($widget.params),
@@ -207,8 +208,38 @@
 			}, 500)
 		},
 		onGridSizeChanged: onGridSizeChanged
+		// groupRowInnerRenderer: function (params) {
+		// 	// Aquí puedes verificar las condiciones y devolver el total
+		// 	if (params.node.group && $widget.params?.table?.roll_up?.total) {
+		// 		return `${$widget.params?.table?.roll_up?.total} ${
+		// 			params.node.aggData.num_sales + params.node.aggData.num_returns
+		// 		}`
+		// 	}
+		// 	return null
+		// }
 	}
-
+	if ($widget.params?.table?.roll_up?.total_col) {
+		gridOptions['autoGroupColumnDef'] = {
+			groupIncludeFooter: true, // Incluir los totales en el pie de grupo
+			groupIncludeTotalFooter: true, // Incluir una fila de totales al final
+			groupDefaultExpanded: -1, // Expandir todos los grupos por defecto
+			autoGroupColumnDef: {
+				headerName: $widget.params?.table?.roll_up?.total_col,
+				field: $widget.params?.table?.roll_up?.total_col,
+				cellRenderer: 'agGroupCellRenderer',
+				cellRendererParams: {
+					footerValueGetter: (params) => {
+						// Cambiar el valor de la celda en la fila de totales
+						if (params.node.level === -1) {
+							return 'TOTAL:'
+						}
+						return params.value
+					}
+				}
+			}
+		}
+	}
+	console.log('gridOptions', gridOptions)
 	/**
 	 * @description Actualiza la configuración de la tabla cuando se cambia el tamaño de la tabla
 	 */
@@ -264,6 +295,10 @@
 	// 	eGridDiv.style.height = gridHeight($widget.widget_id, $widget.params)
 	// 	$widget.resized = false
 	// }
+
+	if ($widget.resized) {
+		resizeAgGridToContent()
+	}
 
 	const newItem = (obj: any) => {
 		gridOptions.api!.applyTransaction({ add: [obj.dataModel] })
