@@ -21,20 +21,27 @@
 	let data: any
 
 	async function fetchData() {
+		const newSlug = $widget?.new_query_slug || slug
 		const conditions = buildConditions()
 
 		$widget['filter_conditions'] = conditions || {}
 		try {
-			data = getApiData(slug, method, conditions)
+			data = getApiData(newSlug, method, conditions)
 		} catch (error) {
 			sendErrorNotification(error)
 		}
 	}
 
 	function buildConditions() {
-		let conditions = { ...conditionsRaw }
+		let conditions = { ...conditionsRaw, ...$widget?.filter_conditions }
 
 		const dateCondition = $dashboard.where_date_cond
+
+		if ($widget?.customDate) {
+			delete $widget?.customDate
+
+			return conditions
+		}
 
 		if (conditions?.firstdate) {
 			conditions.firstdate = returnValidateDate(conditions?.firstdate)
@@ -61,6 +68,7 @@
 				conditions.filterdate = _date[1] || _date[0]
 			}
 		}
+
 		if ($dashboard.where_new_cond && Object.keys($dashboard.where_new_cond).length > 0) {
 			conditions.where_cond = { ...$dashboard.where_new_cond }
 		}

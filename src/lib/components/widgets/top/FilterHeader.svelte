@@ -1,13 +1,16 @@
 <script lang="ts">
 	import moment from 'moment'
-	import { onMount } from 'svelte'
+	import { getContext, onMount } from 'svelte'
 	import { map, pullAll, merge } from 'lodash-es'
 	import { Button, Select, Radio } from 'flowbite-svelte'
 	import { capitalizeWord } from '$lib/helpers/common/common'
+	import { getWidgetAction } from '$lib/helpers'
 	import type { Writable } from 'svelte/store'
 
 	export let widget
 	export let loading = false
+	const dashboard: Writable<any> = getContext('dashboard')
+	const widgetActions: any = getContext('widgetActions')
 
 	let slug =
 		widget.query_slug && widget.query_slug.slug && Array.isArray(widget.query_slug.slug)
@@ -36,10 +39,15 @@
 	let date = null
 	let filterOptions = widget.params.filter
 	let grouping = filterOptions.groupingDefault || null
+	let conditionsDefault = {}
 
 	onMount(() => {
 		if (filterOptions.dateRange && filterOptions.dateRange.show) {
 			date = filterOptions.dateRange.default ? filterOptions.dateRange.default : 'mtd'
+		}
+
+		if (widget.filter_conditions) {
+			conditionsDefault = widget.filter_conditions
 		}
 	})
 
@@ -69,10 +77,6 @@
 		// console.log('Grouping', grouping)
 
 		try {
-			if (!widget.conditionsOriginal) {
-				widget.conditionsOriginal = widget.conditions
-			}
-
 			const newSlug = slugs[slug] || slug
 
 			let conditions: Record<string, any> = {}
@@ -82,13 +86,17 @@
 				(filterOptions?.datepicker && filterOptions?.datepicker?.show)
 			) {
 				let period: Array<any> = []
-				const widgetConditions: Record<string, any> = widget.filter_conditions
+				const widgetConditions: Record<string, any> = conditionsDefault
 
-				if (widgetConditions) {
-					if (widgetConditions.filterdate) {
-						period = [widgetConditions.filterdate, widgetConditions.filterdate]
+				if (dashboard?.where_date_cond) {
+					const date = dashboard?.where_date_cond.split(' - ')
+
+					period = [date[0], date[1] || date[0]]
+				} else {
+					if (widgetConditions?.filterdate) {
+						period = [widgetConditions?.filterdate, widgetConditions?.filterdate]
 					} else {
-						period = [widgetConditions.firstdate, widgetConditions.lastdate]
+						period = [widgetConditions?.firstdate, widgetConditions?.lastdate]
 					}
 				}
 
@@ -117,13 +125,13 @@
 						pullAll(slug.fields, Object.values(filterOptions.grouping))
 					)
 				} else if (
-					widget.conditionsOriginal &&
-					widget.conditionsOriginal.fields &&
-					Array.isArray(widget.conditionsOriginal.fields)
+					widget.filter_conditions &&
+					widget.filter_conditions.fields &&
+					Array.isArray(widget.filter_conditions.fields)
 				) {
 					conditions.fields = [conditions.grouping].concat(
 						pullAll(
-							merge([], widget.conditionsOriginal.fields, []),
+							merge([], widget.filter_conditions.fields, []),
 							Object.values(filterOptions.grouping)
 						)
 					)
@@ -134,7 +142,12 @@
 				conditions = merge({}, conditions, slug.conditions)
 			}
 
-			console.log(slug && slug.slug ? slug.slug : slug, conditions)
+			widget.new_query_slug = slug && slug.slug ? slug.slug : slug
+			widget.filter_conditions = conditions
+			widget.customDate = true
+
+			const reloadAction = getWidgetAction($widgetActions, 'reloadFetchData')
+			reloadAction.action()
 		} catch (error) {
 			console.log(error)
 		}
@@ -219,7 +232,7 @@
 		{/if}
 
 		<div class="">
-			<Button type="button" class="btn btn-primary" on:click={setRange}>
+			<Button type="button" size="md" class="py-3" on:click={setRange}>
 				{#if loading}
 					Loading...
 				{:else}
