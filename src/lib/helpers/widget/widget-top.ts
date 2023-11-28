@@ -14,8 +14,8 @@ export const initWidgetTop = (): Writable<WidgetTop[]> => {
 
 export const setWidgetTop = (widgetTop: Writable<WidgetTop[]>, component: string, props: Record<string, any>) => {
 	const newTopConfig = { component, props}
-
 	widgetTop.update((m: WidgetTop[]) => {
+    m = m.filter((item) => item.component !== component)
     m.push(newTopConfig)
     return m
   })

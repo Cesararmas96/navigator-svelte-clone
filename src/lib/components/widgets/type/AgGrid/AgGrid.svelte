@@ -179,7 +179,8 @@
 	/**
 	 * @description Genera la configuración de la tabla
 	 */
-	let gridOptions: GridOptions = {
+	let gridOptions: any = {
+		//GridOptions = {
 		defaultColDef,
 		pagination: !simpleTable,
 		paginationPageSize: recordsPerPage($widget.params),
@@ -207,6 +208,36 @@
 			}, 500)
 		},
 		onGridSizeChanged: onGridSizeChanged
+		// groupRowInnerRenderer: function (params) {
+		// 	// Aquí puedes verificar las condiciones y devolver el total
+		// 	if (params.node.group && $widget.params?.table?.roll_up?.total) {
+		// 		return `${$widget.params?.table?.roll_up?.total} ${
+		// 			params.node.aggData.num_sales + params.node.aggData.num_returns
+		// 		}`
+		// 	}
+		// 	return null
+		// }
+	}
+	if ($widget.params?.table?.roll_up?.total_col) {
+		gridOptions['autoGroupColumnDef'] = {
+			groupIncludeFooter: true, // Incluir los totales en el pie de grupo
+			groupIncludeTotalFooter: true, // Incluir una fila de totales al final
+			groupDefaultExpanded: -1, // Expandir todos los grupos por defecto
+			autoGroupColumnDef: {
+				headerName: $widget.params?.table?.roll_up?.total_col,
+				field: $widget.params?.table?.roll_up?.total_col,
+				cellRenderer: 'agGroupCellRenderer',
+				cellRendererParams: {
+					footerValueGetter: (params) => {
+						// Cambiar el valor de la celda en la fila de totales
+						if (params.node.level === -1) {
+							return 'TOTAL:'
+						}
+						return params.value
+					}
+				}
+			}
+		}
 	}
 
 	/**
@@ -221,7 +252,6 @@
 	}
 
 	const widgetActions = getContext<Writable<any[]>>('widgetActions')
-	const resizeAction = getWidgetAction($widgetActions, 'resize')
 	const reloadAction = getWidgetAction($widgetActions, 'reloadFetchData')
 
 	onMount(() => {
@@ -248,14 +278,17 @@
 	const resizeAgGridToContent = () => {
 		const eGridDiv: HTMLElement = document.querySelector(`#grid-${$widget.widget_id}`)!
 		eGridDiv.style['min-height'] = !$widget.temp
-			? gridHeight($widget.widget_id, $widget.params)
+			? gridHeight($widget.widget_id)
 			: gridInstanceHeight($widget.widget_id)
 		eGridDiv.style['height'] = eGridDiv.style['min-height']
 		$widget.resized = false
 	}
 	addWidgetAction(widgetActions, {
 		name: 'resizeContent',
-		action: resizeAgGridToContent
+		action: () => {
+			setContentHeight($widget.widget_id)
+			resizeAgGridToContent()
+		}
 	})
 
 	// const resizeAgGridInstanceContent = () => {
@@ -264,6 +297,11 @@
 	// 	eGridDiv.style.height = gridHeight($widget.widget_id, $widget.params)
 	// 	$widget.resized = false
 	// }
+
+	if ($widget.resized) {
+		console.log('resizeAgGridToContent')
+		resizeAgGridToContent()
+	}
 
 	const newItem = (obj: any) => {
 		gridOptions.api!.applyTransaction({ add: [obj.dataModel] })

@@ -122,7 +122,10 @@
 		}
 		$dashboard.where_new_cond = { ...$dashboard.where_cond, ...whereConditions }
 		$dashboard.where_date_cond = dateConditions
-		$dashboard.loaded = false
+		// $dashboard.loaded = false
+		$dashboard.gridItems.map((item) => {
+			item.reload = true
+		})
 		if (drawer) hideDashboardFilters.set(true)
 	}
 

@@ -448,6 +448,7 @@
 							{fixed}
 							{isToolbarVisible}
 							{isOwner}
+							bind:reload={item.reload}
 							isDraggable={dashboard?.attributes?.user_id === $storeUser?.user_id}
 							on:handleInstanceResize={() => handleResizable(item)}
 						/>

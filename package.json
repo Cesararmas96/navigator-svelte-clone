@@ -91,6 +91,7 @@
 		"sweetalert2": "^11.7.12",
 		"tabulator-tables": "^5.5.2",
 		"tailwind-merge": "^1.14.0",
-		"tippy.js": "^6.3.7"
+		"tippy.js": "^6.3.7",
+		"tui-grid": "^4.21.19"
 	}
 }

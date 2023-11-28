@@ -34,13 +34,18 @@ export const generateColumnDefsByData = (widget: any, simpleTable: boolean) => {
   const data = widget.data && widget.data.length > 0 ? widget.data[0] : {}
   const definitions = widget.format_definition || {}
   const columns: any[] = []
+
+  if (simpleTable) console.log('widget', widget)
+
   Object.entries(data).map(([key, value]: [string, any], idx: number) => {
     if (Object.keys(definitions).map((key: string) => key).includes(key)) return
-    columns.push({
+    console.log('key', key)
+    const columnDef = {
       headerName: capitalizeWord(key).replace('_', ' '),
       field: key,
       order: 9998,
       resizable: true,
+      cellClass: simpleTable ? cellClassSimpleTable(definitions, idx) : '',
       hide: Array.isArray(value) || typeof value === 'object',
       valueFormatter: (params: any) => {
         if (simpleTable) {
@@ -59,7 +64,11 @@ export const generateColumnDefsByData = (widget: any, simpleTable: boolean) => {
             : params.value
         }
       }
-    })
+    }
+    if (widget.params?.table?.roll_up?.sum?.includes(key)) {
+      columnDef['aggFunc'] = 'sum';
+    }
+    columns.push(columnDef)
   })
   return columns
 }
@@ -118,6 +127,13 @@ export const generateColumnDefsByDefinition = (widget: any, callbacks: any) => {
     })
 }
 
+export const cellClassSimpleTable = (formatDefinition: any, idx: number): string => {
+	let cellClass = ''
+  if (formatDefinition && formatDefinition['fnFormatNumberInteger'] && formatDefinition['fnFormatNumberInteger'].includes(idx)) cellClass = 'text-right'
+  if (formatDefinition && formatDefinition['fnFormatPercent'] && formatDefinition['fnFormatPercent'].includes(idx)) cellClass = 'text-right'
+	return cellClass
+}
+
 export const cellClass = (formatDefinition: any): string => {
 	let cellClass = ''
 	cellClass += !formatDefinition.align && formatDefinition.format ? ' text-right' : ''
@@ -143,13 +159,14 @@ export const setInstancesContentHeight = (patent_id: string, id: string): any =>
   document.getElementById(`grid-${id}`)?.setAttribute('style', `height: ${instancesHeight.offsetHeight}px`)
 }
 
-export const gridHeight = (id: string, formatDefinition: any): any => {
+export const gridHeight = (id: string): any => {
   const mainHeight = document.getElementById(`widget-main-${id}`)!.offsetHeight
   const toolbarTopEL = document.getElementById(`widget-content-top-${id}`)
   const toolbarTop = toolbarTopEL ? toolbarTopEL.offsetHeight : 0
 	const toolbarBottomEL = document.getElementById(`widget-content-bottom-${id}`)
   const toolbarBottom = toolbarBottomEL ? toolbarBottomEL.offsetHeight : 0
 	const contentHeight = mainHeight - toolbarTop - toolbarBottom
+  console.log('contentHeight', mainHeight, toolbarTop, toolbarBottom, contentHeight)
   return `${contentHeight}px`
 }
 
