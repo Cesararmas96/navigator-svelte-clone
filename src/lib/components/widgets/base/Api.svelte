@@ -8,6 +8,7 @@
 	import { addWidgetAction } from '$lib/helpers'
 	import { sendErrorNotification } from '$lib/stores/toast'
 	import { setWidgetTop } from '$lib/helpers/widget/widget-top'
+	import { page } from '$app/stores'
 
 	export let widget: Writable<any>
 
@@ -21,6 +22,8 @@
 
 	async function fetchData() {
 		const conditions = buildConditions()
+
+		$widget['filter_conditions'] = conditions || {}
 		try {
 			data = getApiData(slug, method, conditions)
 		} catch (error) {
@@ -218,8 +221,29 @@
 	}
 
 	function handleOperationalDate() {
-		// TODO: handle operational date
-		return moment().format('YYYY-MM-DD')
+		const module = $page.data.trocModule
+		const variables = $variablesOperationalProgram
+
+		let moduleOperationalDate = null
+		let dashboardOperationalDate = null
+		try {
+			moduleOperationalDate =
+				module && module.attributes ? module.attributes.operational_date : null
+			dashboardOperationalDate =
+				$dashboard && $dashboard?.attributes ? $dashboard?.attributes?.operational_date : null
+		} catch (error) {
+			console.log(error)
+		}
+
+		return dashboardOperationalDate && moment(dashboardOperationalDate).isValid()
+			? dashboardOperationalDate
+			: moduleOperationalDate && moment(moduleOperationalDate).isValid()
+			? moduleOperationalDate
+			: dashboardOperationalDate && variables[dashboardOperationalDate]
+			? variables[dashboardOperationalDate]
+			: moduleOperationalDate && variables[moduleOperationalDate]
+			? variables[moduleOperationalDate]
+			: moment().format('YYYY-MM-DD')
 	}
 
 	function isDate(strDate: string) {
@@ -253,11 +277,13 @@
 		$widget.fetch = true
 	}
 
-	// const widgetTop = getContext<Writable<any>>('WidgetTop')
-	// setWidgetTop(widgetTop, 'FilterHeader', {
-	// 	// position: 'top',
-	// 	widget: $widget
-	// })
+	if ($widget?.params?.filter) {
+		const widgetTop = getContext<Writable<any>>('WidgetTop')
+		setWidgetTop(widgetTop, 'FilterHeader', {
+			// position: 'top',
+			widget: $widget
+		})
+	}
 </script>
 
 {#await data}
