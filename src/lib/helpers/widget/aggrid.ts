@@ -159,13 +159,14 @@ export const setInstancesContentHeight = (patent_id: string, id: string): any =>
   document.getElementById(`grid-${id}`)?.setAttribute('style', `height: ${instancesHeight.offsetHeight}px`)
 }
 
-export const gridHeight = (id: string, formatDefinition: any): any => {
+export const gridHeight = (id: string): any => {
   const mainHeight = document.getElementById(`widget-main-${id}`)!.offsetHeight
   const toolbarTopEL = document.getElementById(`widget-content-top-${id}`)
   const toolbarTop = toolbarTopEL ? toolbarTopEL.offsetHeight : 0
 	const toolbarBottomEL = document.getElementById(`widget-content-bottom-${id}`)
   const toolbarBottom = toolbarBottomEL ? toolbarBottomEL.offsetHeight : 0
 	const contentHeight = mainHeight - toolbarTop - toolbarBottom
+  console.log('contentHeight', mainHeight, toolbarTop, toolbarBottom, contentHeight)
   return `${contentHeight}px`
 }
 

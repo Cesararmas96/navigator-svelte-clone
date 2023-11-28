@@ -5,7 +5,9 @@
 	import { fetchDarkMode, fetchThemeColor } from './theme'
 	import { merge, map, uniqBy, result, find, without, last, union, orderBy } from 'lodash-es'
 	import type { Writable } from 'svelte/store'
-	import { getWidgetAction } from '$lib/helpers'
+	import { addWidgetAction, getWidgetAction } from '$lib/helpers'
+	import { gridHeight, gridInstanceHeight } from '$lib/helpers/widget/aggrid'
+	import { setContentHeight } from '$lib/helpers/widget/widget'
 
 	export let data: any
 	const widget: any = getContext('widget')
@@ -273,7 +275,7 @@
 		await fetchThemeColor($themeColor)
 
 		makeChart($themeMode)
-
+		resizeEchartToContent()
 		if ($dashboard?.attributes?.explorer === 'v2') {
 			// console.log('resizeAction')
 			resizeAction.action()
@@ -302,6 +304,22 @@
 		makeChart()
 		buildOptions()
 	}
+
+	const resizeEchartToContent = () => {
+		const eChartDiv: HTMLElement = document.querySelector(`#${id}`)!
+		eChartDiv.style['min-height'] = !$widget.temp
+			? gridHeight($widget.widget_id)
+			: gridInstanceHeight($widget.widget_id)
+		eChartDiv.style['height'] = eChartDiv.style['min-height']
+		$widget.resized = false
+	}
+	addWidgetAction(widgetActions, {
+		name: 'resizeContent',
+		action: () => {
+			setContentHeight($widget.widget_id)
+			resizeEchartToContent()
+		}
+	})
 </script>
 
 {#if data}

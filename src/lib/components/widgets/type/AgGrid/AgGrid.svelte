@@ -239,7 +239,7 @@
 			}
 		}
 	}
-	console.log('gridOptions', gridOptions)
+
 	/**
 	 * @description Actualiza la configuración de la tabla cuando se cambia el tamaño de la tabla
 	 */
@@ -252,7 +252,6 @@
 	}
 
 	const widgetActions = getContext<Writable<any[]>>('widgetActions')
-	const resizeAction = getWidgetAction($widgetActions, 'resize')
 	const reloadAction = getWidgetAction($widgetActions, 'reloadFetchData')
 
 	onMount(() => {
@@ -279,14 +278,17 @@
 	const resizeAgGridToContent = () => {
 		const eGridDiv: HTMLElement = document.querySelector(`#grid-${$widget.widget_id}`)!
 		eGridDiv.style['min-height'] = !$widget.temp
-			? gridHeight($widget.widget_id, $widget.params)
+			? gridHeight($widget.widget_id)
 			: gridInstanceHeight($widget.widget_id)
 		eGridDiv.style['height'] = eGridDiv.style['min-height']
 		$widget.resized = false
 	}
 	addWidgetAction(widgetActions, {
 		name: 'resizeContent',
-		action: resizeAgGridToContent
+		action: () => {
+			setContentHeight($widget.widget_id)
+			resizeAgGridToContent()
+		}
 	})
 
 	// const resizeAgGridInstanceContent = () => {
@@ -297,6 +299,7 @@
 	// }
 
 	if ($widget.resized) {
+		console.log('resizeAgGridToContent')
 		resizeAgGridToContent()
 	}
 
