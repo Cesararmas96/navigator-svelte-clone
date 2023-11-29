@@ -35,7 +35,7 @@
 	function buildConditions() {
 		let conditions = { ...conditionsRaw, ...$widget?.filter_conditions }
 
-		const dateCondition = $dashboard.where_date_cond
+		const dateCondition = $dashboard?.where_date_cond
 
 		if ($widget?.customDate) {
 			delete $widget?.customDate
@@ -69,8 +69,8 @@
 			}
 		}
 
-		if ($dashboard.where_new_cond && Object.keys($dashboard.where_new_cond).length > 0) {
-			conditions.where_cond = { ...$dashboard.where_new_cond }
+		if ($dashboard?.where_new_cond && Object.keys($dashboard?.where_new_cond).length > 0) {
+			conditions.where_cond = { ...$dashboard?.where_new_cond }
 		}
 
 		return conditions
