@@ -1,4 +1,3 @@
-import { extractSubdomain } from '$lib/helpers/login/login.js'
 import { getApiData } from '$lib/services/getData'
 import { redirect } from '@sveltejs/kit'
 
@@ -11,7 +10,11 @@ export const load = async ({ params, fetch, locals, url }) => {
 
 	const headers = { authorization: `Bearer ${locals.user.token}` }
 
-	const programs = await getApiData(`programs`, 'GET', {}, {}, { headers }, fetch)
+	const programs = await getApiData(`programs`, 'POST', { "where_cond": {
+    "program_slug": locals.user.programs,
+    "is_active": true
+  }}, {}, { headers }, fetch)
+
 	const modules = await getApiData(
 		`${urlBase}/api/v2/modules?program_slug=${params.programs}`,
 		'GET',

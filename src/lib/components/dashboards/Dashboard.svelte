@@ -64,9 +64,10 @@
 		setGridItems($storeDashboard.dashboard_id)
 		filtersOpen = $storeDashboard?.attributes?.collapse_shows
 		if (filtersOpen === undefined) filtersOpen = false
-
 		// filtersOpen = !!$storeDashboard?.attributes?.collapse_shows
 		filterComponent = DashboardFilters
+		if ($storeUser.aux.filtering_fixed)
+			$storeDashboard.where_new_cond = $storeUser.aux.filtering_fixed
 	}
 
 	$: if (dashboard.newWidget) {
@@ -100,7 +101,10 @@
 		dismissAlert('dashboard-system-msg', $storeDashboard.dashboard_id)
 	}
 
-	$: if (!$storeDashboard.gridItems || $storeDashboard.gridItems.length === 0) {
+	$: if (
+		(!$storeDashboard.gridItems || $storeDashboard.gridItems.length === 0) &&
+		$storeDashboard.loaded
+	) {
 		sendAlert({
 			id: 'dashboard-no-widgets',
 			title: 'No widgets',
@@ -108,7 +112,7 @@
 			dashboardId: $storeDashboard.dashboard_id,
 			type: AlertType.INFO
 		})
-	} else {
+	} else if ($storeDashboard.loaded) {
 		dismissAlert('dashboard-no-widgets', $storeDashboard.dashboard_id)
 	}
 

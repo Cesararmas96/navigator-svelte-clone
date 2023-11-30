@@ -1,20 +1,13 @@
 <script lang="ts">
-	import { filterPrograms, sortPrograms } from '$lib/helpers/programs'
 	import Loading from '$lib/components/common/Loading.svelte'
 	import Card from '$lib/components/home/Card.svelte'
 	import { storePrograms } from '$lib/stores/programs'
 	import { storeUser } from '$lib/stores/session.js'
 	import { onMount } from 'svelte'
-	import { goto } from '$app/navigation'
 
 	export let data
 	$storePrograms = data.programs
 	$storeUser = data.user
-
-	const allowedPrograms = sortPrograms(filterPrograms(data.programs, $storeUser.programs))
-
-	// If there is only one program, redirect to it
-	allowedPrograms.length === 1 && goto(`/${allowedPrograms[0].program_slug}`)
 
 	let searchTerm = ''
 	let filteredTemplates

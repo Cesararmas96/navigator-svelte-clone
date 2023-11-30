@@ -48,7 +48,6 @@ export const loadGridOptions = (widget: any, data: any[]): OptGrid => {
       columnContent: columnContent
     }
   }
-  console.log(widget, gridOptions)
   return gridOptions
 }
 

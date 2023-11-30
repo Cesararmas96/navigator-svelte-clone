@@ -6,6 +6,7 @@
 	import { menuHidden, sidebarMin } from '$lib/stores/sidebar'
 	import Profile from '../header/Profile.svelte'
 	import { themeMode } from '$lib/stores/preferences'
+	import { page } from '$app/stores'
 
 	const toggleDrawer = () => {
 		$sidebarMin = true
@@ -28,7 +29,16 @@
 		</button>
 		<NavBrand href="/home" class="">
 			<span class="ml-4 self-center whitespace-nowrap text-xl font-semibold dark:text-white">
-				<img src="/images/header-logo-troc-{$themeMode}.png" alt="Navigator" width="120" />
+				{#if $page.params.programs}
+					<img
+						src="{import.meta.env.VITE_BASE_URL}/assets/img/programs/{$page.params
+							.programs}/sidebar.png"
+						alt="logo {$page.params.programs}"
+						width="120"
+					/>
+				{:else}
+					<img src="/images/header-logo-troc-{$themeMode}.png" alt="Navigator" width="120" />
+				{/if}
 			</span>
 		</NavBrand>
 	</div>
