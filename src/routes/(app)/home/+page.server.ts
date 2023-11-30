@@ -6,7 +6,13 @@ export const load = async ({locals, fetch, url}) => {
   if (import.meta.env.VITE_ADMIN) throw redirect(302, '/admin')
 
   const headers = { authorization: `Bearer ${locals.user.token}` }
-  const programs = await getApiData(`programs`, 'GET', {}, {}, { headers }, fetch) 
+
+  const programs = await getApiData(`programs`, 'POST', { "where_cond": {
+    "program_slug": locals.user.programs,
+    "is_active": true
+  }}, {}, { headers }, fetch)
+
+  if (programs.length === 1) throw redirect(302, `/${programs[0].program_slug}`)
 
   const tenant = url.hostname.split('.')[0]
 
