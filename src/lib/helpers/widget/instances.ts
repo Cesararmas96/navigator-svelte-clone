@@ -32,7 +32,7 @@ export const removeInstance = (widget: Writable<any>, instanceSlug: string) => {
   });
 }
 
-export const clearInstances = (widget: Writable<any>) => {
+export const clearInstances = async (widget: Writable<any>) => {
   widget.update(w => {
     w.instances = []
     return w;

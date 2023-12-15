@@ -131,11 +131,14 @@
 	background-color: #007bff;
 }
 
+.badge.badge-secondary {
+	color: #fff;
+	background-color: #6c757d;
+}
 .badge.badge-danger {
 	color: #fff;
 	background-color: #dc3545;
 }
-
 .badge.badge-generated {
 	color: #fff;
 	background-color: #007bff;
@@ -191,6 +194,27 @@
 .badge.badge-coffee {
 	color: #fff;
 	background-color: #713f12;
+}
+.badge-info {
+	color: #fff;
+	background-color: #17a2b8
+}
+.badge-dark {
+	color: #fff;
+	background-color: #343a40
+}
+
+.icon-color-warning {
+	color: #ffc107;
+}
+.icon-color-info {
+	color: #17a2b8;
+}
+.icon-color-success {
+	color: #28a745;
+}
+.icon-color-error {
+	color: #dc3545;
 }
 
 .pull-right {

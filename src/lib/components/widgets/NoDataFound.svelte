@@ -10,6 +10,10 @@
 
 	onMount(() => {
 		if ($widget.resize_on_load) resizeAction.action()
+		if ($widget.temp) {
+			const instanceLoadedAction = getWidgetAction($widgetActions, 'instanceLoaded')
+			instanceLoadedAction.action()
+		}
 	})
 </script>
 

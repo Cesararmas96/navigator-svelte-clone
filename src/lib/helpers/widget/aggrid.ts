@@ -3,6 +3,7 @@ import moment from 'moment-timezone'
 import { capitalizeWord } from '../common/common'
 import type { ValueGetterParams } from 'ag-grid-community'
 import { fnFormatMoney, fnFormatPercent, formats } from '../common/formats'
+import { addInstance, clearInstances } from './instances'
 
 export const colAction = (widget: any, callbacks: any, colDef?: Record<string, any>) => {
   return {
@@ -35,11 +36,8 @@ export const generateColumnDefsByData = (widget: any, simpleTable: boolean) => {
   const definitions = widget.format_definition || {}
   const columns: any[] = []
 
-  if (simpleTable) console.log('widget', widget)
-
   Object.entries(data).map(([key, value]: [string, any], idx: number) => {
     if (Object.keys(definitions).map((key: string) => key).includes(key)) return
-    console.log('key', key)
     const columnDef = {
       headerName: capitalizeWord(key).replace('_', ' '),
       field: key,
@@ -79,9 +77,11 @@ export const generateColumnDefsByData = (widget: any, simpleTable: boolean) => {
  */
 export const generateColumnDefsByDefinition = (widget: any, callbacks: any) => {
   const definitions = widget.format_definition
-  return Object.entries(definitions)
+  const colsDef = Object.entries(definitions)
     .filter(([key, col]: [string, any]) => !col.hidden) // Filtrar columnas ocultas
     .map(([key, col]: [string, any]) => {
+      const sort = colSorted(col, widget.params?.pqgrid?.sortModel?.sorter)
+      col.sorted = sort ? true : false
       return key === 'actions'
         ? colAction(widget, callbacks, col)
         : {
@@ -92,6 +92,12 @@ export const generateColumnDefsByDefinition = (widget: any, callbacks: any) => {
             cellClass: cellClass(col),
             cellClassRules: cellClassRules(col, widget.params.thresholds),
             headerClass: headerClass(col),
+            cellStyle: cssToObjet(col.style),
+
+            wrapText: true, // Habilitar wrapText
+            autoHeight: true, // Si quieres que la altura de la fila se ajuste al texto
+
+            sort: sort,
             cellRenderer: (params: ValueGetterParams) => {
               if (col.render && gridCellBuildFunctionsMap[col.render])
                 return gridCellBuildFunctionsMap[col.render](params, callbacks, col)
@@ -125,6 +131,7 @@ export const generateColumnDefsByDefinition = (widget: any, callbacks: any) => {
             }
           }
     })
+    return colsDef
 }
 
 export const cellClassSimpleTable = (formatDefinition: any, idx: number): string => {
@@ -145,6 +152,7 @@ export const headerClass = (formatDefinition: any): string => {
 	let cellClass = ''
 	cellClass += !formatDefinition.align && formatDefinition.format ? ' header-right' : ''
 	cellClass += formatDefinition.align ? ` header-${formatDefinition.align}` : ''
+	cellClass += formatDefinition.sorted ? ` bg-gray-300` : ''
 	return cellClass
 }
 
@@ -166,7 +174,6 @@ export const gridHeight = (id: string): any => {
 	const toolbarBottomEL = document.getElementById(`widget-content-bottom-${id}`)
   const toolbarBottom = toolbarBottomEL ? toolbarBottomEL.offsetHeight : 0
 	const contentHeight = mainHeight - toolbarTop - toolbarBottom
-  console.log('contentHeight', mainHeight, toolbarTop, toolbarBottom, contentHeight)
   return `${contentHeight}px`
 }
 
@@ -452,6 +459,15 @@ function lorealProposalController(params: any) {
 	}
 }
 
+export const colSorted = (col: any, sort: any): any => {
+  if (!sort || !col.dataIndx) return null
+
+  const sortCol = sort.find((s: any) => s.dataIndx === col.dataIndx)
+  if (!sortCol) return null
+
+  return sortCol.dir === 'up' ? 'asc' : 'desc'
+}
+
 export const cellClassRules = (formatDefinition: any, thresholds: any): any => {
 	let rule = {}
 	if (!thresholds) return rule
@@ -479,6 +495,23 @@ export const gridCellFunctionsMap: { [key: string]: (params: any) => any } = {
 	metricsRender: metricsRender,
 }
 
+const cssToObjet = (cssStr) => {
+  const objetCss = {'white-space': 'normal', 'line-height': '1.2'};
+  if (!cssStr) return objetCss;
+
+  const declations = cssStr.split(";");
+
+  declations.forEach(declaration => {
+      const [key, value] = declaration.split(":").map(str => str.trim());
+      if (key && value) {
+          const propertyCamelCase = key.replace(/-([a-z])/g, (match, letra) => letra.toUpperCase());
+          objetCss[propertyCamelCase] = value;
+      }
+  });
+
+  return objetCss;
+}
+
 function metricsRender(threshold: any) {
 	if (threshold && threshold.maximum) {
 		const operator = operatorTokens[threshold.maximum.operator]
@@ -493,6 +526,9 @@ export const gridCellBuildFunctionsMap: { [key: string]: (params: any, callback?
   jsonPretty: jsonPretty,
   dateAndTime: dateAndTime,
   isActiveYesOrNo: isActiveYesOrNo,
+  tasksActions: tasksActions,
+  clickCell: clickCell,
+  // btnsRenderTasksActions: btnsRenderTasksActions
 }
 
 function modulesActive(params: any) {
@@ -553,22 +589,112 @@ function isActiveYesOrNo(params: any, callback?: Record<string, () => void> | ((
   }
 }
 
+function tasksActions(params: any, callback?: Record<string, () => void> | (() => void), colDef?: Record<string, any>) {
+  try {
+    const status = params.data[params.column.colId]
+    let badge = 'secondary'
+    let title = 'Idle'
+
+    switch (status) {
+      case 0:
+        badge = 'secondary'
+        title = 'Idle'
+        break
+      case 1:
+        badge = 'aqua'
+        title = 'Pending'
+        break
+      case 2:
+        badge = 'info'
+        title = 'Started'
+        break
+      case 3:
+        badge = 'primary'
+        title = 'Task Running'
+        break
+      case 4:
+        badge = 'secondary'
+        title = 'Task Stopped'
+        break
+      case 5:
+        badge = 'success'
+        title = 'Done'
+        break
+      case 6:
+        badge = 'success'
+        title = 'Done (No Data)'
+        break
+      case 7:
+        badge = 'warning'
+        title = 'Not Found'
+        break
+      case 9:
+        badge = 'danger'
+        title = 'Task Failed'
+        break
+      case 10:
+        badge = 'warning'
+        title = 'Warning'
+        break
+      case 11:
+        badge = 'secondary'
+        title = 'Skipped'
+        break
+      case 12:
+        badge = 'danger'
+        title = 'Task Error'
+        break
+      case 98:
+        badge = 'danger'
+        title = 'Task Exception'
+        break
+      case 99:
+        badge = 'dark'
+        title = 'Closed'
+        break
+    }
+    if (!params.data['traceback']) {
+      return `<span class="badge badge-${badge}" title="${status}">${title}</span></a>`
+    } else {
+      const a = document.createElement('a')
+      a.dataset.action = 'btnBadge'
+      a.dataset.colId = params.column.colId
+      a.dataset.data = JSON.stringify(params.data)
+      a.dataset.colDef = JSON.stringify(colDef)
+      a.dataset.rowId = params.rowIndex
+      a.classList.add('cursor-pointer')
+      a.classList.add('badge')
+      a.classList.add('badge-' + badge)
+      a.addEventListener('click', callback![colDef!.postRender])
+      a.href = '#'
+      a.title = status
+      a.innerHTML = title
+      return a
+    }
+  } catch (error) {
+    console.log(error)
+  }
+}
+
 function actions(params: any, callback?: Record<string, () => void> | (() => void), colDef?: Record<string, any>) {
 	const container = document.createElement('span')
 	container.classList.add('flex', 'items-center', 'justify-center', 'gap-1', 'mt-0.5', 'opacity-60')
-	params.widget.params.actions.btns.map((btn: any) => {
-		container.appendChild(createActionBtn({ btn, ...params }, callback, colDef))
-	})
+  Object.keys(params.data.attributes.show_controls).map((btn: any) => {
+    if (!params.data.attributes.show_controls[btn]) return
+    container.appendChild(createActionBtn({ btn, ...params }, callback, colDef))
+  })
 	return container
 }
 
 const icons: any = {
-	edit: 'material-symbols:edit-square-outline-rounded',
-	delete: 'material-symbols:delete-outline-rounded'
+	// edit: 'material-symbols:edit-square-outline-rounded',
+	// delete: 'material-symbols:delete-outline-rounded',
+  play: 'tabler:play',
+  upload: 'tabler:cloud-upload'
 }
 
 function createActionBtn(params: any, callback?: Record<string, () => void> | (() => void), colDef?: Record<string, any>) {
-	const data = params.data
+  const data = params.data
 	const widget = params.widget
 
   const btn = document.createElement('iconify-icon')
@@ -582,12 +708,110 @@ function createActionBtn(params: any, callback?: Record<string, () => void> | ((
   if (colDef) btn.dataset.colDef = JSON.stringify(colDef)
 
 	btn.classList.add('cursor-pointer')
-  // console.log('btn', colDef)
   if (callback && typeof callback === 'function') {
     btn.addEventListener('click', callback)
   }
 	return btn
 }
+
+function clickCell(params: any, callback?: Record<string, () => void> | (() => void), colDef?: Record<string, any>) {
+  const div = document.createElement('div')
+  div.classList.add('cursor-pointer')
+  div.dataset.colId = params.column.colId
+  div.dataset.data = JSON.stringify(params.data)
+  div.dataset.colDef = JSON.stringify(colDef)
+  div.dataset.rowId = params.rowIndex
+  div.addEventListener('click', callback!['postRenderOpenDrilldown'])
+  div.title = 'Click for details'
+  div.innerHTML = `${params.data[params.column.colId]} <iconify-icon icon="tabler:hand-finger"></iconify-icon></div>`
+  return div
+}
+
+export const openDrillDownTempTaskMonitor = (widget: any) => {
+  // if (drilldownOpen) return
+  widget.instance_loading = true
+  clearInstances(widget)
+  let drilldowns: any[] = widget.params.drilldowns && Array.isArray(widget.params.drilldowns) ? widget.params.drilldowns : []
+  drilldowns.forEach((drilldown: any) => {
+    const drilldownConfig = Object.assign(
+      {},
+      {
+        master_filtering: true,
+        conditions:
+          !drilldown!.extendConditions || drilldown!.extendConditions === 'false'
+            ? {}
+            : widget.conditions,
+        dashboard_id: widget.dashboard_id,
+        module_id: widget.module_id,
+        program_id: widget.program_id,
+        widget_type_id: widget.widget_type_id,
+        parent: widget.widget_id,
+        dataExtra: drilldown!.dataExtra // TODO: investigar que es el dataExtra
+      },
+      drilldown,
+      {
+        params: {
+          ...drilldown.params,
+          settings: widget.params.settings
+        }
+      }
+    )
+    addInstance(widget, drilldownConfig)
+    // activeDrilldown = addInstance(widget, drilldownConfig)
+    // if (
+    //   drilldownOptions!.removeFields &&
+    //   drilldownConfig.conditions &&
+    //   drilldownConfig.conditions.fields
+    // ) {
+    //   delete drilldownConfig.conditions.fields
+    // }
+    // const vm = createVNode(WidgetComponent, {
+    //   widget: drilldownConfig,
+    // })
+    // vm.appContext = currentInstance!.appContext
+    // render(vm, containerWidget)
+    // element[0].appendChild(containerWidget)
+  })
+}
+// $: isLoading = $widget.instance_loading && drilldownOpen
+
+// function btnsRenderTasksActions(params: any, callback?: Record<string, () => void> | (() => void), colDef?: Record<string, any>) {
+// 	const container = document.createElement('span')
+// 	container.classList.add('flex', 'items-center', 'justify-center', 'gap-1', 'mt-0.5', 'opacity-60')
+// 	params.widget.params.actions.btns.map((btn: any) => {
+// 		container.appendChild(createActionBtn({ btn, ...params }, callback, colDef))
+// 	})
+// 	return container
+//   return "XXX"
+//   // const btnPlay = `<a type='button' style="padding: 5px" class='btnPlay' data-toggle="tooltip" data-placement="top" title="Play"><iconify-icon icon="tabler:play"></iconify-icon></a>`
+//   // const btnExport = `<a type='button' style="padding: 5px" class='btnExport' data-toggle="tooltip" data-placement="top" title="Upload"><iconify-icon icon="tabler:cloud-upload"></iconify-icon></a>`
+//   // const btnSound = `<a type='button' style="padding: 5px" class='btnSound' data-toggle="tooltip" data-placement="top" title="Sound"><iconify-icon icon="tabler:volume"></iconify-icon></a>`
+
+//   // let btns = ''
+//   // if (
+//   //   ui.rowData.attributes &&
+//   //   ui.rowData.attributes.show_controls &&
+//   //   ui.rowData.attributes.show_controls.play
+//   // ) {
+//   //   ui.column.btns.includes('play') ? (btns = btns.concat(btnPlay)) : null
+//   // }
+
+//   // if (
+//   //   (ui.rowData.attributes &&
+//   //     ui.rowData.attributes.file_id &&
+//   //     ui.rowData.attributes.show_controls &&
+//   //     ui.rowData.attributes.show_controls.upload) ||
+//   //   ui.rowData.file_id
+//   // ) {
+//   //   ui.column.btns.includes('export') ? (btns = btns.concat(btnExport)) : null
+//   // }
+
+//   // ui.column.btns.includes('sound') ? (btns = btns.concat(btnSound)) : null
+
+//   // return btns
+// }
+
+
 
 /** 
 function btnsRenderActionsDefaults(widget: WidgetPqTable, pq: any, ui: any) {
@@ -710,111 +934,6 @@ function btnsRenderActionsDefaults(widget: WidgetPqTable, pq: any, ui: any) {
   }
 }
 
-function btnsRenderTasksActions(widget: WidgetPqTable, pq: any, ui: any) {
-  const btnPlay = `<a type='button' style="padding: 5px" class='btnPlay' data-toggle="tooltip" data-placement="top" title="Play"><iconify-icon icon="tabler:play"></iconify-icon></a>`
-  const btnExport = `<a type='button' style="padding: 5px" class='btnExport' data-toggle="tooltip" data-placement="top" title="Upload"><iconify-icon icon="tabler:cloud-upload"></iconify-icon></a>`
-  const btnSound = `<a type='button' style="padding: 5px" class='btnSound' data-toggle="tooltip" data-placement="top" title="Sound"><iconify-icon icon="tabler:volume"></iconify-icon></a>`
-
-  let btns = ''
-  if (
-    ui.rowData.attributes &&
-    ui.rowData.attributes.show_controls &&
-    ui.rowData.attributes.show_controls.play
-  ) {
-    ui.column.btns.includes('play') ? (btns = btns.concat(btnPlay)) : null
-  }
-
-  if (
-    (ui.rowData.attributes &&
-      ui.rowData.attributes.file_id &&
-      ui.rowData.attributes.show_controls &&
-      ui.rowData.attributes.show_controls.upload) ||
-    ui.rowData.file_id
-  ) {
-    ui.column.btns.includes('export') ? (btns = btns.concat(btnExport)) : null
-  }
-
-  ui.column.btns.includes('sound') ? (btns = btns.concat(btnSound)) : null
-
-  return btns
-}
-
-function tasksActions(widget: WidgetPqTable, pq: any, ui: any) {
-  try {
-    const status = ui.rowData.task_state
-
-    let badge = 'secondary'
-    let title = 'Idle'
-
-    switch (status) {
-      case 0:
-        badge = 'secondary'
-        title = 'Idle'
-        break
-      case 1:
-        badge = 'aqua'
-        title = 'Pending'
-        break
-      case 2:
-        badge = 'info '
-        title = 'Started'
-        break
-      case 3:
-        badge = 'primary'
-        title = 'Task Running'
-        break
-      case 4:
-        badge = 'secondary'
-        title = 'Task Stopped'
-        break
-      case 5:
-        badge = 'success'
-        title = 'Done'
-        break
-      case 6:
-        badge = 'success'
-        title = 'Done (No Data)'
-        break
-      case 7:
-        badge = 'warning'
-        title = 'Not Found'
-        break
-      case 9:
-        badge = 'danger'
-        title = 'Task Failed'
-        break
-      case 10:
-        badge = 'warning'
-        title = 'Warning'
-        break
-      case 11:
-        badge = 'secondary'
-        title = 'Skipped'
-        break
-      case 12:
-        badge = 'danger'
-        title = 'Task Error'
-        break
-      case 98:
-        badge = 'danger'
-        title = 'Task Exception'
-        break
-      case 99:
-        badge = 'dark'
-        title = 'Closed'
-        break
-    }
-    if (!ui.rowData.traceback) {
-      return `<a type='button' style="padding: 5px"><span class="v-badge v-badge--inline v-badge__wrapper v-badge__badge badge badge-${badge}" title="${status}">${title}</span></a>`
-    } else {
-      const btnBadge = `<a type='button' style="padding: 5px" class='btnBadge' data-toggle="tooltip" data-placement="top" title="badge"><span class="v-badge v-badge--inline v-badge__wrapper v-badge__badge badge badge-${badge}" title="${status}">${title}</span></a>`
-      return btnBadge
-    }
-  } catch (error) {
-    console.log(error)
-  }
-}
-
 function partnerPortalStatusDeals(widget: WidgetPqTable, pq: any, ui: any) {
   try {
     const status = Number(ui.rowData.state_id)
@@ -865,12 +984,6 @@ function partnerPortalStatusDeals(widget: WidgetPqTable, pq: any, ui: any) {
   } catch (error) {
     console.log(error)
   }
-}
-
-function clickCell(widget: WidgetPqTable, pq: any, ui: any) {
-  return `<center class="btnDetails" title="Click for details" style="cursor: pointer;">${
-    ui.rowData[ui.dataIndx]
-  } <iconify-icon icon="tabler:hand-finger"></iconify-icon></center>`
 }
 
 function btnsRenderVibaActions(widget: WidgetPqTable, pq: any, ui: any) {
