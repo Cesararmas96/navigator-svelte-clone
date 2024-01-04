@@ -411,3 +411,7 @@
 	overflow: visible !important;
 	height: auto !important;
 }
+
+.color-primary {
+	color: rgb(var(--theme-color)) !important;
+}

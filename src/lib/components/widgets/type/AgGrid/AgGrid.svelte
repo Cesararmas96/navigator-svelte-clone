@@ -119,16 +119,27 @@
 			const { action, data, colDef, keys, rowId } = params.srcElement.dataset
 			switch (action) {
 				case 'play':
-					openModal('Confirm Task Execution', 'ActionModalTasks', { data: JSON.parse(data) })
+					openModal('Confirm Task Execution', 'ActionModalTasks', {
+						action: action.toUpperCase(),
+						data: JSON.parse(data),
+						callback: () => {
+							reloadAction.action()
+						}
+					})
 					break
 				case 'export':
+					break
+				case 'upload':
+					openModal('Upload Task', 'ActionModalTasks', {
+						action: action.toUpperCase(),
+						data: JSON.parse(data)
+					})
 					break
 				case 'btnBadge':
 					const _data = JSON.parse(data)
 					const status = _data['task_state']
 					let badge = 'info'
 					let title = 'Information'
-					console.log('btnBadge', status)
 
 					switch (status) {
 						case 0:
@@ -181,9 +192,6 @@
 				? actionBtnMap[$widget.params.drilldowns.cellClick](params.srcElement.dataset)
 				: actionBtnMap['cellClickDefault'](params.srcElement.dataset)
 		},
-		// addWidgetDrilldownTempTaskMonitor(widget: any) {
-		// 	openDrillDownTempTaskMonitor(widget)
-		// },
 		async addWidgetDrilldownTempTaskMonitor(params: any) {
 			let { data, colDef, rowId, colId } = params
 			data = JSON.parse(data)
@@ -291,7 +299,6 @@
 						conditions,
 						format_definition: evClick.colModel
 					})
-					console.log('drilldowns', drilldowns)
 					addInstance(widget, drilldowns[0])
 					$widget.instance_loading = false
 				}
@@ -429,7 +436,6 @@
 			onGridSizeChanged(params)
 		},
 		onFirstDataRendered: function (event) {
-			console.log('onFirstDataRendered', $widget.title)
 			if ($widget.temp) {
 				setInstanceContentHeight($widget.parent)
 				setInstancesContentHeight($widget.parent, $widget.widget_id)
@@ -520,7 +526,7 @@
 		name: 'resizeContent',
 		action: () => {
 			setContentHeight($widget.widget_id)
-			resizeAgGridToContent()
+			if (!$widget.instances || $widget.instances.length === 0) resizeAgGridToContent()
 		}
 	})
 
@@ -532,7 +538,6 @@
 	// }
 
 	if ($widget.resized) {
-		console.log('resizeAgGridToContent')
 		resizeAgGridToContent()
 	}
 

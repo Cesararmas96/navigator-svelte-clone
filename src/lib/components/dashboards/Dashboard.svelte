@@ -120,6 +120,7 @@
 		$storeDashboard.gridItems = resizeItem(item, $storeDashboard.gridItems)
 		gridController.gridParams.updateGrid()
 		$storeDashboard.gridItems = [...$storeDashboard.gridItems]
+		console.log(item)
 	}
 	$: handleCloning = (item: any) => {
 		const clonedItem = cloneItem(item, $storeDashboard.gridItems)
