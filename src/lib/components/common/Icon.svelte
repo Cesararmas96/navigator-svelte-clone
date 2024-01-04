@@ -8,4 +8,6 @@
 	$: icon = icon?.indexOf('fa fa-') === 0 ? iconEquivalences[icon] : icon
 </script>
 
-<iconify-icon {icon} height={size} class={classes} />
+<!-- svelte-ignore a11y-no-static-element-interactions -->
+<!-- svelte-ignore a11y-click-events-have-key-events -->
+<iconify-icon {icon} height={size} class={classes} on:click />
