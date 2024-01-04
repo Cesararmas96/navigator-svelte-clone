@@ -161,7 +161,9 @@
 								{#each Object.values(filteredObject) as method}
 									{#if method.name === 'ADFSAuth'}
 										<Button
-											href={`${apiUrl}${method.uri}`}
+											href={`${apiUrl}${method.uri}?redirect_uri=${
+												import.meta.env.VITE_RESPONSE_URI
+											}`}
 											outline
 											color={method.color || 'light'}
 											class="ml-auto mr-auto flex w-full"
@@ -171,7 +173,9 @@
 									{:else}
 										<li>
 											<Button
-												href={`${apiUrl}${method.uri}`}
+												href={`${apiUrl}${method.uri}?redirect_uri=${
+													import.meta.env.VITE_RESPONSE_URI
+												}}`}
 												outline
 												color={method.color || 'light'}
 												class="ml-auto mr-auto flex w-full"

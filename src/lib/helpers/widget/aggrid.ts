@@ -1,76 +1,86 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable no-case-declarations */
+/* eslint-env es6 */
 import { sendWarningNotification } from '$lib/stores/toast'
 import moment from 'moment-timezone'
 import { capitalizeWord } from '../common/common'
 import type { ValueGetterParams } from 'ag-grid-community'
 import { fnFormatMoney, fnFormatPercent, formats } from '../common/formats'
+import { addInstance, clearInstances } from './instances'
 
 export const colAction = (widget: any, callbacks: any, colDef?: Record<string, any>) => {
-  return {
-    headerName: 'Actions',
-    field: 'actions',
-    order: 9999,
-    cellClass: 'text-center',
-    headerClass: 'header-center',
-    maxWidth: 100,
-    cellRenderer: (params: ValueGetterParams) => {
-      return gridCellBuildFunctionsMap['actions']({
-        data: params.data,
-        tableParams: params,
-        widget: widget,
-      }, callbacks[widget.params.actions.postRender], colDef)
-    }
-  }
+	return {
+		headerName: 'Actions',
+		field: 'actions',
+		order: 9999,
+		cellClass: 'text-center',
+		headerClass: 'header-center',
+		maxWidth: 100,
+		cellRenderer: (params: ValueGetterParams) => {
+			return gridCellBuildFunctionsMap['actions'](
+				{
+					data: params.data,
+					tableParams: params,
+					widget: widget
+				},
+				callbacks[widget.params.actions.postRender],
+				colDef
+			)
+		}
+	}
 }
 
 type FunctionMapType = {
-  [key: string]: number[];
-};
+	[key: string]: number[]
+}
 
 /**
  * @description Genera las columnas por defecto a partir de los datos
  * @param data
  */
 export const generateColumnDefsByData = (widget: any, simpleTable: boolean) => {
-  const data = widget.data && widget.data.length > 0 ? widget.data[0] : {}
-  const definitions = widget.format_definition || {}
-  const columns: any[] = []
+	const data = widget.data && widget.data.length > 0 ? widget.data[0] : {}
+	const definitions = widget.format_definition || {}
+	const columns: any[] = []
 
-  if (simpleTable) console.log('widget', widget)
-
-  Object.entries(data).map(([key, value]: [string, any], idx: number) => {
-    if (Object.keys(definitions).map((key: string) => key).includes(key)) return
-    console.log('key', key)
-    const columnDef = {
-      headerName: capitalizeWord(key).replace('_', ' '),
-      field: key,
-      order: 9998,
-      resizable: true,
-      cellClass: simpleTable ? cellClassSimpleTable(definitions, idx) : '',
-      hide: Array.isArray(value) || typeof value === 'object',
-      valueFormatter: (params: any) => {
-        if (simpleTable) {
-          const def: FunctionMapType = definitions;
-          for (const [fnName, indices] of Object.entries(def)) {
-            if (indices.includes(idx)) {     
-              const fn = formats[fnName]; 
-              return fn(params.value);
-            }
-          }
-        } else {
-          return moment(params.value, 'YYYY-MM-DDTHH:mm:ss.SSSSSSZ', true).isValid()
-            ? moment(params.value, 'YYYY-MM-DDTHH:mm:ss.SSSSSSZ').format(
-                'ddd, MMM DD YYYY, HH:mm:ss'
-              )
-            : params.value
-        }
-      }
-    }
-    if (widget.params?.table?.roll_up?.sum?.includes(key)) {
-      columnDef['aggFunc'] = 'sum';
-    }
-    columns.push(columnDef)
-  })
-  return columns
+	Object.entries(data).map(([key, value]: [string, any], idx: number) => {
+		if (
+			Object.keys(definitions)
+				.map((key: string) => key)
+				.includes(key)
+		)
+			return
+		const columnDef = {
+			headerName: capitalizeWord(key).replace('_', ' '),
+			field: key,
+			order: 9998,
+			resizable: true,
+			cellClass: simpleTable ? cellClassSimpleTable(definitions, idx) : '',
+			hide: Array.isArray(value) || typeof value === 'object',
+			valueFormatter: (params: any) => {
+				if (simpleTable) {
+					const def: FunctionMapType = definitions
+					for (const [fnName, indices] of Object.entries(def)) {
+						if (indices.includes(idx)) {
+							const fn = formats[fnName]
+							return fn(params.value)
+						}
+					}
+				} else {
+					return moment(params.value, 'YYYY-MM-DDTHH:mm:ss.SSSSSSZ', true).isValid()
+						? moment(params.value, 'YYYY-MM-DDTHH:mm:ss.SSSSSSZ').format(
+								'ddd, MMM DD YYYY, HH:mm:ss'
+						  )
+						: params.value
+				}
+			}
+		}
+		if (widget.params?.table?.roll_up?.sum?.includes(key)) {
+			columnDef['aggFunc'] = 'sum'
+		}
+		columns.push(columnDef)
+	})
+	return columns
 }
 
 /**
@@ -78,59 +88,77 @@ export const generateColumnDefsByData = (widget: any, simpleTable: boolean) => {
  * @param data
  */
 export const generateColumnDefsByDefinition = (widget: any, callbacks: any) => {
-  const definitions = widget.format_definition
-  return Object.entries(definitions)
-    .filter(([key, col]: [string, any]) => !col.hidden) // Filtrar columnas ocultas
-    .map(([key, col]: [string, any]) => {
-      return key === 'actions'
-        ? colAction(widget, callbacks, col)
-        : {
-            order: col.order,
-            headerName: col.title,
-            field: key,
-            format: col.format,
-            cellClass: cellClass(col),
-            cellClassRules: cellClassRules(col, widget.params.thresholds),
-            headerClass: headerClass(col),
-            cellRenderer: (params: ValueGetterParams) => {
-              if (col.render && gridCellBuildFunctionsMap[col.render])
-                return gridCellBuildFunctionsMap[col.render](params, callbacks, col)
+	const definitions = widget.format_definition
+	const colsDef = Object.entries(definitions)
+		.filter(([key, col]: [string, any]) => !col.hidden) // Filtrar columnas ocultas
+		.map(([key, col]: [string, any]) => {
+			const sort = colSorted(col, widget.params?.pqgrid?.sortModel?.sorter)
+			col.sorted = sort ? true : false
+			return key === 'actions'
+				? colAction(widget, callbacks, col)
+				: {
+						order: col.order,
+						headerName: col.title,
+						field: key,
+						format: col.format,
+						cellClass: cellClass(col),
+						cellClassRules: cellClassRules(col, widget.params.thresholds),
+						headerClass: headerClass(col),
+						cellStyle: cssToObjet(col.style),
 
-              // if ($widget.params.pqgrid?.formulas && Array.isArray($widget.params.pqgrid?.formulas)) {
-              // 	$widget.params.pqgrid.formulas.map((formula: any, formulaIndex: number) => {
-              // 		if (typeof formulaFunctionsMap[formula[1]] === 'function') {
-              // 			const pqFormula = formula[1].toString()
-              // 			return formulaFunctionsMap[pqFormula](params, $widget)
+						wrapText: true, // Habilitar wrapText
+						autoHeight: true, // Si quieres que la altura de la fila se ajuste al texto
 
-              // 			// $widget.params.pqgrid.formulas[formulaIndex][1] = (...args: any) => {
-              // 			// 	return formulaFunctionsMap[pqFormula](params)
-              // 			// }
-              // 		} else {
-              // 			// console.log(
-              // 			// 	`The formula ${payload.params.value.pqgrid.formulas} function not exist.`
-              // 			// )
-              // 			// delete payload.params.value.pqgrid.formulas[formulaIndex]
-              // 		}
-              // 	})
-              // } else {
-              // 	// 	: params.data[key]
-              // 	return params.data[key]
-              // }
-              return col.format ? 
-                formatByPattern(params.data[key], col.format) : 
-                !Array.isArray(params.data[key]) ? 
-                  params.data[key] :
-                  new Array(params.data[key]).join(', ')
+						sort: sort,
+						cellRenderer: (params: ValueGetterParams) => {
+							if (col.render && gridCellBuildFunctionsMap[col.render])
+								return gridCellBuildFunctionsMap[col.render](params, callbacks, col)
 
-            }
-          }
-    })
+							// if ($widget.params.pqgrid?.formulas && Array.isArray($widget.params.pqgrid?.formulas)) {
+							// 	$widget.params.pqgrid.formulas.map((formula: any, formulaIndex: number) => {
+							// 		if (typeof formulaFunctionsMap[formula[1]] === 'function') {
+							// 			const pqFormula = formula[1].toString()
+							// 			return formulaFunctionsMap[pqFormula](params, $widget)
+
+							// 			// $widget.params.pqgrid.formulas[formulaIndex][1] = (...args: any) => {
+							// 			// 	return formulaFunctionsMap[pqFormula](params)
+							// 			// }
+							// 		} else {
+							// 			// console.log(
+							// 			// 	`The formula ${payload.params.value.pqgrid.formulas} function not exist.`
+							// 			// )
+							// 			// delete payload.params.value.pqgrid.formulas[formulaIndex]
+							// 		}
+							// 	})
+							// } else {
+							// 	// 	: params.data[key]
+							// 	return params.data[key]
+							// }
+							return col.format
+								? formatByPattern(params.data[key], col.format)
+								: !Array.isArray(params.data[key])
+								? params.data[key]
+								: new Array(params.data[key]).join(', ')
+						}
+				  }
+		})
+	return colsDef
 }
 
 export const cellClassSimpleTable = (formatDefinition: any, idx: number): string => {
 	let cellClass = ''
-  if (formatDefinition && formatDefinition['fnFormatNumberInteger'] && formatDefinition['fnFormatNumberInteger'].includes(idx)) cellClass = 'text-right'
-  if (formatDefinition && formatDefinition['fnFormatPercent'] && formatDefinition['fnFormatPercent'].includes(idx)) cellClass = 'text-right'
+	if (
+		formatDefinition &&
+		formatDefinition['fnFormatNumberInteger'] &&
+		formatDefinition['fnFormatNumberInteger'].includes(idx)
+	)
+		cellClass = 'text-right'
+	if (
+		formatDefinition &&
+		formatDefinition['fnFormatPercent'] &&
+		formatDefinition['fnFormatPercent'].includes(idx)
+	)
+		cellClass = 'text-right'
 	return cellClass
 }
 
@@ -145,39 +173,43 @@ export const headerClass = (formatDefinition: any): string => {
 	let cellClass = ''
 	cellClass += !formatDefinition.align && formatDefinition.format ? ' header-right' : ''
 	cellClass += formatDefinition.align ? ` header-${formatDefinition.align}` : ''
+	cellClass += formatDefinition.sorted ? ` bg-gray-300` : ''
 	return cellClass
 }
 
 export const setMainContentHeight = (id: string): any => {
-  const gridHeight = document.getElementById(`grid-${id}`)!.offsetHeight
-  document.getElementById(`widget-main-${id}`)?.setAttribute('style', `height: ${gridHeight}px`)
+	const gridHeight = document.getElementById(`grid-${id}`)!.offsetHeight
+	document.getElementById(`widget-main-${id}`)?.setAttribute('style', `height: ${gridHeight}px`)
 }
 
 export const setInstancesContentHeight = (patent_id: string, id: string): any => {
-  const instancesHeight = document.getElementById(`widget-instances-${patent_id}`)!
-  document.getElementById(`widget-main-${id}`)?.setAttribute('style', `height: ${instancesHeight.offsetHeight}px`)
-  document.getElementById(`grid-${id}`)?.setAttribute('style', `height: ${instancesHeight.offsetHeight}px`)
+	const instancesHeight = document.getElementById(`widget-instances-${patent_id}`)!
+	document
+		.getElementById(`widget-main-${id}`)
+		?.setAttribute('style', `height: ${instancesHeight.offsetHeight}px`)
+	document
+		.getElementById(`grid-${id}`)
+		?.setAttribute('style', `height: ${instancesHeight.offsetHeight}px`)
 }
 
 export const gridHeight = (id: string): any => {
-  const mainHeight = document.getElementById(`widget-main-${id}`)!.offsetHeight
-  const toolbarTopEL = document.getElementById(`widget-content-top-${id}`)
-  const toolbarTop = toolbarTopEL ? toolbarTopEL.offsetHeight : 0
+	const mainHeight = document.getElementById(`widget-main-${id}`)!.offsetHeight
+	const toolbarTopEL = document.getElementById(`widget-content-top-${id}`)
+	const toolbarTop = toolbarTopEL ? toolbarTopEL.offsetHeight : 0
 	const toolbarBottomEL = document.getElementById(`widget-content-bottom-${id}`)
-  const toolbarBottom = toolbarBottomEL ? toolbarBottomEL.offsetHeight : 0
+	const toolbarBottom = toolbarBottomEL ? toolbarBottomEL.offsetHeight : 0
 	const contentHeight = mainHeight - toolbarTop - toolbarBottom
-  console.log('contentHeight', mainHeight, toolbarTop, toolbarBottom, contentHeight)
-  return `${contentHeight}px`
+	return `${contentHeight}px`
 }
 
 export const gridInstanceHeight = (id: string): any => {
-  const mainHeight = 400 //document.getElementById(`widget-main-${id}`)!.offsetHeight
-  const toolbarTopEL = document.getElementById(`widget-content-top-${id}`)
-  const toolbarTop = toolbarTopEL ? toolbarTopEL.offsetHeight : 0
+	const mainHeight = 400 //document.getElementById(`widget-main-${id}`)!.offsetHeight
+	const toolbarTopEL = document.getElementById(`widget-content-top-${id}`)
+	const toolbarTop = toolbarTopEL ? toolbarTopEL.offsetHeight : 0
 	const toolbarBottomEL = document.getElementById(`widget-content-bottom-${id}`)
-  const toolbarBottom = toolbarBottomEL ? toolbarBottomEL.offsetHeight : 0
-	const contentHeight = mainHeight - toolbarTop - toolbarBottom 
-  return `${contentHeight}px`
+	const toolbarBottom = toolbarBottomEL ? toolbarBottomEL.offsetHeight : 0
+	const contentHeight = mainHeight - toolbarTop - toolbarBottom
+	return `${contentHeight}px`
 }
 
 export const recordsPerPage = (formatDefinition: any): any => {
@@ -208,7 +240,7 @@ export const formatByPattern = (value: number, pattern: string): string => {
 
 	switch (pattern) {
 		case '####':
-			result = (value) ? value.toString() : '0'
+			result = value ? value.toString() : '0'
 			break
 
 		case '#,###':
@@ -452,6 +484,15 @@ function lorealProposalController(params: any) {
 	}
 }
 
+export const colSorted = (col: any, sort: any): any => {
+	if (!sort || !col.dataIndx) return null
+
+	const sortCol = sort.find((s: any) => s.dataIndx === col.dataIndx)
+	if (!sortCol) return null
+
+	return sortCol.dir === 'up' ? 'asc' : 'desc'
+}
+
 export const cellClassRules = (formatDefinition: any, thresholds: any): any => {
 	let rule = {}
 	if (!thresholds) return rule
@@ -476,7 +517,24 @@ const operatorTokens: any = {
 }
 
 export const gridCellFunctionsMap: { [key: string]: (params: any) => any } = {
-	metricsRender: metricsRender,
+	metricsRender: metricsRender
+}
+
+const cssToObjet = (cssStr) => {
+	const objetCss = { 'white-space': 'normal', 'line-height': '1.2' }
+	if (!cssStr) return objetCss
+
+	const declations = cssStr.split(';')
+
+	declations.forEach((declaration) => {
+		const [key, value] = declaration.split(':').map((str) => str.trim())
+		if (key && value) {
+			const propertyCamelCase = key.replace(/-([a-z])/g, (match, letra) => letra.toUpperCase())
+			objetCss[propertyCamelCase] = value
+		}
+	})
+
+	return objetCss
 }
 
 function metricsRender(threshold: any) {
@@ -486,13 +544,22 @@ function metricsRender(threshold: any) {
 	}
 }
 
-export const gridCellBuildFunctionsMap: { [key: string]: (params: any, callback?: Record<string, () => void> | (() => void), colDef?: Record<string, any>) => any } = {
+export const gridCellBuildFunctionsMap: {
+	[key: string]: (
+		params: any,
+		callback?: Record<string, () => void> | (() => void),
+		colDef?: Record<string, any>
+	) => any
+} = {
 	modulesActive: modulesActive,
 	modulesProgram: modulesProgram,
-  actions: actions,
-  jsonPretty: jsonPretty,
-  dateAndTime: dateAndTime,
-  isActiveYesOrNo: isActiveYesOrNo,
+	actions: actions,
+	jsonPretty: jsonPretty,
+	dateAndTime: dateAndTime,
+	isActiveYesOrNo: isActiveYesOrNo,
+	tasksActions: tasksActions,
+	clickCell: clickCell
+	// btnsRenderTasksActions: btnsRenderTasksActions
 }
 
 function modulesActive(params: any) {
@@ -509,85 +576,302 @@ function modulesProgram(params: any) {
 }
 
 function jsonPretty(params: any) {
-  try {
-    return JSON.stringify(params.data[params.column.colId])
-  } catch (error) {
-    return params.data[params.column.colId]
-  }
+	try {
+		return JSON.stringify(params.data[params.column.colId])
+	} catch (error) {
+		return params.data[params.column.colId]
+	}
 }
 
 function dateAndTime(params: any) {
-  try {
-    if (params.column.colId && params.data[params.column.colId]) {
-      const date = moment.tz(params.data[params.column.colId], 'America/New_York')
-      return date.format('ddd, MMM DD YYYY, HH:mm:ss')
-    }
-  } catch (error) {
-    console.log(error)
-  }
+	try {
+		if (params.column.colId && params.data[params.column.colId]) {
+			const date = moment.tz(params.data[params.column.colId], 'America/New_York')
+			return date.format('ddd, MMM DD YYYY, HH:mm:ss')
+		}
+	} catch (error) {
+		console.log(error)
+	}
 }
 
-function isActiveYesOrNo(params: any, callback?: Record<string, () => void> | (() => void), colDef?: Record<string, any>) {
-  try {
-    const active = params.data[params.column.colId]
-    let title = (!active)? 'No' : 'Yes'
-    const cls = params.data[params.column.colId] ? 'badge-success' : 'badge-danger'
-    if (!colDef!.postRender) {
-      return `<span class='badge ${cls}'>${title}</span>`
-    } else {
-      const a = document.createElement('a')
-      a.dataset.colId = params.column.colId
-      a.dataset.data = JSON.stringify(params.data)
-      a.dataset.colDef = JSON.stringify(colDef)
-      a.dataset.rowId = params.rowIndex
-      a.classList.add('cursor-pointer')
-      a.classList.add('badge')
-      a.classList.add(cls)
-      a.addEventListener('click', callback![colDef!.postRender])
-      a.href = '#'
-      a.innerHTML = title
-      return a
-    }
-  } catch (error) {
-    console.log(error)
-  }
+function isActiveYesOrNo(
+	params: any,
+	callback?: Record<string, () => void> | (() => void),
+	colDef?: Record<string, any>
+) {
+	try {
+		const active = params.data[params.column.colId]
+		const title = !active ? 'No' : 'Yes'
+		const cls = params.data[params.column.colId] ? 'badge-success' : 'badge-danger'
+		if (!colDef!.postRender) {
+			return `<span class='badge ${cls}'>${title}</span>`
+		} else {
+			const a = document.createElement('a')
+			a.dataset.colId = params.column.colId
+			a.dataset.data = JSON.stringify(params.data)
+			a.dataset.colDef = JSON.stringify(colDef)
+			a.dataset.rowId = params.rowIndex
+			a.classList.add('cursor-pointer')
+			a.classList.add('badge')
+			a.classList.add(cls)
+			a.addEventListener('click', callback![colDef!.postRender])
+			a.href = '#'
+			a.innerHTML = title
+			return a
+		}
+	} catch (error) {
+		console.log(error)
+	}
 }
 
-function actions(params: any, callback?: Record<string, () => void> | (() => void), colDef?: Record<string, any>) {
+function tasksActions(
+	params: any,
+	callback?: Record<string, () => void> | (() => void),
+	colDef?: Record<string, any>
+) {
+	try {
+		const status = params.data[params.column.colId]
+		let badge = 'secondary'
+		let title = 'Idle'
+
+		switch (status) {
+			case 0:
+				badge = 'secondary'
+				title = 'Idle'
+				break
+			case 1:
+				badge = 'aqua'
+				title = 'Pending'
+				break
+			case 2:
+				badge = 'info'
+				title = 'Started'
+				break
+			case 3:
+				badge = 'primary'
+				title = 'Task Running'
+				break
+			case 4:
+				badge = 'secondary'
+				title = 'Task Stopped'
+				break
+			case 5:
+				badge = 'success'
+				title = 'Done'
+				break
+			case 6:
+				badge = 'success'
+				title = 'Done (No Data)'
+				break
+			case 7:
+				badge = 'warning'
+				title = 'Not Found'
+				break
+			case 9:
+				badge = 'danger'
+				title = 'Task Failed'
+				break
+			case 10:
+				badge = 'warning'
+				title = 'Warning'
+				break
+			case 11:
+				badge = 'secondary'
+				title = 'Skipped'
+				break
+			case 12:
+				badge = 'danger'
+				title = 'Task Error'
+				break
+			case 98:
+				badge = 'danger'
+				title = 'Task Exception'
+				break
+			case 99:
+				badge = 'dark'
+				title = 'Closed'
+				break
+		}
+		if (!params.data['traceback']) {
+			return `<span class="badge badge-${badge}" title="${status}">${title}</span></a>`
+		} else {
+			const a = document.createElement('a')
+			a.dataset.action = 'btnBadge'
+			a.dataset.colId = params.column.colId
+			a.dataset.data = JSON.stringify(params.data)
+			a.dataset.colDef = JSON.stringify(colDef)
+			a.dataset.rowId = params.rowIndex
+			a.classList.add('cursor-pointer')
+			a.classList.add('badge')
+			a.classList.add('badge-' + badge)
+			a.addEventListener('click', callback![colDef!.postRender])
+			a.href = '#'
+			a.title = status
+			a.innerHTML = title
+			return a
+		}
+	} catch (error) {
+		console.log(error)
+	}
+}
+
+function actions(
+	params: any,
+	callback?: Record<string, () => void> | (() => void),
+	colDef?: Record<string, any>
+) {
 	const container = document.createElement('span')
 	container.classList.add('flex', 'items-center', 'justify-center', 'gap-1', 'mt-0.5', 'opacity-60')
-	params.widget.params.actions.btns.map((btn: any) => {
-		container.appendChild(createActionBtn({ btn, ...params }, callback, colDef))
-	})
+	if (params.data?.attributes?.show_controls) {
+		Object.keys(params.data?.attributes?.show_controls).map((btn: any) => {
+			if (!params.data.attributes.show_controls[btn]) return
+			container.appendChild(createActionBtn({ btn, ...params }, callback, colDef))
+		})
+	}
 	return container
 }
 
 const icons: any = {
-	edit: 'material-symbols:edit-square-outline-rounded',
-	delete: 'material-symbols:delete-outline-rounded'
+	// edit: 'material-symbols:edit-square-outline-rounded',
+	// delete: 'material-symbols:delete-outline-rounded',
+	play: 'tabler:play',
+	upload: 'tabler:cloud-upload'
 }
 
-function createActionBtn(params: any, callback?: Record<string, () => void> | (() => void), colDef?: Record<string, any>) {
+function createActionBtn(
+	params: any,
+	callback?: Record<string, () => void> | (() => void),
+	colDef?: Record<string, any>
+) {
 	const data = params.data
 	const widget = params.widget
 
-  const btn = document.createElement('iconify-icon')
+	const btn = document.createElement('iconify-icon')
 	btn.icon = icons[params.btn]
 	btn.height = '20px'
 	btn.dataset.action = params.btn
-  btn.dataset.data = JSON.stringify(data)
-  btn.dataset.keys = JSON.stringify(widget.params?.model?.primaryKey ? [widget.params?.model?.primaryKey] : widget.params?.model?.keys || [])
-  btn.dataset.rowId = params.tableParams.rowIndex
-  btn.dataset.colId = params.tableParams.column.colId
-  if (colDef) btn.dataset.colDef = JSON.stringify(colDef)
+	btn.dataset.data = JSON.stringify(data)
+	btn.dataset.keys = JSON.stringify(
+		widget.params?.model?.primaryKey
+			? [widget.params?.model?.primaryKey]
+			: widget.params?.model?.keys || []
+	)
+	btn.dataset.rowId = params.tableParams.rowIndex
+	btn.dataset.colId = params.tableParams.column.colId
+	if (colDef) btn.dataset.colDef = JSON.stringify(colDef)
 
 	btn.classList.add('cursor-pointer')
-  // console.log('btn', colDef)
-  if (callback && typeof callback === 'function') {
-    btn.addEventListener('click', callback)
-  }
+	if (callback && typeof callback === 'function') {
+		btn.addEventListener('click', callback)
+	}
 	return btn
 }
+
+function clickCell(
+	params: any,
+	callback?: Record<string, () => void> | (() => void),
+	colDef?: Record<string, any>
+) {
+	const div = document.createElement('div')
+	div.classList.add('cursor-pointer')
+	div.dataset.colId = params.column.colId
+	div.dataset.data = JSON.stringify(params.data)
+	div.dataset.colDef = JSON.stringify(colDef)
+	div.dataset.rowId = params.rowIndex
+	div.addEventListener('click', callback!['postRenderOpenDrilldown'])
+	div.title = 'Click for details'
+	div.innerHTML = `${
+		params.data[params.column.colId]
+	} <iconify-icon icon="tabler:hand-finger"></iconify-icon></div>`
+	return div
+}
+
+export const openDrillDownTempTaskMonitor = (widget: any) => {
+	// if (drilldownOpen) return
+	widget.instance_loading = true
+	clearInstances(widget)
+	const drilldowns: any[] =
+		widget.params.drilldowns && Array.isArray(widget.params.drilldowns)
+			? widget.params.drilldowns
+			: []
+	drilldowns.forEach((drilldown: any) => {
+		const drilldownConfig = Object.assign(
+			{},
+			{
+				master_filtering: true,
+				conditions:
+					!drilldown!.extendConditions || drilldown!.extendConditions === 'false'
+						? {}
+						: widget.conditions,
+				dashboard_id: widget.dashboard_id,
+				module_id: widget.module_id,
+				program_id: widget.program_id,
+				widget_type_id: widget.widget_type_id,
+				parent: widget.widget_id,
+				dataExtra: drilldown!.dataExtra // TODO: investigar que es el dataExtra
+			},
+			drilldown,
+			{
+				params: {
+					...drilldown.params,
+					settings: widget.params.settings
+				}
+			}
+		)
+		addInstance(widget, drilldownConfig)
+		// activeDrilldown = addInstance(widget, drilldownConfig)
+		// if (
+		//   drilldownOptions!.removeFields &&
+		//   drilldownConfig.conditions &&
+		//   drilldownConfig.conditions.fields
+		// ) {
+		//   delete drilldownConfig.conditions.fields
+		// }
+		// const vm = createVNode(WidgetComponent, {
+		//   widget: drilldownConfig,
+		// })
+		// vm.appContext = currentInstance!.appContext
+		// render(vm, containerWidget)
+		// element[0].appendChild(containerWidget)
+	})
+}
+// $: isLoading = $widget.instance_loading && drilldownOpen
+
+// function btnsRenderTasksActions(params: any, callback?: Record<string, () => void> | (() => void), colDef?: Record<string, any>) {
+// 	const container = document.createElement('span')
+// 	container.classList.add('flex', 'items-center', 'justify-center', 'gap-1', 'mt-0.5', 'opacity-60')
+// 	params.widget.params.actions.btns.map((btn: any) => {
+// 		container.appendChild(createActionBtn({ btn, ...params }, callback, colDef))
+// 	})
+// 	return container
+//   return "XXX"
+//   // const btnPlay = `<a type='button' style="padding: 5px" class='btnPlay' data-toggle="tooltip" data-placement="top" title="Play"><iconify-icon icon="tabler:play"></iconify-icon></a>`
+//   // const btnExport = `<a type='button' style="padding: 5px" class='btnExport' data-toggle="tooltip" data-placement="top" title="Upload"><iconify-icon icon="tabler:cloud-upload"></iconify-icon></a>`
+//   // const btnSound = `<a type='button' style="padding: 5px" class='btnSound' data-toggle="tooltip" data-placement="top" title="Sound"><iconify-icon icon="tabler:volume"></iconify-icon></a>`
+
+//   // let btns = ''
+//   // if (
+//   //   ui.rowData.attributes &&
+//   //   ui.rowData.attributes.show_controls &&
+//   //   ui.rowData.attributes.show_controls.play
+//   // ) {
+//   //   ui.column.btns.includes('play') ? (btns = btns.concat(btnPlay)) : null
+//   // }
+
+//   // if (
+//   //   (ui.rowData.attributes &&
+//   //     ui.rowData.attributes.file_id &&
+//   //     ui.rowData.attributes.show_controls &&
+//   //     ui.rowData.attributes.show_controls.upload) ||
+//   //   ui.rowData.file_id
+//   // ) {
+//   //   ui.column.btns.includes('export') ? (btns = btns.concat(btnExport)) : null
+//   // }
+
+//   // ui.column.btns.includes('sound') ? (btns = btns.concat(btnSound)) : null
+
+//   // return btns
+// }
 
 /** 
 function btnsRenderActionsDefaults(widget: WidgetPqTable, pq: any, ui: any) {
@@ -710,111 +994,6 @@ function btnsRenderActionsDefaults(widget: WidgetPqTable, pq: any, ui: any) {
   }
 }
 
-function btnsRenderTasksActions(widget: WidgetPqTable, pq: any, ui: any) {
-  const btnPlay = `<a type='button' style="padding: 5px" class='btnPlay' data-toggle="tooltip" data-placement="top" title="Play"><iconify-icon icon="tabler:play"></iconify-icon></a>`
-  const btnExport = `<a type='button' style="padding: 5px" class='btnExport' data-toggle="tooltip" data-placement="top" title="Upload"><iconify-icon icon="tabler:cloud-upload"></iconify-icon></a>`
-  const btnSound = `<a type='button' style="padding: 5px" class='btnSound' data-toggle="tooltip" data-placement="top" title="Sound"><iconify-icon icon="tabler:volume"></iconify-icon></a>`
-
-  let btns = ''
-  if (
-    ui.rowData.attributes &&
-    ui.rowData.attributes.show_controls &&
-    ui.rowData.attributes.show_controls.play
-  ) {
-    ui.column.btns.includes('play') ? (btns = btns.concat(btnPlay)) : null
-  }
-
-  if (
-    (ui.rowData.attributes &&
-      ui.rowData.attributes.file_id &&
-      ui.rowData.attributes.show_controls &&
-      ui.rowData.attributes.show_controls.upload) ||
-    ui.rowData.file_id
-  ) {
-    ui.column.btns.includes('export') ? (btns = btns.concat(btnExport)) : null
-  }
-
-  ui.column.btns.includes('sound') ? (btns = btns.concat(btnSound)) : null
-
-  return btns
-}
-
-function tasksActions(widget: WidgetPqTable, pq: any, ui: any) {
-  try {
-    const status = ui.rowData.task_state
-
-    let badge = 'secondary'
-    let title = 'Idle'
-
-    switch (status) {
-      case 0:
-        badge = 'secondary'
-        title = 'Idle'
-        break
-      case 1:
-        badge = 'aqua'
-        title = 'Pending'
-        break
-      case 2:
-        badge = 'info '
-        title = 'Started'
-        break
-      case 3:
-        badge = 'primary'
-        title = 'Task Running'
-        break
-      case 4:
-        badge = 'secondary'
-        title = 'Task Stopped'
-        break
-      case 5:
-        badge = 'success'
-        title = 'Done'
-        break
-      case 6:
-        badge = 'success'
-        title = 'Done (No Data)'
-        break
-      case 7:
-        badge = 'warning'
-        title = 'Not Found'
-        break
-      case 9:
-        badge = 'danger'
-        title = 'Task Failed'
-        break
-      case 10:
-        badge = 'warning'
-        title = 'Warning'
-        break
-      case 11:
-        badge = 'secondary'
-        title = 'Skipped'
-        break
-      case 12:
-        badge = 'danger'
-        title = 'Task Error'
-        break
-      case 98:
-        badge = 'danger'
-        title = 'Task Exception'
-        break
-      case 99:
-        badge = 'dark'
-        title = 'Closed'
-        break
-    }
-    if (!ui.rowData.traceback) {
-      return `<a type='button' style="padding: 5px"><span class="v-badge v-badge--inline v-badge__wrapper v-badge__badge badge badge-${badge}" title="${status}">${title}</span></a>`
-    } else {
-      const btnBadge = `<a type='button' style="padding: 5px" class='btnBadge' data-toggle="tooltip" data-placement="top" title="badge"><span class="v-badge v-badge--inline v-badge__wrapper v-badge__badge badge badge-${badge}" title="${status}">${title}</span></a>`
-      return btnBadge
-    }
-  } catch (error) {
-    console.log(error)
-  }
-}
-
 function partnerPortalStatusDeals(widget: WidgetPqTable, pq: any, ui: any) {
   try {
     const status = Number(ui.rowData.state_id)
@@ -865,12 +1044,6 @@ function partnerPortalStatusDeals(widget: WidgetPqTable, pq: any, ui: any) {
   } catch (error) {
     console.log(error)
   }
-}
-
-function clickCell(widget: WidgetPqTable, pq: any, ui: any) {
-  return `<center class="btnDetails" title="Click for details" style="cursor: pointer;">${
-    ui.rowData[ui.dataIndx]
-  } <iconify-icon icon="tabler:hand-finger"></iconify-icon></center>`
 }
 
 function btnsRenderVibaActions(widget: WidgetPqTable, pq: any, ui: any) {
