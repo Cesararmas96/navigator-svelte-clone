@@ -104,7 +104,7 @@
 	<Input
 		id="dd-input-{id}"
 		size="md"
-		defaultClass="py-1 px-2 w-full !rounded cursor-pointer disabled:cursor-not-allowed disabled:bg-gray-100 dark:disabled:bg-dark-200"
+		defaultClass="py-1 !text-base h-9 px-2 w-full !rounded cursor-pointer disabled:cursor-not-allowed disabled:bg-gray-100 dark:disabled:bg-dark-200"
 		autocomplete="off"
 		readonly
 		value={selected}
