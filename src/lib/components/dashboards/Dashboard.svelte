@@ -120,7 +120,6 @@
 		$storeDashboard.gridItems = resizeItem(item, $storeDashboard.gridItems)
 		gridController.gridParams.updateGrid()
 		$storeDashboard.gridItems = [...$storeDashboard.gridItems]
-		console.log(item)
 	}
 	$: handleCloning = (item: any) => {
 		const clonedItem = cloneItem(item, $storeDashboard.gridItems)
@@ -129,7 +128,7 @@
 	$: handleRemove = (item: any) => {
 		const temp = [...removeItem(item, $storeDashboard.gridItems, gridController.gridParams)]
 		$storeDashboard.gridItems = []
-		if (!item.data.cloned) delete dashboard.widget_location[item.title]
+		if (!item.data.cloned) delete $storeDashboard.widget_location[item.title]
 		widgets = widgets.filter((widget: any) => widget.title !== item.title)
 		setTimeout(() => {
 			$storeDashboard.gridItems = temp
@@ -170,8 +169,12 @@
 			const setNewLocations =
 				!dashboard.widget_location || Object.keys(dashboard.widget_location).length === 0
 
+			if (dashboard.attributes.widget_location) {
+				dashboard.widget_location = { ...dashboard.attributes.widget_location }
+				$storeDashboard.widget_location = { ...dashboard.attributes.widget_location }
+			}
 			items =
-				dashboard.attributes.explorer === 'v3' || setNewLocations
+				dashboard.attributes.widget_location || setNewLocations
 					? loadV3Locations(dashboard.widget_location, widgets, cols, isMobile())
 					: loadV2Locations(dashboard.widget_location, dashboard, widgets, cols, isMobile())
 
@@ -190,17 +193,15 @@
 	const updateWidgetLocation = async (_dashboard: any = $storeDashboard) => {
 		if (_dashboard?.attributes?.user_id !== $storeUser?.user_id) return
 
-		const payload = { widget_location: getControllerItemsLocations(gridController.gridParams) }
-		await postData(
-			`${baseUrl}/api/v2/dashboard/widgets/location/${_dashboard.dashboard_id}`,
-			payload
-		)
-		if (!_dashboard.attributes.explorer || _dashboard.attributes.explorer !== 'v3') {
-			const attributes = { ..._dashboard.attributes, explorer: 'v3' }
-			patchData(`${baseUrl}/api/v2/dashboards/${_dashboard.dashboard_id}`, {
-				attributes
-			})
+		const attributes = {
+			..._dashboard.attributes,
+			explorer: 'v3',
+			widget_location: getControllerItemsLocations(gridController.gridParams)
 		}
+		const resp = await patchData(`${baseUrl}/api/v2/dashboards/${_dashboard.dashboard_id}`, {
+			attributes
+		})
+		if (resp) _dashboard.attributes = resp.attributes
 	}
 
 	const updateLocations = async () => {
@@ -269,9 +270,7 @@
 			if (_dashboard.widget_location && _dashboard.widget_location[copiedWidget.title]) {
 				delete _dashboard.widget_location[copiedWidget.title]
 			}
-			await postData(`${baseUrl}/api/v2/dashboard/widgets/location/${_dashboard.dashboard_id}`, {
-				widget_location: _dashboard.widget_location
-			})
+			updateWidgetLocation()
 
 			_dashboard.gridItems = _dashboard.gridItems
 				.map((i: any) => {
