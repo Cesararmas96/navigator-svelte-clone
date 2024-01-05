@@ -150,15 +150,15 @@
 		loading.set(true)
 		try {
 			const user = impersonation ? { user_id: $storeUser?.user_id } : { user_id: null }
-			const resp = await patchData(
+			let resp = await postData(
 				`${import.meta.env.VITE_API_URL}/api/v2/dashboards/${currentDashboard.dashboard_id}`,
 				{
 					attributes: { ...currentDashboard.attributes, ...user }
 				}
 			)
-			if (resp && resp.dashboard_id) {
+			if (resp[0] && resp[0].dashboard_id) {
+				resp = { ...resp[0] }
 				currentDashboard = structuredClone(resp)
-
 				storeDashboards.update((dashboards) =>
 					dashboards.map((item) => {
 						if (item.dashboard_id === currentDashboard.dashboard_id) {

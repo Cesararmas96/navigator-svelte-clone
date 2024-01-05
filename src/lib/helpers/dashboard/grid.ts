@@ -365,5 +365,5 @@ export const reorderLines = (item: any, items: any[], gridParams: GridParams) =>
 export const addNewItem = (item, gridController: any) => {
 	const w = item.w
 	const h = item.h
-	return gridController.getFirstAvailablePosition(w, h)
+	return gridController ? gridController.getFirstAvailablePosition(w, h) : { x: 0, y: 0 }
 }
