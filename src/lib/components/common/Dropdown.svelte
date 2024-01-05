@@ -17,12 +17,17 @@
 	export let labelClass: string = 'mb-2'
 	export let label: string = ''
 	export let placeholder: string = 'Select an option...'
+	export let showPlaceholder: boolean = true
 	export let showSearch: boolean = true
 	export let showScroll: boolean = true
 	export let reset: boolean = false
 	export let disabled: boolean = false
+	export let keyValue: string = 'value'
+	export let keyLabel: string = 'label'
 
 	const id = generateUID()
+
+	$: loadingItems = items.length === 0
 
 	let selected: string | undefined
 	let searchTerm = ''
@@ -37,7 +42,8 @@
 	const handleClick = (e: any, item: Item) => {
 		e.preventDefault()
 		dropdownOpen = false
-		selected = item.label
+		selected = item[keyLabel]
+		searchTerm = ''
 		dispatch('change', item)
 	}
 
@@ -81,14 +87,15 @@
 		if (!items) return
 		filterdItems =
 			term !== ''
-				? items.filter((item: Item) => item.label.toLowerCase().includes(term.toLowerCase()))
+				? items.filter((item: Item) => item[keyLabel].toLowerCase().includes(term.toLowerCase()))
 				: [...items]
 		loadMoreItems(true)
 	}
 
 	$: if (selectedValue) {
-		selected = items.find((item: Item) => item.value === selectedValue)?.label
-		if (!selected) selected = placeholder
+		const selectedItem = items.find((item: Item) => item[keyValue] === selectedValue)
+		if (!selectedItem) selected = placeholder
+		else selected = selectedItem[keyLabel]
 	} else {
 		selected = placeholder
 	}
@@ -107,14 +114,14 @@
 		defaultClass="py-1 !text-base h-9 px-2 w-full !rounded cursor-pointer disabled:cursor-not-allowed disabled:bg-gray-100 dark:disabled:bg-dark-200"
 		autocomplete="off"
 		readonly
-		value={selected}
-		{disabled}
+		value={loadingItems ? 'Loading...' : selected}
+		disabled={disabled || loadingItems}
 	>
 		<Icon
 			icon={!dropdownOpen ? 'mdi:chevron-down' : 'mdi:chevron-up'}
 			slot="right"
 			size="18"
-			classes={!disabled ? 'cursor-pointer' : 'cursor-not-allowed'}
+			classes={!disabled && !loadingItems ? 'cursor-pointer' : 'cursor-not-allowed'}
 		/>
 	</Input>
 	{#if !disabled}
@@ -130,15 +137,17 @@
 					<Search size="md" class="round-md" bind:searchTerm on:input={searchTermChange} />
 				{/if}
 			</div>
-			<DropdownItem
-				defaultClass="w-full min-w-[200px] px-2 py-1 hover:bg-gray-100"
-				on:click={(e) => handleClick(e, { value: '', label: placeholder })}
-				>{placeholder}</DropdownItem
-			>
+			{#if showPlaceholder}
+				<DropdownItem
+					defaultClass="w-full min-w-[200px] px-2 py-1 hover:bg-gray-100"
+					on:click={(e) => handleClick(e, { value: '', label: placeholder })}
+					>{placeholder}</DropdownItem
+				>
+			{/if}
 			{#each loadedItems as item}
 				<DropdownItem
 					defaultClass="w-full min-w-[200px] px-2 py-1 hover:bg-gray-100"
-					on:click={(e) => handleClick(e, item)}>{item.label}</DropdownItem
+					on:click={(e) => handleClick(e, item)}>{item[keyLabel]}</DropdownItem
 				>
 			{/each}
 		</Dropdown>
