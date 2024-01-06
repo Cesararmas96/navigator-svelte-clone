@@ -386,7 +386,9 @@
 
 	let clientHeight = 0
 
-	$: heightStyle = `height: calc(100vh - ${175 + clientHeight}px)`
+	$: heightStyle = !isMobileDevice() ? `height: calc(100vh - ${175 + clientHeight}px)` : ''
+
+	$: isMobileDevice = () => innerWidth < 1024
 </script>
 
 <svelte:window bind:innerWidth />
@@ -397,7 +399,7 @@
 	</section>
 {/if}
 
-<div id="grid" class="block w-full overflow-y-auto" style={heightStyle}>
+<div id="grid" class="block w-full" style={heightStyle} class:overflow-y-auto={!isMobileDevice()}>
 	{#if Boolean($storeDashboard?.allow_filtering) && !Boolean($storeDashboard?.attributes?.sticky)}
 		<section>
 			<svelte:component this={filterComponent} bind:open={filtersOpen} />
@@ -407,35 +409,66 @@
 	<Alerts dashboardId={$storeDashboard.dashboard_id} />
 
 	{#if $storeDashboard.gridItems && $storeDashboard.gridItems.length > 0}
-		<Grid
-			{itemSize}
-			class="grid-container"
-			gap={5}
-			{cols}
-			collision="compress"
-			bind:controller={gridController}
-			on:change={updateLocations}
-		>
-			{#each $storeDashboard.gridItems as item}
-				<GridItem
-					x={item.x}
-					y={item.y}
-					w={item.w}
-					h={item.h}
-					class="grid-item"
-					activeClass="grid-item-active"
-					previewClass="bg-red-500 rounded"
-					resizable={dashboard?.attributes?.user_id === $storeUser?.user_id}
-					movable={dashboard?.attributes?.user_id === $storeUser?.user_id}
-					on:change={(e) => {
-						changeItemSize(item)
-					}}
-					let:active
-					bind:id={item.data.title}
-				>
+		{#if !isMobileDevice()}
+			<Grid
+				{itemSize}
+				class="grid-container"
+				gap={5}
+				{cols}
+				collision="compress"
+				bind:controller={gridController}
+				on:change={updateLocations}
+			>
+				{#each $storeDashboard.gridItems as item}
+					<GridItem
+						x={item.x}
+						y={item.y}
+						w={item.w}
+						h={item.h}
+						class="grid-item"
+						activeClass="grid-item-active"
+						previewClass="bg-red-500 rounded"
+						resizable={dashboard?.attributes?.user_id === $storeUser?.user_id}
+						movable={dashboard?.attributes?.user_id === $storeUser?.user_id}
+						on:change={(e) => {
+							changeItemSize(item)
+						}}
+						let:active
+						bind:id={item.data.title}
+					>
+						<WidgetBox
+							widget={item.data}
+							resized={resizedTitle === item.title && !active}
+							let:fixed
+							let:isOwner
+							let:isToolbarVisible
+							let:widget
+							on:handleResize={() => handleResizable(item)}
+							on:handleCloning={() => handleCloning(item)}
+							on:handleRemove={() => handleRemove(item)}
+							on:handleResizable={(e) => {
+								item.data.params.settings.resizable = e.detail.resizable && !e.detail.fixed
+							}}
+						>
+							<Widget
+								{widget}
+								{fixed}
+								{isToolbarVisible}
+								{isOwner}
+								bind:reload={item.reload}
+								isDraggable={dashboard?.attributes?.user_id === $storeUser?.user_id}
+								on:handleInstanceResize={() => handleResizable(item)}
+							/>
+						</WidgetBox>
+					</GridItem>
+				{/each}
+			</Grid>
+		{:else}
+			<div class="grid grid-cols-1 gap-y-3 p-2">
+				{#each $storeDashboard.gridItems as item}
 					<WidgetBox
 						widget={item.data}
-						resized={resizedTitle === item.title && !active}
+						resized={false}
 						let:fixed
 						let:isOwner
 						let:isToolbarVisible
@@ -452,14 +485,15 @@
 							{fixed}
 							{isToolbarVisible}
 							{isOwner}
+							isMobileDevice={true}
 							bind:reload={item.reload}
 							isDraggable={dashboard?.attributes?.user_id === $storeUser?.user_id}
 							on:handleInstanceResize={() => handleResizable(item)}
 						/>
 					</WidgetBox>
-				</GridItem>
-			{/each}
-		</Grid>
+				{/each}
+			</div>
+		{/if}
 	{/if}
 </div>
 

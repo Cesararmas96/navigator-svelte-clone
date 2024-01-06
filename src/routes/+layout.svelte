@@ -12,9 +12,18 @@
 	import WidgetMaximize from '$lib/components/widgets/Maximize.svelte'
 	import WidgetFormBuilderDrawer from '$lib/components/widgets/FormBuilderDrawer.svelte'
 	import Spinner from '$lib/components/common/Spinner.svelte'
-	import { loading } from '$lib/stores/preferences'
+	import { loading, themeColor, themeMode } from '$lib/stores/preferences'
+	import { onMount } from 'svelte'
 
 	initModal()
+
+	onMount(() => {
+		if (!$themeMode) $themeMode = localStorage.getItem('theme-mode') || 'light'
+		$themeColor =
+			document.querySelector('html')?.getAttribute('data-theme-color') ||
+			localStorage.getItem('theme-color') ||
+			'blue'
+	})
 </script>
 
 {#if $navigating || $loading}

@@ -4,8 +4,9 @@
 	import Icon from '../common/Icon.svelte'
 	import PreferenceItem from './PreferenceItem.svelte'
 	import { onMount } from 'svelte'
-	import { themeMode } from '$lib/stores/preferences'
+	import { themeColor, themeMode } from '$lib/stores/preferences'
 	import ThemeColorPicker from './ThemeColorPicker.svelte'
+	import { iconColor } from '$lib/helpers/common/common'
 
 	let _themeMode: string | null
 
@@ -41,9 +42,10 @@
 	type="button"
 	data-tb-dropdown-toggle
 	aria-expanded="false"
-	class="icon relative grid h-9 w-9 place-content-center rounded text-2xl font-light hover:bg-white/10 aria-expanded:bg-white/20"
+	class="icon relative grid h-6 w-6 place-content-center rounded text-2xl font-light hover:bg-white/10 aria-expanded:bg-white/20"
 >
-	<Icon icon="line-md:cog-loop" size="20px" />
+	<!-- <Icon icon="line-md:cog-loop" size="20px" /> -->
+	<img src="/images/icons/settings{iconColor($themeColor)}.svg" alt="Navigator" />
 </button>
 
 <Dropdown
