@@ -19,6 +19,7 @@
 	export let isOwner: boolean
 	export let isDraggable: boolean = false
 	export let reload: boolean = false
+	export let isMobileDevice: boolean = false
 
 	$: if (reload) {
 		const reloadAction = getWidgetAction($widgetActions, 'reloadFetchData')
@@ -57,10 +58,10 @@
 
 <div
 	id={`widget-${$widget.widget_id}`}
-	class:h-[calc(100%-0.5rem)]={!$widget.temp && !$widget.collapse}
-	class:absolute={!$widget?.temp && !$widget?.collapse && !$widget?.layout}
-	class:-ml-1={!$widget.temp && !$widget.collapse}
-	class:p-1={!$widget.temp && !$widget.collapse}
+	class:h-[calc(100%-0.5rem)]={!$widget.temp && !$widget.collapse && !isMobileDevice}
+	class:absolute={!$widget?.temp && !$widget?.collapse && !$widget?.layout && !isMobileDevice}
+	class:-ml-1={!$widget.temp && !$widget.collapse && !isMobileDevice}
+	class:p-1={!$widget.temp && !$widget.collapse && !isMobileDevice}
 	class="w-full"
 >
 	{#if $widget.loading}
@@ -91,9 +92,10 @@
 	<!-- Widget Content -->
 	<div
 		id={`widget-main-${$widget.widget_id}`}
-		class:overflow-hidden={!scrollableBox}
-		class:overflow-y-auto={scrollableBox}
+		class:overflow-hidden={!isMobileDevice && !scrollableBox}
+		class:overflow-y-auto={!isMobileDevice && scrollableBox}
 		class:hidden={$widget.collapse}
+		class:!h-full={isMobileDevice}
 		class="widget-content relative flex w-full cursor-auto flex-col space-y-4 rounded-md text-sm"
 		on:pointerdown={(event) => {
 			// event.preventDefault()

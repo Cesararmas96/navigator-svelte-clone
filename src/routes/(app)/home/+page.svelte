@@ -3,6 +3,7 @@
 	import Icon from '$lib/components/common/Icon.svelte'
 	import Loading from '$lib/components/common/Loading.svelte'
 	import Card from '$lib/components/home/Card.svelte'
+	import { getApiData } from '$lib/services/getData.js'
 	import { storePrograms } from '$lib/stores/programs'
 	import { storeUser } from '$lib/stores/session.js'
 	import { Input } from 'flowbite-svelte'
@@ -36,11 +37,14 @@
 			filteredTemplates = [...aux]
 		}, 5)
 	}
-
-	onMount(() => {
+	// let users
+	onMount(async () => {
 		filteredTemplates = data.programs.sort(function (program: any, program2: any) {
 			return program.program_id - program2.program_id
 		})
+
+		// users = await getApiData('https://api.dev.navigator.mobileinsight.com/api/v1/ad_users', 'GET')
+		// console.log('users', users)
 	})
 </script>
 
@@ -58,6 +62,20 @@
 				filterCategories()
 			}}
 		/>
+		<!-- <Dropdown
+			items={users}
+			keyValue="email"
+			keyLabel="display_name"
+			defaultClass="text-base w-72"
+			labelClass="mb-0"
+			showSearch={true}
+			showPlaceholder={false}
+			{selectedValue}
+			on:change={(e) => {
+				selectedValue = e.detail.value
+				filterCategories()
+			}}
+		/> -->
 		<Input
 			type="text"
 			size="md"

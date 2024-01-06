@@ -7,6 +7,7 @@
 		'blue', // text-blue-500 bg-blue-100
 		'green', // text-green-500 bg-green-100
 		'indigo', // text-indigo-500 bg-indigo-100
+		'yellow', // text-indigo-500 bg-indigo-100
 		'orange', // text-orange-500 bg-orange-100
 		'purple', // text-purple-500 bg-purple-100
 		'red', // text-red-500 bg-red-100
@@ -17,6 +18,7 @@
 	let currentColor = document.documentElement.getAttribute('data-theme-color')
 
 	const handleThemeColor = (color: string) => {
+		console.log(color)
 		document.documentElement.setAttribute('data-theme-color', color)
 		localStorage.setItem('theme-color', color)
 		$themeColor = color

@@ -197,11 +197,11 @@
 }
 .badge-info {
 	color: #fff;
-	background-color: #17a2b8
+	background-color: #17a2b8;
 }
 .badge-dark {
 	color: #fff;
-	background-color: #343a40
+	background-color: #343a40;
 }
 
 .icon-color-warning {
@@ -282,14 +282,30 @@
 	}
 }
 
+// .navigator-blue {
+// 	background-color: #007aff;
+// 	border-color: #007aff;
+// 	background: linear-gradient(118deg, rgba(0, 122, 255, 1), rgba(0, 122, 255, 0.7)) !important;
+// 	color: #ffffff;
+// 	&:hover {
+// 		background-color: #004fcb;
+// 		border-color: #004fcb;
+// 		color: #ffffff;
+// 	}
+// }
+
 .navigator-blue {
-	background-color: #007aff;
-	border-color: #007aff;
-	background: linear-gradient(118deg, rgba(0, 122, 255, 1), rgba(0, 122, 255, 0.7)) !important;
+	background-color: rgb(var(--color-blue));
+	border-color: rgb(var(--color-blue));
+	background: linear-gradient(
+		118deg,
+		rgb(var(--color-blue)) 100%,
+		rgb(var(--color-blue)) 70%
+	) !important;
 	color: #ffffff;
 	&:hover {
-		background-color: #004fcb;
-		border-color: #004fcb;
+		background-color: rgb(var(--color-blue));
+		border-color: rgb(var(--color-blue));
 		color: #ffffff;
 	}
 }
@@ -394,12 +410,13 @@
 }
 
 .tui-grid-content-area {
-	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+	font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen-Sans, Ubuntu, Cantarell,
+		'Helvetica Neue', sans-serif;
 	font-size: 12px;
 	line-height: normal;
 }
 
-.tui-grid-row-even>td {
+.tui-grid-row-even > td {
 	background-color: #f9f9f9 !important;
 }
 
