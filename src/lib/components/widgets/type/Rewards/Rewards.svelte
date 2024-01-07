@@ -9,6 +9,8 @@
 
 	export let data: any
 
+	/** comentario para dev */
+
 	const widget = getContext<Writable<any>>('widget')
 
 	const baseUrl = import.meta.env.VITE_API_URL
