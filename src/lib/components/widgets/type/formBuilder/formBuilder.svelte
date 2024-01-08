@@ -134,8 +134,12 @@
 								class="btn-pull-left mt-2 w-full	 rounded text-sm"
 								on:click={() => handleSubmitForm(handleValidateForm, 'formSaved')}
 							>
-								<Icon icon="tabler:plus" classes="mr-2" /> Save Changes</Button
-							>
+								<Icon icon="tabler:plus" classes="mr-2" />
+
+								{schema && schema.settings && schema.settings.showCancel
+									? schema.settings.SubmitLabel
+									: 'Save changes'}
+							</Button>
 						</div>
 					</div>
 				</Form>
