@@ -28,13 +28,18 @@
 	$variablesOperationalProgram = data.variablesOperational
 
 	const setStores = async () => {
-		const stores = await postData(
-			`${import.meta.env.VITE_API_URL}/api/v2/services/queries/${
-				$page.params.programs
-			}_stores?refresh=1`,
-			{}
-		)
-		$storeStores = { ...$storeStores, [$page.params.programs]: Object.values(stores) }
+		try {
+			const stores = await postData(
+				`${import.meta.env.VITE_API_URL}/api/v2/services/queries/${
+					$page.params.programs
+				}_stores?refresh=1`,
+				{}
+			)
+			if (stores) $storeStores = { ...$storeStores, [$page.params.programs]: Object.values(stores) }
+		} catch (error) {
+			$storeStores = { ...$storeStores }
+			console.log(error)
+		}
 	}
 	if (!$storeStores || !$storeStores[$page.params.programs]) setStores()
 
