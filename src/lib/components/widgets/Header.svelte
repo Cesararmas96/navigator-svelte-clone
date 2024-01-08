@@ -4,6 +4,7 @@
 	import { getContext, onMount } from 'svelte'
 
 	export let isToolbarVisible: boolean
+	export let isMobileDevice: boolean = false
 
 	const widget: any = getContext('widget')
 	const showToolbar: boolean = $widget?.params?.settings?.toolbar?.show
@@ -15,6 +16,6 @@
 			icon={$widget?.params?.settings?.header?.icon ? $widget?.attributes?.icon : undefined}
 			title={$widget?.params?.settings?.header?.title ? $widget?.title : undefined}
 		/>
-		{#if showToolbar}<WidgetToolbar {isToolbarVisible} />{/if}
+		{#if showToolbar}<WidgetToolbar {isToolbarVisible} {isMobileDevice} />{/if}
 	</div>
 </div>

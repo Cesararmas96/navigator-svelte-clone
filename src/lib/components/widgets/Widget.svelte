@@ -75,7 +75,7 @@
 		class="min-h-8"
 	>
 		{#if !fixed && header}
-			<WidgetHeader {isToolbarVisible} />
+			<WidgetHeader {isToolbarVisible} {isMobileDevice} />
 		{:else if isToolbarVisible && isOwner}
 			<div
 				class="absolute right-1 z-10 -mt-1"

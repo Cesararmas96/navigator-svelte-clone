@@ -19,6 +19,7 @@
 	import { sendSuccessNotification } from '$lib/stores/toast'
 
 	export let isToolbarVisible: boolean
+	export let isMobileDevice: boolean = false
 
 	const widgetActions = getContext<Writable<any>>('widgetActions')
 	const widget = getContext<Writable<any>>('widget')
@@ -44,10 +45,10 @@
 		const titleEL = document.getElementById(`widget-title-${widget_id}`)!
 		const toolbarEL = 200
 		const widgetEL = document.getElementById(`widget-${widget_id}`)!
-		showInMenu = widgetEL?.offsetWidth - (titleEL?.offsetWidth + toolbarEL) < 0
+		showInMenu = widgetEL?.offsetWidth - (titleEL?.offsetWidth + toolbarEL) < 0 || isMobileDevice
 	}
 
-	$: if (isToolbarVisible) {
+	$: if (isToolbarVisible || isMobileDevice) {
 		handleShowMenu($widget.widget_id)
 		setToolbarItems()
 	}
@@ -296,7 +297,7 @@
 	<div
 		id={`widget-toolbar-${$widget.widget_id}`}
 		style:background-color={patternUrl.test(bg) ? 'transparent' : bg}
-		class={isToolbarVisible
+		class={isToolbarVisible || isMobileDevice
 			? `widget-toolbar absolute right-2 rounded-md bg-white dark:bg-dark-100`
 			: 'hidden'}
 		on:pointerdown={(event) => {
@@ -304,18 +305,23 @@
 			event.stopPropagation()
 		}}
 	>
-		<div class="flex flex-row justify-end pl-0">
+		<div class="flex flex-row justify-end pl-0" class:pr-2={isMobileDevice}>
 			{#each listOutOfMenu as item}
 				<svelte:component
 					this={toolbarItems[item].component}
 					showInMenu={toolbarItems[item].showInMenu}
 					item={toolbarItems[item].item}
+					{isMobileDevice}
 				/>
 			{/each}
 
 			{#if !toolbar.help && $widget.description}<ToolbarHelp helpText={$widget.description} />{/if}
 
-			<Tooltip placement="bottom" class="z-10" triggeredBy="#more-actions">More</Tooltip>
+			<Tooltip
+				placement="bottom"
+				class={`z-10 ${isMobileDevice ? 'hidden' : ''}`}
+				triggeredBy="#more-actions">More</Tooltip
+			>
 			<button
 				id="more-actions"
 				type="button"
@@ -331,6 +337,7 @@
 						this={toolbarItems[item].component}
 						showInMenu={toolbarItems[item].showInMenu}
 						item={toolbarItems[item].item}
+						{isMobileDevice}
 						on:itemClick={() => (menuOpen = !menuOpen)}
 					/>
 				{/each}

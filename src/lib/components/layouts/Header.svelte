@@ -6,8 +6,10 @@
 	import { themeColor, themeMode } from '$lib/stores/preferences'
 	import { page } from '$app/stores'
 	import { iconColor, isIconWhite } from '$lib/helpers/common/common'
+	import Icon from '../common/Icon.svelte'
 
 	const toggleDrawer = () => {
+		console.log('toggleDrawer')
 		$sidebarMin = true
 		$menuHidden = !$menuHidden
 	}
@@ -25,7 +27,11 @@
 			class="btn-sidebar-toggle -ml-2 mr-2 grid h-5 w-5 place-content-center rounded font-light hover:bg-white/10 dark:hover:bg-dark-100 xl:hidden"
 			on:click={toggleDrawer}
 		>
-			<img src="/images/icons/start{iconColor($themeColor)}.svg" alt="Navigator" />
+			<img
+				src="/images/icons/start{iconColor($themeColor)}.svg"
+				alt="Navigator"
+				class="btn-sidebar-toggle"
+			/>
 			<!-- <Icon icon="tabler:layout-sidebar" size="20px" classes="btn-sidebar-toggle" /> -->
 		</button>
 		<NavBrand href="/home" class="">
@@ -51,7 +57,7 @@
 	<!-- Top right menu -->
 	<ul class="flex flex-row items-center justify-end px-3 lg:w-[var(--sidebar-width)]">
 		<!-- Mobile search toggle -->
-		<li class="mx-1 block lg:hidden">
+		<li class="mx-1 hidden">
 			<button
 				type="button"
 				id="search-toggle"
@@ -67,7 +73,7 @@
 		</li>
 
 		<!-- Preferences -->
-		<li id="preferences" class="dropdown-header mx-1 hidden sm:block">
+		<li id="preferences" class="dropdown-header mx-1 block">
 			<Preferences />
 		</li>
 

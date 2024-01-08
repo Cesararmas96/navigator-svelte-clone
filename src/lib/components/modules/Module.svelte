@@ -22,6 +22,7 @@
 	import { generateRandomString } from '$lib/helpers/common/common'
 
 	export let trocModule: any
+
 	const baseUrl = import.meta.env.VITE_API_URL
 	let dropdownOpen = false
 	const user = $storeUser

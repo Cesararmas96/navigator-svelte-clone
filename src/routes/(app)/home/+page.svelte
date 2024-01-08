@@ -49,10 +49,12 @@
 </script>
 
 {#if filteredTemplates}
-	<div class="flex items-center justify-start px-4 md:flex-col lg:w-[40%] lg:flex-row lg:gap-x-4">
+	<div
+		class="flex flex-col items-center justify-start gap-y-2 px-4 lg:w-[40%] lg:flex-row lg:gap-x-4"
+	>
 		<Dropdown
 			items={types}
-			defaultClass="text-base w-72"
+			defaultClass="text-base w-full lg:w-72"
 			labelClass="mb-0"
 			showSearch={false}
 			{selectedValue}
