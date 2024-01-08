@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { getApiData } from '$lib/services/getData'
 import { redirect } from '@sveltejs/kit'
 
@@ -6,17 +7,30 @@ import { redirect } from '@sveltejs/kit'
 export const load = async ({ params, fetch, locals, url }) => {
 	if (!locals.user) throw redirect(302, '/login')
 
+	const next = locals.user.next
+	if (next && params.programs !== next) throw redirect(302, `/${next}`)
+
 	const urlBase = import.meta.env.VITE_API_URL
 
 	const headers = { authorization: `Bearer ${locals.user.token}` }
 
-	const programs = await getApiData(`programs`, 'POST', { "where_cond": {
-    "program_slug": locals.user.programs,
-    "is_active": true
-  }}, {}, { headers }, fetch)
+	const program = next ? next : params.programs
 
+	const programs = await getApiData(
+		`programs`,
+		'POST',
+		{
+			where_cond: {
+				program_slug: locals.user.programs,
+				is_active: true
+			}
+		},
+		{},
+		{ headers },
+		fetch
+	)
 	const modules = await getApiData(
-		`${urlBase}/api/v2/modules?program_slug=${params.programs}`,
+		`${urlBase}/api/v2/modules?program_slug=${program}`,
 		'GET',
 		{},
 		{},
@@ -24,14 +38,14 @@ export const load = async ({ params, fetch, locals, url }) => {
 		fetch
 	)
 	const variablesOperational = await getApiData(
-		`${urlBase}/api/v2/variables/${params.programs}`,
+		`${urlBase}/api/v2/variables/${program}`,
 		'GET',
 		{},
 		{},
 		{ headers },
 		fetch
 	)
-	const moduleName = params.dashboard ? params.dashboard : params.programs
+	const moduleName = next ? next : params.dashboard ? params.dashboard : program
 	const trocModule =
 		modules && modules.length > 0
 			? modules.find(

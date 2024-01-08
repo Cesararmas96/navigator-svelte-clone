@@ -6,11 +6,10 @@
 	import _ from 'lodash'
 	import { sendErrorNotification } from '$lib/stores/toast'
 	import { addInstance, clearInstances } from '$lib/helpers/widget/instances'
+	import { storeUser } from '$lib/stores'
 
 	export let data: any
-
-	/** comentario para dev */
-
+	console.log($storeUser)
 	const widget = getContext<Writable<any>>('widget')
 
 	const baseUrl = import.meta.env.VITE_API_URL
@@ -28,7 +27,6 @@
 				Object.keys(groupedData).map((item) => {
 					sortable.push({ label: item, value: groupedData[item] })
 				})
-				console.log(sortable)
 
 				const sortedData = _.sortBy(sortable, [(value) => value?.label.toLowerCase()])
 

@@ -244,6 +244,7 @@ export const formatByPattern = (value: number, pattern: string): string => {
 			break
 
 		case '#,###':
+		case '#,####':
 		case '##,###':
 		case '$#,###':
 		case '$##,###':
@@ -283,7 +284,7 @@ export const formatByPattern = (value: number, pattern: string): string => {
 			break
 
 		default:
-			throw new Error('Patrón no reconocido')
+			throw new Error('Patrón no reconocido ' + pattern)
 	}
 
 	return result
@@ -498,6 +499,7 @@ export const cellClassRules = (formatDefinition: any, thresholds: any): any => {
 	if (!thresholds) return rule
 	if (formatDefinition.render) {
 		const fn = gridCellFunctionsMap[formatDefinition.render]
+		console.log(thresholds, formatDefinition.dataIndx)
 		if (fn) rule = fn(thresholds[formatDefinition.dataIndx])
 		else
 			sendWarningNotification(
