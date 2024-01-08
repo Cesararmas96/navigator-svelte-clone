@@ -28,15 +28,17 @@
 				Object.keys(groupedData).map((item) => {
 					sortable.push({ label: item, value: groupedData[item] })
 				})
-				const sortedData = _.sortBy(sortable, [
-					(value) => {
-						return value?.label.toLowerCase()
-					}
-				])
+				console.log(sortable)
+
+				const sortedData = _.sortBy(sortable, [(value) => value?.label.toLowerCase()])
+
 				rewards = sortedData
 			} else {
 				rewards = data
 			}
+			rewards.map((group) => {
+				group.value = _.sortBy(group.value, (value) => [-1 * value?.rewards, value?.reward])
+			})
 		}
 	}
 

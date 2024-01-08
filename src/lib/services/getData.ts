@@ -49,7 +49,8 @@ export async function getData(
 
 		options.headers['Origin'] = 'https://navigator.com'
 		// Add the authentication token if authenticated
-		if (loggedIn && options.headers.authorization) options.headers.authorization = options.headers.authorization || null
+		if (loggedIn && options.headers.authorization)
+			options.headers.authorization = options.headers.authorization || null
 
 		const headers = new Headers(options.headers)
 
@@ -70,15 +71,17 @@ export async function getData(
 		// if (validResponseStatus.includes(response?.status)) {
 
 		if (response?.status === 204) return null
-		if (response?.status === 500) throw new Error(`500 Internal Server Error<br>Server got itself in trouble`)
-		if (response?.status === 401) throw new Error(`Signature Failed or Expired:<br>Signature verification failed`)
+		if (response?.status === 500)
+			throw new Error(`500 Internal Server Error<br>Server got itself in trouble`)
+		if (response?.status === 401)
+			throw new Error(`Signature Failed or Expired:<br>Signature verification failed`)
 
 		if (!response?.ok) {
 			let statusText = ''
 			const responseError = await response.json()
-			if (responseError && responseError.message){
+			if (responseError && responseError.message) {
 				statusText = responseError.message
-			}else {
+			} else {
 				statusText = response.statusText || 'Request error'
 				statusText = response.statusText.includes('reason')
 					? JSON.parse(response.statusText).reason
@@ -88,7 +91,7 @@ export async function getData(
 		}
 		return await response.json()
 	} catch (error) {
-		console.log('error', error)
+		console.log(error)
 		throw error
 	}
 }
@@ -150,13 +153,13 @@ export async function putData(url: string, payload: Record<string, any> = {}) {
 }
 
 export async function deleteData(url: string, payload: Record<string, any> = {}) {
-	let options	
+	let options
 	const user = get(storeUser)
 	if (user?.token) {
 		const headers = { authorization: `Bearer ${user?.token}` }
 		options = { ...options, headers }
 	}
-	
+
 	const response = await getData(getQuerySlug(url), 'DELETE', payload, {}, options)
 	return { ...response }
 }
