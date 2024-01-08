@@ -12,6 +12,7 @@
 		items: Record<string, ToolbarItem>
 	}
 
+	export let isMobileDevice: boolean = false
 	export let showInMenu: boolean
 	export let item: ToolbarToggle
 

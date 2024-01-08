@@ -8,6 +8,8 @@
 	import { sendErrorNotification } from '$lib/stores/toast'
 	import { openConfirmModal } from '$lib/helpers/common/modal'
 
+	export let isMobileDevice: boolean = false
+
 	const widget = getContext<Writable<any>>('widget')
 
 	const widgetActions = getContext<Writable<any[]>>('widgetActions')
@@ -43,4 +45,4 @@
 <button on:click={closeWidget} class="icon btn hover:bg-light-100 dark:hover:bg-dark-200">
 	<Icon icon="tabler:x" size="18" />
 </button>
-<Tooltip placement="bottom" class="z-10">Remove</Tooltip>
+<Tooltip placement="bottom" class={`z-10 ${isMobileDevice ? 'hidden' : ''}`}>Remove</Tooltip>
