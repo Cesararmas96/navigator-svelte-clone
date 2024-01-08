@@ -158,7 +158,9 @@
 	}
 
 	async function handleSubmit(payload: any, type: string) {
-		let url = `${urlBase}/${$selectedFormBuilderWidget.params?.model?.meta}`
+		const endpoint = `${schema?.endpoint || $selectedFormBuilderWidget.params?.model?.meta}`
+
+		let url = `${urlBase}/${endpoint}`
 		let method = 'PUT'
 		let message = 'Successfully created'
 		let callback = $selectedFormBuilderRecord.callbackNew
@@ -170,6 +172,7 @@
 			callback = $selectedFormBuilderRecord.callbackUpdate
 		}
 
+		console.log(url, method, payload)
 		const dataModel = await getApiData(url, method, payload)
 
 		if (dataModel) {
@@ -211,7 +214,10 @@
 
 			{#if $selectedFormBuilderRecord?.action === 'new'}
 				<Button class=" mt-3 w-full rounded text-sm" on:click={() => update('formSaved')}>
-					<Icon icon="tabler:plus" classes="mr-2" /> Save Changes</Button
+					<Icon icon="tabler:plus" classes="mr-2" />
+					{schema && schema.settings && schema.settings.showCancel
+						? schema.settings.SubmitLabel
+						: 'Save changes'}</Button
 				>
 			{:else}
 				<Button class=" mt-3 w-full rounded text-sm" on:click={() => update('formUpdated')}>
@@ -244,7 +250,11 @@
 								handleSubmitForm(handleValidateForm, 'save')
 							}}
 						>
-							<Icon icon="tabler:plus" classes="mr-1" />Save Changes
+							<Icon icon="tabler:plus" classes="mr-1" />{schema &&
+							schema.settings &&
+							schema.settings.showCancel
+								? schema.settings.SubmitLabel
+								: 'Save changes'}
 						</Button>
 					{:else}
 						<Button
