@@ -92,11 +92,24 @@
 							authorization: `Bearer ${token}`
 						}
 					}
+
+					delete jsonSchema.properties[property]?.$ref?.$ref
 				}
 
-				if (jsonSchema.properties[property]?.type === 'text') {
+				if (
+					jsonSchema.properties[property]?.type === 'text' ||
+					jsonSchema.properties[property]?.['ui:widget']
+				) {
 					jsonSchema.properties[property].type = 'string'
 					jsonSchema.properties[property]['format'] = 'textarea'
+				}
+
+				if (jsonSchema.properties[property]?.type === 'datetime') {
+					jsonSchema.properties[property].attrs.visible = false
+				}
+
+				if (jsonSchema.properties[property]?.['ui:widget'] === 'ImageUploader') {
+					jsonSchema.properties[property].type = 'upload'
 				}
 			})
 
@@ -104,6 +117,8 @@
 				getModelByID(jsonSchema, record, slug, conditions)
 			} else {
 				schema = getSchemaComputed(jsonSchema)
+
+				// console.log(JSON.stringify(schema))
 			}
 		} else {
 			sendErrorNotification('The form could not be loaded')
@@ -158,7 +173,9 @@
 	}
 
 	async function handleSubmit(payload: any, type: string) {
-		let url = `${urlBase}/${$selectedFormBuilderWidget.params?.model?.meta}`
+		const endpoint = `${schema?.endpoint || $selectedFormBuilderWidget.params?.model?.meta}`
+
+		let url = `${urlBase}/${endpoint}`
 		let method = 'PUT'
 		let message = 'Successfully created'
 		let callback = $selectedFormBuilderRecord.callbackNew
@@ -173,10 +190,12 @@
 		const dataModel = await getApiData(url, method, payload)
 
 		if (dataModel) {
-			callback({
-				rowId: $selectedFormBuilderRecord?.rowId,
-				dataModel
-			})
+			if (callback) {
+				callback({
+					rowId: $selectedFormBuilderRecord?.rowId,
+					dataModel
+				})
+			}
 			sendSuccessNotification(message)
 			close()
 		} else {
@@ -211,7 +230,10 @@
 
 			{#if $selectedFormBuilderRecord?.action === 'new'}
 				<Button class=" mt-3 w-full rounded text-sm" on:click={() => update('formSaved')}>
-					<Icon icon="tabler:plus" classes="mr-2" /> Save Changes</Button
+					<Icon icon="tabler:plus" classes="mr-2" />
+					{schema && schema.settings && schema.settings.showSubmit
+						? schema.settings.SubmitLabel
+						: 'Save changes'}</Button
 				>
 			{:else}
 				<Button class=" mt-3 w-full rounded text-sm" on:click={() => update('formUpdated')}>
@@ -229,6 +251,13 @@
 					<Icon icon="tabler:plus" classes="mr-2" /> Save as New</Button
 				>
 			{/if}
+
+			{#if schema && schema.settings && schema.settings.showCancel}
+				<Button class=" mt-1 w-full rounded text-sm " outline on:click={() => close()}>
+					<!-- <Icon icon="tabler:" classes="mr-2" /> -->
+					Cancel
+				</Button>
+			{/if}
 		</div>
 	</div>
 
@@ -244,7 +273,11 @@
 								handleSubmitForm(handleValidateForm, 'save')
 							}}
 						>
-							<Icon icon="tabler:plus" classes="mr-1" />Save Changes
+							<Icon icon="tabler:plus" classes="mr-1" />{schema &&
+							schema.settings &&
+							schema.settings.showCancel
+								? schema.settings.SubmitLabel
+								: 'Save changes'}
 						</Button>
 					{:else}
 						<Button

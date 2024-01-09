@@ -35,6 +35,13 @@
 	import DrawerFilters from './DrawerFilters.svelte'
 	import { Button, Tooltip } from 'flowbite-svelte'
 	import Icon from '../common/Icon.svelte'
+	import { page } from '$app/stores'
+
+	import {
+		hideFormBuilderDrawer,
+		selectedFormBuilderRecord,
+		selectedFormBuilderWidget
+	} from '$lib/stores/widgets'
 
 	export let dashboard: any
 
@@ -315,6 +322,27 @@
 		loading.set(false)
 	}
 
+	const openDrawerAssignBadge = () => {
+		$selectedFormBuilderWidget = {
+			params: {
+				model: {
+					meta: 'api/v1/badge_assign',
+					primaryKey: 'reward_id',
+					schema: {
+						$withoutDefs: true
+					}
+				}
+			},
+			query_slug: {
+				slug: '{BASE_URL_API}/api/v1/badge_assign'
+			}
+		}
+		$selectedFormBuilderRecord = {
+			action: 'new'
+		}
+		$hideFormBuilderDrawer = false
+	}
+
 	const clearCopyWidgets = () => {
 		$storeCCPWidget = null
 		$storeCCPWidgetBehavior = null
@@ -496,6 +524,16 @@
 		{/if}
 	{/if}
 </div>
+
+{#if ['/rewards/rewards_employee'].includes($page?.url?.pathname)}
+	<Button
+		pill={true}
+		class="fixed bottom-6 right-6 !p-3 shadow-md"
+		on:click={() => openDrawerAssignBadge()}
+		><Icon icon="tabler:plus" size="20" /> Assign Badge</Button
+	>
+	<Tooltip placement="left">Assign Badge</Tooltip>
+{/if}
 
 {#if $storeDashboard?.allow_filtering && $hideDashboardFilters}
 	<Button
