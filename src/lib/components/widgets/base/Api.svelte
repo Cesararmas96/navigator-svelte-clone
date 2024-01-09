@@ -107,7 +107,7 @@
 		if ($widget.params && $widget.params.addConditions) {
 			conditions = addConditions($widget.params.addConditions, conditions)
 		}
-		console.log(conditions)
+
 		return conditions
 	}
 
