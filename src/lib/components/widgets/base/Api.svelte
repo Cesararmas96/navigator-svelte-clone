@@ -10,6 +10,8 @@
 	import { setWidgetTop } from '$lib/helpers/widget/widget-top'
 	import { page } from '$app/stores'
 	import NoDataFound from '../NoDataFound.svelte'
+	import { storeUser } from '$lib/stores'
+	import _ from 'lodash'
 
 	export let widget: Writable<any>
 
@@ -33,9 +35,26 @@
 		}
 	}
 
+	const addConditions = (addConditions, conditions) => {
+		const session = $storeUser
+
+		const addOptionsCondition = {}
+
+		_.map(addConditions, (optionValue, optionItem) => {
+			if (_.get(session, optionValue)) {
+				addOptionsCondition[optionItem] = _.get(session, optionValue)
+			}
+		})
+
+		if (Object.keys(addOptionsCondition).length > 0) {
+			conditions = _.merge({}, conditions, addOptionsCondition)
+		}
+
+		return conditions
+	}
+
 	function buildConditions() {
 		let conditions = { ...conditionsRaw, ...$widget?.filter_conditions }
-
 		const dateCondition = $dashboard?.where_date_cond
 
 		if ($widget?.customDate) {
@@ -74,6 +93,21 @@
 			conditions.where_cond = { ...$dashboard?.where_new_cond }
 		}
 
+		if ($widget.params && $widget.params.addFilterOptions) {
+			conditions.filter_options = addConditions(
+				$widget.params.addFilterOptions,
+				conditions.filter_options
+			)
+		}
+
+		if ($widget.params && $widget.params.addFilterConditions) {
+			conditions.filter = addConditions($widget.params.addFilterConditions, conditions.filter)
+		}
+
+		if ($widget.params && $widget.params.addConditions) {
+			conditions = addConditions($widget.params.addConditions, conditions)
+		}
+		console.log(conditions)
 		return conditions
 	}
 
