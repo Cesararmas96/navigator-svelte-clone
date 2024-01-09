@@ -1,19 +1,15 @@
 lockfileVersion: '6.0'
 
-settings:
-  autoInstallPeers: true
-  excludeLinksFromLockfile: false
-
 dependencies:
   '@floating-ui/dom':
     specifier: ^1.4.5
     version: 1.4.5
   '@mixoo/form':
-    specifier: ^2.0.2
-    version: 2.0.2(@mixoo/ui@1.1.2)(svelte@4.1.1)
+    specifier: ^3.0.0
+    version: 3.0.0(@mixoo/ui@1.2.0)(svelte@4.1.1)
   '@mixoo/ui':
-    specifier: ^1.1.2
-    version: 1.1.2(monaco-editor@0.44.0)(svelte@4.1.1)
+    specifier: ^1.2.0
+    version: 1.2.0(monaco-editor@0.44.0)(svelte@4.1.1)
   '@nextlint/core':
     specifier: ^1.2.0
     version: 1.2.0
@@ -550,6 +546,12 @@ packages:
     resolution: {integrity: sha512-+wluvCrRhXrhyOmRDJ3q8mux9JkKy5SJ/v8ol2tu4FVjyYvtEzkc/3pK15ET6RKg4b4w4BmTk1+gsCUhf21Ykg==}
     dev: true
 
+  /@internationalized/date@3.5.1:
+    resolution: {integrity: sha512-LUQIfwU9e+Fmutc/DpRTGXSdgYZLBegi4wygCWDSVmUdLTaMHsQyASDiJtREwanwKuQLq0hY76fCJ9J/9I2xOQ==}
+    dependencies:
+      '@swc/helpers': 0.5.3
+    dev: false
+
   /@jest/schemas@29.6.3:
     resolution: {integrity: sha512-mo5j5X+jIZmJQveBKeS/clAueipV7KgiX1vMgCxam1RNYiqE1w62n0/tJJnHtjW8ZHcQco5gY85jA3mi0L+nSA==}
     engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
@@ -605,25 +607,26 @@ packages:
     dev: false
     optional: true
 
-  /@melt-ui/svelte@0.50.0(svelte@4.1.1):
-    resolution: {integrity: sha512-NcWwxwStXq77/yOuBfnGkuJdUta3M4SwqZECdaRpAQ61BHI3qz7WW2ZM42JmDvGSs9W6ww2kZFNF8XNTO92CdA==}
+  /@melt-ui/svelte@0.61.1(svelte@4.1.1):
+    resolution: {integrity: sha512-xG/rRK77yfzAWm0/KrB+NrJ3qzBALv7B3OoHGyLSfFXIGum+CzklxtDH8gNSuCA6ENfuPnY7pwy390+LNqvdig==}
     peerDependencies:
       svelte: '>=3 <5'
     dependencies:
       '@floating-ui/core': 1.5.0
       '@floating-ui/dom': 1.5.3
+      '@internationalized/date': 3.5.1
       dequal: 2.0.3
       focus-trap: 7.5.3
       nanoid: 4.0.2
       svelte: 4.1.1
     dev: false
 
-  /@mixoo-ui/accordion@2.0.0(svelte@4.1.1):
-    resolution: {integrity: sha512-YuK6oq+BlBRx78Y2qzefhOQakdn8gs58B/UCB/aEYwfdatBajgteI9sOkaj4YOQ+xcyN3q25ufwu9yojANVT2Q==}
+  /@mixoo-ui/accordion@2.0.1(svelte@4.1.1):
+    resolution: {integrity: sha512-ewQAG2uIV9zMb/w3yXMXoP4tipx3qv1me9uC8VrTF3GBuHuhuwiD/lhK+7v5jauCkORlFCh/GeSzqLQHh6xFgg==}
     peerDependencies:
       svelte: ^4
     dependencies:
-      '@melt-ui/svelte': 0.50.0(svelte@4.1.1)
+      '@melt-ui/svelte': 0.61.1(svelte@4.1.1)
       '@mixoo-ui/core': 1.0.5
       svelte: 4.1.1
     dev: false
@@ -652,8 +655,8 @@ packages:
       cva: /class-variance-authority@0.7.0
     dev: false
 
-  /@mixoo-ui/editor@1.0.6(monaco-editor@0.44.0)(svelte@4.1.1):
-    resolution: {integrity: sha512-7O++QBDlHzj8IwyxVQI2e9AqRZiANwYWl/35wawwrSDN2RAh5HWK/pljy4tG9pELnRo4EgYy6ldbFNkCOj0B7A==}
+  /@mixoo-ui/editor@1.0.7(monaco-editor@0.44.0)(svelte@4.1.1):
+    resolution: {integrity: sha512-6cHeL+pfLP/jVDmF8kybkuKcb4+Qpnk1AFHAUMhF3LGW9bAPBSJfsXT0MrwXSb/CAkjwOQmkHx6FWvo7NigiGA==}
     peerDependencies:
       svelte: ^4
     dependencies:
@@ -694,25 +697,25 @@ packages:
       svelte: 4.1.1
     dev: false
 
-  /@mixoo-ui/select@1.0.7(svelte@4.1.1):
-    resolution: {integrity: sha512-fmhLQahmTds/z9Nu4t8+qppYVVmqa3O/TEOgHaQL1zphF2lmwkV2i4TtO2llpr6/l8YfDfWVCcE31OQhJfzBZQ==}
+  /@mixoo-ui/select@1.0.8(svelte@4.1.1):
+    resolution: {integrity: sha512-CwwmlKxoJGIM07k0d82qbKzowEXRCos9BaPsib530OZCDwxWnelfm7pyrr86x8EAXm1AklTwfshstu2b6/eaIA==}
     peerDependencies:
       svelte: ^4
     dependencies:
-      '@melt-ui/svelte': 0.50.0(svelte@4.1.1)
+      '@melt-ui/svelte': 0.61.1(svelte@4.1.1)
       '@mixoo-ui/core': 1.0.5
       '@mixoo-ui/input': 1.0.6(svelte@4.1.1)
       '@mixoo/virtual-list': 1.0.4(svelte@4.1.1)
       svelte: 4.1.1
     dev: false
 
-  /@mixoo-ui/switch@1.0.7(svelte@4.1.1):
-    resolution: {integrity: sha512-0SSY13fs44F0vUMmxFN2QkJnAoX58ax+BiNTPRBDJo05BOE/wTJpY3Nel3riD1BDny1j7265hlxVMVKj8gruVA==}
+  /@mixoo-ui/switch@1.0.8(svelte@4.1.1):
+    resolution: {integrity: sha512-k+2jyK1NzDEe6+tuQpmyD+aVS5EMngny2h/+mENv/wwKG3krDR3Bl6umAjeQJtfTnlO2Y361JEb1/v4tf6LWWA==}
     peerDependencies:
       svelte: ^4
     dependencies:
       '@floating-ui/dom': 1.5.3
-      '@melt-ui/svelte': 0.50.0(svelte@4.1.1)
+      '@melt-ui/svelte': 0.61.1(svelte@4.1.1)
       '@mixoo-ui/core': 1.0.5
       svelte: 4.1.1
     dev: false
@@ -727,15 +730,25 @@ packages:
       svelte: 4.1.1
     dev: false
 
-  /@mixoo/form@2.0.2(@mixoo/ui@1.1.2)(svelte@4.1.1):
-    resolution: {integrity: sha512-TKn00foyZWLcJSuLmD4tdynHxFb45lhC1yQB+PfVW1zXaYeA9LkjSeqwIm0AudkeEjf6tizn0EKlgQ5utnToAQ==}
+  /@mixoo-ui/upload@1.1.0(svelte@4.1.1):
+    resolution: {integrity: sha512-qmwQ6GaKY+GlCvErQ8f0kPHqXuoLT6CiOmZgeXSynX2KV0AqyHc66eDdBPNdCnjrHgcz+AEJIT076NqauW5YuA==}
     peerDependencies:
-      '@mixoo/ui': ^1.1.2
+      svelte: ^4
+    dependencies:
+      '@melt-ui/svelte': 0.61.1(svelte@4.1.1)
+      '@mixoo-ui/core': 1.0.5
+      svelte: 4.1.1
+    dev: false
+
+  /@mixoo/form@3.0.0(@mixoo/ui@1.2.0)(svelte@4.1.1):
+    resolution: {integrity: sha512-Hx+WLN0Np1lMAio9BVpYCBVz7dlZEdzWozpmtH59CVzTERWtqe50VtmqhRzFsnh+8CbWAh3evM3T7qGDpCwIYQ==}
+    peerDependencies:
+      '@mixoo/ui': ^1.2.0
       svelte: ^4
     dependencies:
       '@mixoo-ui/core': 1.0.5
       '@mixoo/stores': 1.0.2
-      '@mixoo/ui': 1.1.2(monaco-editor@0.44.0)(svelte@4.1.1)
+      '@mixoo/ui': 1.2.0(monaco-editor@0.44.0)(svelte@4.1.1)
       jsonschema: 1.4.1
       svelte: 4.1.1
       url: 0.11.3
@@ -747,21 +760,22 @@ packages:
       nanostores: 0.9.3
     dev: false
 
-  /@mixoo/ui@1.1.2(monaco-editor@0.44.0)(svelte@4.1.1):
-    resolution: {integrity: sha512-v8zgul5nDl4jtITn/VhEyvyh/ivuZ4TeL1BPdeawDH0XG8pfxSMl7BPSEHLHx0uX+DlRBQbzPNrT50tNb8D3rg==}
+  /@mixoo/ui@1.2.0(monaco-editor@0.44.0)(svelte@4.1.1):
+    resolution: {integrity: sha512-KigJ2O4a2Q/i8mrAm+YuyY4AA45Cp8Q4qxeo+92D2vd0g6WCNPmjOpJWLvBGtEMkC7iwIlNGJrMNahx4lFOXpg==}
     peerDependencies:
       svelte: ^4
     dependencies:
-      '@mixoo-ui/accordion': 2.0.0(svelte@4.1.1)
+      '@mixoo-ui/accordion': 2.0.1(svelte@4.1.1)
       '@mixoo-ui/button': 1.0.7(svelte@4.1.1)
       '@mixoo-ui/checkbox': 1.0.5(svelte@4.1.1)
-      '@mixoo-ui/editor': 1.0.6(monaco-editor@0.44.0)(svelte@4.1.1)
+      '@mixoo-ui/editor': 1.0.7(monaco-editor@0.44.0)(svelte@4.1.1)
       '@mixoo-ui/input': 1.0.6(svelte@4.1.1)
       '@mixoo-ui/number': 1.0.5(svelte@4.1.1)
       '@mixoo-ui/radio': 1.0.5(svelte@4.1.1)
-      '@mixoo-ui/select': 1.0.7(svelte@4.1.1)
-      '@mixoo-ui/switch': 1.0.7(svelte@4.1.1)
+      '@mixoo-ui/select': 1.0.8(svelte@4.1.1)
+      '@mixoo-ui/switch': 1.0.8(svelte@4.1.1)
       '@mixoo-ui/textarea': 1.0.6(svelte@4.1.1)
+      '@mixoo-ui/upload': 1.1.0(svelte@4.1.1)
       svelte: 4.1.1
     transitivePeerDependencies:
       - monaco-editor
@@ -1101,6 +1115,12 @@ packages:
       '@stitches/core': 1.2.8
       '@svelteuidev/composables': 0.13.0(svelte@4.1.1)
       svelte: 4.1.1
+    dev: false
+
+  /@swc/helpers@0.5.3:
+    resolution: {integrity: sha512-FaruWX6KdudYloq1AHD/4nU+UsMTdNE8CKyrseXWEcgjDAbvkwJg2QGPAnfIJLIWsjZOSPLOAykK6fuYp4vp4A==}
+    dependencies:
+      tslib: 2.6.1
     dev: false
 
   /@testing-library/dom@9.3.3:
@@ -5841,7 +5861,6 @@ packages:
 
   /tslib@2.6.1:
     resolution: {integrity: sha512-t0hLfiEKfMUoqhG+U1oid7Pva4bbDPHYfJNiB7BiIjRkj1pyC++4N3huJfqY6aRH6VTB0rvtzQwjM4K6qpfOig==}
-    dev: true
 
   /tsutils@3.21.0(typescript@5.1.6):
     resolution: {integrity: sha512-mHKK3iUXL+3UF6xL5k0PEhKRUBKPBCv/+RkEOpjRWxxx27KKRBmmA60A9pgOUvMi8GKhRMPEmjBRPzs2W7O1OA==}
@@ -6428,3 +6447,7 @@ packages:
   /zwitch@2.0.4:
     resolution: {integrity: sha512-bXE4cR/kVZhKZX/RjPEflHaKVhUVl85noU3v6b8apfQEc1x4A+zBxjZ4lN8LqGd6WZ3dl98pY4o717VFmoPp+A==}
     dev: false
+
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
