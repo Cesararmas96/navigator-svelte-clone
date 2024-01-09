@@ -38,7 +38,6 @@
 			if (stores) $storeStores = { ...$storeStores, [$page.params.programs]: Object.values(stores) }
 		} catch (error) {
 			$storeStores = { ...$storeStores }
-			console.log(error)
 		}
 	}
 	if (!$storeStores || !$storeStores[$page.params.programs]) setStores()

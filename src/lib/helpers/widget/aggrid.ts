@@ -102,7 +102,7 @@ export const generateColumnDefsByDefinition = (widget: any, callbacks: any) => {
 						field: key,
 						format: col.format,
 						cellClass: cellClass(col),
-						cellClassRules: cellClassRules(col, widget.params.thresholds),
+						cellClassRules: cellClassRules(key, col, widget.params.thresholds),
 						headerClass: headerClass(col),
 						cellStyle: cssToObjet(col.style),
 
@@ -142,6 +142,7 @@ export const generateColumnDefsByDefinition = (widget: any, callbacks: any) => {
 						}
 				  }
 		})
+	// if (widget.classbase === 'selectpqtableWidget') colsDef.push(colAction(widget, callbacks))
 	return colsDef
 }
 
@@ -244,6 +245,7 @@ export const formatByPattern = (value: number, pattern: string): string => {
 			break
 
 		case '#,###':
+		case '#,####':
 		case '##,###':
 		case '$#,###':
 		case '$##,###':
@@ -283,7 +285,7 @@ export const formatByPattern = (value: number, pattern: string): string => {
 			break
 
 		default:
-			throw new Error('Patrón no reconocido')
+			throw new Error('Patrón no reconocido ' + pattern)
 	}
 
 	return result
@@ -493,12 +495,12 @@ export const colSorted = (col: any, sort: any): any => {
 	return sortCol.dir === 'up' ? 'asc' : 'desc'
 }
 
-export const cellClassRules = (formatDefinition: any, thresholds: any): any => {
+export const cellClassRules = (key: string, formatDefinition: any, thresholds: any): any => {
 	let rule = {}
 	if (!thresholds) return rule
 	if (formatDefinition.render) {
 		const fn = gridCellFunctionsMap[formatDefinition.render]
-		if (fn) rule = fn(thresholds[formatDefinition.dataIndx])
+		if (fn) rule = fn(thresholds[formatDefinition.dataIndx || key])
 		else
 			sendWarningNotification(
 				`Function ${formatDefinition.render} not found in gridCellFunctionsMap`
@@ -538,9 +540,13 @@ const cssToObjet = (cssStr) => {
 }
 
 function metricsRender(threshold: any) {
-	if (threshold && threshold.maximum) {
-		const operator = operatorTokens[threshold.maximum.operator]
-		return { [threshold.maximum.class]: `x ${operator} ${threshold.maximum.value}` }
+	if (threshold) {
+		const _threshold = {}
+		Object.keys(threshold).map((key) => {
+			const operator = operatorTokens[threshold[key].operator]
+			_threshold[threshold[key].class] = `x ${operator} ${threshold[key].value}`
+		})
+		return _threshold
 	}
 }
 
@@ -722,9 +728,11 @@ function actions(
 ) {
 	const container = document.createElement('span')
 	container.classList.add('flex', 'items-center', 'justify-center', 'gap-1', 'mt-0.5', 'opacity-60')
-	if (params.data?.attributes?.show_controls) {
-		Object.keys(params.data?.attributes?.show_controls).map((btn: any) => {
-			if (!params.data.attributes.show_controls[btn]) return
+	const constrols = params.widget?.params?.actions?.btns
+	if (constrols) {
+		constrols.map((btn: any) => {
+			if (params.data?.attributes?.show_controls && !params.data?.attributes?.show_controls[btn])
+				return
 			container.appendChild(createActionBtn({ btn, ...params }, callback, colDef))
 		})
 	}
@@ -732,8 +740,8 @@ function actions(
 }
 
 const icons: any = {
-	// edit: 'material-symbols:edit-square-outline-rounded',
-	// delete: 'material-symbols:delete-outline-rounded',
+	edit: 'material-symbols:edit-square-outline-rounded',
+	delete: 'material-symbols:delete-outline-rounded',
 	play: 'tabler:play',
 	upload: 'tabler:cloud-upload'
 }

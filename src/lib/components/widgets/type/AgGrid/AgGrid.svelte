@@ -411,7 +411,6 @@
 	if ($widget.params.actions && !formatDefinitionKeys.includes('actions')) {
 		columnDefs.push(colAction($widget, actionBtnMap))
 	}
-
 	columnDefs = columnDefs.sort((a: any, b: any) => a.order - b.order)
 
 	/**

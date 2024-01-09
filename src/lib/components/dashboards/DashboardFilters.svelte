@@ -18,7 +18,7 @@
 		data-tb-collapse
 		class="rounded-md border border-gray-200 bg-white px-1 pt-1 dark:border-dark-200 dark:bg-dark-100"
 	>
-		<div>
+		<div class="border">
 			<button
 				class="mb-1 block w-full rounded bg-gray-200 px-3 py-2 text-left text-md font-bold text-heading hover:bg-gray-300 dark:bg-dark-200 dark:hover:bg-dark-300/50"
 				type="button"

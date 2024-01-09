@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { storeUser } from '$lib/stores'
 import { get } from 'svelte/store'
 

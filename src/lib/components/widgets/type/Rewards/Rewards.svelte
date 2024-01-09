@@ -1,17 +1,18 @@
 <script lang="ts">
-	import { getContext } from 'svelte'
+	import { getContext, onMount } from 'svelte'
 	import Reward from './Reward.svelte'
 	import type { Writable } from 'svelte/store'
 	import { getApiData } from '$lib/services/getData'
 	import _ from 'lodash'
 	import { sendErrorNotification } from '$lib/stores/toast'
 	import { addInstance, clearInstances } from '$lib/helpers/widget/instances'
+	import { getWidgetAction } from '$lib/helpers'
 
 	export let data: any
 
-	/** comentario para dev */
-
 	const widget = getContext<Writable<any>>('widget')
+	const widgetActions = getContext<Writable<any[]>>('widgetActions')
+	const resizeAction = getWidgetAction($widgetActions, 'resize')
 
 	const baseUrl = import.meta.env.VITE_API_URL
 
@@ -28,7 +29,6 @@
 				Object.keys(groupedData).map((item) => {
 					sortable.push({ label: item, value: groupedData[item] })
 				})
-				console.log(sortable)
 
 				const sortedData = _.sortBy(sortable, [(value) => value?.label.toLowerCase()])
 
@@ -164,6 +164,12 @@
 	}
 
 	getData()
+
+	onMount(() => {
+		// console.log('onMount', resizeAction)
+		// $widget.attributes.fullcontent = true
+		// resizeAction.action()
+	})
 </script>
 
 {#if $widget.params && $widget.params.groupBy}
