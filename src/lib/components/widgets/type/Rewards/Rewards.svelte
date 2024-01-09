@@ -1,16 +1,18 @@
 <script lang="ts">
-	import { getContext } from 'svelte'
+	import { getContext, onMount } from 'svelte'
 	import Reward from './Reward.svelte'
 	import type { Writable } from 'svelte/store'
 	import { getApiData } from '$lib/services/getData'
 	import _ from 'lodash'
 	import { sendErrorNotification } from '$lib/stores/toast'
 	import { addInstance, clearInstances } from '$lib/helpers/widget/instances'
-	import { storeUser } from '$lib/stores'
+	import { getWidgetAction } from '$lib/helpers'
 
 	export let data: any
-	console.log($storeUser)
+
 	const widget = getContext<Writable<any>>('widget')
+	const widgetActions = getContext<Writable<any[]>>('widgetActions')
+	const resizeAction = getWidgetAction($widgetActions, 'resize')
 
 	const baseUrl = import.meta.env.VITE_API_URL
 
@@ -162,6 +164,12 @@
 	}
 
 	getData()
+
+	onMount(() => {
+		// console.log('onMount', resizeAction)
+		// $widget.attributes.fullcontent = true
+		// resizeAction.action()
+	})
 </script>
 
 {#if $widget.params && $widget.params.groupBy}

@@ -113,11 +113,23 @@ export const loadLocalStoredLocations = (_dashboard: any, _widgets: any[], isMob
 	}
 }
 
-export const getControllerItemsLocations = (gridParams: GridParams) => {
+export const getControllerItemsLocations = (gridItems: any[], gridParams: GridParams) => {
 	return Object.entries(gridParams.items).reduce((acc, [key, item]) => {
+		const gridItem = gridItems.find((i) => i.title === key)
+		if (gridItem) {
+			gridItem.x = item.x
+			gridItem.y = item.y
+			gridItem.w = item.w
+			gridItem.h = item.h
+		}
 		acc[key] = { x: item.x, y: item.y, w: item.w, h: item.h }
 		return acc
 	}, {})
+
+	// return Object.entries(gridParams.items).reduce((acc, [key, item]) => {
+	// 	acc[key] = { x: item.x, y: item.y, w: item.w, h: item.h }
+	// 	return acc
+	// }, {})
 }
 
 export const saveLocations = (dashboard: any, gridItems: any[], gridParams: GridParams) => {
@@ -288,7 +300,6 @@ export const resizeItem = (item: any, items: any[]) => {
 		document.getElementById(`widget-instances-${item.data.widget_id}`)?.clientHeight || 0
 	const height = header + content + widgetInstances
 	const prevousHeight = maxHeight(item.y, items)
-
 	if (item.data?.instances?.length > 0) {
 		item._h = item.h
 		item.h = Math.ceil(height / (rowHeight + 1))
@@ -339,8 +350,14 @@ const maxHeight = (yPos: number, items: any[]) => {
 
 const reorderAfterResize = (item: any, prevousHeight: number, items: any[]) => {
 	const height = maxHeight(item.y, items) - prevousHeight
+	let existInLine: boolean = false
 	items.map((i) => {
-		if (i.y > item.y) i.y += height
+		if (i.y > item.y) {
+			if (existInLine || (item.x >= i.x && item.x <= i.w - 1)) {
+				existInLine = true
+				i.y += height
+			}
+		}
 		return i
 	})
 	return [...items]

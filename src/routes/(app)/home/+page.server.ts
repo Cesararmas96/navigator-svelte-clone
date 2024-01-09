@@ -4,8 +4,6 @@ import { redirect } from '@sveltejs/kit'
 export const load = async ({ locals, fetch, url }) => {
 	if (!locals.user) throw redirect(302, '/')
 	if (import.meta.env.VITE_ADMIN) throw redirect(302, '/admin')
-	console.log('locals.user', locals.user)
-
 	const headers = { authorization: `Bearer ${locals.user.token}` }
 
 	const programs = await getApiData(

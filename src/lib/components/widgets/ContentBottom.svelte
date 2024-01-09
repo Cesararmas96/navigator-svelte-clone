@@ -10,8 +10,8 @@
 
 	const filters = $dashboard?.filtering_show
 		? { ...$dashboard?.filtering_show }
-		: trocModule.filtering_show
-		? { ...trocModule.filtering_show }
+		: trocModule?.filtering_show
+		? { ...trocModule?.filtering_show }
 		: {}
 
 	const filtersArray: any[] = Object.entries(filters?.filtering || {})
@@ -21,10 +21,10 @@
 
 	let filtersApplied: string[] = []
 
-	$: if ($dashboard.where_new_cond) {
+	$: if ($dashboard?.where_new_cond) {
 		// console.log($dashboard.where_new_cond)
 		filtersApplied = []
-		for (const key in $dashboard.where_new_cond) {
+		for (const key in $dashboard?.where_new_cond) {
 			const filter = filtersSorted[key.replace('_id', '')]
 			if (!filter || !filter.selected) continue
 			filtersApplied.push(`${filter.name}: ${filter.selected.label}`)

@@ -98,9 +98,9 @@
 			dashboardId: $storeDashboard.dashboard_id,
 			type: AlertType.WARNING,
 			callback1Btn: 'Publish',
-			callback1: () => {
-				updateWidgetLocation()
-				dispatch('handleCustomize', false)
+			callback1: async () => {
+				await updateWidgetLocation()
+				dispatch('handleCustomize', $storeDashboard?.attributes)
 			}
 		}
 		sendAlert(alert)
@@ -173,9 +173,10 @@
 				$storeDashboard.gridItems = [...items]
 				return
 			}
+
 			const setNewLocations =
 				!dashboard.widget_location || Object.keys(dashboard.widget_location).length === 0
-
+			console.log('setNewLocations', setNewLocations, dashboard)
 			if (dashboard.attributes.widget_location) {
 				dashboard.widget_location = { ...dashboard.attributes.widget_location }
 				$storeDashboard.widget_location = { ...dashboard.attributes.widget_location }
@@ -197,18 +198,24 @@
 		}
 	}
 
-	const updateWidgetLocation = async (_dashboard: any = $storeDashboard) => {
-		if (_dashboard?.attributes?.user_id !== $storeUser?.user_id) return
+	const updateWidgetLocation = async () => {
+		if ($storeDashboard?.attributes?.user_id !== $storeUser?.user_id) return
 
 		const attributes = {
-			..._dashboard.attributes,
+			...$storeDashboard.attributes,
 			explorer: 'v3',
-			widget_location: getControllerItemsLocations(gridController.gridParams)
+			widget_location: getControllerItemsLocations(
+				$storeDashboard.gridItems,
+				gridController.gridParams
+			)
 		}
-		const resp = await patchData(`${baseUrl}/api/v2/dashboards/${_dashboard.dashboard_id}`, {
-			attributes
+		const resp = await postData(`${baseUrl}/api/v2/dashboards/${$storeDashboard.dashboard_id}`, {
+			attributes: attributes
 		})
-		if (resp) _dashboard.attributes = resp.attributes
+
+		if (resp[0]) $storeDashboard.attributes = resp[0].attributes
+
+		return $storeDashboard.attributes
 	}
 
 	const updateLocations = async () => {

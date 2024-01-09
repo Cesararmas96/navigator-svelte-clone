@@ -147,14 +147,14 @@
 		loading.set(false)
 	}
 
-	const confirmCustomize = async (impersonation: boolean) => {
+	const confirmCustomize = async (impersonation: boolean, attributes?: Record<string, any>) => {
 		loading.set(true)
 		try {
 			const user = impersonation ? { user_id: $storeUser?.user_id } : { user_id: null }
 			let resp = await postData(
 				`${import.meta.env.VITE_API_URL}/api/v2/dashboards/${currentDashboard.dashboard_id}`,
 				{
-					attributes: { ...currentDashboard.attributes, ...user }
+					attributes: { ...(attributes ? attributes : currentDashboard.attributes), ...user }
 				}
 			)
 			if (resp[0] && resp[0].dashboard_id) {
@@ -180,7 +180,7 @@
 		loading.set(false)
 	}
 
-	const handleCustomize = async () => {
+	const handleCustomize = async (attributes: Record<string, any>) => {
 		let impersonation = true
 		let description =
 			'Are you sure that you want to customizable this dashboard?\nThis action cannot be undone.'
@@ -424,7 +424,7 @@
 								</Dropdown>
 							</div>
 						</div>
-						<Dashboard {dashboard} on:handleCustomize={(e) => confirmCustomize(e.detail)} />
+						<Dashboard {dashboard} on:handleCustomize={(e) => confirmCustomize(false, e.detail)} />
 					</TabItem>
 				{/each}
 			{/if}

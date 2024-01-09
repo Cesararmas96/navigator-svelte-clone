@@ -9,6 +9,7 @@
 	import { sendErrorNotification } from '$lib/stores/toast'
 	import { setWidgetTop } from '$lib/helpers/widget/widget-top'
 	import { page } from '$app/stores'
+	import NoDataFound from '../NoDataFound.svelte'
 
 	export let widget: Writable<any>
 
@@ -299,5 +300,5 @@
 {:then data}
 	<slot {data} />
 {:catch error}
-	{sendErrorNotification(error)}
+	<NoDataFound {error} />
 {/await}

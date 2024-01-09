@@ -89,6 +89,9 @@
 		{/if}
 	</div>
 
+	<!-- class:overflow-hidden={!$widget.attributes?.fullcontent && !isMobileDevice && !scrollableBox}
+	class:overflow-y-auto={!$widget.attributes?.fullcontent && !isMobileDevice && scrollableBox} -->
+
 	<!-- Widget Content -->
 	<div
 		id={`widget-main-${$widget.widget_id}`}
