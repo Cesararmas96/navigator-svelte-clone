@@ -327,7 +327,10 @@
 			params: {
 				model: {
 					meta: 'api/v1/badge_assign',
-					primaryKey: 'reward_id'
+					primaryKey: 'reward_id',
+					schema: {
+						$withoutDefs: true
+					}
 				}
 			},
 			query_slug: {
