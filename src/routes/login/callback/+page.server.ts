@@ -8,7 +8,7 @@ export const load: PageServerLoad = async ({ locals, cookies }) => {
 	const half = Math.ceil(locals.user.token.length / 2)
 	const token1 = locals.user.token.slice(0, half)
 	const token2 = locals.user.token.slice(half)
-
+	console.log('PASO 1')
 	cookies.set('_session1', encrypt(token1), {
 		path: '/',
 		httpOnly: true,
@@ -28,7 +28,8 @@ export const load: PageServerLoad = async ({ locals, cookies }) => {
 		httpOnly: true,
 		sameSite: 'none',
 		secure: true, //import.meta.env.ENV === 'production',
-		maxAge: 60 * 60 * 24 * 30
+		maxAge: 60 * 60
 	})
+	console.log('PASO 2')
 	if (locals.user.next) throw redirect(302, `/${locals.user.next}`)
 }
