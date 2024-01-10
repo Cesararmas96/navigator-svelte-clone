@@ -2,6 +2,7 @@ import { decrypt } from '$lib/helpers/auth/auth'
 import type { Handle } from '@sveltejs/kit'
 
 export const handle: Handle = async ({ event, resolve }) => {
+	console.log('hooks', event)
 	let token = event.url.searchParams.get('token') || ''
 	const next = event.url.searchParams.get('next') || event.cookies.get('_program')
 
