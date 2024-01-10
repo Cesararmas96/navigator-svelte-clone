@@ -13,6 +13,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 			const decoded2 = decrypt(event.cookies.get('_session2'))
 			if (!decoded1 || !decoded2) return await resolve(event)
 			token = decoded1 + decoded2
+			console.log('HOOKS TOKEN', token)
 		} catch (error) {
 			return await resolve(event)
 		}
@@ -27,6 +28,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 			}
 		})
 		const session = await rawSession.json()
+		console.log('HOOKS SESSIOM', session)
 
 		if (session) {
 			event.locals.user = session.session
