@@ -4,7 +4,7 @@ import type { Handle } from '@sveltejs/kit'
 export const handle: Handle = async ({ event, resolve }) => {
 	let token = event.url.searchParams.get('token') || ''
 	const next = event.url.searchParams.get('next') || event.cookies.get('_program')
-
+	console.log('HOOKS URL', event.url)
 	if (!token) {
 		try {
 			if (!event.cookies.get('_session1') || !event.cookies.get('_session2'))
@@ -41,6 +41,6 @@ export const handle: Handle = async ({ event, resolve }) => {
 		console.log('hooks', error)
 		return await resolve(event)
 	}
-
+	console.log('HOOKS PASO')
 	return await resolve(event)
 }
