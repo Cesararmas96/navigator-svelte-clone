@@ -2,6 +2,7 @@
 	import { Avatar, Dropdown, DropdownItem } from 'flowbite-svelte'
 	import Icon from '$lib/components/common/Icon.svelte'
 	import { enhance } from '$app/forms'
+	import { storeUser } from '$lib/stores'
 
 	const handleLogout = () => {}
 </script>
@@ -24,14 +25,16 @@
 				</div>
 			</a>
 		</DropdownItem>
-		<DropdownItem>
-			<a href="/admin">
-				<div class="mx-2 flex cursor-pointer flex-row items-center">
-					<Icon icon="line-md:clipboard-check" size="20px" classes="mr-3" />
-					Admin
-				</div>
-			</a>
-		</DropdownItem>
+		{#if !$storeUser.next}
+			<DropdownItem>
+				<a href="/admin">
+					<div class="mx-2 flex cursor-pointer flex-row items-center">
+						<Icon icon="line-md:clipboard-check" size="20px" classes="mr-3" />
+						Admin
+					</div>
+				</a>
+			</DropdownItem>
+		{/if}
 		<DropdownItem slot="footer">
 			<form action="/logout" method="POST" use:enhance>
 				<button type="submit" class="mx-2 flex cursor-pointer flex-row items-center">

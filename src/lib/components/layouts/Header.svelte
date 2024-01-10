@@ -6,10 +6,9 @@
 	import { themeColor, themeMode } from '$lib/stores/preferences'
 	import { page } from '$app/stores'
 	import { iconColor, isIconWhite } from '$lib/helpers/common/common'
-	import Icon from '../common/Icon.svelte'
 
+	$: showToggle = $page.route.id?.includes('programs')
 	const toggleDrawer = () => {
-		console.log('toggleDrawer')
 		$sidebarMin = true
 		$menuHidden = !$menuHidden
 	}
@@ -21,19 +20,21 @@
 >
 	<!-- Logo -->
 	<div class="flex flex-shrink-0 items-center px-5 lg:w-[var(--sidebar-width)]">
-		<button
-			id="sidebar-toggle"
-			type="button"
-			class="btn-sidebar-toggle -ml-2 mr-2 grid h-5 w-5 place-content-center rounded font-light hover:bg-white/10 dark:hover:bg-dark-100 xl:hidden"
-			on:click={toggleDrawer}
-		>
-			<img
-				src="/images/icons/start{iconColor($themeColor)}.svg"
-				alt="Navigator"
-				class="btn-sidebar-toggle"
-			/>
-			<!-- <Icon icon="tabler:layout-sidebar" size="20px" classes="btn-sidebar-toggle" /> -->
-		</button>
+		{#if showToggle}
+			<button
+				id="sidebar-toggle"
+				type="button"
+				class="btn-sidebar-toggle -ml-2 mr-2 grid h-5 w-5 place-content-center rounded font-light hover:bg-white/10 dark:hover:bg-dark-100 xl:hidden"
+				on:click={toggleDrawer}
+			>
+				<img
+					src="/images/icons/start{iconColor($themeColor)}.svg"
+					alt="Navigator"
+					class="btn-sidebar-toggle"
+				/>
+				<!-- <Icon icon="tabler:layout-sidebar" size="20px" classes="btn-sidebar-toggle" /> -->
+			</button>
+		{/if}
 		<NavBrand href="/home" class="">
 			<span class="ml-4 self-center whitespace-nowrap text-xl font-semibold dark:text-white">
 				{#if $page.params.programs}
@@ -81,13 +82,15 @@
 		<li class="relative mx-1 md:block">
 			<Profile />
 		</li>
-	</ul>
 
-	<button
-		type="button"
-		id="search-toggle"
-		class="icon mr-5 grid h-6 w-6 place-content-center text-2xl font-light hover:bg-white/10 aria-expanded:bg-white/20"
-	>
-		<img src="/images/icons/support{iconColor($themeColor)}.svg" alt="Navigator" />
-	</button>
+		<li>
+			<a
+				href="https://support.trocdigital.io/"
+				target="_blank"
+				class="icon mx-2 grid h-6 w-6 place-content-center text-2xl font-light hover:bg-white/10 aria-expanded:bg-white/20"
+			>
+				<img src="/images/icons/support{iconColor($themeColor)}.svg" alt="Navigator" />
+			</a>
+		</li>
+	</ul>
 </header>
