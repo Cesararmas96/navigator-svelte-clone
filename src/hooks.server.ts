@@ -2,8 +2,6 @@ import { decrypt } from '$lib/helpers/auth/auth'
 import type { Handle } from '@sveltejs/kit'
 
 export const handle: Handle = async ({ event, resolve }) => {
-	if (event.url.pathname.startsWith('/js') || event.url.pathname.startsWith('/_app/fonts'))
-		return await resolve(event)
 	let token = event.url.searchParams.get('token') || ''
 	const next = event.url.searchParams.get('next') || event.cookies.get('_program')
 	console.log('HOOKS URL', event.url)
