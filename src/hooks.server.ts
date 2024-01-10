@@ -11,6 +11,8 @@ export const handle: Handle = async ({ event, resolve }) => {
 			const decoded1 = decrypt(event.cookies.get('_session1'))
 			const decoded2 = decrypt(event.cookies.get('_session2'))
 			if (!decoded1 || !decoded2) return await resolve(event)
+			console.log('decoded1', decoded1)
+			console.log('decoded2', decoded2)
 			token = decoded1 + decoded2
 		} catch (error) {
 			return await resolve(event)
