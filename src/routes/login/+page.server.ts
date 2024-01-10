@@ -26,9 +26,18 @@ const login: Action = async ({ cookies, request }) => {
 
 	if (response.ok) {
 		const data = await response.json()
-		const token = encrypt(data.token)
+		const half = Math.ceil(data.token.length / 2)
+		const token1 = data.token.slice(0, half)
+		const token2 = data.token.slice(half)
 
-		cookies.set('_session', token, {
+		cookies.set('_session', encrypt(token1), {
+			path: '/',
+			httpOnly: true,
+			sameSite: 'strict',
+			secure: true, //import.meta.env.ENV === 'production',
+			maxAge: 60 * 60 * 24 * 30
+		})
+		cookies.set('_session', encrypt(token2), {
 			path: '/',
 			httpOnly: true,
 			sameSite: 'strict',
