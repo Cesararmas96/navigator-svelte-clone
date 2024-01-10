@@ -2,6 +2,8 @@ import { redirect } from '@sveltejs/kit'
 import type { PageServerLoad } from './$types'
 import { encrypt } from '$lib/helpers/auth/auth'
 
+export const ssr = false
+
 export const load: PageServerLoad = async ({ locals, cookies }) => {
 	const half = Math.ceil(locals.user.token.length / 2)
 	const token1 = locals.user.token.slice(0, half)
