@@ -4,7 +4,6 @@ import type { Handle } from '@sveltejs/kit'
 export const handle: Handle = async ({ event, resolve }) => {
 	let token = event.url.searchParams.get('token') || ''
 	const next = event.url.searchParams.get('next') || event.cookies.get('_program')
-	console.log('HOOKS URL', event.url)
 	if (!token) {
 		try {
 			if (!event.cookies.get('_session1') || !event.cookies.get('_session2'))
@@ -13,7 +12,6 @@ export const handle: Handle = async ({ event, resolve }) => {
 			const decoded2 = decrypt(event.cookies.get('_session2'))
 			if (!decoded1 || !decoded2) return await resolve(event)
 			token = decoded1 + decoded2
-			console.log('HOOKS TOKEN', token)
 		} catch (error) {
 			return await resolve(event)
 		}
@@ -28,7 +26,6 @@ export const handle: Handle = async ({ event, resolve }) => {
 			}
 		})
 		const session = await rawSession.json()
-		console.log('HOOKS SESSIOM', session)
 
 		if (session) {
 			event.locals.user = session.session
@@ -41,6 +38,5 @@ export const handle: Handle = async ({ event, resolve }) => {
 		console.log('hooks', error)
 		return await resolve(event)
 	}
-	console.log('HOOKS PASO')
 	return await resolve(event)
 }
