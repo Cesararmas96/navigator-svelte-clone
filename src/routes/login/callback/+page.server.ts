@@ -25,7 +25,7 @@ export const load: PageServerLoad = async ({ locals, cookies }) => {
 		path: '/',
 		httpOnly: true,
 		sameSite: false,
-		secure: true, //import.meta.env.ENV === 'production',
+		secure: false, //import.meta.env.ENV === 'production',
 		maxAge: 60 * 60 * 24 * 30
 	})
 	if (locals.user.next) throw redirect(302, `/${locals.user.next}`)
