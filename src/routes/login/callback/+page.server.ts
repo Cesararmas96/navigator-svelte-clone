@@ -16,7 +16,6 @@ export const load: PageServerLoad = async ({ locals, cookies }) => {
 		secure: true, //import.meta.env.ENV === 'production',
 		maxAge: 60 * 60 * 24 * 30
 	})
-
 	cookies.set('_session2', encrypt(token2), {
 		path: '/',
 		httpOnly: true,
@@ -24,7 +23,6 @@ export const load: PageServerLoad = async ({ locals, cookies }) => {
 		secure: true, //import.meta.env.ENV === 'production',
 		maxAge: 60 * 60 * 24 * 30
 	})
-
 	cookies.set('_program', locals.user.next, {
 		path: '/',
 		httpOnly: true,
