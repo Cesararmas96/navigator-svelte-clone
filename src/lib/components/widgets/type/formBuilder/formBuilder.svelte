@@ -93,11 +93,40 @@
 							authorization: `Bearer ${token}`
 						}
 					}
+
+					delete jsonSchema.properties[property]?.$ref?.$ref
 				}
 
-				if (jsonSchema.properties[property]?.type === 'text') {
+				if (
+					jsonSchema.properties[property]?.type === 'text' ||
+					jsonSchema.properties[property]?.['ui:widget'] === 'textarea'
+				) {
 					jsonSchema.properties[property].type = 'string'
 					jsonSchema.properties[property]['format'] = 'textarea'
+				}
+
+				if (jsonSchema.properties[property]?.type === 'datetime') {
+					jsonSchema.properties[property].attrs.visible = false
+				}
+
+				if (jsonSchema.properties[property]?.['ui:widget'] === 'ImageUploader') {
+					// TODO: improve
+					jsonSchema.properties[property].type = 'upload'
+
+					delete jsonSchema.properties[property].attrs.placeholder
+
+					jsonSchema.properties[property].attrs['fetching'] = {
+						url: `${baseUrl}/services/files/static/images/badges/`,
+						method: 'PUT',
+						payload: 'file_name',
+						headers: {
+							authorization: `Bearer ${token}`
+						}
+					}
+
+					if (jsonSchema.properties[property]?.['ui:help'])
+						jsonSchema.properties[property].attrs.help =
+							jsonSchema.properties[property]?.['ui:help']
 				}
 			})
 
