@@ -87,7 +87,7 @@ export const loadLocalStoredLocations = (_dashboard: any, _widgets: any[], isMob
 	const grid = localStorage.getItem('grid')
 	if (!grid) return []
 
-	let y = 0
+	const y = 0
 	const gridData = JSON.parse(grid)
 	const dashboardGrid = gridData.widget_location[_dashboard.dashboard_id]
 	if (dashboardGrid) {
@@ -102,12 +102,12 @@ export const loadLocalStoredLocations = (_dashboard: any, _widgets: any[], isMob
 			.map(([key, item]: [string, any]) => {
 				const data = _widgets.find((item) => item.title === key) || {}
 
-				if (isMobile) {
-					data.resize_on_load = true
-					const ret = { title: key, x: 0, w: 12, h: item.h, y, data }
-					y = y + item.h
-					return ret
-				}
+				// if (isMobile) {
+				// 	data.resize_on_load = true
+				// 	const ret = { title: key, x: 0, w: 12, h: item.h, y, data }
+				// 	y = y + item.h
+				// 	return ret
+				// }
 				return { title: key, ...item, data }
 			})
 	}

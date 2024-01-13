@@ -36,6 +36,7 @@
 	import { Button, Tooltip } from 'flowbite-svelte'
 	import Icon from '../common/Icon.svelte'
 	import { page } from '$app/stores'
+	import _ from 'lodash'
 
 	import {
 		hideFormBuilderDrawer,
@@ -124,6 +125,7 @@
 	}
 
 	$: handleResizable = (item: any) => {
+		if (isMobileDevice()) return
 		$storeDashboard.gridItems = resizeItem(item, $storeDashboard.gridItems)
 		gridController.gridParams.updateGrid()
 		$storeDashboard.gridItems = [...$storeDashboard.gridItems]
@@ -157,7 +159,6 @@
 
 	const setGridItems = async (dashboardId: string): Promise<void> => {
 		$storeDashboard.gridItems = []
-
 		try {
 			widgets = await getApiData(`${baseUrl}/api/v2/widgets?dashboard_id=${dashboardId}`, 'GET')
 			if (!widgets) return
@@ -176,7 +177,7 @@
 
 			const setNewLocations =
 				!dashboard.widget_location || Object.keys(dashboard.widget_location).length === 0
-			console.log('setNewLocations', setNewLocations, dashboard)
+
 			if (dashboard.attributes.widget_location) {
 				dashboard.widget_location = { ...dashboard.attributes.widget_location }
 				$storeDashboard.widget_location = { ...dashboard.attributes.widget_location }
@@ -424,6 +425,13 @@
 	$: heightStyle = !isMobileDevice() ? `height: calc(100vh - ${175 + clientHeight}px)` : ''
 
 	$: isMobileDevice = () => innerWidth < 1024
+
+	const getSortedItems = (items: any[]) => {
+		return items.sort((a, b) => {
+			if (a.y === b.y) return a.x < b.x ? -1 : 1
+			return a.y < b.y ? -1 : 1
+		})
+	}
 </script>
 
 <svelte:window bind:innerWidth />
@@ -500,20 +508,15 @@
 			</Grid>
 		{:else}
 			<div class="grid grid-cols-1 gap-y-3 p-2">
-				{#each $storeDashboard.gridItems as item}
+				{#each getSortedItems($storeDashboard.gridItems) as item}
 					<WidgetBox
 						widget={item.data}
 						resized={false}
+						isMobileDevice={true}
 						let:fixed
 						let:isOwner
 						let:isToolbarVisible
 						let:widget
-						on:handleResize={() => handleResizable(item)}
-						on:handleCloning={() => handleCloning(item)}
-						on:handleRemove={() => handleRemove(item)}
-						on:handleResizable={(e) => {
-							item.data.params.settings.resizable = e.detail.resizable && !e.detail.fixed
-						}}
 					>
 						<Widget
 							{widget}
@@ -522,8 +525,6 @@
 							{isOwner}
 							isMobileDevice={true}
 							bind:reload={item.reload}
-							isDraggable={dashboard?.attributes?.user_id === $storeUser?.user_id}
-							on:handleInstanceResize={() => handleResizable(item)}
 						/>
 					</WidgetBox>
 				{/each}
