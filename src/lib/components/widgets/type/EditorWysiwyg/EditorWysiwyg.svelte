@@ -8,7 +8,6 @@
 	export let html = $widget.format_definition.html
 	// import Devtool from './_components/Devtool.svelte'
 
-	console.log(html)
 	const showcaseContent = {
 		type: 'doc',
 		attrs: { align: 'left' },
@@ -41,8 +40,6 @@
 
 	const onSave = () => {
 		const json = editor.getJSON()
-		console.log(editor)
-		console.log(json)
 		// localStorage.setItem('editor', JSON.stringify(json))
 	}
 
@@ -99,7 +96,7 @@
 	{@html html}
 </div>
 
-<style lang="scss">
+<style>
 	.container {
 		display: flex;
 		flex-direction: row;
@@ -122,6 +119,6 @@
 	.editor {
 		max-width: 90%;
 		width: 100%;
-		margin: auto;
+		margin: 10px auto;
 	}
 </style>

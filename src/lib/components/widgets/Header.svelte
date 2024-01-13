@@ -14,7 +14,9 @@
 	<div id={`widget-title-${$widget.widget_id}`} class="widget-header flex space-x-3">
 		<HeaderTitle
 			icon={$widget?.params?.settings?.header?.icon ? $widget?.attributes?.icon : undefined}
-			title={$widget?.params?.settings?.header?.title ? $widget?.title : undefined}
+			title={$widget?.params?.settings?.header?.title
+				? $widget?.attributes.title || $widget?.title
+				: undefined}
 		/>
 		{#if showToolbar}<WidgetToolbar {isToolbarVisible} {isMobileDevice} />{/if}
 	</div>

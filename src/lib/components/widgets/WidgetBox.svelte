@@ -21,6 +21,7 @@
 
 	export let widget: any
 	export let resized: boolean = false
+	export let isMobileDevice: boolean = false
 
 	const defaultSettings = {
 		title: '',
@@ -162,7 +163,8 @@
 	}
 
 	const bgTypeClass = (bg: string) => {
-		return !isDarkMode() ? (isUrl(bg) ? 'widget-bg-image' : 'widget-bg-color') : ''
+		if (fixed) return 'bg-transparent'
+		return !isDarkMode() && !fixed ? (isUrl(bg) ? 'widget-bg-image' : '') : ''
 	}
 </script>
 
@@ -181,7 +183,9 @@
 	class:border-gray-200={$themeMode !== 'dark' && border}
 	class:cursor-default={fixed || !draggable}
 	class:widget-drilldown-open={$widgetStore?.instances && $widgetStore?.instances?.length > 0}
-	class={`card justify-content-between flex h-full w-full flex-col rounded-lg p-1 ${bgTypeClass(
+	class:card={!fixed}
+	class:relative={isMobileDevice}
+	class={`justify-content-between widget-bg-color flex h-full w-full flex-col rounded-lg p-1 ${bgTypeClass(
 		background
 	)}`}
 	on:mouseenter={() => {
@@ -210,6 +214,7 @@
 		content: '';
 		background-image: var(--widget-bg-image);
 		background-size: cover;
+		background-position: center;
 		position: absolute;
 		top: 0px;
 		right: 0px;

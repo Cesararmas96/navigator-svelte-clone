@@ -54,6 +54,8 @@ export const load = async ({ params, fetch, locals, url }) => {
 					(item: any) => item.module_name === moduleName || item.module_slug === moduleName
 			  )
 			: null
+
+	console.log(modules)
 	const menu = trocModule
 		? modules.filter((item: any) => item.program_id === trocModule?.program_id)
 		: []
