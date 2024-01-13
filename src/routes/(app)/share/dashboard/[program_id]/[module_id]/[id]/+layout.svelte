@@ -1,3 +1,3 @@
-<main class="absolute h-full w-full p-0">
-    <slot/>
+<main class="shared-dashboard absolute h-screen w-full p-0">
+	<slot />
 </main>

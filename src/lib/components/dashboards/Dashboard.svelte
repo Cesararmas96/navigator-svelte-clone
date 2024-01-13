@@ -45,6 +45,7 @@
 	} from '$lib/stores/widgets'
 
 	export let dashboard: any
+	export let isShared: boolean = false
 
 	let filterComponent: any
 	const dispatch = createEventDispatcher()
@@ -422,7 +423,8 @@
 
 	let clientHeight = 0
 
-	$: heightStyle = !isMobileDevice() ? `height: calc(100vh - ${175 + clientHeight}px)` : ''
+	$: heightStyle =
+		!isMobileDevice() && !isShared ? `height: calc(100vh - ${175 + clientHeight}px)` : ''
 
 	$: isMobileDevice = () => innerWidth < 1024
 
