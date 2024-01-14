@@ -8,7 +8,6 @@
 	export let html = $widget.format_definition.html
 	// import Devtool from './_components/Devtool.svelte'
 
-	console.log(html)
 	const showcaseContent = {
 		type: 'doc',
 		attrs: { align: 'left' },

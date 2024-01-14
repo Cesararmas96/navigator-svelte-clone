@@ -4,7 +4,7 @@
 	import type { Writable } from 'svelte/store'
 	import { Form } from '@mixoo/form'
 	import Loading from '$lib/components/common/Loading.svelte'
-	import { Button } from 'flowbite-svelte'
+	import { Button, Alert } from 'flowbite-svelte'
 	import { getApiData } from '$lib/services/getData'
 	import { storeUser } from '$lib/stores'
 	import { sendErrorNotification, sendSuccessNotification } from '$lib/stores/toast'
@@ -23,6 +23,7 @@
 	let meta: any
 	const baseUrl = import.meta.env.VITE_API_URL
 	const token = $storeUser?.token
+	let responseServer = null
 
 	function getSchemaComputed(jsonSchema: Record<string, any>) {
 		if ($widget?.params?.model?.schema?.$withoutDefs && jsonSchema?.$defs) {
@@ -54,6 +55,9 @@
 
 		if (dataModel) {
 			sendSuccessNotification(dataModel?.message || message)
+			if ($widget?.params?.model?.responseAlert) {
+				responseServer = dataModel?.message || message
+			}
 		} else {
 			console.log('Error here', dataModel)
 			sendErrorNotification('There has been a problem...')
@@ -97,6 +101,11 @@
 					delete jsonSchema.properties[property]?.$ref?.$ref
 				}
 
+				if (jsonSchema.properties[property]?.enum_type) {
+					jsonSchema.properties[property].items = jsonSchema.properties[property]?.enum_type
+					delete jsonSchema.properties[property]?.enum_type
+				}
+
 				if (
 					jsonSchema.properties[property]?.type === 'text' ||
 					jsonSchema.properties[property]?.['ui:widget'] === 'textarea'
@@ -131,6 +140,8 @@
 			})
 
 			schema = getSchemaComputed(jsonSchema)
+
+			console.log(JSON.stringify(schema))
 		} else {
 			sendErrorNotification('The form could not be loaded')
 		}
@@ -155,6 +166,12 @@
 				<div class="px-2 pb-2 text-sm text-gray-500 dark:text-gray-400">
 					{description}
 				</div>
+
+				{#if responseServer}
+					<Alert color="blue" dismissable>
+						{responseServer}
+					</Alert>
+				{/if}
 
 				<Form {schema}>
 					<div slot="buttons-footer" let:handleValidateForm>
