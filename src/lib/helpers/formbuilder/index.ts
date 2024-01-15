@@ -15,7 +15,8 @@ export const getJsonSchema = async (jsonSchema, $widget, credentials) => {
 			jsonSchema.properties[property].$ref['_fetch'] = {
 				baseUrl: `${credentials?.baseUrl}/${
 					$widget?.params?.model?.schema?.properties &&
-					$widget?.params?.model?.schema?.properties[property]
+					$widget?.params?.model?.schema?.properties[property] &&
+					$widget?.params?.model?.schema?.properties[property]?.$ref?.url
 						? $widget?.params?.model?.schema?.properties[property]?.$ref?.url
 						: 'api/v1/'
 				}`,

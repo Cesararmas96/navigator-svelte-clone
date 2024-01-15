@@ -82,7 +82,7 @@
 						{title}
 					</h5>
 				</div>
-				<div class="px-2 pb-2 text-sm text-gray-500 dark:text-gray-400">
+				<div class="px-2 text-sm text-gray-500 dark:text-gray-400">
 					{description}
 				</div>
 
