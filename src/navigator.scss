@@ -432,3 +432,7 @@
 .color-primary {
 	color: rgb(var(--theme-color)) !important;
 }
+
+.ui .select:after {
+	display: none;
+}

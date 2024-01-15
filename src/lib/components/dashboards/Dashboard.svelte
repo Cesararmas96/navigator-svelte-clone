@@ -535,7 +535,7 @@
 	{/if}
 </div>
 
-{#if ['/rewards/rewards_employee'].includes($page?.url?.pathname)}
+{#if ['/rewards'].includes($page?.url?.pathname)}
 	<Button
 		pill={true}
 		class="fixed bottom-6 right-6 !p-3 shadow-md"
