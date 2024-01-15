@@ -1,11 +1,11 @@
+.env
+env.*
+/env
 .DS_Store
 node_modules
 /build
 /.svelte-kit
 /package
-.env
-env.*
-/env
 /api
 !.env.example
 vite.config.js.timestamp-*
