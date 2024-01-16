@@ -145,7 +145,7 @@
 	}
 
 	$: if ($themeMode !== 'dark') {
-		opacity = $widgetStore?.params?.settings?.appearance?.opacity
+		opacity = !fixed ? $widgetStore?.params?.settings?.appearance?.opacity : 0
 		background = $widgetStore?.params?.settings?.appearance?.background || '#ffffff'
 		backgroundRGB = $widgetStore?.params?.settings?.appearance?.backgroundRGB || '255, 255, 255'
 		color = $widgetStore?.params?.settings?.appearance?.color || '#37507f'
@@ -161,7 +161,6 @@
 	$: if (resized) {
 		$widgetStore.resized = true
 	}
-
 	const bgTypeClass = (bg: string) => {
 		if (fixed) return 'bg-transparent'
 		return !isDarkMode() && !fixed ? (isUrl(bg) ? 'widget-bg-image' : '') : ''
@@ -179,8 +178,8 @@
 	style:--widget-bg-opacity={opacity / 100}
 	style:--widget-fixed={fixed ? 'fixed' : ''}
 	style:border-color={fixed || $themeMode === 'dark' ? '' : '#E5E7EB'}
-	class:border={$themeMode !== 'dark' && border}
-	class:border-gray-200={$themeMode !== 'dark' && border}
+	class:border={$themeMode !== 'dark' && border && !fixed}
+	class:border-gray-200={$themeMode !== 'dark' && border && !fixed}
 	class:cursor-default={fixed || !draggable}
 	class:widget-drilldown-open={$widgetStore?.instances && $widgetStore?.instances?.length > 0}
 	class:card={!fixed}
