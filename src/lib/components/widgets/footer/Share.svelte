@@ -23,7 +23,7 @@
 {#await token then token}
 	<span class="mr-3 inline-flex items-center text-sm">
 		<a
-			href={`/share/widget/${$widget?.dashboard_id}/${$widget?.widget_id}`}
+			href={`/share/widget/${$widget?.widget_id}`}
 			target="_blank"
 			class="icon btn hover:bg-light-100 dark:hover:bg-dark-200"
 			on:click={handleApiData}

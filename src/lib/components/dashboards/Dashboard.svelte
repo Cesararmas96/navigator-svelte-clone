@@ -46,7 +46,7 @@
 
 	export let dashboard: any
 	export let isShared: boolean = false
-
+	console.log(dashboard)
 	let filterComponent: any
 	const dispatch = createEventDispatcher()
 

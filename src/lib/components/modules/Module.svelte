@@ -267,7 +267,7 @@
 	}
 
 	const handleShareDashboard = () => {
-		const url = `/share/dashboard/${currentDashboard.program_id}/${currentDashboard.module_id}/${currentDashboard.dashboard_id}`
+		const url = `/share/dashboard/${currentDashboard.dashboard_id}`
 		const link = document.createElement('a')
 		link.href = url
 		link.setAttribute('target', '_blank')
