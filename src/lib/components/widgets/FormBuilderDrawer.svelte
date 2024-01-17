@@ -10,13 +10,12 @@
 	import Icon from '../common/Icon.svelte'
 	import { capitalizeWord } from '$lib/helpers/common/common'
 	import { Form } from '@mixoo/form'
-	import { sendErrorNotification, sendSuccessNotification } from '$lib/stores/toast'
+	import { sendErrorNotification } from '$lib/stores/toast'
 	import Loading from '$lib/components/common/Loading.svelte'
-	import { merge } from 'lodash-es'
-
+	import { storeUser } from '$lib/stores'
+	import { getJsonSchema, getSchemaComputed, handleSubmitForm } from '$lib/helpers/formbuilder'
 	import '@mixoo/ui/css/theme/default.css'
 	import '@mixoo/form/css/theme/default.css'
-	import { storeUser } from '$lib/stores'
 
 	const baseUrl = import.meta.env.VITE_API_URL
 	let primaryKey: string = ''
@@ -24,7 +23,6 @@
 	let title: string = ''
 	let description: string = ''
 	let schema: any
-	const urlBase = import.meta.env.VITE_API_URL
 
 	let transitionParams = {
 		x: 320,
@@ -67,74 +65,23 @@
 		slug: string,
 		conditions: Record<string, any>
 	) {
-		const jsonSchema = await getApiData(`${slug}:meta`, 'GET', conditions)
+		const prepareJsonSchema = await getApiData(`${slug}:meta`, 'GET', conditions)
 
-		if (jsonSchema) {
-			jsonSchema['noHeader'] = true
-			title = `${capitalizeWord(record.action)} ${jsonSchema?.title}`
-			description = jsonSchema?.description
-
-			Object.keys(jsonSchema.properties).map((property) => {
-				if (
-					jsonSchema.properties[property]?.$ref?.api &&
-					jsonSchema.properties[property]?.type === 'object'
-				) {
-					jsonSchema.properties[property].type = 'select'
-
-					jsonSchema.properties[property].$ref['_fetch'] = {
-						baseUrl: `${baseUrl}/${
-							$selectedFormBuilderWidget?.params?.model?.schema?.properties &&
-							$selectedFormBuilderWidget?.params?.model?.schema?.properties[property]
-								? $selectedFormBuilderWidget?.params?.model?.schema?.properties[property]?.$ref?.url
-								: 'api/v1/'
-						}`,
-						headers: {
-							authorization: `Bearer ${token}`
-						}
-					}
-
-					delete jsonSchema.properties[property]?.$ref?.$ref
-				}
-
-				if (
-					jsonSchema.properties[property]?.type === 'text' ||
-					jsonSchema.properties[property]?.['ui:widget'] === 'textarea'
-				) {
-					jsonSchema.properties[property].type = 'string'
-					jsonSchema.properties[property]['format'] = 'textarea'
-				}
-
-				if (jsonSchema.properties[property]?.type === 'datetime') {
-					jsonSchema.properties[property].attrs.visible = false
-				}
-
-				if (jsonSchema.properties[property]?.['ui:widget'] === 'ImageUploader') {
-					// TODO: improve
-					jsonSchema.properties[property].type = 'upload'
-
-					delete jsonSchema.properties[property].attrs.placeholder
-
-					jsonSchema.properties[property].attrs['fetching'] = {
-						url: `${baseUrl}/services/files/static/images/badges/`,
-						method: 'PUT',
-						payload: 'file_name',
-						headers: {
-							authorization: `Bearer ${token}`
-						}
-					}
-
-					if (jsonSchema.properties[property]?.['ui:help'])
-						jsonSchema.properties[property].attrs.help =
-							jsonSchema.properties[property]?.['ui:help']
-				}
+		if (prepareJsonSchema) {
+			const jsonSchema = await getJsonSchema(prepareJsonSchema, $selectedFormBuilderRecord, {
+				baseUrl,
+				token
 			})
 
 			if (primaryKey) {
 				getModelByID(jsonSchema, record, slug, conditions)
 			} else {
-				schema = getSchemaComputed(jsonSchema)
+				schema = getSchemaComputed(jsonSchema, $selectedFormBuilderRecord)
+			}
 
-				// console.log(JSON.stringify(schema))
+			if (schema) {
+				title = `${capitalizeWord(record.action)} ${jsonSchema?.title}`
+				description = jsonSchema?.description
 			}
 		} else {
 			sendErrorNotification('The form could not be loaded')
@@ -167,56 +114,20 @@
 			})
 		}
 
-		schema = getSchemaComputed(jsonSchema)
+		schema = getSchemaComputed(jsonSchema, $selectedFormBuilderRecord)
 	}
 
-	function getSchemaComputed(jsonSchema: Record<string, any>) {
-		if ($selectedFormBuilderWidget?.params?.model?.schema?.$withoutDefs && jsonSchema?.$defs) {
-			delete jsonSchema.$defs
-		}
-
-		return merge({}, jsonSchema, $selectedFormBuilderWidget?.params?.model?.schema || {})
-	}
-
-	function handleSubmitForm(handleValidateForm: any, type: string) {
-		const payload = handleValidateForm()
-		console.log(payload)
-		if (!Array.isArray(payload)) {
-			handleSubmit(payload, type)
-		} else {
-			sendErrorNotification('There has been a problem...')
-		}
-	}
-
-	async function handleSubmit(payload: any, type: string) {
+	async function handleSubmitFormLocal(handleValidateForm: any, type: string) {
 		const endpoint = `${schema?.endpoint || $selectedFormBuilderWidget.params?.model?.meta}`
 
-		let url = `${urlBase}/${endpoint}`
-		let method = 'PUT'
-		let message = 'Successfully created'
-		let callback = $selectedFormBuilderRecord.callbackNew
+		const response = await handleSubmitForm(handleValidateForm, type, $selectedFormBuilderRecord, {
+			baseUrl,
+			endpoint,
+			primaryKey
+		})
 
-		if (type === 'update') {
-			url = `${url}${primaryKey}`
-			method = 'POST'
-			message = 'Successfully updated'
-			callback = $selectedFormBuilderRecord.callbackUpdate
-		}
-
-		const dataModel = await getApiData(url, method, payload)
-
-		if (dataModel) {
-			if (callback) {
-				callback({
-					rowId: $selectedFormBuilderRecord?.rowId,
-					dataModel
-				})
-			}
-			sendSuccessNotification(message)
+		if (response) {
 			close()
-		} else {
-			console.log('Error here', dataModel)
-			sendErrorNotification('There has been a problem...')
 		}
 	}
 </script>
@@ -286,7 +197,7 @@
 							id="formSaved"
 							class="mb-2 mt-3 w-full rounded p-2 text-sm "
 							on:click={() => {
-								handleSubmitForm(handleValidateForm, 'save')
+								handleSubmitFormLocal(handleValidateForm, 'save')
 							}}
 						>
 							<Icon icon="tabler:plus" classes="mr-1" />{schema &&
@@ -300,7 +211,7 @@
 							id="formUpdated"
 							class="mb-2 mt-3 w-full rounded p-2 text-sm "
 							on:click={() => {
-								handleSubmitForm(handleValidateForm, 'update')
+								handleSubmitFormLocal(handleValidateForm, 'update')
 							}}
 						>
 							<Icon icon="tabler:edit" classes="mr-1" />Update Changes
@@ -311,7 +222,7 @@
 							class="mb-2 w-full rounded p-2 text-sm "
 							outline
 							on:click={() => {
-								handleSubmitForm(handleValidateForm, 'saveAsNew')
+								handleSubmitFormLocal(handleValidateForm, 'saveAsNew')
 							}}
 						>
 							<Icon icon="tabler:plus" classes="mr-1" />Save as New

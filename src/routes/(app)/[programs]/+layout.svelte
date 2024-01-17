@@ -16,7 +16,7 @@
 	$storeModule = data.trocModule
 	$storePrograms = data.programs
 	$storeUser = data.user
-	$storeDashboards = data.dashboards.map((dashboard) => {
+	$storeDashboards = data.dashboards?.map((dashboard) => {
 		if ($storeUser.aux.filtering_fixed) {
 			dashboard.where_cond = {
 				...dashboard.where_cond,

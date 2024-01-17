@@ -7,7 +7,7 @@
 	const dashboard = { ...data.dashboard }
 </script>
 
-<div class="nav-scroll mb-2 flex h-full w-full flex-col items-start px-2 py-3">
+<div class="nav-scroll mb-2 flex h-screen w-full flex-col items-start px-2 py-3">
 	<h1 class="mb-1 px-2">{dashboard.name}</h1>
-	<Dashboard {dashboard} />
+	<Dashboard {dashboard} isShared={true} />
 </div>
