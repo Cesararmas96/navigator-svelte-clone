@@ -6,6 +6,7 @@
 	import { themeColor, themeMode } from '$lib/stores/preferences'
 	import { page } from '$app/stores'
 	import { iconColor, isIconWhite } from '$lib/helpers/common/common'
+	import AnonymousSupport from '../header/AnonymousSupport.svelte'
 
 	$: showToggle = $page.route.id?.includes('programs')
 	const toggleDrawer = () => {
@@ -81,6 +82,10 @@
 		<!-- Profile -->
 		<li class="relative mx-1 md:block">
 			<Profile />
+		</li>
+
+		<li>
+			<AnonymousSupport />
 		</li>
 
 		<li>
