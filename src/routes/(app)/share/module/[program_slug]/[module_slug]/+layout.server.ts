@@ -22,7 +22,7 @@ export const load = async ({ params, fetch, locals, url }) => {
 		{ headers },
 		fetch
 	)
-	const program = programs.find((item: any) => item.program_id == params.program_id)
+	const program = programs.find((item: any) => item.program_slug == params.program_slug)
 	const variablesOperational = await getApiData(
 		`${urlBase}/api/v2/variables/${program.program_slug}`,
 		'GET',
@@ -32,7 +32,7 @@ export const load = async ({ params, fetch, locals, url }) => {
 		fetch
 	)
 	const modules = await getApiData(
-		`${urlBase}/api/v2/modules?program_slug=${program.program_slug}`,
+		`${urlBase}/api/v2/modules?program_slug=${params.program_slug}`,
 		'GET',
 		{},
 		{},
@@ -41,10 +41,7 @@ export const load = async ({ params, fetch, locals, url }) => {
 	)
 	const trocModule =
 		modules && modules.length > 0
-			? modules.find(
-					(item: any) =>
-						item.module_name === program.program_slug || item.module_slug === program.program_slug
-			  )
+			? modules.find((item: any) => item.module_slug === params.module_slug)
 			: null
 	const dashboards = await getApiData(
 		`${urlBase}/api/v2/dashboards?program_id=${trocModule?.program_id}&module_id=${

@@ -2,11 +2,6 @@
 	import { onMount } from 'svelte'
 	import { storeModule } from '$lib/stores/modules'
 
-	export let data
-	$: {
-		$storeModule = data.trocModule
-	}
-
 	let ModuleComp: any
 
 	onMount(async () => {
@@ -15,4 +10,4 @@
 	})
 </script>
 
-<svelte:component this={ModuleComp} trocModule={data.trocModule} />
+<svelte:component this={ModuleComp} trocModule={$storeModule} />

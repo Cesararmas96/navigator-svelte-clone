@@ -18,6 +18,7 @@
 	let breadcrumbs: any[]
 
 	$: trocModule = $storeModule
+	$: program = $storeProgram
 
 	$: if (trocModule) {
 		breadcrumbs = []
@@ -29,8 +30,7 @@
 			url: createUrl($page.data.program)
 		})
 		breadcrumbs.push({
-			name:
-				trocModule.attributes.order === '0' ? $storeProgram?.program_name : trocModule.description,
+			name: trocModule.description,
 			icon: trocModule.attributes.icon,
 			order: trocModule.attributes.order,
 			url: createUrl(trocModule)
@@ -46,7 +46,8 @@
 	})
 
 	const handleShareModule = () => {
-		const url = `/share/module/${trocModule.program_id}/${trocModule.module_id}`
+		console.log('share module', program.program_slug, trocModule.module_slug)
+		const url = `/share/module/${program.program_slug}/${trocModule.module_slug}`
 		const link = document.createElement('a')
 		link.href = url
 		link.setAttribute('target', '_blank')

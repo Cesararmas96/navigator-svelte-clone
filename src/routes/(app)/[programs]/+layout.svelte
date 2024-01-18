@@ -11,9 +11,8 @@
 	import { postData } from '$lib/services/getData.js'
 
 	export let data
-
+	$: $storeModule = data.trocModule
 	$storeModules = data.menu
-	$storeModule = data.trocModule
 	$storePrograms = data.programs
 	$storeUser = data.user
 	$storeDashboards = data.dashboards?.map((dashboard) => {
