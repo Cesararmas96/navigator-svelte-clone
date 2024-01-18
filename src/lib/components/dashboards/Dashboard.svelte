@@ -37,6 +37,7 @@
 	import Icon from '../common/Icon.svelte'
 	import { page } from '$app/stores'
 	import _ from 'lodash'
+	import { onMount } from 'svelte'
 
 	import {
 		hideFormBuilderDrawer,
@@ -46,7 +47,7 @@
 
 	export let dashboard: any
 	export let isShared: boolean = false
-	console.log(dashboard)
+
 	let filterComponent: any
 	const dispatch = createEventDispatcher()
 
@@ -423,8 +424,14 @@
 
 	let clientHeight = 0
 
+	let haveBreadcrumb = false
+
 	$: heightStyle =
-		!isMobileDevice() && !isShared ? `height: calc(100vh - ${175 + clientHeight}px)` : ''
+		!isMobileDevice() && !isShared
+			? `height: calc(100vh - ${175 + clientHeight}px)`
+			: haveBreadcrumb
+			? `height: calc(100vh - 110px)`
+			: ''
 
 	$: isMobileDevice = () => innerWidth < 1024
 
@@ -434,6 +441,10 @@
 			return a.y < b.y ? -1 : 1
 		})
 	}
+
+	onMount(() => {
+		haveBreadcrumb = document.getElementById('breadcrumb') ? true : false
+	})
 </script>
 
 <svelte:window bind:innerWidth />

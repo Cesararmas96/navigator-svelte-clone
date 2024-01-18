@@ -22,6 +22,7 @@
 	import { generateRandomString } from '$lib/helpers/common/common'
 
 	export let trocModule: any
+	export let isShared: boolean = false
 
 	const baseUrl = import.meta.env.VITE_API_URL
 	let dropdownOpen = false
@@ -424,7 +425,11 @@
 								</Dropdown>
 							</div>
 						</div>
-						<Dashboard {dashboard} on:handleCustomize={(e) => confirmCustomize(false, e.detail)} />
+						<Dashboard
+							{dashboard}
+							on:handleCustomize={(e) => confirmCustomize(false, e.detail)}
+							{isShared}
+						/>
 					</TabItem>
 				{/each}
 			{/if}
