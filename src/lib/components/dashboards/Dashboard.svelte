@@ -19,15 +19,36 @@
 	import Alerts from '../widgets/type/Alert/Alerts.svelte'
 	import { dismissAlert, sendAlert, sendErrorAlert } from '$lib/helpers/common/alerts'
 	import { AlertType, type AlertMessage } from '$lib/interfaces/Alert'
-	import { storeCCPWidget, storeCCPWidgetBehavior, storeDashboards } from '$lib/stores/dashboards'
+	import {
+		hideDashboardFilters,
+		storeCCPWidget,
+		storeCCPWidgetBehavior,
+		storeDashboards
+	} from '$lib/stores/dashboards'
 	import { storeUser } from '$lib/stores'
 	import { generateRandomString, generateSlug } from '$lib/helpers/common/common'
 	import { sendErrorNotification, sendSuccessNotification } from '$lib/stores/toast'
 	import { writable } from 'svelte/store'
 	import { createEventDispatcher, setContext } from 'svelte'
 	import { loading } from '$lib/stores/preferences'
+	import DashboardFilters from './DashboardFilters.svelte'
+	import DrawerFilters from './DrawerFilters.svelte'
+	import { Button, Tooltip } from 'flowbite-svelte'
+	import Icon from '../common/Icon.svelte'
+	import { page } from '$app/stores'
+	import _ from 'lodash'
+	import { onMount } from 'svelte'
+
+	import {
+		hideFormBuilderDrawer,
+		selectedFormBuilderRecord,
+		selectedFormBuilderWidget
+	} from '$lib/stores/widgets'
 
 	export let dashboard: any
+	export let isShared: boolean = false
+
+	let filterComponent: any
 	const dispatch = createEventDispatcher()
 
 	const baseUrl = import.meta.env.VITE_API_URL
@@ -41,12 +62,22 @@
 	let isChanging = false
 	let resizedTitle = ''
 
+	let filtersOpen: boolean = false
+
 	const storeDashboard = writable(dashboard)
 	setContext('dashboard', storeDashboard)
+
 	$: $storeDashboard = dashboard
 
 	$: if (!$storeDashboard.loaded) {
+		filterComponent = null
 		setGridItems($storeDashboard.dashboard_id)
+		filtersOpen = $storeDashboard?.attributes?.collapse_shows
+		if (filtersOpen === undefined) filtersOpen = false
+		// filtersOpen = !!$storeDashboard?.attributes?.collapse_shows
+		filterComponent = DashboardFilters
+		if ($storeUser.aux.filtering_fixed)
+			$storeDashboard.where_new_cond = $storeUser.aux.filtering_fixed
 	}
 
 	$: if (dashboard.newWidget) {
@@ -70,9 +101,9 @@
 			dashboardId: $storeDashboard.dashboard_id,
 			type: AlertType.WARNING,
 			callback1Btn: 'Publish',
-			callback1: () => {
-				updateWidgetLocation()
-				dispatch('handleCustomize', false)
+			callback1: async () => {
+				await updateWidgetLocation()
+				dispatch('handleCustomize', $storeDashboard?.attributes)
 			}
 		}
 		sendAlert(alert)
@@ -80,7 +111,10 @@
 		dismissAlert('dashboard-system-msg', $storeDashboard.dashboard_id)
 	}
 
-	$: if (!$storeDashboard.gridItems || $storeDashboard.gridItems.length === 0) {
+	$: if (
+		(!$storeDashboard.gridItems || $storeDashboard.gridItems.length === 0) &&
+		$storeDashboard.loaded
+	) {
 		sendAlert({
 			id: 'dashboard-no-widgets',
 			title: 'No widgets',
@@ -88,12 +122,15 @@
 			dashboardId: $storeDashboard.dashboard_id,
 			type: AlertType.INFO
 		})
-	} else {
+	} else if ($storeDashboard.loaded) {
 		dismissAlert('dashboard-no-widgets', $storeDashboard.dashboard_id)
 	}
 
 	$: handleResizable = (item: any) => {
+		if (isMobileDevice()) return
 		$storeDashboard.gridItems = resizeItem(item, $storeDashboard.gridItems)
+		gridController.gridParams.updateGrid()
+		$storeDashboard.gridItems = [...$storeDashboard.gridItems]
 	}
 	$: handleCloning = (item: any) => {
 		const clonedItem = cloneItem(item, $storeDashboard.gridItems)
@@ -102,13 +139,15 @@
 	$: handleRemove = (item: any) => {
 		const temp = [...removeItem(item, $storeDashboard.gridItems, gridController.gridParams)]
 		$storeDashboard.gridItems = []
-		delete dashboard.widget_location[item.title]
+		if (!item.data.cloned) delete $storeDashboard.widget_location[item.title]
 		widgets = widgets.filter((widget: any) => widget.title !== item.title)
 		setTimeout(() => {
 			$storeDashboard.gridItems = temp
-			gridController.gridParams.unregisterItem(item)
-			gridController.gridParams.updateGrid()
-			updateLocations()
+			if (!item.data.cloned) {
+				gridController.gridParams.unregisterItem(item)
+				gridController.gridParams.updateGrid()
+				updateLocations()
+			}
 		}, 100)
 	}
 
@@ -122,7 +161,6 @@
 
 	const setGridItems = async (dashboardId: string): Promise<void> => {
 		$storeDashboard.gridItems = []
-
 		try {
 			widgets = await getApiData(`${baseUrl}/api/v2/widgets?dashboard_id=${dashboardId}`, 'GET')
 			if (!widgets) return
@@ -138,11 +176,16 @@
 				$storeDashboard.gridItems = [...items]
 				return
 			}
+
 			const setNewLocations =
 				!dashboard.widget_location || Object.keys(dashboard.widget_location).length === 0
 
+			if (dashboard.attributes.widget_location) {
+				dashboard.widget_location = { ...dashboard.attributes.widget_location }
+				$storeDashboard.widget_location = { ...dashboard.attributes.widget_location }
+			}
 			items =
-				dashboard.attributes.explorer === 'v3' || setNewLocations
+				dashboard.attributes.widget_location || setNewLocations
 					? loadV3Locations(dashboard.widget_location, widgets, cols, isMobile())
 					: loadV2Locations(dashboard.widget_location, dashboard, widgets, cols, isMobile())
 
@@ -158,20 +201,24 @@
 		}
 	}
 
-	const updateWidgetLocation = async (_dashboard: any = $storeDashboard) => {
-		if (_dashboard?.attributes?.user_id !== $storeUser?.user_id) return
+	const updateWidgetLocation = async () => {
+		if ($storeDashboard?.attributes?.user_id !== $storeUser?.user_id) return
 
-		const payload = { widget_location: getControllerItemsLocations(gridController.gridParams) }
-		await postData(
-			`${baseUrl}/api/v2/dashboard/widgets/location/${_dashboard.dashboard_id}`,
-			payload
-		)
-		if (!_dashboard.attributes.explorer || _dashboard.attributes.explorer !== 'v3') {
-			const attributes = { ..._dashboard.attributes, explorer: 'v3' }
-			patchData(`${baseUrl}/api/v2/dashboards/${_dashboard.dashboard_id}`, {
-				attributes
-			})
+		const attributes = {
+			...$storeDashboard.attributes,
+			explorer: 'v3',
+			widget_location: getControllerItemsLocations(
+				$storeDashboard.gridItems,
+				gridController.gridParams
+			)
 		}
+		const resp = await postData(`${baseUrl}/api/v2/dashboards/${$storeDashboard.dashboard_id}`, {
+			attributes: attributes
+		})
+
+		if (resp[0]) $storeDashboard.attributes = resp[0].attributes
+
+		return $storeDashboard.attributes
 	}
 
 	const updateLocations = async () => {
@@ -240,9 +287,7 @@
 			if (_dashboard.widget_location && _dashboard.widget_location[copiedWidget.title]) {
 				delete _dashboard.widget_location[copiedWidget.title]
 			}
-			await postData(`${baseUrl}/api/v2/dashboard/widgets/location/${_dashboard.dashboard_id}`, {
-				widget_location: _dashboard.widget_location
-			})
+			updateWidgetLocation()
 
 			_dashboard.gridItems = _dashboard.gridItems
 				.map((i: any) => {
@@ -285,6 +330,27 @@
 		// }
 		clearCopyWidgets()
 		loading.set(false)
+	}
+
+	const openDrawerAssignBadge = () => {
+		$selectedFormBuilderWidget = {
+			params: {
+				model: {
+					meta: 'api/v1/badge_assign',
+					primaryKey: 'reward_id',
+					schema: {
+						$withoutDefs: true
+					}
+				}
+			},
+			query_slug: {
+				slug: '{BASE_URL_API}/api/v1/badge_assign'
+			}
+		}
+		$selectedFormBuilderRecord = {
+			action: 'new'
+		}
+		$hideFormBuilderDrawer = false
 	}
 
 	const clearCopyWidgets = () => {
@@ -355,63 +421,156 @@
 		}
 		loading.set(false)
 	}
+
+	let clientHeight = 0
+
+	let haveBreadcrumb = false
+
+	$: heightStyle =
+		!isMobileDevice() && !isShared
+			? `height: calc(100vh - ${175 + clientHeight}px)`
+			: haveBreadcrumb
+			? `height: calc(100vh - 110px)`
+			: ''
+
+	$: isMobileDevice = () => innerWidth < 1024
+
+	const getSortedItems = (items: any[]) => {
+		return items.sort((a, b) => {
+			if (a.y === b.y) return a.x < b.x ? -1 : 1
+			return a.y < b.y ? -1 : 1
+		})
+	}
+
+	onMount(() => {
+		haveBreadcrumb = document.getElementById('breadcrumb') ? true : false
+	})
 </script>
 
 <svelte:window bind:innerWidth />
 
-<Alerts dashboardId={$storeDashboard.dashboard_id} />
+{#if Boolean($storeDashboard?.allow_filtering) && Boolean($storeDashboard?.attributes?.sticky)}
+	<section bind:clientHeight>
+		<svelte:component this={filterComponent} bind:open={filtersOpen} />
+	</section>
+{/if}
 
-<div id="grid" class="w-full">
-	<Grid
-		{itemSize}
-		class="grid-container"
-		gap={5}
-		{cols}
-		collision="compress"
-		bind:controller={gridController}
-		on:change={updateLocations}
-	>
-		{#each $storeDashboard.gridItems as item}
-			<GridItem
-				x={item.x}
-				y={item.y}
-				w={item.w}
-				h={item.h}
-				class="grid-item"
-				activeClass="grid-item-active"
-				previewClass="bg-red-500 rounded"
-				resizable={dashboard?.attributes?.user_id === $storeUser?.user_id}
-				movable={dashboard?.attributes?.user_id === $storeUser?.user_id}
-				on:change={(e) => {
-					changeItemSize(item)
-				}}
-				let:active
-				bind:id={item.data.title}
+<div id="grid" class="block w-full" style={heightStyle} class:overflow-y-auto={!isMobileDevice()}>
+	{#if Boolean($storeDashboard?.allow_filtering) && !Boolean($storeDashboard?.attributes?.sticky)}
+		<section>
+			<svelte:component this={filterComponent} bind:open={filtersOpen} />
+		</section>
+	{/if}
+
+	<Alerts dashboardId={$storeDashboard.dashboard_id} />
+
+	{#if $storeDashboard.gridItems && $storeDashboard.gridItems.length > 0}
+		{#if !isMobileDevice()}
+			<Grid
+				{itemSize}
+				class="grid-container"
+				gap={5}
+				{cols}
+				collision="compress"
+				bind:controller={gridController}
+				on:change={updateLocations}
 			>
-				<WidgetBox
-					widget={item.data}
-					resized={resizedTitle === item.title && !active}
-					let:fixed
-					let:isOwner
-					let:isToolbarVisible
-					let:widget
-					on:handleResize={() => handleResizable(item)}
-					on:handleCloning={() => handleCloning(item)}
-					on:handleRemove={() => handleRemove(item)}
-					on:handleResizable={(e) => {
-						item.data.params.settings.resizable = e.detail.resizable && !e.detail.fixed
-					}}
-				>
-					<Widget
-						{widget}
-						{fixed}
-						{isToolbarVisible}
-						{isOwner}
-						isDraggable={dashboard?.attributes?.user_id === $storeUser?.user_id}
-						on:handleInstanceResize={() => handleResizable(item)}
-					/>
-				</WidgetBox>
-			</GridItem>
-		{/each}
-	</Grid>
+				{#each $storeDashboard.gridItems as item}
+					<GridItem
+						x={item.x}
+						y={item.y}
+						w={item.w}
+						h={item.h}
+						class="grid-item"
+						activeClass="grid-item-active"
+						previewClass="bg-red-500 rounded"
+						resizable={dashboard?.attributes?.user_id === $storeUser?.user_id}
+						movable={dashboard?.attributes?.user_id === $storeUser?.user_id}
+						on:change={(e) => {
+							changeItemSize(item)
+						}}
+						let:active
+						bind:id={item.data.title}
+					>
+						<WidgetBox
+							widget={item.data}
+							resized={resizedTitle === item.title && !active}
+							let:fixed
+							let:isOwner
+							let:isToolbarVisible
+							let:widget
+							on:handleResize={() => handleResizable(item)}
+							on:handleCloning={() => handleCloning(item)}
+							on:handleRemove={() => handleRemove(item)}
+							on:handleResizable={(e) => {
+								item.data.params.settings.resizable = e.detail.resizable && !e.detail.fixed
+							}}
+						>
+							<Widget
+								{widget}
+								{fixed}
+								{isToolbarVisible}
+								{isOwner}
+								bind:reload={item.reload}
+								isDraggable={dashboard?.attributes?.user_id === $storeUser?.user_id}
+								on:handleInstanceResize={() => handleResizable(item)}
+							/>
+						</WidgetBox>
+					</GridItem>
+				{/each}
+			</Grid>
+		{:else}
+			<div class="grid grid-cols-1 gap-y-3 p-2">
+				{#each getSortedItems($storeDashboard.gridItems) as item}
+					<WidgetBox
+						widget={item.data}
+						resized={false}
+						isMobileDevice={true}
+						let:fixed
+						let:isOwner
+						let:isToolbarVisible
+						let:widget
+					>
+						<Widget
+							{widget}
+							{fixed}
+							{isToolbarVisible}
+							{isOwner}
+							isMobileDevice={true}
+							bind:reload={item.reload}
+						/>
+					</WidgetBox>
+				{/each}
+			</div>
+		{/if}
+	{/if}
 </div>
+
+{#if ['/rewards'].includes($page?.url?.pathname)}
+	<Button
+		pill={true}
+		class="fixed bottom-6 right-6 !p-3 shadow-md"
+		on:click={() => openDrawerAssignBadge()}
+		><Icon icon="tabler:plus" size="20" /> Assign Badge</Button
+	>
+	<Tooltip placement="left">Assign Badge</Tooltip>
+{/if}
+
+{#if $storeDashboard?.allow_filtering && $hideDashboardFilters}
+	<Button
+		pill={true}
+		class="fixed bottom-6 right-6 !p-3 shadow-md"
+		on:click={() => hideDashboardFilters.set(false)}><Icon icon="tabler:filter" size="20" /></Button
+	>
+	<Tooltip placement="left">Filters</Tooltip>
+{/if}
+
+{#if $storeDashboard?.allow_filtering}
+	<DrawerFilters />
+{/if}
+
+<style>
+	.inner-shadow {
+		box-shadow: inset 0 0 10px #000000;
+	}
+</style>

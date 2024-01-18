@@ -27,6 +27,11 @@
 </script>
 
 {#if data.length > 0}
+	{#if $widget?.params?.body_message}
+		<div class="m-3 my-5 text-md font-bold text-heading">
+			{$widget.params.body_message}
+		</div>
+	{/if}
 	<div class="m-3 my-5">
 		{#each data as item, idx}
 			<a href={item.href} target={item?.external ? '_blank' : ''}>

@@ -24,6 +24,7 @@
 		}
 	}
 
+	export let isMobileDevice: boolean = false
 	export let showInMenu: boolean
 	export let item: ToolbarItem
 	export let props: any = null
@@ -33,11 +34,15 @@
 	<button class="icon btn hover:bg-light-100 dark:hover:bg-dark-200" on:click={handleAction}>
 		<Icon icon={item.icon} size="18" />
 	</button>
-	<Tooltip placement="bottom" class="z-10">{item.tooltipText}</Tooltip>
+	<Tooltip placement="bottom" class={`z-10 ${isMobileDevice ? 'hidden' : ''}`}
+		>{item.tooltipText}</Tooltip
+	>
 {:else}
 	<DropdownItem class="flex items-center gap-2" on:click={handleAction}>
 		<Icon icon={item.icon} size="18" />
 		{item.name}
 	</DropdownItem>
-	<Tooltip placement="left" class="z-10">{item.tooltipText}</Tooltip>
+	<Tooltip placement="left" class={`z-10 ${isMobileDevice ? 'hidden' : ''}`}
+		>{item.tooltipText}</Tooltip
+	>
 {/if}

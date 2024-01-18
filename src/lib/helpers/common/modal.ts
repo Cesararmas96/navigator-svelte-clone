@@ -36,6 +36,7 @@ export const openConfirmModal = (
 		confirmCallback: (props?: any) => void,
 		confirmButtonText?: string,
 		cancelButtonText?: string,
+		hideCancelButton?: boolean,
 	}
 ) => {
 	const instanceConfig = { component: 'Confirm', props }

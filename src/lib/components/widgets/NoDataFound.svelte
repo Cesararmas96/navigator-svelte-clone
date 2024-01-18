@@ -3,13 +3,20 @@
 	import Icon from '../common/Icon.svelte'
 	import { getWidgetAction } from '$lib/helpers'
 	import type { Writable } from 'svelte/store'
+	import { sendErrorNotification } from '$lib/stores/toast'
 
+	export let error: any = null
 	const widget: any = getContext('widget')
 	const widgetActions = getContext<Writable<any[]>>('widgetActions')
 	const resizeAction = getWidgetAction($widgetActions, 'resize')
 
 	onMount(() => {
+		if (error) sendErrorNotification(error)
 		if ($widget.resize_on_load) resizeAction.action()
+		if ($widget.temp) {
+			const instanceLoadedAction = getWidgetAction($widgetActions, 'instanceLoaded')
+			instanceLoadedAction.action()
+		}
 	})
 </script>
 

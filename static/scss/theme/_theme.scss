@@ -2,6 +2,7 @@
 $theme-blue: 0 64 107;
 $theme-green: 38 65 52;
 $theme-indigo: 206 138 0; // yellow
+$theme-yellow: 255 192 0; // yellow
 $theme-orange: 247 100 0;
 $theme-purple: 158 0 255;
 $theme-red: 198 0 0;
@@ -12,16 +13,17 @@ $theme-colors: (
 	blue: #{$theme-blue},
 	green: #{$theme-green},
 	indigo: #{$theme-indigo},
+	yellow: #{$theme-yellow},
 	orange: #{$theme-orange},
 	purple: #{$theme-purple},
 	red: #{$theme-red},
 	cyan: #{$theme-cyan},
-	teal: #{$theme-teal},
+	teal: #{$theme-teal}
 );
 
 @each $color, $value in $theme-colors {
 	:root {
-		&:not([data-theme="dark"]) {
+		&:not([data-theme='dark']) {
 			&[data-theme-color="#{'' + $color}"] {
 				--theme-color-light: #{$value};
 				--theme-radio-bg: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='2.5' fill='rgb(#{$value})'/%3e%3c/svg%3e");
@@ -35,7 +37,7 @@ $theme-colors: (
 $css-theme-variables: (
 	--theme-color: var(--theme-color-light)
 		(
-			17 130 238,
+			17 130 238
 		),
 	// Body
 	--body-bg: var(--body-light-bg) var(--body-dark-bg),
@@ -61,7 +63,7 @@ $css-theme-variables: (
 	// Scrollbar
 	--scrollbar-thumb-bg: #d4e5f5 #bad2e8,
 	--radio-checked-bg: var(--theme-radio-bg)
-		url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='2' fill='%231182ee' /%3e%3c/svg%3e"),
+		url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='2' fill='%231182ee' /%3e%3c/svg%3e")
 );
 
 @include theme-switch($css-theme-variables);

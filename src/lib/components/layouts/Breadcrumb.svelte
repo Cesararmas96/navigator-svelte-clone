@@ -4,53 +4,58 @@
 	import { onMount } from 'svelte'
 	import Icon from '../common/Icon.svelte'
 	import { format } from 'date-fns'
-	import { storeModules } from '$lib/stores/modules'
+	import { storeModule } from '$lib/stores/modules'
 
 	const createUrl = (item: any) => {
-		if (item.attributes.order === '0') {
+		if (item.attributes?.order === '0') {
 			return `/${item.module_name}`
 		} else {
 			return `/${$page.url.pathname.split('/')[1]}/${item.module_name}`
 		}
 	}
 
-	$: activeUrl = $page.url.pathname
-
 	let breadcrumb: string
 	let breadcrumbs: any[]
 
-	$: {
+	$: trocModule = $storeModule
+	$: program = $storeProgram
+
+	$: if (trocModule) {
 		breadcrumbs = []
-		let slugs = $page.url.pathname.split('/')
-		slugs
-			.filter((slug) => slug !== '')
-			.forEach((slug) => {
-				const m = $storeModules.find((item) => item.module_name === slug)
-				if (m) {
-					breadcrumbs.push({
-						name: m.attributes.order === '0' ? $storeProgram?.program_name : m.description,
-						icon: m.attributes.icon,
-						order: m.attributes.order,
-						url: createUrl(m)
-					})
-				}
-			})
-		const trocModule = $storeModules.find(
-			(item) => item.module_slug === activeUrl.split('/').at(-1)
-		)
+
+		breadcrumbs.push({
+			name: $page.data.program.program_name,
+			icon: 'ic:baseline-home',
+			order: 0,
+			url: createUrl($page.data.program)
+		})
+		breadcrumbs.push({
+			name: trocModule.description,
+			icon: trocModule.attributes.icon,
+			order: trocModule.attributes.order,
+			url: createUrl(trocModule)
+		})
+
 		if (trocModule) {
 			breadcrumb = trocModule.description
 		}
 	}
 
-	let programName: any
-
 	onMount(() => {
 		if (!$storeProgram) $storeProgram = JSON.parse(localStorage.getItem('program')!)
 	})
+
+	const handleShareModule = () => {
+		console.log('share module', program.program_slug, trocModule.module_slug)
+		const url = `/share/module/${program.program_slug}/${trocModule.module_slug}`
+		const link = document.createElement('a')
+		link.href = url
+		link.setAttribute('target', '_blank')
+		link.click()
+	}
 </script>
 
-<div class="content-header px-5">
+<div id="breadcrumb" class="content-header px-5">
 	<div class="flex flex-shrink-0 items-center text-heading">
 		<span class="font-bold">{breadcrumb || 404}</span>
 	</div>
@@ -64,4 +69,5 @@
 	<div id="date" class="hidden text-md text-muted lg:block">
 		<span>{format(new Date(), 'EEEE, LLLL d, yyyy')}</span>
 	</div>
+	<Icon icon="mdi:share-variant" classes="ml-3 cursor-pointer" on:click={handleShareModule} />
 </div>

@@ -1,12 +1,14 @@
 <script lang="ts">
 	import { NavBrand } from 'flowbite-svelte'
-	import Search from '../header/Search.svelte'
-	import Icon from '../common/Icon.svelte'
 	import Preferences from '../header/Preferences.svelte'
 	import { menuHidden, sidebarMin } from '$lib/stores/sidebar'
 	import Profile from '../header/Profile.svelte'
-	import { themeMode } from '$lib/stores/preferences'
+	import { themeColor, themeMode } from '$lib/stores/preferences'
+	import { page } from '$app/stores'
+	import { iconColor, isIconWhite } from '$lib/helpers/common/common'
+	import AnonymousSupport from '../header/AnonymousSupport.svelte'
 
+	$: showToggle = $page.route.id?.includes('programs')
 	const toggleDrawer = () => {
 		$sidebarMin = true
 		$menuHidden = !$menuHidden
@@ -14,21 +16,38 @@
 </script>
 
 <header
-	class="relative z-20 flex h-16 flex-shrink-0 items-center rounded-b-lg bg-theme text-white shadow-md shadow-theme/20 dark:bg-[#1b2931] dark:text-heading dark:shadow-none print:hidden"
+	class="relative z-20 flex h-16 flex-shrink-0 items-center rounded-b-lg bg-theme shadow-md shadow-theme/20 dark:bg-[#1b2931] dark:text-heading dark:shadow-none print:hidden"
+	class:text-white={!isIconWhite($themeColor)}
 >
 	<!-- Logo -->
 	<div class="flex flex-shrink-0 items-center px-5 lg:w-[var(--sidebar-width)]">
-		<button
-			id="sidebar-toggle"
-			type="button"
-			class="btn-sidebar-toggle -ml-2 mr-2 grid h-9 w-9 place-content-center rounded font-light hover:bg-white/10 dark:hover:bg-dark-100 xl:hidden"
-			on:click={toggleDrawer}
-		>
-			<Icon icon="tabler:layout-sidebar" size="20px" classes="btn-sidebar-toggle" />
-		</button>
+		{#if showToggle}
+			<button
+				id="sidebar-toggle"
+				type="button"
+				class="btn-sidebar-toggle -ml-2 mr-2 grid h-5 w-5 place-content-center rounded font-light hover:bg-white/10 dark:hover:bg-dark-100 xl:hidden"
+				on:click={toggleDrawer}
+			>
+				<img
+					src="/images/icons/start{iconColor($themeColor)}.svg"
+					alt="Navigator"
+					class="btn-sidebar-toggle"
+				/>
+				<!-- <Icon icon="tabler:layout-sidebar" size="20px" classes="btn-sidebar-toggle" /> -->
+			</button>
+		{/if}
 		<NavBrand href="/home" class="">
 			<span class="ml-4 self-center whitespace-nowrap text-xl font-semibold dark:text-white">
-				<img src="/images/header-logo-troc-{$themeMode}.png" alt="Navigator" width="120" />
+				{#if $page.params.programs}
+					<img
+						src="{import.meta.env.VITE_BASE_URL}/assets/img/programs/{$page.params
+							.programs}/sidebar.png"
+						alt="logo {$page.params.programs}"
+						width="120"
+					/>
+				{:else}
+					<img src="/images/header-logo-troc-{$themeMode}.png" alt="Navigator" width="120" />
+				{/if}
 			</span>
 		</NavBrand>
 	</div>
@@ -38,9 +57,9 @@
 	<i class="ml-auto" />
 
 	<!-- Top right menu -->
-	<ul class="flex flex-row items-center justify-end px-5 lg:w-[var(--sidebar-width)]">
+	<ul class="flex flex-row items-center justify-end px-3 lg:w-[var(--sidebar-width)]">
 		<!-- Mobile search toggle -->
-		<li class="mx-1 block lg:hidden">
+		<li class="mx-1 hidden">
 			<button
 				type="button"
 				id="search-toggle"
@@ -56,13 +75,27 @@
 		</li>
 
 		<!-- Preferences -->
-		<li id="preferences" class="dropdown-header mx-1 hidden sm:block">
+		<li id="preferences" class="dropdown-header mx-1 block">
 			<Preferences />
 		</li>
 
 		<!-- Profile -->
 		<li class="relative mx-1 md:block">
 			<Profile />
+		</li>
+
+		<li>
+			<AnonymousSupport />
+		</li>
+
+		<li>
+			<a
+				href="https://support.trocdigital.io/"
+				target="_blank"
+				class="icon mx-2 grid h-6 w-6 place-content-center text-2xl font-light hover:bg-white/10 aria-expanded:bg-white/20"
+			>
+				<img src="/images/icons/support{iconColor($themeColor)}.svg" alt="Navigator" />
+			</a>
 		</li>
 	</ul>
 </header>

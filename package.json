@@ -51,8 +51,8 @@
 	"type": "module",
 	"dependencies": {
 		"@floating-ui/dom": "^1.4.5",
-		"@mixoo/form": "^2.0.2",
-		"@mixoo/ui": "^1.1.2",
+		"@mixoo/form": "^3.0.2",
+		"@mixoo/ui": "^1.2.1",
 		"@nextlint/core": "^1.2.0",
 		"@nextlint/svelte": "^1.1.2",
 		"@popperjs/core": "^2.11.8",
@@ -68,11 +68,13 @@
 		"date-fns": "^2.30.0",
 		"echarts": "^5.4.3",
 		"embla-carousel": "^8.0.0-rc07",
+		"flatpickr": "^4.6.13",
 		"flowbite": "^1.7.0",
 		"flowbite-svelte": "^0.40.2",
 		"html2canvas": "^1.4.1",
 		"jsonwebtoken": "^9.0.2",
 		"jsvectormap": "^1.5.3",
+		"lodash": "^4.17.21",
 		"lodash-es": "^4.17.21",
 		"macy": "^2.5.1",
 		"material-symbols": "^0.9.0",
@@ -82,12 +84,14 @@
 		"pdfjs-dist": "^3.10.111",
 		"simplebar": "^6.2.5",
 		"svelte-exmarkdown": "^3.0.0",
+		"svelte-flatpickr": "^3.3.3",
 		"svelte-grid-extended": "^1.1.1",
 		"svelte-grid-layout": "^1.0.3",
 		"svelte-pdf": "^1.0.20",
 		"sweetalert2": "^11.7.12",
 		"tabulator-tables": "^5.5.2",
 		"tailwind-merge": "^1.14.0",
-		"tippy.js": "^6.3.7"
+		"tippy.js": "^6.3.7",
+		"tui-grid": "^4.21.19"
 	}
 }

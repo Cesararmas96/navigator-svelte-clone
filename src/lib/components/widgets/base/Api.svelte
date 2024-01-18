@@ -7,9 +7,16 @@
 	import type { Writable } from 'svelte/store'
 	import { addWidgetAction } from '$lib/helpers'
 	import { sendErrorNotification } from '$lib/stores/toast'
+	import { setWidgetTop } from '$lib/helpers/widget/widget-top'
+	import { page } from '$app/stores'
+	import NoDataFound from '../NoDataFound.svelte'
+	import { storeUser } from '$lib/stores'
+	import _ from 'lodash'
 
 	export let widget: Writable<any>
-	let widgetActions: any = getContext('widgetActions')
+
+	const widgetActions: any = getContext('widgetActions')
+	const dashboard: Writable<any> = getContext('dashboard')
 
 	const slug = $widget.query_slug?.slug || $widget.params.query?.slug
 	const conditionsRaw = $widget.conditions
@@ -17,27 +24,88 @@
 	let data: any
 
 	async function fetchData() {
+		const newSlug = $widget?.new_query_slug || slug
 		const conditions = buildConditions()
+
+		$widget['filter_conditions'] = conditions || {}
 		try {
-			data = getApiData(slug, method, conditions)
+			data = getApiData(newSlug, method, conditions)
 		} catch (error) {
 			sendErrorNotification(error)
 		}
 	}
 
+	const addConditions = (addConditions, conditions) => {
+		const session = $storeUser
+
+		const addOptionsCondition = {}
+
+		_.map(addConditions, (optionValue, optionItem) => {
+			if (_.get(session, optionValue)) {
+				addOptionsCondition[optionItem] = _.get(session, optionValue)
+			}
+		})
+
+		if (Object.keys(addOptionsCondition).length > 0) {
+			conditions = _.merge({}, conditions, addOptionsCondition)
+		}
+
+		return conditions
+	}
+
 	function buildConditions() {
-		const conditions = conditionsRaw
+		let conditions = { ...conditionsRaw, ...$widget?.filter_conditions }
+		const dateCondition = $dashboard?.where_date_cond
+
+		if ($widget?.customDate) {
+			delete $widget?.customDate
+
+			return conditions
+		}
 
 		if (conditions?.firstdate) {
 			conditions.firstdate = returnValidateDate(conditions?.firstdate)
+
+			if (dateCondition) {
+				conditions.firstdate = dateCondition.split(' - ')[0]
+			}
 		}
 
 		if (conditions?.lastdate) {
 			conditions.lastdate = returnValidateDate(conditions?.lastdate)
+
+			if (dateCondition) {
+				const _date = dateCondition.split(' - ')
+				conditions.lastdate = _date[1] || _date[0]
+			}
 		}
 
 		if (conditions?.filterdate && !Array.isArray(conditions?.filterdate)) {
 			conditions.filterdate = returnValidateDate(conditions?.filterdate)
+
+			if (dateCondition) {
+				const _date = dateCondition.split(' - ')
+				conditions.filterdate = _date[1] || _date[0]
+			}
+		}
+
+		if ($dashboard?.where_new_cond && Object.keys($dashboard?.where_new_cond).length > 0) {
+			conditions.where_cond = { ...$dashboard?.where_new_cond }
+		}
+
+		if ($widget.params && $widget.params.addFilterOptions) {
+			conditions.filter_options = addConditions(
+				$widget.params.addFilterOptions,
+				conditions.filter_options
+			)
+		}
+
+		if ($widget.params && $widget.params.addFilterConditions) {
+			conditions.filter = addConditions($widget.params.addFilterConditions, conditions.filter)
+		}
+
+		if ($widget.params && $widget.params.addConditions) {
+			conditions = addConditions($widget.params.addConditions, conditions)
 		}
 
 		return conditions
@@ -65,8 +133,7 @@
 					break
 				case 'CURRENT_DATE':
 				case 'ENTRY_DATE':
-					// validateDate = moment(entryDate).format('YYYY-MM-DD')
-					validateDate = '2023-09-28'
+					validateDate = moment(entryDate).format('YYYY-MM-DD')
 					break
 				case 'YESTERDAY':
 					validateDate = moment(entryDate).subtract(1, 'days').format('YYYY-MM-DD')
@@ -75,8 +142,7 @@
 					validateDate = moment(entryDate).subtract(1, 'month').format('YYYY-MM-DD')
 					break
 				case 'FDOM':
-					// validateDate = moment(entryDate).startOf('month').format('YYYY-MM-DD')
-					validateDate = '2023-09-01'
+					validateDate = moment(entryDate).startOf('month').format('YYYY-MM-DD')
 					break
 				case 'FDOPW':
 					if (moment(entryDate).isSame(moment().day(6), 'd')) {
@@ -198,8 +264,29 @@
 	}
 
 	function handleOperationalDate() {
-		// TODO: handle operational date
-		return moment().format('YYYY-MM-DD')
+		const module = $page.data.trocModule
+		const variables = $variablesOperationalProgram
+
+		let moduleOperationalDate = null
+		let dashboardOperationalDate = null
+		try {
+			moduleOperationalDate =
+				module && module.attributes ? module.attributes.operational_date : null
+			dashboardOperationalDate =
+				$dashboard && $dashboard?.attributes ? $dashboard?.attributes?.operational_date : null
+		} catch (error) {
+			console.log(error)
+		}
+
+		return dashboardOperationalDate && moment(dashboardOperationalDate).isValid()
+			? dashboardOperationalDate
+			: moduleOperationalDate && moment(moduleOperationalDate).isValid()
+			? moduleOperationalDate
+			: dashboardOperationalDate && variables[dashboardOperationalDate]
+			? variables[dashboardOperationalDate]
+			: moduleOperationalDate && variables[moduleOperationalDate]
+			? variables[moduleOperationalDate]
+			: moment().format('YYYY-MM-DD')
 	}
 
 	function isDate(strDate: string) {
@@ -232,6 +319,14 @@
 		}
 		$widget.fetch = true
 	}
+
+	if ($widget?.params?.filter) {
+		const widgetTop = getContext<Writable<any>>('WidgetTop')
+		setWidgetTop(widgetTop, 'FilterHeader', {
+			// position: 'top',
+			widget: $widget
+		})
+	}
 </script>
 
 {#await data}
@@ -239,5 +334,5 @@
 {:then data}
 	<slot {data} />
 {:catch error}
-	{sendErrorNotification(error)}
+	<NoDataFound {error} />
 {/await}

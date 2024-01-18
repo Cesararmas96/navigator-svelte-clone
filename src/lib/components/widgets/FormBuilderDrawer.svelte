@@ -10,13 +10,12 @@
 	import Icon from '../common/Icon.svelte'
 	import { capitalizeWord } from '$lib/helpers/common/common'
 	import { Form } from '@mixoo/form'
-	import { sendErrorNotification, sendSuccessNotification } from '$lib/stores/toast'
+	import { sendErrorNotification } from '$lib/stores/toast'
 	import Loading from '$lib/components/common/Loading.svelte'
-	import { merge } from 'lodash-es'
-
+	import { storeUser } from '$lib/stores'
+	import { getJsonSchema, getSchemaComputed, handleSubmitForm } from '$lib/helpers/formbuilder'
 	import '@mixoo/ui/css/theme/default.css'
 	import '@mixoo/form/css/theme/default.css'
-	import { storeUser } from '$lib/stores'
 
 	const baseUrl = import.meta.env.VITE_API_URL
 	let primaryKey: string = ''
@@ -24,7 +23,6 @@
 	let title: string = ''
 	let description: string = ''
 	let schema: any
-	const urlBase = import.meta.env.VITE_API_URL
 
 	let transitionParams = {
 		x: 320,
@@ -67,43 +65,23 @@
 		slug: string,
 		conditions: Record<string, any>
 	) {
-		const jsonSchema = await getApiData(`${slug}:meta`, 'GET', conditions)
+		const prepareJsonSchema = await getApiData(`${slug}:meta`, 'GET', conditions)
 
-		if (jsonSchema) {
-			jsonSchema['noHeader'] = true
-			title = `${capitalizeWord(record.action)} ${jsonSchema?.title}`
-			description = jsonSchema?.description
-
-			Object.keys(jsonSchema.properties).map((property) => {
-				if (
-					jsonSchema.properties[property]?.$ref?.api &&
-					jsonSchema.properties[property]?.type === 'object'
-				) {
-					jsonSchema.properties[property].type = 'select'
-
-					jsonSchema.properties[property].$ref['_fetch'] = {
-						baseUrl: `${baseUrl}/${
-							$selectedFormBuilderWidget?.params?.model?.schema?.properties &&
-							$selectedFormBuilderWidget?.params?.model?.schema?.properties[property]
-								? $selectedFormBuilderWidget?.params?.model?.schema?.properties[property]?.$ref?.url
-								: 'api/v1/'
-						}`,
-						headers: {
-							authorization: `Bearer ${token}`
-						}
-					}
-				}
-
-				if (jsonSchema.properties[property]?.type === 'text') {
-					jsonSchema.properties[property].type = 'string'
-					jsonSchema.properties[property]['format'] = 'textarea'
-				}
+		if (prepareJsonSchema) {
+			const jsonSchema = await getJsonSchema(prepareJsonSchema, $selectedFormBuilderRecord, {
+				baseUrl,
+				token
 			})
 
 			if (primaryKey) {
 				getModelByID(jsonSchema, record, slug, conditions)
 			} else {
-				schema = getSchemaComputed(jsonSchema)
+				schema = getSchemaComputed(jsonSchema, $selectedFormBuilderWidget)
+			}
+
+			if (schema) {
+				title = `${capitalizeWord(record.action)} ${jsonSchema?.title}`
+				description = jsonSchema?.description
 			}
 		} else {
 			sendErrorNotification('The form could not be loaded')
@@ -136,52 +114,20 @@
 			})
 		}
 
-		schema = getSchemaComputed(jsonSchema)
+		schema = getSchemaComputed(jsonSchema, $selectedFormBuilderRecord)
 	}
 
-	function getSchemaComputed(jsonSchema: Record<string, any>) {
-		if ($selectedFormBuilderWidget?.params?.model?.schema?.$withoutDefs && jsonSchema?.$defs) {
-			delete jsonSchema.$defs
-		}
+	async function handleSubmitFormLocal(handleValidateForm: any, type: string) {
+		const endpoint = `${schema?.endpoint || $selectedFormBuilderWidget.params?.model?.meta}`
 
-		return merge({}, jsonSchema, $selectedFormBuilderWidget?.params?.model?.schema || {})
-	}
+		const response = await handleSubmitForm(handleValidateForm, type, $selectedFormBuilderRecord, {
+			baseUrl,
+			endpoint,
+			primaryKey
+		})
 
-	function handleSubmitForm(handleValidateForm: any, type: string) {
-		const payload = handleValidateForm()
-		console.log(payload)
-		if (!Array.isArray(payload)) {
-			handleSubmit(payload, type)
-		} else {
-			sendErrorNotification('There has been a problem...')
-		}
-	}
-
-	async function handleSubmit(payload: any, type: string) {
-		let url = `${urlBase}/${$selectedFormBuilderWidget.params?.model?.meta}`
-		let method = 'PUT'
-		let message = 'Successfully created'
-		let callback = $selectedFormBuilderRecord.callbackNew
-
-		if (type === 'update') {
-			url = `${url}${primaryKey}`
-			method = 'POST'
-			message = 'Successfully updated'
-			callback = $selectedFormBuilderRecord.callbackUpdate
-		}
-
-		const dataModel = await getApiData(url, method, payload)
-
-		if (dataModel) {
-			callback({
-				rowId: $selectedFormBuilderRecord?.rowId,
-				dataModel
-			})
-			sendSuccessNotification(message)
+		if (response) {
 			close()
-		} else {
-			console.log('Error here', dataModel)
-			sendErrorNotification('There has been a problem...')
 		}
 	}
 </script>
@@ -196,7 +142,7 @@
 	class="w-[350px] p-0"
 >
 	<div class="sticky top-0 z-10 flex w-full flex-col bg-inherit bg-white p-2 dark:bg-gray-800">
-		<div class="mb-2 flex items-center">
+		<div class="mb-1 flex items-center">
 			<h5
 				id="drawer-label"
 				class=" inline-flex items-center text-base font-semibold text-gray-500 dark:text-gray-400"
@@ -206,71 +152,95 @@
 			</h5>
 			<CloseButton on:click={() => close()} class="dark:text-white" />
 		</div>
-		<div class="px-2 pb-2 text-sm text-gray-500 dark:text-gray-400">
+		<div class="px-2 pb-1 text-sm text-gray-500 dark:text-gray-400">
 			{description}
-
-			{#if $selectedFormBuilderRecord?.action === 'new'}
-				<Button class=" mt-3 w-full rounded text-sm" on:click={() => update('formSaved')}>
-					<Icon icon="tabler:plus" classes="mr-2" /> Save Changes</Button
-				>
-			{:else}
-				<Button class=" mt-3 w-full rounded text-sm" on:click={() => update('formUpdated')}>
-					<Icon
-						icon="streamline:interface-edit-write-2-change-document-edit-modify-paper-pencil-write-writing"
-						classes="mr-2"
-					/> Update Changes</Button
-				>
-
-				<Button
-					class=" mt-1 w-full rounded text-sm"
-					outline
-					on:click={() => update('formSaveAsNew')}
-				>
-					<Icon icon="tabler:plus" classes="mr-2" /> Save as New</Button
-				>
-			{/if}
 		</div>
 	</div>
 
 	{#if schema}
-		<div class="px-4 pb-4">
-			<Form {schema}>
-				<div slot="buttons-header" let:handleValidateForm class="hidden">
-					{#if $selectedFormBuilderRecord?.action === 'new'}
-						<Button
-							id="formSaved"
-							class="mb-2 mt-3 w-full rounded p-2 text-sm "
-							on:click={() => {
-								handleSubmitForm(handleValidateForm, 'save')
-							}}
-						>
-							<Icon icon="tabler:plus" classes="mr-1" />Save Changes
-						</Button>
-					{:else}
-						<Button
-							id="formUpdated"
-							class="mb-2 mt-3 w-full rounded p-2 text-sm "
-							on:click={() => {
-								handleSubmitForm(handleValidateForm, 'update')
-							}}
-						>
-							<Icon icon="tabler:edit" classes="mr-1" />Update Changes
-						</Button>
+		<div class="flex h-[88%] flex-col">
+			<div class="relative flex-grow">
+				<div class="absolute h-full w-full overflow-y-auto">
+					<div class="px-4 pb-4">
+						<Form {schema}>
+							<div slot="buttons-header" let:handleValidateForm class="hidden">
+								{#if $selectedFormBuilderRecord?.action === 'new'}
+									<Button
+										id="formSaved"
+										class="mb-2 mt-3 w-full rounded p-2 text-sm "
+										on:click={() => {
+											handleSubmitFormLocal(handleValidateForm, 'save')
+										}}
+									>
+										<Icon icon="tabler:plus" classes="mr-1" />{schema &&
+										schema.settings &&
+										schema.settings.showCancel
+											? schema.settings.SubmitLabel
+											: 'Save changes'}
+									</Button>
+								{:else}
+									<Button
+										id="formUpdated"
+										class="mb-2 mt-3 w-full rounded p-2 text-sm "
+										on:click={() => {
+											handleSubmitFormLocal(handleValidateForm, 'update')
+										}}
+									>
+										<Icon icon="tabler:edit" classes="mr-1" />Update Changes
+									</Button>
 
-						<Button
-							id="formSaveAsNew"
-							class="mb-2 w-full rounded p-2 text-sm "
-							outline
-							on:click={() => {
-								handleSubmitForm(handleValidateForm, 'saveAsNew')
-							}}
-						>
-							<Icon icon="tabler:plus" classes="mr-1" />Save as New
-						</Button>
-					{/if}
+									<Button
+										id="formSaveAsNew"
+										class="mb-2 w-full rounded p-2 text-sm "
+										outline
+										on:click={() => {
+											handleSubmitFormLocal(handleValidateForm, 'saveAsNew')
+										}}
+									>
+										<Icon icon="tabler:plus" classes="mr-1" />Save as New
+									</Button>
+								{/if}
+							</div>
+							<div slot="buttons-footer" />
+						</Form>
+					</div>
 				</div>
-				<div slot="buttons-footer" />
-			</Form>
+			</div>
+			<div class="px-2 pb-2">
+				<div>
+					<div class="px-2 pb-2 text-sm text-gray-500 dark:text-gray-400">
+						{#if $selectedFormBuilderRecord?.action === 'new'}
+							<Button class=" mt-3 w-full rounded text-sm" on:click={() => update('formSaved')}>
+								<Icon icon="tabler:plus" classes="mr-2" />
+								{schema && schema.settings && schema.settings.showSubmit
+									? schema.settings.SubmitLabel
+									: 'Save changes'}</Button
+							>
+						{:else}
+							<Button class=" mt-3 w-full rounded text-sm" on:click={() => update('formUpdated')}>
+								<Icon
+									icon="streamline:interface-edit-write-2-change-document-edit-modify-paper-pencil-write-writing"
+									classes="mr-2"
+								/> Update Changes</Button
+							>
+
+							<Button
+								class=" mt-1 w-full rounded text-sm"
+								outline
+								on:click={() => update('formSaveAsNew')}
+							>
+								<Icon icon="tabler:plus" classes="mr-2" /> Save as New</Button
+							>
+						{/if}
+
+						{#if schema && schema.settings && schema.settings.showCancel}
+							<Button class=" mt-1 w-full rounded text-sm " outline on:click={() => close()}>
+								Cancel
+							</Button>
+						{/if}
+					</div>
+				</div>
+			</div>
 		</div>
 	{:else}
 		<Loading />

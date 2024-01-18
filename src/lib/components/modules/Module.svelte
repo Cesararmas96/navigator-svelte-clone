@@ -22,6 +22,8 @@
 	import { generateRandomString } from '$lib/helpers/common/common'
 
 	export let trocModule: any
+	export let isShared: boolean = false
+
 	const baseUrl = import.meta.env.VITE_API_URL
 	let dropdownOpen = false
 	const user = $storeUser
@@ -146,19 +148,19 @@
 		loading.set(false)
 	}
 
-	const confirmCustomize = async (impersonation: boolean) => {
+	const confirmCustomize = async (impersonation: boolean, attributes?: Record<string, any>) => {
 		loading.set(true)
 		try {
 			const user = impersonation ? { user_id: $storeUser?.user_id } : { user_id: null }
-			const resp = await patchData(
+			let resp = await postData(
 				`${import.meta.env.VITE_API_URL}/api/v2/dashboards/${currentDashboard.dashboard_id}`,
 				{
-					attributes: { ...currentDashboard.attributes, ...user }
+					attributes: { ...(attributes ? attributes : currentDashboard.attributes), ...user }
 				}
 			)
-			if (resp && resp.dashboard_id) {
+			if (resp[0] && resp[0].dashboard_id) {
+				resp = { ...resp[0] }
 				currentDashboard = structuredClone(resp)
-
 				storeDashboards.update((dashboards) =>
 					dashboards.map((item) => {
 						if (item.dashboard_id === currentDashboard.dashboard_id) {
@@ -179,7 +181,7 @@
 		loading.set(false)
 	}
 
-	const handleCustomize = async () => {
+	const handleCustomize = async (attributes: Record<string, any>) => {
 		let impersonation = true
 		let description =
 			'Are you sure that you want to customizable this dashboard?\nThis action cannot be undone.'
@@ -266,7 +268,7 @@
 	}
 
 	const handleShareDashboard = () => {
-		const url = `/share/dashboard/${currentDashboard.program_id}/${currentDashboard.module_id}/${currentDashboard.dashboard_id}`
+		const url = `/share/dashboard/${currentDashboard.dashboard_id}`
 		const link = document.createElement('a')
 		link.href = url
 		link.setAttribute('target', '_blank')
@@ -318,8 +320,9 @@
 </script>
 
 <Alerts position="top" />
-<Tabs style="pill" contentClass="p-0 mt-2">
-	<div class="card ml-[5px] mr-[10px] w-full p-1">
+
+<Tabs style="pill" contentClass="mt-0">
+	<div class="card my-2 ml-[5px] mr-[10px] w-full p-1">
 		<div class="nav-scroll gap-1 overflow-visible font-bold text-heading">
 			{#if $storeDashboards && $storeDashboards.length > 0 && currentDashboard}
 				{#each $storeDashboards as dashboard}
@@ -422,7 +425,11 @@
 								</Dropdown>
 							</div>
 						</div>
-						<Dashboard {dashboard} on:handleCustomize={(e) => confirmCustomize(e.detail)} />
+						<Dashboard
+							{dashboard}
+							on:handleCustomize={(e) => confirmCustomize(false, e.detail)}
+							{isShared}
+						/>
 					</TabItem>
 				{/each}
 			{/if}

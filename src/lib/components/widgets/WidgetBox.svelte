@@ -21,6 +21,7 @@
 
 	export let widget: any
 	export let resized: boolean = false
+	export let isMobileDevice: boolean = false
 
 	const defaultSettings = {
 		title: '',
@@ -144,7 +145,7 @@
 	}
 
 	$: if ($themeMode !== 'dark') {
-		opacity = $widgetStore?.params?.settings?.appearance?.opacity
+		opacity = !fixed ? $widgetStore?.params?.settings?.appearance?.opacity : 0
 		background = $widgetStore?.params?.settings?.appearance?.background || '#ffffff'
 		backgroundRGB = $widgetStore?.params?.settings?.appearance?.backgroundRGB || '255, 255, 255'
 		color = $widgetStore?.params?.settings?.appearance?.color || '#37507f'
@@ -160,9 +161,9 @@
 	$: if (resized) {
 		$widgetStore.resized = true
 	}
-
 	const bgTypeClass = (bg: string) => {
-		return !isDarkMode() ? (isUrl(bg) ? 'widget-bg-image' : 'widget-bg-color') : ''
+		if (fixed) return 'bg-transparent'
+		return !isDarkMode() && !fixed ? (isUrl(bg) ? 'widget-bg-image' : '') : ''
 	}
 </script>
 
@@ -177,11 +178,13 @@
 	style:--widget-bg-opacity={opacity / 100}
 	style:--widget-fixed={fixed ? 'fixed' : ''}
 	style:border-color={fixed || $themeMode === 'dark' ? '' : '#E5E7EB'}
-	class:border={$themeMode !== 'dark' && border}
-	class:border-gray-200={$themeMode !== 'dark' && border}
+	class:border={$themeMode !== 'dark' && border && !fixed}
+	class:border-gray-200={$themeMode !== 'dark' && border && !fixed}
 	class:cursor-default={fixed || !draggable}
 	class:widget-drilldown-open={$widgetStore?.instances && $widgetStore?.instances?.length > 0}
-	class={`card justify-content-between flex h-full w-full flex-col rounded-lg p-1 ${bgTypeClass(
+	class:card={!fixed}
+	class:relative={isMobileDevice}
+	class={`justify-content-between widget-bg-color flex h-full w-full flex-col rounded-lg p-1 ${bgTypeClass(
 		background
 	)}`}
 	on:mouseenter={() => {
@@ -210,6 +213,7 @@
 		content: '';
 		background-image: var(--widget-bg-image);
 		background-size: cover;
+		background-position: center;
 		position: absolute;
 		top: 0px;
 		right: 0px;

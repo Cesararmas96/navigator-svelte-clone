@@ -18,13 +18,13 @@
 	const apiUrl = import.meta.env.VITE_API_URL
 
 	//TODO: Agregar esta variable en las variables de entorno
-	const baseProdUrl = 'https://api.trocdigital.io'
+	const apiImages = import.meta.env.VITE_API_URL_IMAGES
 	let showPassword: boolean = false
 
 	const getLoginData = async () => {
 		try {
 			const subdomain = extractSubdomain()
-			const rootLink = `${baseProdUrl}/api/v2/services/images/`
+			const rootLink = `${apiImages}/api/v2/services/images/`
 
 			const [data] = await getApiData(
 				`${apiUrl}/api/v1/clients?subdomain_prefix=${subdomain}`,
@@ -76,7 +76,7 @@
 	<main>
 		<div class="main-container dark:text-white-dark min-h-screen text-black">
 			<div class="flex min-h-screen bg-white">
-				<div class=" width-full w-4/5 flex-col text-white dark:text-black lg:flex">
+				<div class="width-full lg: hidden flex-col text-white dark:text-black lg:flex lg:w-4/5">
 					<Carousel images={data.slideshowCarouselData} />
 				</div>
 				<div class="relative flex w-full items-center justify-center lg:w-2/5">
@@ -161,7 +161,9 @@
 								{#each Object.values(filteredObject) as method}
 									{#if method.name === 'ADFSAuth'}
 										<Button
-											href={`${apiUrl}${method.uri}`}
+											href={`${apiUrl}${method.uri}?redirect_uri=${
+												import.meta.env.VITE_RESPONSE_URI
+											}`}
 											outline
 											color={method.color || 'light'}
 											class="ml-auto mr-auto flex w-full"
@@ -171,7 +173,9 @@
 									{:else}
 										<li>
 											<Button
-												href={`${apiUrl}${method.uri}`}
+												href={`${apiUrl}${method.uri}?redirect_uri=${
+													import.meta.env.VITE_RESPONSE_URI
+												}}`}
 												outline
 												color={method.color || 'light'}
 												class="ml-auto mr-auto flex w-full"

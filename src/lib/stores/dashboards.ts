@@ -10,3 +10,5 @@ export const storeCCPDashboardBehavior = writable<any | null>(null);
 
 export const storeCCPWidget= writable<any | null>(null);
 export const storeCCPWidgetBehavior = writable<any | null>(null);
+
+export const hideDashboardFilters = writable(true);

@@ -11,6 +11,7 @@
 	import Icon from '../common/Icon.svelte'
 	import { menuHidden, sidebarMin } from '$lib/stores/sidebar'
 	import { onMount } from 'svelte'
+	import { storeUser } from '$lib/stores'
 
 	interface menuItem {
 		type: string
@@ -67,7 +68,10 @@
 	}
 
 	function handleDrawer(event: any) {
-		if (event.target.localName === 'iconify-icon' && !event.target.nextElementSibling) {
+		if (
+			$page.data.programs.length === 1 ||
+			(event.target.localName === 'iconify-icon' && !event.target.nextElementSibling)
+		) {
 			$sidebarMin = !$sidebarMin
 			event.preventDefault()
 		}
@@ -96,23 +100,37 @@
 >
 	<SidebarWrapper divClass="px-3 py-4" data-simplebar>
 		<SidebarGroup>
-			<SidebarItem
-				label="Return to programs"
-				href="/home"
-				class="hover:bg-wite/10 px-3 py-2"
-				spanClass="flex-1 text-left menu-text ml-3 whitespace-nowrap"
-				on:click={handleDrawer}
-			>
-				<svelte:fragment slot="icon">
-					<Icon icon="tabler:arrow-back-up-double" />
-				</svelte:fragment>
-				<svelte:fragment slot="subtext">
-					<Icon
-						icon="carbon:radio-button{!$sidebarMin ? '-checked' : ''}"
-						classes="max-xl:hidden p-2"
-					/>
-				</svelte:fragment>
-			</SidebarItem>
+			{#if !$storeUser.next}
+				<SidebarItem
+					label={$page.data.programs.length > 1 ? 'Return to programs' : 'Hold sidebar'}
+					href="/home"
+					class="hover:bg-wite/10 px-3 py-2"
+					spanClass="flex-1 text-left menu-text ml-3 whitespace-nowrap"
+					on:click={handleDrawer}
+				>
+					<svelte:fragment slot="icon">
+						{#if $page.data.programs.length > 1}
+							<Icon icon="tabler:arrow-back-up-double" />
+						{:else}
+							<img
+								src="{import.meta.env.VITE_BASE_URL}/assets/img/programs/{$page.params
+									.programs}/icon.png"
+								alt="logo {$page.params.programs}"
+								width="18"
+							/>
+						{/if}
+					</svelte:fragment>
+					<svelte:fragment slot="subtext">
+						{#if $page.data.programs.length === 1}
+							<Icon icon="tabler:arrow-narrow-right" />
+						{/if}
+						<Icon
+							icon="carbon:radio-button{!$sidebarMin ? '-checked' : ''}"
+							classes="max-xl:hidden p-2"
+						/>
+					</svelte:fragment>
+				</SidebarItem>
+			{/if}
 		</SidebarGroup>
 		<SidebarGroup ulClass="space-y-0" border>
 			{#each parentMenu as item}

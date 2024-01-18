@@ -3,8 +3,11 @@
 	import Icon from '../../../common/Icon.svelte'
 	import type { AlertMessage } from '$lib/interfaces/Alert'
 	import { dismissAlert } from '$lib/helpers/common/alerts'
+	import { getContext } from 'svelte'
 
-	export let alert: AlertMessage
+	const widget: any = getContext('widget')
+
+	export let alert: AlertMessage = $widget.format_definition
 
 	type Color = 'red' | 'green' | 'yellow' | 'blue'
 	type Type = 'error' | 'success' | 'warning' | 'info'

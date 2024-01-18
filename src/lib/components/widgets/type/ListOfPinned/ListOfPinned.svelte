@@ -45,7 +45,7 @@
 	}
 
 	const handleShareWidget = (widget) => {
-		const url = `/share/widget/${widget?.dashboard_id}/${widget?.widget_id}`
+		const url = `/share/widget/${widget?.widget_id}`
 		const link = document.createElement('a')
 		link.href = url
 		link.target = '_blank'

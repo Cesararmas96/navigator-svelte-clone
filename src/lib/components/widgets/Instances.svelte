@@ -16,7 +16,7 @@
 	const handleCloseInstance = (e: any) => {
 		removeInstance(widget, e.detail)
 		setTimeout(() => {
-			dispatch('handleInstanceResize')
+			dispatch('handleInstanceResize', 'close')
 		}, 100)
 	}
 </script>
