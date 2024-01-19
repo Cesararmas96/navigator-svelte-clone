@@ -5,6 +5,7 @@
 	import Icon from '../common/Icon.svelte'
 	import { format } from 'date-fns'
 	import { storeModule } from '$lib/stores/modules'
+	import { Tooltip } from 'flowbite-svelte'
 
 	const createUrl = (item: any) => {
 		if (item.attributes?.order === '0') {
@@ -46,7 +47,6 @@
 	})
 
 	const handleShareModule = () => {
-		console.log('share module', program.program_slug, trocModule.module_slug)
 		const url = `/share/module/${program.program_slug}/${trocModule.module_slug}`
 		const link = document.createElement('a')
 		link.href = url
@@ -70,4 +70,5 @@
 		<span>{format(new Date(), 'EEEE, LLLL d, yyyy')}</span>
 	</div>
 	<Icon icon="mdi:share-variant" classes="ml-3 cursor-pointer" on:click={handleShareModule} />
+	<Tooltip>Share module {program.program_name} > {trocModule.description}</Tooltip>
 </div>
