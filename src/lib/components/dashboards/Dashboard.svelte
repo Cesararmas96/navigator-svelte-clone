@@ -46,7 +46,7 @@
 
 	export let dashboard: any
 	export let isShared: boolean = false
-	console.log(dashboard)
+
 	let filterComponent: any
 	const dispatch = createEventDispatcher()
 
@@ -183,6 +183,7 @@
 				dashboard.widget_location = { ...dashboard.attributes.widget_location }
 				$storeDashboard.widget_location = { ...dashboard.attributes.widget_location }
 			}
+
 			items =
 				dashboard.attributes.widget_location || setNewLocations
 					? loadV3Locations(dashboard.widget_location, widgets, cols, isMobile())
