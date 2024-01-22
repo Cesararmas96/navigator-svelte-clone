@@ -131,13 +131,13 @@
 	initActions()
 	initWidgetTop()
 
-	onMount(() => {
-		$widgetStore.instances = []
-		if ($widgetStore.params && !$widgetStore.params?.settings && !$widgetStore.temp) {
-			$widgetStore.params.settings = Object.assign({}, defaultSettings.params.settings)
-		}
-		$widgetStore.context = 'widget'
-	})
+	// onMount(() => {
+	$widgetStore.instances = []
+	if ($widgetStore.params && !$widgetStore.params?.settings && !$widgetStore.temp) {
+		$widgetStore.params.settings = Object.assign({}, defaultSettings.params.settings)
+	}
+	$widgetStore.context = 'widget'
+	// })
 
 	$: {
 		fixed = $widgetStore?.params?.settings?.general?.fixed
