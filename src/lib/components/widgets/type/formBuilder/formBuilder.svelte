@@ -12,7 +12,8 @@
 	import {
 		getJsonSchema,
 		getSchemaComputed,
-		handleSubmitForm
+		handleSubmitForm,
+		utilFunctionsMap
 	} from '$lib/helpers/formbuilder/index'
 
 	export let data: any
@@ -38,8 +39,15 @@
 
 		if (response) {
 			if ($widget?.params?.model?.responseAlert) {
-				responseServer = response?.message
-				
+				if (
+					$widget?.params?.model?.responseAlert?.callback &&
+					utilFunctionsMap[$widget?.params?.model?.responseAlert?.callback]
+				) {
+					responseServer =
+						utilFunctionsMap[$widget?.params?.model?.responseAlert?.callback](response)
+				} else {
+					responseServer = response?.response?.message
+				}
 			}
 		}
 	}
@@ -89,7 +97,7 @@
 
 				{#if responseServer}
 					<Alert color="blue" dismissable>
-						{responseServer}
+						{@html responseServer}
 					</Alert>
 				{/if}
 

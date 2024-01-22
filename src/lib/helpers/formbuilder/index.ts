@@ -114,10 +114,19 @@ async function handleSubmit(payload: any, type: string, $widget, extra) {
 
 		sendSuccessNotification(dataModel?.message || message)
 
-		return { message: dataModel?.message || message }
+		return { response: dataModel || message }
 	} else {
 		console.log('Error here', dataModel)
 		sendErrorNotification('There has been a problem...')
 		return false
 	}
+}
+
+export const utilFunctionsMap: { [key: string]: (params: any) => any } = {
+	supportTicket: supportTicket
+}
+
+export function supportTicket(params) {
+	console.log('paramsparamsparams', params)
+	return `${params?.response?.message} <br> ID de ticket ${params?.response?.ticket_number}  <br> Login: ${params?.response?.login_information?.login} <br> Email: ${params?.response?.login_information?.email}`
 }
