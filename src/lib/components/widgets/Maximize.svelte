@@ -1,12 +1,15 @@
 <script lang="ts">
+	import { generateUID } from '$lib/helpers/common/common'
 	import { selectedWidgetMaximize } from '$lib/stores/widgets'
 	import Widget from './Widget.svelte'
 	import WidgetBox from './WidgetBox.svelte'
 
 	let widget: any
 	$: if ($selectedWidgetMaximize) {
-		widget = $selectedWidgetMaximize.widget
+		widget = { ...$selectedWidgetMaximize.widget }
 		widget.loaded = false
+		widget.maximized = true
+		widget.widget_id = generateUID()
 	}
 </script>
 

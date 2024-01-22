@@ -23,6 +23,8 @@
 	export let resized: boolean = false
 	export let isMobileDevice: boolean = false
 
+	let collapsed: boolean = false
+
 	const defaultSettings = {
 		title: '',
 		description: '',
@@ -112,7 +114,12 @@
 
 		addWidgetAction(widgetActions, {
 			name: 'collapse',
-			action: () => dispatchResize()
+			action: () => {
+				setTimeout(() => {
+					collapsed = !collapsed
+					dispatch('handleCollapse', collapsed)
+				}, 100)
+			}
 		})
 
 		addWidgetAction(widgetActions, {
