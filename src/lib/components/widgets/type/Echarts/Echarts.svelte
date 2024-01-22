@@ -15,7 +15,7 @@
 	const widgetActions = getContext<Writable<any[]>>('widgetActions')
 	const resizeAction = getWidgetAction($widgetActions, 'resize')
 
-	export let id = 'chart' + $widget.widget_id
+	export let id = 'chart-' + $widget.widget_id
 	export let theme = 'macarons'
 	export let width = 200
 	export let height = 200
@@ -306,6 +306,7 @@
 	}
 
 	const resizeEchartToContent = () => {
+		setContentHeight($widget.widget_id)
 		const eChartDiv: HTMLElement = document.querySelector(`#${id}`)!
 		eChartDiv.style['min-height'] = !$widget.temp
 			? gridHeight($widget.widget_id)
@@ -324,7 +325,7 @@
 
 {#if data}
 	<div bind:clientWidth={width}>
-		<div {id} style="height: {height}px" />
+		<div {id} />
 	</div>
 {/if}
 
