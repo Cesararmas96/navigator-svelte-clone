@@ -18,12 +18,6 @@
 
 	widgetBase = widgetBase === 'Api' || widgetBase === 'Rest' ? widgetBase : 'Media'
 
-	if (widgetBase === 'Media') {
-		$widget.params.settings.toolbar.reload = true
-		$widget.params.settings.toolbar.filtering = true
-		$widget.params.settings.toolbar.export = true
-	}
-
 	import(`./base/${widgetBase}.svelte`).then((value: any) => {
 		Thing = value.default
 	})
