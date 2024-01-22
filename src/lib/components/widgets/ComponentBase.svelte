@@ -7,14 +7,10 @@
 	let Thing: any
 
 	let widgetBase: string
-
 	// $: if ($widget && $widget.widget_type_id) {
-	widgetBase =
-		$widget.widget_type_id === 'business-card'
-			? 'Api'
-			: $widget.widget_type_id.includes('-')
-			? capitalizeWord($widget.widget_type_id.split('-')[0])
-			: capitalizeWord($widget.widget_type_id)
+	widgetBase = $widget.widget_type_id.includes('-')
+		? capitalizeWord($widget.widget_type_id.split('-')[0])
+		: capitalizeWord($widget.widget_type_id)
 
 	widgetBase = widgetBase === 'Api' || widgetBase === 'Rest' ? widgetBase : 'Media'
 
