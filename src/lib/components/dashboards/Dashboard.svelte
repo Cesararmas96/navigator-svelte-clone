@@ -222,7 +222,7 @@
 	}
 
 	const updateLocations = async () => {
-		if (isChanging || isMobile()) return
+		if (isChanging || isMobile() || dashboard?.attributes?.user_id !== $storeUser?.user_id) return
 		isChanging = true
 		setTimeout(async () => {
 			isChanging = false
@@ -475,9 +475,9 @@
 						activeClass="grid-item-active"
 						previewClass="bg-red-500 rounded"
 						resizable={dashboard?.attributes?.user_id === $storeUser?.user_id}
-						movable={dashboard?.attributes?.user_id === $storeUser?.user_id}
+						movable={true}
 						on:change={(e) => {
-							changeItemSize(item)
+							if (dashboard?.attributes?.user_id === $storeUser?.user_id) changeItemSize(item)
 						}}
 						let:active
 						bind:id={item.data.title}
@@ -502,7 +502,7 @@
 								{isToolbarVisible}
 								{isOwner}
 								bind:reload={item.reload}
-								isDraggable={dashboard?.attributes?.user_id === $storeUser?.user_id}
+								isDraggable={true}
 								on:handleInstanceResize={() => handleResizable(item)}
 							/>
 						</WidgetBox>
