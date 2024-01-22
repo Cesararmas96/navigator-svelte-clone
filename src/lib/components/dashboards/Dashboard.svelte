@@ -125,9 +125,13 @@
 		dismissAlert('dashboard-no-widgets', $storeDashboard.dashboard_id)
 	}
 
-	$: handleResizable = (item: any) => {
+	$: handleResizable = (item: any, collapse: boolean) => {
 		if (isMobileDevice()) return
-		$storeDashboard.gridItems = resizeItem(item, $storeDashboard.gridItems)
+		$storeDashboard.gridItems = resizeItem(
+			item,
+			$storeDashboard.gridItems,
+			collapse || item.data?.instances?.length > 0
+		)
 		gridController.gridParams.updateGrid()
 		$storeDashboard.gridItems = [...$storeDashboard.gridItems]
 	}
@@ -489,9 +493,10 @@
 							let:isOwner
 							let:isToolbarVisible
 							let:widget
-							on:handleResize={() => handleResizable(item)}
+							on:handleResize={() => handleResizable(item, false)}
 							on:handleCloning={() => handleCloning(item)}
 							on:handleRemove={() => handleRemove(item)}
+							on:handleCollapse={(e) => handleResizable(item, e.detail)}
 							on:handleResizable={(e) => {
 								item.data.params.settings.resizable = e.detail.resizable && !e.detail.fixed
 							}}
@@ -503,7 +508,7 @@
 								{isOwner}
 								bind:reload={item.reload}
 								isDraggable={true}
-								on:handleInstanceResize={() => handleResizable(item)}
+								on:handleInstanceResize={() => handleResizable(item, false)}
 							/>
 						</WidgetBox>
 					</GridItem>
