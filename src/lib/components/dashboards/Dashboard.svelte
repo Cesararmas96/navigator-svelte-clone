@@ -46,7 +46,7 @@
 
 	export let dashboard: any
 	export let isShared: boolean = false
-	console.log(dashboard)
+
 	let filterComponent: any
 	const dispatch = createEventDispatcher()
 
@@ -125,9 +125,13 @@
 		dismissAlert('dashboard-no-widgets', $storeDashboard.dashboard_id)
 	}
 
-	$: handleResizable = (item: any) => {
+	$: handleResizable = (item: any, collapse: boolean) => {
 		if (isMobileDevice()) return
-		$storeDashboard.gridItems = resizeItem(item, $storeDashboard.gridItems)
+		$storeDashboard.gridItems = resizeItem(
+			item,
+			$storeDashboard.gridItems,
+			collapse || item.data?.instances?.length > 0
+		)
 		gridController.gridParams.updateGrid()
 		$storeDashboard.gridItems = [...$storeDashboard.gridItems]
 	}
@@ -183,6 +187,7 @@
 				dashboard.widget_location = { ...dashboard.attributes.widget_location }
 				$storeDashboard.widget_location = { ...dashboard.attributes.widget_location }
 			}
+
 			items =
 				dashboard.attributes.widget_location || setNewLocations
 					? loadV3Locations(dashboard.widget_location, widgets, cols, isMobile())
@@ -221,7 +226,7 @@
 	}
 
 	const updateLocations = async () => {
-		if (isChanging || isMobile()) return
+		if (isChanging || isMobile() || dashboard?.attributes?.user_id !== $storeUser?.user_id) return
 		isChanging = true
 		setTimeout(async () => {
 			isChanging = false
@@ -474,9 +479,9 @@
 						activeClass="grid-item-active"
 						previewClass="bg-red-500 rounded"
 						resizable={dashboard?.attributes?.user_id === $storeUser?.user_id}
-						movable={dashboard?.attributes?.user_id === $storeUser?.user_id}
+						movable={true}
 						on:change={(e) => {
-							changeItemSize(item)
+							if (dashboard?.attributes?.user_id === $storeUser?.user_id) changeItemSize(item)
 						}}
 						let:active
 						bind:id={item.data.title}
@@ -488,9 +493,10 @@
 							let:isOwner
 							let:isToolbarVisible
 							let:widget
-							on:handleResize={() => handleResizable(item)}
+							on:handleResize={() => handleResizable(item, false)}
 							on:handleCloning={() => handleCloning(item)}
 							on:handleRemove={() => handleRemove(item)}
+							on:handleCollapse={(e) => handleResizable(item, e.detail)}
 							on:handleResizable={(e) => {
 								item.data.params.settings.resizable = e.detail.resizable && !e.detail.fixed
 							}}
@@ -501,8 +507,8 @@
 								{isToolbarVisible}
 								{isOwner}
 								bind:reload={item.reload}
-								isDraggable={dashboard?.attributes?.user_id === $storeUser?.user_id}
-								on:handleInstanceResize={() => handleResizable(item)}
+								isDraggable={true}
+								on:handleInstanceResize={() => handleResizable(item, false)}
 							/>
 						</WidgetBox>
 					</GridItem>

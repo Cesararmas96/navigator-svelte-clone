@@ -293,14 +293,14 @@ export const pasteItem = (item: any, items: any[]) => {
 	return [...items, newItem]
 }
 
-export const resizeItem = (item: any, items: any[]) => {
+export const resizeItem = (item: any, items: any[], remainHeight: boolean) => {
 	const header = document.getElementById(`widget-header-${item.data.widget_id}`)?.clientHeight || 0
 	const content = document.getElementById(`widget-main-${item.data.widget_id}`)?.clientHeight || 0
 	const widgetInstances =
 		document.getElementById(`widget-instances-${item.data.widget_id}`)?.clientHeight || 0
 	const height = header + content + widgetInstances
 	const prevousHeight = maxHeight(item.y, items)
-	if (item.data?.instances?.length > 0) {
+	if (remainHeight) {
 		item._h = item.h
 		item.h = Math.ceil(height / (rowHeight + 1))
 	} else {

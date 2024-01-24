@@ -26,7 +26,6 @@
 	const baseUrl = import.meta.env.VITE_API_URL
 	let dropdownOpen = false
 	const user = $storeUser
-
 	let currentDashboard
 	let popupRemoveModal = false
 	let selectedDashboardID: string
@@ -412,7 +411,7 @@
 										<Icon icon="tabler:camera" size="18" classes="mr-1" />
 										Screenshot</DropdownItem
 									>
-									{#if isOwner}
+									{#if isOwner || currentDashboard.user_id === $storeUser.user_id}
 										<DropdownItem
 											on:click={() => handleDashboardRemove(dashboard.dashboard_id)}
 											defaultClass="flex flex-row text-red-500 font-medium py-2 pl-2 pr-4 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"
@@ -428,17 +427,19 @@
 					</TabItem>
 				{/each}
 			{/if}
-			<TabItem
-				defaultClass="cursor-pointer"
-				on:click={handleNewDashboard}
-				open={!$storeDashboards || $storeDashboards.length === 0}
-			>
-				<div slot="title" class="flex items-center gap-2">
-					<Icon icon="gala:add" size="20px" />
-					New tab
-				</div>
-				<div><Alerts /></div>
-			</TabItem>
+			{#if user.superuser}
+				<TabItem
+					defaultClass="cursor-pointer"
+					on:click={handleNewDashboard}
+					open={!$storeDashboards || $storeDashboards.length === 0}
+				>
+					<div slot="title" class="flex items-center gap-2">
+						<Icon icon="gala:add" size="20px" />
+						New tab
+					</div>
+					<div><Alerts /></div>
+				</TabItem>
+			{/if}
 		</div>
 	</div>
 </Tabs>
