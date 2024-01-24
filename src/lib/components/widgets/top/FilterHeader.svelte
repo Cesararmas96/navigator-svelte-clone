@@ -209,13 +209,13 @@
 
 		{#if Object.keys(slugs).length > 0}
 			<div class="w-64">
-				<Select size="sm" class="mt-2" items={slugs} bind:value={slug} />
+				<Select size="sm" class="" items={slugs} bind:value={slug} />
 			</div>
 		{/if}
 
 		{#if filterOptions?.dateRange && filterOptions?.dateRange?.show}
 			<div class="w-64">
-				<Select size="sm" class="mt-2" items={dates} bind:value={date} />
+				<Select size="sm" class="" items={dates} bind:value={date} />
 			</div>
 		{/if}
 
