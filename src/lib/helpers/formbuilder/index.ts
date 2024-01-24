@@ -128,5 +128,13 @@ export const utilFunctionsMap: { [key: string]: (params: any) => any } = {
 
 export function supportTicket(params) {
 	console.log('paramsparamsparams', params)
-	return `${params?.response?.message} <br> ID de ticket ${params?.response?.ticket_number}  <br> Login: ${params?.response?.login_information?.login} <br> Email: ${params?.response?.login_information?.email}`
+	let message = `${params?.response?.message} <br> ID de ticket ${params?.response?.ticket_number}  `
+
+	if (params?.response?.login_information?.login)
+		message = message.concat(`<br> Login: ${params?.response?.login_information?.login}`)
+
+	if (params?.response?.login_information?.email)
+		message = message.concat(`<br> Email: ${params?.response?.login_information?.email}`)
+
+	return message
 }
