@@ -200,7 +200,7 @@
 </script>
 
 <div class="">
-	<div class="mt-1 flex h-9 items-center gap-4">
+	<div class="flex h-9 items-center gap-4">
 		{#if filterOptions?.datepicker && filterOptions?.datepicker?.show}
 			<div class="w-64">
 				<!-- Your datepicker component here -->
