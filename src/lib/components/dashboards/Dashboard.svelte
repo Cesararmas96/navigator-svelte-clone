@@ -13,7 +13,8 @@
 		saveLocations,
 		loadLocalStoredLocations,
 		removeWidgetLocalstore,
-		getControllerItemsLocations
+		getControllerItemsLocations,
+		resizeCollapseItem
 	} from '$lib/helpers/dashboard/grid'
 	import { getApiData, patchData, postData, putData } from '$lib/services/getData'
 	import Alerts from '../widgets/type/Alert/Alerts.svelte'
@@ -125,13 +126,16 @@
 		dismissAlert('dashboard-no-widgets', $storeDashboard.dashboard_id)
 	}
 
-	$: handleResizable = (item: any, collapse: boolean) => {
+	$: handleResizable = (item: any) => {
 		if (isMobileDevice()) return
-		$storeDashboard.gridItems = resizeItem(
-			item,
-			$storeDashboard.gridItems,
-			collapse || item.data?.instances?.length > 0
-		)
+		$storeDashboard.gridItems = resizeItem(item, $storeDashboard.gridItems)
+		gridController.gridParams.updateGrid()
+		$storeDashboard.gridItems = [...$storeDashboard.gridItems]
+	}
+	$: handleCollapse = (item: any, collapse: boolean) => {
+		if (isMobileDevice()) return
+		console.log('collapse')
+		$storeDashboard.gridItems = resizeCollapseItem(item, $storeDashboard.gridItems, collapse)
 		gridController.gridParams.updateGrid()
 		$storeDashboard.gridItems = [...$storeDashboard.gridItems]
 	}
@@ -449,7 +453,12 @@
 	</section>
 {/if}
 
-<div id="grid" class="block w-full" style={heightStyle} class:overflow-y-auto={!isMobileDevice()}>
+<div
+	id="grid"
+	class="block w-full overflow-x-hidden"
+	style={heightStyle}
+	class:overflow-y-auto={!isMobileDevice()}
+>
 	{#if Boolean($storeDashboard?.allow_filtering) && !Boolean($storeDashboard?.attributes?.sticky)}
 		<section>
 			<svelte:component this={filterComponent} bind:open={filtersOpen} />
@@ -493,10 +502,10 @@
 							let:isOwner
 							let:isToolbarVisible
 							let:widget
-							on:handleResize={() => handleResizable(item, false)}
+							on:handleResize={() => handleResizable(item)}
 							on:handleCloning={() => handleCloning(item)}
 							on:handleRemove={() => handleRemove(item)}
-							on:handleCollapse={(e) => handleResizable(item, e.detail)}
+							on:handleCollapse={(e) => handleCollapse(item, e.detail)}
 							on:handleResizable={(e) => {
 								item.data.params.settings.resizable = e.detail.resizable && !e.detail.fixed
 							}}
@@ -508,7 +517,7 @@
 								{isOwner}
 								bind:reload={item.reload}
 								isDraggable={true}
-								on:handleInstanceResize={() => handleResizable(item, false)}
+								on:handleInstanceResize={() => handleResizable(item)}
 							/>
 						</WidgetBox>
 					</GridItem>
