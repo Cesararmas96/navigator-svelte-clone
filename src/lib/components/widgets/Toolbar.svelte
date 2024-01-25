@@ -30,6 +30,9 @@
 
 	let isWidgetOwner: boolean = $dashboard?.attributes?.user_id === $storeUser?.user_id
 	let menuOpen = false
+	$: if (!isToolbarVisible) {
+		menuOpen = false
+	}
 
 	let bg: string
 	let toolbar: any
@@ -338,7 +341,7 @@
 						showInMenu={toolbarItems[item].showInMenu}
 						item={toolbarItems[item].item}
 						{isMobileDevice}
-						on:itemClick={() => (menuOpen = !menuOpen)}
+						on:itemClick={() => (menuOpen = false)}
 					/>
 				{/each}
 			</Dropdown>
