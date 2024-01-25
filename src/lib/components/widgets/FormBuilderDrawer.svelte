@@ -76,7 +76,7 @@
 			if (primaryKey) {
 				getModelByID(jsonSchema, record, slug, conditions)
 			} else {
-				schema = getSchemaComputed(jsonSchema, $selectedFormBuilderRecord)
+				schema = getSchemaComputed(jsonSchema, $selectedFormBuilderWidget)
 			}
 
 			if (schema) {
@@ -142,7 +142,7 @@
 	class="w-[350px] p-0"
 >
 	<div class="sticky top-0 z-10 flex w-full flex-col bg-inherit bg-white p-2 dark:bg-gray-800">
-		<div class="mb-2 flex items-center">
+		<div class="mb-1 flex items-center">
 			<h5
 				id="drawer-label"
 				class=" inline-flex items-center text-base font-semibold text-gray-500 dark:text-gray-400"
@@ -152,85 +152,95 @@
 			</h5>
 			<CloseButton on:click={() => close()} class="dark:text-white" />
 		</div>
-		<div class="px-2 pb-2 text-sm text-gray-500 dark:text-gray-400">
+		<div class="px-2 pb-1 text-sm text-gray-500 dark:text-gray-400">
 			{description}
-
-			{#if $selectedFormBuilderRecord?.action === 'new'}
-				<Button class=" mt-3 w-full rounded text-sm" on:click={() => update('formSaved')}>
-					<Icon icon="tabler:plus" classes="mr-2" />
-					{schema && schema.settings && schema.settings.showSubmit
-						? schema.settings.SubmitLabel
-						: 'Save changes'}</Button
-				>
-			{:else}
-				<Button class=" mt-3 w-full rounded text-sm" on:click={() => update('formUpdated')}>
-					<Icon
-						icon="streamline:interface-edit-write-2-change-document-edit-modify-paper-pencil-write-writing"
-						classes="mr-2"
-					/> Update Changes</Button
-				>
-
-				<Button
-					class=" mt-1 w-full rounded text-sm"
-					outline
-					on:click={() => update('formSaveAsNew')}
-				>
-					<Icon icon="tabler:plus" classes="mr-2" /> Save as New</Button
-				>
-			{/if}
-
-			{#if schema && schema.settings && schema.settings.showCancel}
-				<Button class=" mt-1 w-full rounded text-sm " outline on:click={() => close()}>
-					<!-- <Icon icon="tabler:" classes="mr-2" /> -->
-					Cancel
-				</Button>
-			{/if}
 		</div>
 	</div>
 
 	{#if schema}
-		<div class="px-4 pb-4">
-			<Form {schema}>
-				<div slot="buttons-header" let:handleValidateForm class="hidden">
-					{#if $selectedFormBuilderRecord?.action === 'new'}
-						<Button
-							id="formSaved"
-							class="mb-2 mt-3 w-full rounded p-2 text-sm "
-							on:click={() => {
-								handleSubmitFormLocal(handleValidateForm, 'save')
-							}}
-						>
-							<Icon icon="tabler:plus" classes="mr-1" />{schema &&
-							schema.settings &&
-							schema.settings.showCancel
-								? schema.settings.SubmitLabel
-								: 'Save changes'}
-						</Button>
-					{:else}
-						<Button
-							id="formUpdated"
-							class="mb-2 mt-3 w-full rounded p-2 text-sm "
-							on:click={() => {
-								handleSubmitFormLocal(handleValidateForm, 'update')
-							}}
-						>
-							<Icon icon="tabler:edit" classes="mr-1" />Update Changes
-						</Button>
+		<div class="flex h-[88%] flex-col">
+			<div class="relative flex-grow">
+				<div class="absolute h-full w-full overflow-y-auto">
+					<div class="px-4 pb-4">
+						<Form {schema}>
+							<div slot="buttons-header" let:handleValidateForm class="hidden">
+								{#if $selectedFormBuilderRecord?.action === 'new'}
+									<Button
+										id="formSaved"
+										class="mb-2 mt-3 w-full rounded p-2 text-sm "
+										on:click={() => {
+											handleSubmitFormLocal(handleValidateForm, 'save')
+										}}
+									>
+										<Icon icon="tabler:plus" classes="mr-1" />{schema &&
+										schema.settings &&
+										schema.settings.showCancel
+											? schema.settings.SubmitLabel
+											: 'Save changes'}
+									</Button>
+								{:else}
+									<Button
+										id="formUpdated"
+										class="mb-2 mt-3 w-full rounded p-2 text-sm "
+										on:click={() => {
+											handleSubmitFormLocal(handleValidateForm, 'update')
+										}}
+									>
+										<Icon icon="tabler:edit" classes="mr-1" />Update Changes
+									</Button>
 
-						<Button
-							id="formSaveAsNew"
-							class="mb-2 w-full rounded p-2 text-sm "
-							outline
-							on:click={() => {
-								handleSubmitFormLocal(handleValidateForm, 'saveAsNew')
-							}}
-						>
-							<Icon icon="tabler:plus" classes="mr-1" />Save as New
-						</Button>
-					{/if}
+									<Button
+										id="formSaveAsNew"
+										class="mb-2 w-full rounded p-2 text-sm "
+										outline
+										on:click={() => {
+											handleSubmitFormLocal(handleValidateForm, 'saveAsNew')
+										}}
+									>
+										<Icon icon="tabler:plus" classes="mr-1" />Save as New
+									</Button>
+								{/if}
+							</div>
+							<div slot="buttons-footer" />
+						</Form>
+					</div>
 				</div>
-				<div slot="buttons-footer" />
-			</Form>
+			</div>
+			<div class="px-2 pb-2">
+				<div>
+					<div class="px-2 pb-2 text-sm text-gray-500 dark:text-gray-400">
+						{#if $selectedFormBuilderRecord?.action === 'new'}
+							<Button class=" mt-3 w-full rounded text-sm" on:click={() => update('formSaved')}>
+								<Icon icon="tabler:plus" classes="mr-2" />
+								{schema && schema.settings && schema.settings.showSubmit
+									? schema.settings.SubmitLabel
+									: 'Save changes'}</Button
+							>
+						{:else}
+							<Button class=" mt-3 w-full rounded text-sm" on:click={() => update('formUpdated')}>
+								<Icon
+									icon="streamline:interface-edit-write-2-change-document-edit-modify-paper-pencil-write-writing"
+									classes="mr-2"
+								/> Update Changes</Button
+							>
+
+							<Button
+								class=" mt-1 w-full rounded text-sm"
+								outline
+								on:click={() => update('formSaveAsNew')}
+							>
+								<Icon icon="tabler:plus" classes="mr-2" /> Save as New</Button
+							>
+						{/if}
+
+						{#if schema && schema.settings && schema.settings.showCancel}
+							<Button class=" mt-1 w-full rounded text-sm " outline on:click={() => close()}>
+								Cancel
+							</Button>
+						{/if}
+					</div>
+				</div>
+			</div>
 		</div>
 	{:else}
 		<Loading />
