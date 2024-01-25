@@ -134,7 +134,6 @@
 	}
 	$: handleCollapse = (item: any, collapse: boolean) => {
 		if (isMobileDevice()) return
-		console.log('collapse')
 		$storeDashboard.gridItems = resizeCollapseItem(item, $storeDashboard.gridItems, collapse)
 		gridController.gridParams.updateGrid()
 		$storeDashboard.gridItems = [...$storeDashboard.gridItems]
