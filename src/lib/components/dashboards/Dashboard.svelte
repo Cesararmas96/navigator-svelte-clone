@@ -13,7 +13,8 @@
 		saveLocations,
 		loadLocalStoredLocations,
 		removeWidgetLocalstore,
-		getControllerItemsLocations
+		getControllerItemsLocations,
+		resizeCollapseItem
 	} from '$lib/helpers/dashboard/grid'
 	import { getApiData, patchData, postData, putData } from '$lib/services/getData'
 	import Alerts from '../widgets/type/Alert/Alerts.svelte'
@@ -132,6 +133,13 @@
 		gridController.gridParams.updateGrid()
 		$storeDashboard.gridItems = [...$storeDashboard.gridItems]
 	}
+	$: handleCollapse = (item: any, collapse: boolean) => {
+		if (isMobileDevice()) return
+		console.log('collapse')
+		$storeDashboard.gridItems = resizeCollapseItem(item, $storeDashboard.gridItems, collapse)
+		gridController.gridParams.updateGrid()
+		$storeDashboard.gridItems = [...$storeDashboard.gridItems]
+	}
 	$: handleCloning = (item: any) => {
 		const clonedItem = cloneItem(item, $storeDashboard.gridItems)
 		$storeDashboard.gridItems = [...$storeDashboard.gridItems, clonedItem]
@@ -184,6 +192,7 @@
 				dashboard.widget_location = { ...dashboard.attributes.widget_location }
 				$storeDashboard.widget_location = { ...dashboard.attributes.widget_location }
 			}
+
 			items =
 				dashboard.attributes.widget_location || setNewLocations
 					? loadV3Locations(dashboard.widget_location, widgets, cols, isMobile())
@@ -222,7 +231,7 @@
 	}
 
 	const updateLocations = async () => {
-		if (isChanging || isMobile()) return
+		if (isChanging || isMobile() || dashboard?.attributes?.user_id !== $storeUser?.user_id) return
 		isChanging = true
 		setTimeout(async () => {
 			isChanging = false
@@ -455,7 +464,12 @@
 	</section>
 {/if}
 
-<div id="grid" class="block w-full" style={heightStyle} class:overflow-y-auto={!isMobileDevice()}>
+<div
+	id="grid"
+	class="block w-full overflow-x-hidden"
+	style={heightStyle}
+	class:overflow-y-auto={!isMobileDevice()}
+>
 	{#if Boolean($storeDashboard?.allow_filtering) && !Boolean($storeDashboard?.attributes?.sticky)}
 		<section>
 			<svelte:component this={filterComponent} bind:open={filtersOpen} />
@@ -485,9 +499,9 @@
 						activeClass="grid-item-active"
 						previewClass="bg-red-500 rounded"
 						resizable={dashboard?.attributes?.user_id === $storeUser?.user_id}
-						movable={dashboard?.attributes?.user_id === $storeUser?.user_id}
+						movable={true}
 						on:change={(e) => {
-							changeItemSize(item)
+							if (dashboard?.attributes?.user_id === $storeUser?.user_id) changeItemSize(item)
 						}}
 						let:active
 						bind:id={item.data.title}
@@ -502,6 +516,7 @@
 							on:handleResize={() => handleResizable(item)}
 							on:handleCloning={() => handleCloning(item)}
 							on:handleRemove={() => handleRemove(item)}
+							on:handleCollapse={(e) => handleCollapse(item, e.detail)}
 							on:handleResizable={(e) => {
 								item.data.params.settings.resizable = e.detail.resizable && !e.detail.fixed
 							}}
@@ -512,7 +527,7 @@
 								{isToolbarVisible}
 								{isOwner}
 								bind:reload={item.reload}
-								isDraggable={dashboard?.attributes?.user_id === $storeUser?.user_id}
+								isDraggable={true}
 								on:handleInstanceResize={() => handleResizable(item)}
 							/>
 						</WidgetBox>
