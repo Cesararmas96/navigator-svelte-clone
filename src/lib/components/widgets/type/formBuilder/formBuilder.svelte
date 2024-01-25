@@ -91,7 +91,7 @@
 						{title}
 					</h5>
 				</div>
-				<div class="px-2 text-sm text-gray-500 dark:text-gray-400">
+				<div class="px-2 pb-2 text-sm text-gray-500 dark:text-gray-400">
 					{description}
 				</div>
 
@@ -102,10 +102,10 @@
 				{/if}
 
 				<Form {schema}>
-					<div slot="buttons-footer" let:handleValidateForm>
+					<div class="w-full" slot="buttons-footer" let:handleValidateForm>
 						<div class="flex items-end justify-end">
 							<Button
-								class="btn-pull-left mt-2 w-full	 rounded text-sm"
+								class="btn-pull-left mt-2 rounded text-sm"
 								on:click={() => handleSubmitFormLocal(handleValidateForm, 'formSaved')}
 							>
 								<Icon icon="tabler:plus" classes="mr-2" />
