@@ -66,20 +66,6 @@
 			}}
 		/>
 
-		<!-- <Dropdown
-			items={users}
-			keyValue="email"
-			keyLabel="display_name"
-			defaultClass="text-base w-72"
-			labelClass="mb-0"
-			showSearch={true}
-			showPlaceholder={false}
-			{selectedValue}
-			on:change={(e) => {
-				selectedValue = e.detail.value
-				filterCategories()
-			}}
-		/> -->
 		<Input
 			type="text"
 			size="md"
@@ -93,7 +79,7 @@
 				icon={'typcn:delete'}
 				slot="right"
 				size="18"
-				classes={'cursor-pointer'}
+				classes={`cursor-pointer ${searchTerm !== '' ? '' : 'hidden'}`}
 				on:click={() => {
 					searchTerm = ''
 					filterCategories()
