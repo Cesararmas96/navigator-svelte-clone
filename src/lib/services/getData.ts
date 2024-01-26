@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { storeUser } from '$lib/stores'
+import { sendErrorNotification } from '$lib/stores/toast'
 import { get } from 'svelte/store'
 
 /**
@@ -82,6 +83,8 @@ export async function getData(
 			const responseError = await response.json()
 			if (responseError && responseError.message) {
 				statusText = responseError.message
+			} else if (responseError?.error) {
+				statusText = responseError.error
 			} else if (responseError && responseError.payload) {
 				statusText = responseError.payload
 			} else {
@@ -90,6 +93,8 @@ export async function getData(
 					? JSON.parse(response.statusText).reason
 					: statusText
 			}
+
+			sendErrorNotification(`Request error: ${response.status}:<br> ${statusText}`)
 			throw new Error(`Request error: ${response.status}:<br> ${statusText}`)
 		}
 		return await response.json()
