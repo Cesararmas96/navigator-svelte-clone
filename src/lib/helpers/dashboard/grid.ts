@@ -1,8 +1,10 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable @typescript-eslint/no-inferrable-types */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import type { GridParams } from 'svelte-grid-extended/types'
 import { generateUID } from '../common/common'
+import { collapse } from '../common/collapse'
 
 const rowHeight = 12
 const minRowHeight = 14
@@ -66,28 +68,28 @@ export const loadV3Locations = (
 		})
 	}
 
-	if (isMobile) {
-		let y = 0
-		return Object.entries(widgetLocation).map(([key, item]: [string, any]) => {
-			const data = _widgets.find((i) => i.title === key || i.widget_slug === key) || {}
-			return { title: data.title, x: 0, w: cols, h: item.h, y: ++y, data }
+	// if (isMobile) {
+	// 	let y = 0
+	// 	return Object.entries(widgetLocation).map(([key, item]: [string, any]) => {
+	// 		const data = _widgets.find((i) => i.title === key || i.widget_slug === key) || {}
+	// 		return { title: data.title, x: 0, w: cols, h: item.h, y: ++y, data }
+	// 	})
+	// } else {
+	return Object.entries(widgetLocation)
+		.map(([key, item]: [string, any]) => {
+			const data = _widgets.find((item) => item.title === key || item.widget_slug === key) || null
+			if (!data) return null
+			return { title: data.title, ...item, data }
 		})
-	} else {
-		return Object.entries(widgetLocation)
-			.map(([key, item]: [string, any]) => {
-				const data = _widgets.find((item) => item.title === key || item.widget_slug === key) || null
-				if (!data) return null
-				return { title: data.title, ...item, data }
-			})
-			.filter((item) => item !== null)
-	}
+		.filter((item) => item !== null)
+	// }
 }
 
 export const loadLocalStoredLocations = (_dashboard: any, _widgets: any[], isMobile) => {
 	const grid = localStorage.getItem('grid')
 	if (!grid) return []
 
-	let y = 0
+	const y = 0
 	const gridData = JSON.parse(grid)
 	const dashboardGrid = gridData.widget_location[_dashboard.dashboard_id]
 	if (dashboardGrid) {
@@ -102,12 +104,12 @@ export const loadLocalStoredLocations = (_dashboard: any, _widgets: any[], isMob
 			.map(([key, item]: [string, any]) => {
 				const data = _widgets.find((item) => item.title === key) || {}
 
-				if (isMobile) {
-					data.resize_on_load = true
-					const ret = { title: key, x: 0, w: 12, h: item.h, y, data }
-					y = y + item.h
-					return ret
-				}
+				// if (isMobile) {
+				// 	data.resize_on_load = true
+				// 	const ret = { title: key, x: 0, w: 12, h: item.h, y, data }
+				// 	y = y + item.h
+				// 	return ret
+				// }
 				return { title: key, ...item, data }
 			})
 	}
@@ -314,6 +316,88 @@ export const resizeItem = (item: any, items: any[]) => {
 	return reorderAfterResize(item, prevousHeight, items)
 }
 
+export const resizeCollapseItem = (item: any, items: any[], collapse: boolean) => {
+	const header = document.getElementById(`widget-header-${item.data.widget_id}`)?.clientHeight || 0
+	const content = document.getElementById(`widget-main-${item.data.widget_id}`)?.clientHeight || 0
+	const widgetInstances =
+		document.getElementById(`widget-instances-${item.data.widget_id}`)?.clientHeight || 0
+	const height = header + content + widgetInstances
+	item.data.collapse = collapse
+	if (collapse) {
+		item._h = item.h
+		item.h = Math.ceil(height / (rowHeight + 1))
+	} else {
+		item.h = item._h
+		delete item._h
+	}
+	return reorderAfterCollapse(item, items, collapse)
+}
+
+const reorderAfterCollapse = (item: any, items: any[], collapse: boolean) => {
+	const temp = structuredClone(items)
+	const posY = item.y //collapse ? item._y || item.y : item.y
+	const height = item.h - (item._h || 3) //maxHeight(item.y, items) - prevousHeight
+	const cordsFreeToMove = [
+		{
+			y: posY,
+			items: items
+				.filter((i) => i.title === item.title) //i.y === posY && i.data.collapse)
+				.map((i) => {
+					return { x: i.x, w: i.w }
+				})
+		}
+	]
+	let blockedCords: { x: number; w: number }
+	temp
+		.sort((a, b) => a.y - b.y)
+		.map((i) => {
+			const iPosY = i.y //collapse ? i._y || i.y : i.y
+			if (iPosY > posY) {
+				if (!cordsFreeToMove.some((cords) => cords.y === iPosY))
+					cordsFreeToMove.push({ y: iPosY, items: [] })
+
+				const freeToMove = cordsFreeToMove
+					.sort((a, b) => b.y - a.y)
+					.find((cords) => cords.y < iPosY)
+
+				const freeToMoveMerged = mergePositioningBlocks(freeToMove!.items) // Merge spaces collapsed
+
+				const isItemInsideOfCollapsedItems = itemIsInsideOfCollapsedItems(i, freeToMoveMerged)
+				const inItemInsideOfBlockedCords = blockedCords
+					? itemIsInsideOfCollapsedItem(i, blockedCords)
+					: false
+
+				if (inItemInsideOfBlockedCords && collapse) {
+					cordsFreeToMove.find((cords) => cords.y === iPosY)!.items = [...freeToMoveMerged]
+				} else if (isItemInsideOfCollapsedItems && collapse) {
+					// Enter here if item is inside of collapsed widget
+					const tempItem = items.find((item) => item.title === i.title)
+					if (!tempItem!._y) tempItem!._y = tempItem!.y
+					tempItem!.y = (tempItem.data.collapse ? tempItem!._y : tempItem!.y) + height
+					cordsFreeToMove.find((cords) => cords.y === iPosY)!.items.push({ x: i.x, w: i.w })
+				} else if (!isItemInsideOfCollapsedItems && collapse) {
+					// Enter here if item is inside of expanded widget
+					cordsFreeToMove.find((cords) => cords.y === iPosY)!.items = [...freeToMoveMerged]
+					blockedCords = !blockedCords
+						? { x: i.x, w: i.w }
+						: mergePositioningBlocks([{ ...blockedCords }, { x: i.x, w: i.w }])[0]
+				} else if (isItemInsideOfCollapsedItems && !collapse && i._y) {
+					// Enter here if item is inside of expanded widget
+					const tempItem = items.find((item) => item.title === i.title)
+					tempItem!.y += height
+					cordsFreeToMove.find((cords) => cords.y === iPosY)!.items = [...freeToMoveMerged]
+				} else if (freeToMoveMerged.length === 0) {
+					const tempItem = items.find((item) => item.title === i.title)
+					if (tempItem!._y) tempItem!.y = tempItem!._y
+					delete tempItem!._y
+				}
+			}
+			return i
+		})
+
+	return [...items]
+}
+
 export const removeItem = (item: any, items: any[], gridParams: GridParams) => {
 	items = items.filter((gridItem) => gridItem.title !== item.title)
 	if (item.data.parent) items = reorderAfterDelete(item, items)
@@ -346,6 +430,56 @@ const insertLineInGrid = (item: any, items: any[]) => {
 const maxHeight = (yPos: number, items: any[]) => {
 	const max = Math.max(...items.filter((i) => i.y === yPos).map((i) => i.h))
 	return max === -Infinity ? 0 : max
+}
+
+const itemIsInsideOfCollapsedItems = (item: any, items: any[]) => {
+	for (const i of items) {
+		if (itemIsInsideOfCollapsedItem(item, i)) {
+			return true
+		}
+	}
+	return false
+}
+
+const itemIsInsideOfCollapsedItem = (childItem: any, fatherItem: any) => {
+	const fatherX = fatherItem.x
+	const fatherW = fatherItem.x + fatherItem.w
+	const childX = childItem.x
+	const childW = childItem.x + childItem.w
+	return (
+		// (fatherX > childX && fatherX < childW && fatherW >= childW) ||
+		// (fatherX <= childX && fatherW < childW && fatherW > childX) ||
+		fatherX <= childX && fatherW >= childW //||
+		// (fatherX > childX && fatherW < childW)
+	)
+}
+
+function mergePositioningBlocks(positions: any[]) {
+	if (!Array.isArray(positions) || positions.length === 0) {
+		return []
+	}
+
+	positions.sort((a, b) => a.x - b.x)
+
+	const mergedBlocks: any[] = []
+	let currentBlock = { ...positions[0] }
+
+	for (let i = 1; i < positions.length; i++) {
+		const currentPosition = positions[i]
+
+		if (currentBlock.x + currentBlock.w >= currentPosition.x) {
+			currentBlock.w =
+				Math.max(currentBlock.x + currentBlock.w, currentPosition.x + currentPosition.w) -
+				currentBlock.x
+		} else {
+			mergedBlocks.push({ ...currentBlock })
+			currentBlock = { ...currentPosition }
+		}
+	}
+
+	mergedBlocks.push({ ...currentBlock })
+
+	return mergedBlocks
 }
 
 const reorderAfterResize = (item: any, prevousHeight: number, items: any[]) => {

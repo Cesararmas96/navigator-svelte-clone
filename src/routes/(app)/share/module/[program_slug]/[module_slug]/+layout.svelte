@@ -11,8 +11,8 @@
 	import { postData } from '$lib/services/getData.js'
 
 	export let data
-	$: $storeModule = data.trocModule
-	$storeModules = data.menu
+
+	$storeModule = data.trocModule
 	$storePrograms = data.programs
 	$storeUser = data.user
 	$storeDashboards = data.dashboards?.map((dashboard) => {
@@ -30,35 +30,27 @@
 		try {
 			const stores = await postData(
 				`${import.meta.env.VITE_API_URL}/api/v2/services/queries/${
-					$page.params.programs
+					data.program.program_slug
 				}_stores?refresh=1`,
 				{}
 			)
-			if (stores) $storeStores = { ...$storeStores, [$page.params.programs]: Object.values(stores) }
+			if (stores)
+				$storeStores = { ...$storeStores, [data.program.program_slug]: Object.values(stores) }
 		} catch (error) {
 			$storeStores = { ...$storeStores }
 		}
 	}
-	if (!$storeStores || !$storeStores[$page.params.programs]) setStores()
+	if (!$storeStores || !$storeStores[data.program.program_slug]) setStores()
 
 	let width: number
 </script>
 
 <svelte:window bind:innerWidth={width} />
 
-<Header />
-
-<Sidebar menu={data.menu} />
-
-<div id="content" class={$sidebarMin ? 'content-alt' : ''}>
+<div id="shared-content" class="absolute h-screen w-full p-0">
 	<Breadcrumb />
 
-	<div data-simplebar>
-		<main>
-			<slot />
-			<!-- <div class="ml-[5px] mr-[10px]">
-				<Footer />
-			</div> -->
-		</main>
-	</div>
+	<main>
+		<slot />
+	</main>
 </div>

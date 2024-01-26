@@ -7,14 +7,13 @@
 
 	const widget = getContext<Writable<any>>('widget')
 
-	let information = {}
+	let information = {} as any
 	let colors: string[] = ['blue', 'green', 'orange', 'yellow']
 	let avatar: null
 	let title: null
 	let subTitle: null
 	let personalInfo: any[] = []
 
-	console.log(data, $widget)
 	information = data[0]
 
 	avatar =

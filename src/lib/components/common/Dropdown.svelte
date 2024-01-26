@@ -129,7 +129,7 @@
 			bind:open={dropdownOpen}
 			on:show={activeScroll}
 			placement="bottom-start"
-			class={`${showScroll ? 'dropdown-scroll h-44 overflow-y-auto' : 'dropdown-scroll'}`}
+			class={`${showScroll ? 'dropdown-scroll overflow-y-auto' : 'dropdown-scroll'}`}
 			containerClass="w-full z-50 divide-y"
 		>
 			<div slot="header" class:p-3={showSearch}>
@@ -139,14 +139,14 @@
 			</div>
 			{#if showPlaceholder}
 				<DropdownItem
-					defaultClass="w-full min-w-[200px] px-2 py-1 hover:bg-gray-100"
+					defaultClass="w-full min-w-[200px] px-2 py-1 hover:bg-gray-100 "
 					on:click={(e) => handleClick(e, { value: '', label: placeholder })}
 					>{placeholder}</DropdownItem
 				>
 			{/if}
 			{#each loadedItems as item}
 				<DropdownItem
-					defaultClass="w-full min-w-[200px] px-2 py-1 hover:bg-gray-100"
+					defaultClass="w-full min-w-[200px] px-2 py-1 hover:bg-gray-100 "
 					on:click={(e) => handleClick(e, item)}>{item[keyLabel]}</DropdownItem
 				>
 			{/each}

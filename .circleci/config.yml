@@ -77,6 +77,27 @@ jobs:
             docker push <<pipeline.parameters.ecr>>:<< pipeline.number >>
             docker push <<pipeline.parameters.ecr>>:<<parameters.env-tag>>
 
+  build-qa-docker-image:
+    machine:
+      image: ubuntu-2004:202201-02
+    parameters:
+      env-tag:
+        type: string
+        default: "qa"
+    steps:
+      - checkout
+      - run: 
+          name: Install dependencies
+          command: |
+            # Install dependencies and config env.
+      - run:
+          name: Build and tag Docker image for QA
+          command: |
+            docker build -f Dockerfile-qa -t image:<< parameters.env-tag >> .
+            docker tag image:<< parameters.env-tag >> << pipeline.parameters.ecr >>:<< pipeline.number >>
+            docker tag image:<< parameters.env-tag >> << pipeline.parameters.ecr >>:<< parameters.env-tag >>
+
+
   deploy-kube-service: 
     machine:
       image: ubuntu-2004:202201-02
@@ -161,7 +182,7 @@ workflows:
           name: "approve-navigator-svelte-qa"
           type: approval
           requires: 
-            - deploy-navigator-svelte-dev
+            - deploy-navigator-svelte-dev       
       - tag-image: 
           <<: *branch_filters
           name: "tag-image-with-qa"
@@ -224,6 +245,6 @@ workflows:
           env-tag: "production"
           vpn-target: "https://redash.internal.trocdigital.io"
           context: 
-            - navigator-dev
+            - navigator-production
           requires:
             - tag-image-with-production

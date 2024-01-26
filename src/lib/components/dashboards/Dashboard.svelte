@@ -13,7 +13,8 @@
 		saveLocations,
 		loadLocalStoredLocations,
 		removeWidgetLocalstore,
-		getControllerItemsLocations
+		getControllerItemsLocations,
+		resizeCollapseItem
 	} from '$lib/helpers/dashboard/grid'
 	import { getApiData, patchData, postData, putData } from '$lib/services/getData'
 	import Alerts from '../widgets/type/Alert/Alerts.svelte'
@@ -36,6 +37,8 @@
 	import { Button, Tooltip } from 'flowbite-svelte'
 	import Icon from '../common/Icon.svelte'
 	import { page } from '$app/stores'
+	import _ from 'lodash'
+	import { onMount } from 'svelte'
 
 	import {
 		hideFormBuilderDrawer,
@@ -44,6 +47,7 @@
 	} from '$lib/stores/widgets'
 
 	export let dashboard: any
+	export let isShared: boolean = false
 
 	let filterComponent: any
 	const dispatch = createEventDispatcher()
@@ -124,7 +128,14 @@
 	}
 
 	$: handleResizable = (item: any) => {
+		if (isMobileDevice()) return
 		$storeDashboard.gridItems = resizeItem(item, $storeDashboard.gridItems)
+		gridController.gridParams.updateGrid()
+		$storeDashboard.gridItems = [...$storeDashboard.gridItems]
+	}
+	$: handleCollapse = (item: any, collapse: boolean) => {
+		if (isMobileDevice()) return
+		$storeDashboard.gridItems = resizeCollapseItem(item, $storeDashboard.gridItems, collapse)
 		gridController.gridParams.updateGrid()
 		$storeDashboard.gridItems = [...$storeDashboard.gridItems]
 	}
@@ -135,11 +146,13 @@
 	$: handleRemove = (item: any) => {
 		const temp = [...removeItem(item, $storeDashboard.gridItems, gridController.gridParams)]
 		$storeDashboard.gridItems = []
-		if (!item.data.cloned) delete $storeDashboard.widget_location[item.title]
+		if (!$storeDashboard.widget_location)
+			$storeDashboard.widget_location = $storeDashboard.attributes.widget_location
+		if (!item.data?.cloned) delete $storeDashboard.widget_location[item.title]
 		widgets = widgets.filter((widget: any) => widget.title !== item.title)
 		setTimeout(() => {
 			$storeDashboard.gridItems = temp
-			if (!item.data.cloned) {
+			if (!item.data?.cloned) {
 				gridController.gridParams.unregisterItem(item)
 				gridController.gridParams.updateGrid()
 				updateLocations()
@@ -157,7 +170,6 @@
 
 	const setGridItems = async (dashboardId: string): Promise<void> => {
 		$storeDashboard.gridItems = []
-
 		try {
 			widgets = await getApiData(`${baseUrl}/api/v2/widgets?dashboard_id=${dashboardId}`, 'GET')
 			if (!widgets) return
@@ -176,11 +188,12 @@
 
 			const setNewLocations =
 				!dashboard.widget_location || Object.keys(dashboard.widget_location).length === 0
-			console.log('setNewLocations', setNewLocations, dashboard)
+
 			if (dashboard.attributes.widget_location) {
 				dashboard.widget_location = { ...dashboard.attributes.widget_location }
 				$storeDashboard.widget_location = { ...dashboard.attributes.widget_location }
 			}
+
 			items =
 				dashboard.attributes.widget_location || setNewLocations
 					? loadV3Locations(dashboard.widget_location, widgets, cols, isMobile())
@@ -219,7 +232,7 @@
 	}
 
 	const updateLocations = async () => {
-		if (isChanging || isMobile()) return
+		if (isChanging || isMobile() || dashboard?.attributes?.user_id !== $storeUser?.user_id) return
 		isChanging = true
 		setTimeout(async () => {
 			isChanging = false
@@ -421,9 +434,27 @@
 
 	let clientHeight = 0
 
-	$: heightStyle = !isMobileDevice() ? `height: calc(100vh - ${175 + clientHeight}px)` : ''
+	let haveBreadcrumb = false
+
+	$: heightStyle =
+		!isMobileDevice() && !isShared
+			? `height: calc(100vh - ${175 + clientHeight}px)`
+			: haveBreadcrumb
+			? `height: calc(100vh - 110px)`
+			: ''
 
 	$: isMobileDevice = () => innerWidth < 1024
+
+	const getSortedItems = (items: any[]) => {
+		return items.sort((a, b) => {
+			if (a.y === b.y) return a.x < b.x ? -1 : 1
+			return a.y < b.y ? -1 : 1
+		})
+	}
+
+	onMount(() => {
+		haveBreadcrumb = document.getElementById('breadcrumb') ? true : false
+	})
 </script>
 
 <svelte:window bind:innerWidth />
@@ -434,7 +465,12 @@
 	</section>
 {/if}
 
-<div id="grid" class="block w-full" style={heightStyle} class:overflow-y-auto={!isMobileDevice()}>
+<div
+	id="grid"
+	class="block w-full overflow-x-hidden"
+	style={heightStyle}
+	class:overflow-y-auto={!isMobileDevice()}
+>
 	{#if Boolean($storeDashboard?.allow_filtering) && !Boolean($storeDashboard?.attributes?.sticky)}
 		<section>
 			<svelte:component this={filterComponent} bind:open={filtersOpen} />
@@ -464,9 +500,9 @@
 						activeClass="grid-item-active"
 						previewClass="bg-red-500 rounded"
 						resizable={dashboard?.attributes?.user_id === $storeUser?.user_id}
-						movable={dashboard?.attributes?.user_id === $storeUser?.user_id}
+						movable={true}
 						on:change={(e) => {
-							changeItemSize(item)
+							if (dashboard?.attributes?.user_id === $storeUser?.user_id) changeItemSize(item)
 						}}
 						let:active
 						bind:id={item.data.title}
@@ -481,6 +517,7 @@
 							on:handleResize={() => handleResizable(item)}
 							on:handleCloning={() => handleCloning(item)}
 							on:handleRemove={() => handleRemove(item)}
+							on:handleCollapse={(e) => handleCollapse(item, e.detail)}
 							on:handleResizable={(e) => {
 								item.data.params.settings.resizable = e.detail.resizable && !e.detail.fixed
 							}}
@@ -491,7 +528,7 @@
 								{isToolbarVisible}
 								{isOwner}
 								bind:reload={item.reload}
-								isDraggable={dashboard?.attributes?.user_id === $storeUser?.user_id}
+								isDraggable={true}
 								on:handleInstanceResize={() => handleResizable(item)}
 							/>
 						</WidgetBox>
@@ -500,20 +537,15 @@
 			</Grid>
 		{:else}
 			<div class="grid grid-cols-1 gap-y-3 p-2">
-				{#each $storeDashboard.gridItems as item}
+				{#each getSortedItems($storeDashboard.gridItems) as item}
 					<WidgetBox
 						widget={item.data}
 						resized={false}
+						isMobileDevice={true}
 						let:fixed
 						let:isOwner
 						let:isToolbarVisible
 						let:widget
-						on:handleResize={() => handleResizable(item)}
-						on:handleCloning={() => handleCloning(item)}
-						on:handleRemove={() => handleRemove(item)}
-						on:handleResizable={(e) => {
-							item.data.params.settings.resizable = e.detail.resizable && !e.detail.fixed
-						}}
 					>
 						<Widget
 							{widget}
@@ -522,8 +554,6 @@
 							{isOwner}
 							isMobileDevice={true}
 							bind:reload={item.reload}
-							isDraggable={dashboard?.attributes?.user_id === $storeUser?.user_id}
-							on:handleInstanceResize={() => handleResizable(item)}
 						/>
 					</WidgetBox>
 				{/each}

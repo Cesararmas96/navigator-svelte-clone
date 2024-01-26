@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { onMount } from 'svelte'
 	import { storeModule } from '$lib/stores/modules'
+	import { onMount } from 'svelte'
 
 	let ModuleComp: any
 
@@ -10,4 +10,4 @@
 	})
 </script>
 
-<svelte:component this={ModuleComp} trocModule={$storeModule} />
+<svelte:component this={ModuleComp} trocModule={$storeModule} isShared={true} />

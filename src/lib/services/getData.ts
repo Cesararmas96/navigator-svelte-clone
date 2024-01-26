@@ -85,6 +85,8 @@ export async function getData(
 				statusText = responseError.message
 			} else if (responseError?.error) {
 				statusText = responseError.error
+			} else if (responseError && responseError.payload) {
+				statusText = responseError.payload
 			} else {
 				statusText = response.statusText || 'Request error'
 				statusText = response.statusText.includes('reason')

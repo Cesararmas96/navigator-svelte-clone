@@ -436,3 +436,45 @@
 .ui .select:after {
 	display: none;
 }
+
+.editor ol {
+	list-style: auto;
+	margin: 10px 0 10px 20px;
+}
+
+///
+/// NAVIGATOR SHARED DASHBOARD STYLES
+///
+
+.shared-dashboard .nav-scroll {
+	white-space: normal;
+}
+
+:root {
+	scrollbar-face-color: rgba(155, 155, 155, 0.5); /* Firefox 63 compatibility */
+	scrollbar-track-color: transparent; /* Firefox 63 compatibility */
+	scrollbar-color: rgba(155, 155, 155, 0.5) transparent;
+	scrollbar-width: auto;
+}
+
+::-webkit-scrollbar {
+	height: 4px;
+	width: 4px;
+}
+::-webkit-scrollbar-track {
+	background: transparent;
+}
+::-webkit-scrollbar-thumb {
+	background-color: rgba(155, 155, 155, 0.5);
+	border-radius: 10px;
+	border: transparent;
+}
+
+.editor ol {
+	list-style: auto;
+	margin: 10px 0 10px 20px;
+}
+
+.editor p {
+	margin: 10px 0;
+}

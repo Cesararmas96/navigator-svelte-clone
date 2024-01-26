@@ -18,13 +18,13 @@
 	const apiUrl = import.meta.env.VITE_API_URL
 
 	//TODO: Agregar esta variable en las variables de entorno
-	const baseProdUrl = 'https://api.trocdigital.io'
+	const apiImages = import.meta.env.VITE_API_URL_IMAGES
 	let showPassword: boolean = false
 
 	const getLoginData = async () => {
 		try {
 			const subdomain = extractSubdomain()
-			const rootLink = `${baseProdUrl}/api/v2/services/images/`
+			const rootLink = `${apiImages}/api/v2/services/images/`
 
 			const [data] = await getApiData(
 				`${apiUrl}/api/v1/clients?subdomain_prefix=${subdomain}`,
