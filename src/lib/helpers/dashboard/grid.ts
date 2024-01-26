@@ -68,21 +68,21 @@ export const loadV3Locations = (
 		})
 	}
 
-	if (isMobile) {
-		let y = 0
-		return Object.entries(widgetLocation).map(([key, item]: [string, any]) => {
-			const data = _widgets.find((i) => i.title === key || i.widget_slug === key) || {}
-			return { title: data.title, x: 0, w: cols, h: item.h, y: ++y, data }
+	// if (isMobile) {
+	// 	let y = 0
+	// 	return Object.entries(widgetLocation).map(([key, item]: [string, any]) => {
+	// 		const data = _widgets.find((i) => i.title === key || i.widget_slug === key) || {}
+	// 		return { title: data.title, x: 0, w: cols, h: item.h, y: ++y, data }
+	// 	})
+	// } else {
+	return Object.entries(widgetLocation)
+		.map(([key, item]: [string, any]) => {
+			const data = _widgets.find((item) => item.title === key || item.widget_slug === key) || null
+			if (!data) return null
+			return { title: data.title, ...item, data }
 		})
-	} else {
-		return Object.entries(widgetLocation)
-			.map(([key, item]: [string, any]) => {
-				const data = _widgets.find((item) => item.title === key || item.widget_slug === key) || null
-				if (!data) return null
-				return { title: data.title, ...item, data }
-			})
-			.filter((item) => item !== null)
-	}
+		.filter((item) => item !== null)
+	// }
 }
 
 export const loadLocalStoredLocations = (_dashboard: any, _widgets: any[], isMobile) => {
