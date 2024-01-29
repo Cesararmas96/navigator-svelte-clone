@@ -111,13 +111,6 @@ export const loadLocalStoredLocations = (
 			.map(([key, item]: [string, any]) => {
 				if (key === 'timestamp') return null
 				const data = _widgets.find((item) => item.title === key) || {}
-
-				// if (isMobile) {
-				// 	data.resize_on_load = true
-				// 	const ret = { title: key, x: 0, w: 12, h: item.h, y, data }
-				// 	y = y + item.h
-				// 	return ret
-				// }
 				return { title: key, ...item, data }
 			})
 			.filter((item) => item !== null)
