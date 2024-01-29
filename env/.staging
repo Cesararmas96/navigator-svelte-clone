@@ -3,4 +3,6 @@ VITE_BASE_URL=https://front.trocdigital.io
 
 VITE_DATE_URL=https://api.dev.navigator.mobileinsight.com 
 
+VITE_API_URL_IMAGES=https://api.trocdigital.io
+
 VITE_ENV=staging
