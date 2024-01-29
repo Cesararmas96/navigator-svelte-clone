@@ -20,7 +20,8 @@ export async function getData(
 	payload: Record<string, any> = {},
 	queryParams: Record<string, any> = {},
 	options: Record<string, any> = {},
-	myFetch?: any
+	myFetch?: any,
+	showErrorNotification?: boolean
 ) {
 	try {
 		// Validate that 'url' is a non-empty string
@@ -94,7 +95,8 @@ export async function getData(
 					: statusText
 			}
 
-			sendErrorNotification(`Request error: ${response.status}:<br> ${statusText}`)
+			if (showErrorNotification)
+				sendErrorNotification(`Request error: ${response.status}:<br> ${statusText}`)
 			throw new Error(`Request error: ${response.status}:<br> ${statusText}`)
 		}
 		return await response.json()
@@ -110,7 +112,8 @@ export async function getApiData(
 	payload: Record<string, any> = {},
 	queryParams: Record<string, any> = {},
 	options: Record<string, any> = {},
-	myFetch?: any
+	myFetch?: any,
+	showErrorNotification = true
 ) {
 	if (!options?.headers?.authorization) {
 		const user = get(storeUser)
@@ -120,11 +123,23 @@ export async function getApiData(
 			options = { ...options, headers }
 		}
 	}
-	const response = await getData(getQuerySlug(url), method, payload, queryParams, options, myFetch)
+	const response = await getData(
+		getQuerySlug(url),
+		method,
+		payload,
+		queryParams,
+		options,
+		myFetch,
+		showErrorNotification
+	)
 	return response
 }
 
-export async function patchData(url: string, payload: Record<string, any> = {}) {
+export async function patchData(
+	url: string,
+	payload: Record<string, any> = {},
+	showErrorNotification = true
+) {
 	let options
 	const user = get(storeUser)
 	if (user?.token) {
@@ -132,11 +147,23 @@ export async function patchData(url: string, payload: Record<string, any> = {}) 
 		options = { ...options, headers }
 	}
 
-	const response = await getData(getQuerySlug(url), 'PATCH', payload, {}, options)
+	const response = await getData(
+		getQuerySlug(url),
+		'PATCH',
+		payload,
+		{},
+		options,
+		null,
+		showErrorNotification
+	)
 	return { ...response }
 }
 
-export async function postData(url: string, payload: Record<string, any> = {}) {
+export async function postData(
+	url: string,
+	payload: Record<string, any> = {},
+	showErrorNotification = true
+) {
 	let options
 	const user = get(storeUser)
 	if (user?.token) {
@@ -144,11 +171,23 @@ export async function postData(url: string, payload: Record<string, any> = {}) {
 		options = { ...options, headers }
 	}
 
-	const response = await getData(getQuerySlug(url), 'POST', payload, {}, options)
+	const response = await getData(
+		getQuerySlug(url),
+		'POST',
+		payload,
+		{},
+		options,
+		null,
+		showErrorNotification
+	)
 	return { ...response }
 }
 
-export async function putData(url: string, payload: Record<string, any> = {}) {
+export async function putData(
+	url: string,
+	payload: Record<string, any> = {},
+	showErrorNotification = true
+) {
 	let options
 	const user = get(storeUser)
 	if (user?.token) {
@@ -156,11 +195,23 @@ export async function putData(url: string, payload: Record<string, any> = {}) {
 		options = { ...options, headers }
 	}
 
-	const response = await getData(getQuerySlug(url), 'PUT', payload, {}, options)
+	const response = await getData(
+		getQuerySlug(url),
+		'PUT',
+		payload,
+		{},
+		options,
+		null,
+		showErrorNotification
+	)
 	return { ...response }
 }
 
-export async function deleteData(url: string, payload: Record<string, any> = {}) {
+export async function deleteData(
+	url: string,
+	payload: Record<string, any> = {},
+	showErrorNotification = true
+) {
 	let options
 	const user = get(storeUser)
 	if (user?.token) {
@@ -168,7 +219,15 @@ export async function deleteData(url: string, payload: Record<string, any> = {})
 		options = { ...options, headers }
 	}
 
-	const response = await getData(getQuerySlug(url), 'DELETE', payload, {}, options)
+	const response = await getData(
+		getQuerySlug(url),
+		'DELETE',
+		payload,
+		{},
+		options,
+		null,
+		showErrorNotification
+	)
 	return { ...response }
 }
 
