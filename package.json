@@ -51,8 +51,8 @@
 	"type": "module",
 	"dependencies": {
 		"@floating-ui/dom": "^1.4.5",
-		"@mixoo/form": "^3.0.2",
-		"@mixoo/ui": "^1.2.1",
+		"@mixoo/form": "^3.0.4",
+		"@mixoo/ui": "^1.2.3",
 		"@nextlint/core": "^1.2.0",
 		"@nextlint/svelte": "^1.1.2",
 		"@popperjs/core": "^2.11.8",
