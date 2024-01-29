@@ -85,7 +85,12 @@ export const loadV3Locations = (
 	// }
 }
 
-export const loadLocalStoredLocations = (_dashboard: any, _widgets: any[], isMobile) => {
+export const loadLocalStoredLocations = (
+	_dashboard: any,
+	_widgets: any[],
+	isMobile,
+	dbTimestamp: number
+) => {
 	const grid = localStorage.getItem('grid')
 	if (!grid) return []
 
@@ -93,6 +98,8 @@ export const loadLocalStoredLocations = (_dashboard: any, _widgets: any[], isMob
 	const gridData = JSON.parse(grid)
 	const dashboardGrid = gridData.widget_location[_dashboard.dashboard_id]
 	if (dashboardGrid) {
+		const timestamp = dashboardGrid?.timestamp || 0
+		if (timestamp < dbTimestamp) return []
 		return Object.entries(dashboardGrid)
 			.sort(([keyA, itemA], [keyB, itemB]) => {
 				if ((itemA as any).x < (itemB as any).x) return -1
@@ -102,6 +109,7 @@ export const loadLocalStoredLocations = (_dashboard: any, _widgets: any[], isMob
 				return 0
 			})
 			.map(([key, item]: [string, any]) => {
+				if (key === 'timestamp') return null
 				const data = _widgets.find((item) => item.title === key) || {}
 
 				// if (isMobile) {
@@ -112,6 +120,7 @@ export const loadLocalStoredLocations = (_dashboard: any, _widgets: any[], isMob
 				// }
 				return { title: key, ...item, data }
 			})
+			.filter((item) => item !== null)
 	}
 }
 
@@ -134,7 +143,11 @@ export const getControllerItemsLocations = (gridItems: any[], gridParams: GridPa
 	// }, {})
 }
 
-export const saveLocations = (dashboard: any, gridItems: any[], gridParams: GridParams) => {
+export const saveLocalStorageLocations = (
+	dashboard: any,
+	gridItems: any[],
+	gridParams: GridParams
+) => {
 	const deletedItems: string[] = []
 	const items = Object.entries(gridParams.items).reduce((acc, [key, item]) => {
 		const gridItem = gridItems.find((i) => i.title === key)
@@ -161,9 +174,15 @@ export const saveLocations = (dashboard: any, gridItems: any[], gridParams: Grid
 	if (grid) {
 		const gridData = JSON.parse(grid)
 		if (gridData.widget_location[dashboard.dashboard_id]) {
-			gridData.widget_location[dashboard.dashboard_id] = items
+			gridData.widget_location[dashboard.dashboard_id] = {
+				...items,
+				timestamp: new Date().getTime()
+			}
 		} else {
-			gridData.widget_location = { ...gridData.widget_location, [dashboard.dashboard_id]: items }
+			gridData.widget_location = {
+				...gridData.widget_location,
+				[dashboard.dashboard_id]: { ...items, timestamp: new Date().getTime() }
+			}
 		}
 		localStorage.setItem('grid', JSON.stringify(gridData))
 	} else {
@@ -171,7 +190,7 @@ export const saveLocations = (dashboard: any, gridItems: any[], gridParams: Grid
 			'grid',
 			JSON.stringify({
 				widget_location: {
-					[dashboard.dashboard_id]: items
+					[dashboard.dashboard_id]: { ...items, timestamp: new Date().getTime() }
 				}
 			})
 		)
