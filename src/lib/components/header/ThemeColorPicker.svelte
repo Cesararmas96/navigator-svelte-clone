@@ -18,7 +18,6 @@
 	let currentColor = document.documentElement.getAttribute('data-theme-color')
 
 	const handleThemeColor = (color: string) => {
-		console.log(color)
 		document.documentElement.setAttribute('data-theme-color', color)
 		localStorage.setItem('theme-color', color)
 		$themeColor = color
