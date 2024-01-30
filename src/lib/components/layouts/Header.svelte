@@ -44,7 +44,7 @@
 							.programs}/sidebar.png"
 						alt="logo {$page.params.programs}"
 						id="logo"
-						class={$page.params.programs}
+						class={`${$page.params.programs}_${$themeColor}`}
 						width="120"
 					/>
 				{:else}
