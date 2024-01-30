@@ -49,12 +49,13 @@
 </script>
 
 {#if filteredTemplates}
+	<!-- class="flex flex-col items-center justify-start gap-y-2 px-4 lg:flex-row lg:flex-row lg:gap-x-4" -->
 	<div
-		class="flex flex-col items-center justify-start gap-y-2 px-4 lg:w-[40%] lg:flex-row lg:gap-x-4"
+		class="flex flex-col items-center justify-start gap-y-2 px-4 lg:w-[50%] lg:flex-row lg:gap-x-4"
 	>
 		<Dropdown
 			items={types}
-			defaultClass="text-base w-full lg:w-72"
+			defaultClass="text-base w-full lg:w-72 mb-0"
 			labelClass="mb-0"
 			showSearch={false}
 			{selectedValue}
@@ -64,24 +65,11 @@
 				filterCategories()
 			}}
 		/>
-		<!-- <Dropdown
-			items={users}
-			keyValue="email"
-			keyLabel="display_name"
-			defaultClass="text-base w-72"
-			labelClass="mb-0"
-			showSearch={true}
-			showPlaceholder={false}
-			{selectedValue}
-			on:change={(e) => {
-				selectedValue = e.detail.value
-				filterCategories()
-			}}
-		/> -->
+
 		<Input
 			type="text"
 			size="md"
-			class="form-control rounded bg-white/75 p-2 pl-8 text-base placeholder:text-muted dark:bg-dark-100/50 "
+			class="form-control rounded bg-white/75 p-2 pl-8 text-base placeholder:text-muted dark:bg-dark-100/50"
 			placeholder="Start typing to search a program..."
 			bind:value={searchTerm}
 			on:input={filterCategories}
@@ -91,7 +79,7 @@
 				icon={'typcn:delete'}
 				slot="right"
 				size="18"
-				classes={'cursor-pointer'}
+				classes={`cursor-pointer ${searchTerm !== '' ? '' : 'hidden'}`}
 				on:click={() => {
 					searchTerm = ''
 					filterCategories()

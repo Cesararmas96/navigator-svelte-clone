@@ -8,6 +8,5 @@
 </script>
 
 <div class="nav-scroll mb-2 flex h-screen w-full flex-col items-start px-2 py-3">
-	<h1 class="mb-1 px-2">{dashboard.name}</h1>
 	<Dashboard {dashboard} isShared={true} />
 </div>

@@ -23,6 +23,8 @@
 	export let resized: boolean = false
 	export let isMobileDevice: boolean = false
 
+	let collapsed: boolean = false
+
 	const defaultSettings = {
 		title: '',
 		description: '',
@@ -52,21 +54,21 @@
 				},
 				toolbar: {
 					show: true,
-					close: false,
-					reload: false,
-					filtering: false,
-					collapse: false,
-					clone: false,
-					help: false,
-					export: false,
-					screenshot: false,
-					max: false,
-					share: false,
-					pin: false,
-					like: false,
-					cut: false,
-					copy: false,
-					comments: false
+					close: true,
+					reload: true,
+					filtering: true,
+					collapse: true,
+					clone: true,
+					help: true,
+					export: true,
+					screenshot: true,
+					max: true,
+					share: true,
+					pin: true,
+					like: true,
+					cut: true,
+					copy: true,
+					comments: true
 				},
 				footer: {
 					show: true,
@@ -112,7 +114,12 @@
 
 		addWidgetAction(widgetActions, {
 			name: 'collapse',
-			action: () => dispatchResize()
+			action: () => {
+				setTimeout(() => {
+					collapsed = !collapsed
+					dispatch('handleCollapse', collapsed)
+				}, 100)
+			}
 		})
 
 		addWidgetAction(widgetActions, {
@@ -131,13 +138,13 @@
 	initActions()
 	initWidgetTop()
 
-	onMount(() => {
-		$widgetStore.instances = []
-		if ($widgetStore.params && !$widgetStore.params?.settings && !$widgetStore.temp) {
-			$widgetStore.params.settings = Object.assign({}, defaultSettings.params.settings)
-		}
-		$widgetStore.context = 'widget'
-	})
+	// onMount(() => {
+	$widgetStore.instances = []
+	if ($widgetStore.params && !$widgetStore.params?.settings && !$widgetStore.temp) {
+		$widgetStore.params.settings = Object.assign({}, defaultSettings.params.settings)
+	}
+	$widgetStore.context = 'widget'
+	// })
 
 	$: {
 		fixed = $widgetStore?.params?.settings?.general?.fixed

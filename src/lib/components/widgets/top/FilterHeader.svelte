@@ -88,8 +88,8 @@
 				let period: Array<any> = []
 				const widgetConditions: Record<string, any> = conditionsDefault
 
-				if (dashboard?.where_date_cond) {
-					const date = dashboard?.where_date_cond.split(' - ')
+				if ($dashboard?.where_date_cond) {
+					const date = $dashboard?.where_date_cond.split(' - ')
 
 					period = [date[0], date[1] || date[0]]
 				} else {
@@ -199,8 +199,8 @@
 	}
 </script>
 
-<div class="">
-	<div class="flex items-center gap-4 pt-1">
+<div class="pt-4">
+	<div class="flex h-9 items-center gap-4">
 		{#if filterOptions?.datepicker && filterOptions?.datepicker?.show}
 			<div class="w-64">
 				<!-- Your datepicker component here -->
@@ -208,14 +208,14 @@
 		{/if}
 
 		{#if Object.keys(slugs).length > 0}
-			<div class="w-64">
-				<Select size="sm" class="mt-2" items={slugs} bind:value={slug} />
+			<div class="ml-1 w-64">
+				<Select size="sm" class="h-9 py-0 align-middle" items={slugs} bind:value={slug} />
 			</div>
 		{/if}
 
 		{#if filterOptions?.dateRange && filterOptions?.dateRange?.show}
-			<div class="w-64">
-				<Select size="sm" class="mt-2" items={dates} bind:value={date} />
+			<div class=" ml-1 w-64">
+				<Select size="sm" class="h-9 py-0 align-middle" items={dates} bind:value={date} />
 			</div>
 		{/if}
 
@@ -232,7 +232,7 @@
 		{/if}
 
 		<div class="">
-			<Button type="button" size="md" class="py-3" on:click={setRange}>
+			<Button type="button" size="md" class=" h-9" on:click={setRange}>
 				{#if loading}
 					Loading...
 				{:else}

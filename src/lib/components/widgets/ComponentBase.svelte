@@ -7,21 +7,17 @@
 	let Thing: any
 
 	let widgetBase: string
+	// $: if ($widget && $widget.widget_type_id) {
+	widgetBase = $widget.widget_type_id.includes('-')
+		? capitalizeWord($widget.widget_type_id.split('-')[0])
+		: capitalizeWord($widget.widget_type_id)
 
-	$: if ($widget && $widget.widget_type_id) {
-		widgetBase =
-			$widget.widget_type_id === 'business-card'
-				? 'Api'
-				: $widget.widget_type_id.includes('-')
-				? capitalizeWord($widget.widget_type_id.split('-')[0])
-				: capitalizeWord($widget.widget_type_id)
+	widgetBase = widgetBase === 'Api' || widgetBase === 'Rest' ? widgetBase : 'Media'
 
-		widgetBase = widgetBase === 'Api' || widgetBase === 'Rest' ? widgetBase : 'Media'
-
-		import(`./base/${widgetBase}.svelte`).then((value: any) => {
-			Thing = value.default
-		})
-	}
+	import(`./base/${widgetBase}.svelte`).then((value: any) => {
+		Thing = value.default
+	})
+	// }
 </script>
 
 <svelte:component this={Thing} {widget} let:data>

@@ -30,6 +30,9 @@
 
 	let isWidgetOwner: boolean = $dashboard?.attributes?.user_id === $storeUser?.user_id
 	let menuOpen = false
+	$: if (!isToolbarVisible) {
+		menuOpen = false
+	}
 
 	let bg: string
 	let toolbar: any
@@ -80,7 +83,7 @@
 						}
 					}
 				},
-				hide: toolbar['like'] || $widget['shared'],
+				show: toolbar['like'] && !$widget['shared'],
 				showInMenu
 			},
 			reload: {
@@ -94,7 +97,7 @@
 						reloadAction.action()
 					}
 				},
-				hide: toolbar['reload'],
+				show: toolbar['reload'],
 				showInMenu
 			},
 			clone: {
@@ -108,7 +111,7 @@
 						cloneAction.action()
 					}
 				},
-				hide: toolbar['clone'] || $widget['shared'],
+				show: toolbar['clone'] && !$widget['shared'],
 				showInMenu
 			},
 			collapse: {
@@ -140,7 +143,7 @@
 						}
 					}
 				},
-				hide: toolbar['collapse'],
+				show: toolbar['collapse'],
 				showInMenu
 			},
 			maximize: {
@@ -168,7 +171,7 @@
 						}
 					}
 				},
-				hide: toolbar['max'] || $widget['shared'],
+				show: toolbar['max'] && !$widget['shared'],
 				showInMenu
 			},
 			pin: {
@@ -190,7 +193,7 @@
 						}
 					}
 				},
-				hide: toolbar['pin'] || $widget['shared'],
+				show: toolbar['pin'] && !$widget['shared'],
 				showInMenu
 			},
 			copy: {
@@ -205,7 +208,7 @@
 						sendSuccessNotification('Widget copied to clipboard')
 					}
 				},
-				hide: toolbar['copy'] || $widget['shared'],
+				show: toolbar['copy'] && !$widget['shared'],
 				showInMenu
 			},
 			cut: {
@@ -220,7 +223,7 @@
 						sendSuccessNotification('Widget cut to clipboard')
 					}
 				},
-				hide: !isWidgetOwner || $widget['temp'] || $widget['cloned'] || $widget['shared'],
+				show: isWidgetOwner && !$widget['temp'] && !$widget['cloned'] && !$widget['shared'],
 				showInMenu
 			},
 			screenshot: {
@@ -231,7 +234,7 @@
 					tooltipText: 'Screenshot',
 					action: () => screenshot($widget.widget_id, $widget.title)
 				},
-				hide: toolbar['screenshot'],
+				show: toolbar['screenshot'],
 				showInMenu: true
 			},
 			settings: {
@@ -249,7 +252,7 @@
 						$hideWidgetSettings = false
 					}
 				},
-				hide: !isWidgetOwner || $widget['settings'],
+				show: isWidgetOwner && $widget['settings'],
 				showInMenu: true
 			},
 			export: {
@@ -262,7 +265,7 @@
 						openExportDataModal(modal, { query_slug: $widget.query_slug.slug })
 					}
 				},
-				hide: toolbar['export'],
+				show: toolbar['export'],
 				showInMenu: true
 			},
 			share: {
@@ -279,16 +282,16 @@
 						link.click()
 					}
 				},
-				hide: toolbar['share'],
+				show: toolbar['share'],
 				showInMenu: true
 			}
 		}
 
 		listOutOfMenu = Object.keys(toolbarItems).filter(
-			(item) => !toolbarItems[item].hide && !toolbarItems[item].showInMenu
+			(item) => toolbarItems[item].show && !toolbarItems[item].showInMenu
 		)
 		listInMenu = Object.keys(toolbarItems).filter(
-			(item) => !toolbarItems[item].hide && toolbarItems[item].showInMenu
+			(item) => toolbarItems[item].show && toolbarItems[item].showInMenu
 		)
 	}
 </script>
@@ -338,7 +341,7 @@
 						showInMenu={toolbarItems[item].showInMenu}
 						item={toolbarItems[item].item}
 						{isMobileDevice}
-						on:itemClick={() => (menuOpen = !menuOpen)}
+						on:itemClick={() => (menuOpen = false)}
 					/>
 				{/each}
 			</Dropdown>
