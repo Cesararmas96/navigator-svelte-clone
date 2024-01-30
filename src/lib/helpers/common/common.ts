@@ -93,7 +93,7 @@ export const compare = (obj1: Record<string, any>, obj2: Record<string, any>) =>
 }
 
 export const iconColor = (themeColor: string | null) => {
-	const color = themeColor && themeColor === 'yellow' ? '' : '-white'
+	const color = themeColor && (themeColor === 'yellow' || themeColor === 'cyan') ? '' : '-white'
 	return isDarkMode() ? '-white' : color
 }
 

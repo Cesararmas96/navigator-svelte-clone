@@ -432,7 +432,7 @@
 					</TabItem>
 				{/each}
 			{/if}
-			{#if user.superuser}
+			<!-- {#if user.superuser}
 				<TabItem
 					defaultClass="cursor-pointer"
 					on:click={handleNewDashboard}
@@ -444,7 +444,7 @@
 					</div>
 					<div><Alerts /></div>
 				</TabItem>
-			{/if}
+			{/if} -->
 		</div>
 	</div>
 </Tabs>

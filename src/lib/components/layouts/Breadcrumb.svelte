@@ -69,6 +69,8 @@
 	<div id="date" class="hidden text-md text-muted lg:block">
 		<span>{format(new Date(), 'EEEE, LLLL d, yyyy')}</span>
 	</div>
-	<Icon icon="mdi:share-variant" classes="ml-3 cursor-pointer" on:click={handleShareModule} />
-	<Tooltip>Share module {program.program_name} > {trocModule.description}</Tooltip>
+	{#if $page.data.dashboards.length > 1}
+		<Icon icon="mdi:share-variant" classes="ml-3 cursor-pointer" on:click={handleShareModule} />
+		<Tooltip>Share module {program.program_name} > {trocModule.description}</Tooltip>
+	{/if}
 </div>
