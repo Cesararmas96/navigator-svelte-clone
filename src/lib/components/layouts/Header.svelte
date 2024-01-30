@@ -43,6 +43,8 @@
 						src="{import.meta.env.VITE_BASE_URL}/assets/img/programs/{$page.params
 							.programs}/sidebar.png"
 						alt="logo {$page.params.programs}"
+						id="logo"
+						class={`${$page.params.programs}_${$themeColor}`}
 						width="120"
 					/>
 				{:else}
@@ -75,20 +77,24 @@
 		</li>
 
 		<!-- Preferences -->
-		<li id="preferences" class="dropdown-header mx-1 block">
+		<li
+			id="preferences"
+			class="dropdown-header mx-1 block"
+			class:hidden={$page.data.trocModule.attributes?.hide_settings}
+		>
 			<Preferences />
 		</li>
 
 		<!-- Profile -->
-		<li class="relative mx-1 md:block">
+		<li class="relative mx-1 md:block" class:hidden={$page.data.trocModule.attributes?.hide_menu}>
 			<Profile />
 		</li>
 
-		<li>
+		<li class:hidden={$page.data.trocModule.attributes?.hide_ticket}>
 			<AnonymousSupport />
 		</li>
 
-		<li>
+		<li class:hidden={$page.data.trocModule.attributes?.hide_support}>
 			<a
 				href="https://support.trocdigital.io/"
 				target="_blank"
