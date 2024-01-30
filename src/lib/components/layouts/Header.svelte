@@ -80,21 +80,21 @@
 		<li
 			id="preferences"
 			class="dropdown-header mx-1 block"
-			class:hidden={$page.data.trocModule.attributes?.hide_settings}
+			class:hidden={$page.data.trocModule?.attributes?.hide_settings}
 		>
 			<Preferences />
 		</li>
 
 		<!-- Profile -->
-		<li class="relative mx-1 md:block" class:hidden={$page.data.trocModule.attributes?.hide_menu}>
+		<li class="relative mx-1 md:block" class:hidden={$page.data.trocModule?.attributes?.hide_menu}>
 			<Profile />
 		</li>
 
-		<li class:hidden={$page.data.trocModule.attributes?.hide_ticket}>
+		<li class:hidden={$page.data.trocModule?.attributes?.hide_ticket}>
 			<AnonymousSupport />
 		</li>
 
-		<li class:hidden={$page.data.trocModule.attributes?.hide_support}>
+		<li class:hidden={$page.data.trocModule?.attributes?.hide_support}>
 			<a
 				href="https://support.trocdigital.io/"
 				target="_blank"
