@@ -1,6 +1,0 @@
-VITE_API_URL=https://api.dev.navigator.mobileinsight.com 
-VITE_BASE_URL=https://front.trocdigital.io
-
-VITE_DATE_URL=https://api.dev.navigator.mobileinsight.com 
-
-VITE_ENV=prod
