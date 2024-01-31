@@ -7,6 +7,7 @@
 	import { themeColor, themeMode } from '$lib/stores/preferences'
 	import ThemeColorPicker from './ThemeColorPicker.svelte'
 	import { iconColor } from '$lib/helpers/common/common'
+	import { page } from '$app/stores'
 
 	let _themeMode: string | null
 
@@ -36,6 +37,29 @@
 		document.documentElement.setAttribute('data-theme', _themeMode!)
 		$themeMode = _themeMode!
 	}
+
+	let _iconColor = iconColor($themeColor)
+	$: if ($themeColor || $themeMode) _iconColor = iconColor($themeColor)
+
+	const setColor = (color: string) => {
+		document.documentElement.setAttribute('data-theme-color', color)
+		localStorage.setItem('theme-color', color)
+		$themeColor = color
+	}
+
+	onMount(() => {
+		let color = $page.data.program?.attributes?.theme_color
+		if (color) {
+			localStorage.setItem('backup-theme-color', localStorage.getItem('theme-color') || $themeColor)
+			setColor(color)
+		} else {
+			color = localStorage.getItem('backup-theme-color')
+			if (color) {
+				localStorage.removeItem('backup-theme-color')
+				setColor(color)
+			}
+		}
+	})
 </script>
 
 <button
@@ -46,7 +70,7 @@
 	id="preferences"
 >
 	<!-- <Icon icon="line-md:cog-loop" size="20px" /> -->
-	<img src="/images/icons/settings{iconColor($themeColor)}.svg" alt="Navigator" />
+	<img src="/images/icons/settings{_iconColor}.svg" alt="Navigator" />
 </button>
 
 <Dropdown
@@ -63,7 +87,7 @@
 		on:click={handleDarkMode}
 	/>
 	<PreferenceItem name="Adjust Page Zoom" icon="fluent-mdl2:zoom-to-fit" id="pref-zoom" />
-	{#if $themeMode !== 'dark'}
+	{#if $themeMode !== 'dark' && !$page.data.program?.attributes?.theme_color}
 		<ThemeColorPicker />
 	{/if}
 </Dropdown>

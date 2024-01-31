@@ -35,11 +35,14 @@
 		}
 		$hideFormBuilderDrawer = false
 	}
+
+	let _iconColor = iconColor($themeColor)
+	$: if ($themeColor || $themeMode) _iconColor = iconColor($themeColor)
 </script>
 
 <button
 	class="icon mx-2 grid h-6 w-6 place-content-center text-2xl font-light hover:bg-white/10 aria-expanded:bg-white/20"
 	on:click={() => openDrawerAnonymousSupport()}
 >
-	<img src="/images/icons/bell{iconColor($themeColor)}.svg" alt="Navigator" />
+	<img src="/images/icons/bell{_iconColor}.svg" alt="Navigator" />
 </button>
