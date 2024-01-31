@@ -81,6 +81,8 @@ export const handleSubmitForm = async (handleValidateForm: any, type: string, $w
 	const payload = handleValidateForm()
 	console.log(payload)
 	if (!Array.isArray(payload)) {
+		$widget?.params?.model?._ignore?.forEach((item) => delete payload[item])
+
 		return await handleSubmit(payload, type, $widget, extra)
 	} else {
 		sendErrorNotification('There has been a problem...')

@@ -4,7 +4,7 @@
 	import type { Writable } from 'svelte/store'
 	import { Form } from '@mixoo/form'
 	import Loading from '$lib/components/common/Loading.svelte'
-	import { Button, Alert } from 'flowbite-svelte'
+	import { Alert, Button } from 'flowbite-svelte'
 	import { getApiData } from '$lib/services/getData'
 	import { storeUser } from '$lib/stores'
 	import { sendErrorNotification } from '$lib/stores/toast'
@@ -29,7 +29,7 @@
 	const token = $storeUser?.token
 	let responseServer = null
 
-	async function handleSubmitFormLocal(handleValidateForm: any, type: string) {
+	async function handleSubmitFormLocal(handleValidateForm: any, type: string, handleResetForm) {
 		const endpoint = `${schema?.endpoint || meta}`
 
 		const response = await handleSubmitForm(handleValidateForm, type, $widget, {
@@ -49,6 +49,8 @@
 					responseServer = response?.response?.message
 				}
 			}
+
+			handleResetForm()
 		}
 	}
 
@@ -102,18 +104,19 @@
 				{/if}
 
 				<Form {schema}>
-					<div class="w-full" slot="buttons-footer" let:handleValidateForm>
+					<div class="w-full" slot="buttons-footer" let:handleValidateForm let:handleResetForm>
 						<div class="flex items-end justify-end">
-							<Button
-								class="btn-pull-left mt-2 rounded text-sm"
-								on:click={() => handleSubmitFormLocal(handleValidateForm, 'formSaved')}
+							<button
+								class="btn btn-form text-md"
+								on:click={() =>
+									handleSubmitFormLocal(handleValidateForm, 'formSaved', handleResetForm)}
 							>
 								<Icon icon="tabler:plus" classes="mr-2" />
 
 								{schema && schema.settings && schema.settings.showCancel
 									? schema.settings.SubmitLabel
 									: 'Save changes'}
-							</Button>
+							</button>
 						</div>
 					</div>
 				</Form>
