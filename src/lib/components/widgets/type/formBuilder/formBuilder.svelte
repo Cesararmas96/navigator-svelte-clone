@@ -29,7 +29,7 @@
 	const token = $storeUser?.token
 	let responseServer = null
 
-	async function handleSubmitFormLocal(handleValidateForm: any, type: string) {
+	async function handleSubmitFormLocal(handleValidateForm: any, type: string, handleResetForm) {
 		const endpoint = `${schema?.endpoint || meta}`
 
 		const response = await handleSubmitForm(handleValidateForm, type, $widget, {
@@ -49,6 +49,8 @@
 					responseServer = response?.response?.message
 				}
 			}
+
+			handleResetForm()
 		}
 	}
 
@@ -102,11 +104,12 @@
 				{/if}
 
 				<Form {schema}>
-					<div class="w-full" slot="buttons-footer" let:handleValidateForm>
+					<div class="w-full" slot="buttons-footer" let:handleValidateForm let:handleResetForm>
 						<div class="flex items-end justify-end">
 							<Button
 								class="btn-pull-left mt-2 rounded text-sm"
-								on:click={() => handleSubmitFormLocal(handleValidateForm, 'formSaved')}
+								on:click={() =>
+									handleSubmitFormLocal(handleValidateForm, 'formSaved', handleResetForm)}
 							>
 								<Icon icon="tabler:plus" classes="mr-2" />
 
