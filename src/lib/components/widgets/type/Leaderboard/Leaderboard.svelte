@@ -72,7 +72,7 @@
 					</div>
 					<div class="leaderName">{rewards[0].display_name}</div>
 					<Indicator color="yellow" border size="xl" placement="top-right">
-						<span id="leader-1" class="text-lg font-bold">{rewards[0].num_badges}</span>
+						<span id="leader-1" class="text-lg font-bold sm:text-sm">{rewards[0].num_badges}</span>
 					</Indicator>
 				</div>
 			</div>
@@ -100,7 +100,7 @@
 					</div>
 					<div class="leaderName">{rewards[1].display_name}</div>
 					<Indicator color="blue" border size="xl" placement="top-right">
-						<span id="leader-2" class="text-lg font-bold">{rewards[1].num_badges}</span>
+						<span id="leader-2" class="text-lg font-bold sm:text-sm">{rewards[1].num_badges}</span>
 					</Indicator>
 				</div>
 			</div>
@@ -128,7 +128,7 @@
 					</div>
 					<div class="leaderName">{rewards[2].display_name}</div>
 					<Indicator color="blue" border size="xl" placement="top-right">
-						<span id="leader-3" class="text-lg font-bold">{rewards[2].num_badges}</span>
+						<span id="leader-3" class="text-lg font-bold sm:text-sm">{rewards[2].num_badges}</span>
 					</Indicator>
 				</div>
 			</div>
@@ -188,6 +188,7 @@
 		position: relative;
 		min-height: 120px;
 		/* padding-top: 3rem; */
+		margin-top: 35px;
 	}
 	.container .topLeadersList .image {
 		border-radius: 50%;
@@ -228,8 +229,8 @@
 		bottom: -20%;
 	}
 	.container .topLeadersList .leader:nth-child(2) .image {
-		min-width: 110px;
-		min-height: 110px;
+		width: 110px;
+		height: 110px;
 		padding: 6px;
 	}
 	.container .topLeadersList .leader:nth-child(2) .crown {
@@ -238,6 +239,7 @@
 	.container .topLeadersList .leader:nth-child(2) .crown svg {
 		fill: #d4d4d4;
 	}
+
 	.container .topLeadersList .leader:nth-child(3) {
 		color: black;
 		position: absolute;
@@ -312,5 +314,52 @@
 		overflow: scroll;
 		height: 20rem;
 		overflow-x: hidden;
+	}
+
+	@media only screen and (max-width: 768px) {
+		.container .topLeadersList .leader:nth-child(1) .image {
+			width: 90px;
+			height: 90px;
+			padding: 4px;
+		}
+
+		.container .topLeadersList .leader:nth-child(1) .crown {
+			top: -25%;
+		}
+
+		.container .topLeadersList .leader:nth-child(1) .crown svg {
+			width: 2rem;
+			margin-bottom: 2px;
+		}
+
+		/* ------------------------------------------------------ */
+		.container .topLeadersList .leader:nth-child(2) .image {
+			width: 85px;
+			height: 85px;
+			padding: 4px;
+		}
+
+		.container .topLeadersList .leader:nth-child(2) .crown svg {
+			width: 2rem;
+			margin-bottom: 2px;
+		}
+		/* ------------------------------------------------------ */
+
+		.container .topLeadersList .leader:nth-child(3) .image {
+			min-width: 85px;
+			min-height: 85px;
+			padding: 4px;
+		}
+
+		.container .topLeadersList .leader:nth-child(3) .crown svg {
+			top: -15%;
+			width: 2rem;
+		}
+	}
+
+	@media (max-width: 640px) {
+		.container .leaderName {
+			font-size: 15px;
+		}
 	}
 </style>
