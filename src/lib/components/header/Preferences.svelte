@@ -43,6 +43,7 @@
 	data-tb-dropdown-toggle
 	aria-expanded="false"
 	class="icon relative grid h-6 w-6 place-content-center rounded text-2xl font-light hover:bg-white/10 aria-expanded:bg-white/20"
+	id="preferences"
 >
 	<!-- <Icon icon="line-md:cog-loop" size="20px" /> -->
 	<img src="/images/icons/settings{iconColor($themeColor)}.svg" alt="Navigator" />
@@ -54,14 +55,14 @@
 	class="flex grid h-full grid-cols-3 flex-col gap-3 p-4"
 >
 	<div slot="header" class="py-2 text-center font-bold">Preferences</div>
-	<PreferenceItem name="Toggle Fullscreen" icon="tabler:arrows-maximize" id="fullscreen-toggle" />
+	<PreferenceItem name="Toggle Fullscreen" icon="tabler:arrows-maximize" id="pref-fullscreen" />
 	<PreferenceItem
 		name="Toggle Dark Mode"
 		icon={$themeMode === 'dark' ? 'tabler:sun' : 'tabler:moon'}
 		id="theme-toggle"
 		on:click={handleDarkMode}
 	/>
-	<PreferenceItem name="Adjust Page Zoom" icon="fluent-mdl2:zoom-to-fit" id="adjust-page-zoom" />
+	<PreferenceItem name="Adjust Page Zoom" icon="fluent-mdl2:zoom-to-fit" id="pref-zoom" />
 	{#if $themeMode !== 'dark'}
 		<ThemeColorPicker />
 	{/if}

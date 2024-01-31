@@ -10,7 +10,7 @@
 		removeItem,
 		addNewItem,
 		pasteItem,
-		saveLocations,
+		saveLocalStorageLocations,
 		loadLocalStoredLocations,
 		removeWidgetLocalstore,
 		getControllerItemsLocations,
@@ -180,12 +180,6 @@
 
 			let items: any[] = []
 
-			items = loadLocalStoredLocations(dashboard, widgets, isMobile())!
-			if (items && items.length > 0) {
-				$storeDashboard.gridItems = [...items]
-				return
-			}
-
 			const setNewLocations =
 				!dashboard.widget_location || Object.keys(dashboard.widget_location).length === 0
 
@@ -194,6 +188,23 @@
 				$storeDashboard.widget_location = { ...dashboard.attributes.widget_location }
 			}
 
+			/**
+			 * Load widgets from local storage
+			 */
+			items = loadLocalStoredLocations(
+				dashboard,
+				widgets,
+				isMobile(),
+				$storeDashboard.widget_location['timestamp'] || 0
+			)!
+			if (items && items.length > 0) {
+				$storeDashboard.gridItems = [...items]
+				return
+			}
+
+			/**
+			 * Load widgets from database
+			 */
 			items =
 				dashboard.attributes.widget_location || setNewLocations
 					? loadV3Locations(dashboard.widget_location, widgets, cols, isMobile())
@@ -214,13 +225,15 @@
 	const updateWidgetLocation = async () => {
 		if ($storeDashboard?.attributes?.user_id !== $storeUser?.user_id) return
 
+		const widget_location = getControllerItemsLocations(
+			$storeDashboard.gridItems,
+			gridController.gridParams
+		)
+		widget_location['timestamp'] = new Date().getTime()
 		const attributes = {
 			...$storeDashboard.attributes,
 			explorer: 'v3',
-			widget_location: getControllerItemsLocations(
-				$storeDashboard.gridItems,
-				gridController.gridParams
-			)
+			widget_location
 		}
 		const resp = await postData(`${baseUrl}/api/v2/dashboards/${$storeDashboard.dashboard_id}`, {
 			attributes: attributes
@@ -232,12 +245,14 @@
 	}
 
 	const updateLocations = async () => {
-		if (isChanging || isMobile() || dashboard?.attributes?.user_id !== $storeUser?.user_id) return
+		if (isChanging || isMobile()) return // || dashboard?.attributes?.user_id !== $storeUser?.user_id
 		isChanging = true
 		setTimeout(async () => {
 			isChanging = false
-			saveLocations(dashboard, $storeDashboard.gridItems, gridController.gridParams)
-		}, 2000)
+			saveLocalStorageLocations(dashboard, $storeDashboard.gridItems, gridController.gridParams)
+			if (dashboard?.attributes?.user_id !== $storeUser?.user_id)
+				sendSuccessNotification('Updated widget position in local storage')
+		}, 1000)
 	}
 
 	const handleWidgetPaste = async () => {

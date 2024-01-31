@@ -32,7 +32,8 @@
 				`${import.meta.env.VITE_API_URL}/api/v2/services/queries/${
 					$page.params.programs
 				}_stores?refresh=1`,
-				{}
+				{},
+				false
 			)
 			if (stores) $storeStores = { ...$storeStores, [$page.params.programs]: Object.values(stores) }
 		} catch (error) {
