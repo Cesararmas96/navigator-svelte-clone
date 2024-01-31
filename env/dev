@@ -1,0 +1,10 @@
+VITE_API_URL=https://api.dev.trocdigital.io
+VITE_BASE_URL=https://front.trocdigital.io
+
+VITE_DATE_URL=https://api.dev.trocdigital.io 
+
+VITE_ENV=dev
+
+VITE_API_URL_IMAGES=https://api.trocdigital.io
+
+SESSION_SECRET_KEY=8682582a2778d8ab63db6dc533d341d9c9c6fb9e1cdc767654db64593805889d
