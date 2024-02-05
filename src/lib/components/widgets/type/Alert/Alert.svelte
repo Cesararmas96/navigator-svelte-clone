@@ -20,7 +20,7 @@
 		info: { icon: 'mdi:information-outline', color: 'blue' }
 	}
 
-	$: color = types[alert.type].color
+	$: color = types[alert.type]?.color
 
 	const onClick1 = () => {
 		dismissAlert(alert.id!)
@@ -37,7 +37,7 @@
 	<div class="flex flex-row justify-between">
 		<div class="flex flex-col items-start justify-center">
 			<div class="flex items-center gap-3">
-				<Icon icon={types[alert.type].icon} size="18" />
+				<Icon icon={types[alert.type]?.icon} size="18" />
 				<span class="text-lg font-medium">{alert.title}</span>
 			</div>
 			{#if alert.message}<p class="mb-2 mt-2">{alert.message}</p>{/if}
