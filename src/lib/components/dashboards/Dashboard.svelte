@@ -195,7 +195,7 @@
 				dashboard,
 				widgets,
 				isMobile(),
-				$storeDashboard.widget_location['timestamp'] || 0
+				$storeDashboard.widget_location?.timestamp || 0
 			)!
 			if (items && items.length > 0) {
 				$storeDashboard.gridItems = [...items]
