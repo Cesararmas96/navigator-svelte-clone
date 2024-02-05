@@ -6,9 +6,6 @@
 	import { loading } from '$lib/stores/preferences'
 	import { storeModule, storeModules } from '$lib/stores/modules'
 	import { goto } from '$app/navigation'
-	import { page } from '$app/stores'
-
-	const { client } = $page.data
 
 	export let props: {
 		title?: string
