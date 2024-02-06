@@ -4,11 +4,11 @@
 	import { schema } from './setting'
 
 	const widget: any = getContext('widget')
-	let data: any = $widget.format_definition || []
+	let data: any = $widget.format_definition?.links || []
 
 	$: if ($widget?.saved) {
 		setTimeout(() => {
-			data = $widget.format_definition
+			data = $widget.format_definition?.links
 			createSettings()
 		}, 5)
 
