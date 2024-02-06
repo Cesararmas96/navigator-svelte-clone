@@ -104,22 +104,39 @@ async function handleSubmit(payload: any, type: string, $widget, extra) {
 		callback = $widget.callbackUpdate
 	}
 
-	const dataModel = await getApiData(url, method, payload)
+	try {
+		const dataModel = await getApiData(url, method, payload)
 
-	if (dataModel) {
-		if (callback) {
-			callback({
-				rowId: $widget?.rowId,
-				dataModel
-			})
+		if (dataModel) {
+			if (callback) {
+				callback({
+					rowId: $widget?.rowId,
+					dataModel
+				})
+			}
+
+			sendSuccessNotification(dataModel?.message || message)
+
+			return { response: dataModel || message }
+		} else {
+			console.log('Error here', dataModel)
+			sendErrorNotification('There has been a problem...')
+			return false
+		}
+	} catch (error: any) {
+		console.log(error)
+
+		if (error?.message.includes('User already exists')) {
+			extra?.handleSetFormErrors([
+				{
+					message: error?.message.split('<br> ')[1] || error,
+					raw: {
+						path: ['login']
+					}
+				}
+			])
 		}
 
-		sendSuccessNotification(dataModel?.message || message)
-
-		return { response: dataModel || message }
-	} else {
-		console.log('Error here', dataModel)
-		sendErrorNotification('There has been a problem...')
 		return false
 	}
 }
