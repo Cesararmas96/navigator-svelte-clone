@@ -7,6 +7,7 @@
 	import { storeUser } from '$lib/stores'
 	import { themeMode } from '$lib/stores/preferences'
 	import { initWidgetTop } from '$lib/helpers/widget/widget-top'
+	import { merge } from 'lodash-es'
 
 	let isToolbarVisible: boolean = false
 	let fixed: boolean
@@ -87,6 +88,7 @@
 
 	let widgetStore: any = writable(widget)
 	setContext('widget', widgetStore)
+	console.log('widgetStore', $widgetStore)
 
 	const dispatchResize = () => {
 		setTimeout(() => {
@@ -140,8 +142,14 @@
 
 	// onMount(() => {
 	$widgetStore.instances = []
-	if ($widgetStore.params && !$widgetStore.params?.settings && !$widgetStore.temp) {
-		$widgetStore.params.settings = Object.assign({}, defaultSettings.params.settings)
+	if ($widgetStore.params && !$widgetStore.temp) {
+		$widgetStore.params.settings = merge(
+			{},
+			defaultSettings.params.settings,
+			$widgetStore.params.settings
+		)
+		console.log('widgetStore', $widgetStore.title)
+		console.log('widgetStore', $widgetStore.params.settings)
 	}
 	$widgetStore.context = 'widget'
 	// })
