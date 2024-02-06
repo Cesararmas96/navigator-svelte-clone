@@ -88,7 +88,6 @@
 
 	let widgetStore: any = writable(widget)
 	setContext('widget', widgetStore)
-	console.log('widgetStore', $widgetStore)
 
 	const dispatchResize = () => {
 		setTimeout(() => {
@@ -148,8 +147,6 @@
 			defaultSettings.params.settings,
 			$widgetStore.params.settings
 		)
-		console.log('widgetStore', $widgetStore.title)
-		console.log('widgetStore', $widgetStore.params.settings)
 	}
 	$widgetStore.context = 'widget'
 	// })
