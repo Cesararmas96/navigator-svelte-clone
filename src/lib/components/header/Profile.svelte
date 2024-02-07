@@ -25,7 +25,7 @@
 				</div>
 			</a>
 		</DropdownItem>
-		{#if !$storeUser.next}
+		{#if $storeUser.superuser}
 			<DropdownItem>
 				<a href="/admin">
 					<div class="mx-2 flex cursor-pointer flex-row items-center">

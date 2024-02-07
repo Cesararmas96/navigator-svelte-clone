@@ -11,6 +11,7 @@
 	import { postData } from '$lib/services/getData.js'
 	import { isIconWhite } from '$lib/helpers/common/common.js'
 	import { themeColor } from '$lib/stores/preferences.js'
+	import ChatGoogle from '$lib/components/common/ChatGoogle.svelte'
 
 	export let data
 	$: $storeModule = data.trocModule
@@ -69,3 +70,7 @@
 		</main>
 	</div>
 </div>
+
+{#if data.program?.attributes?.chat_google}
+	<ChatGoogle />
+{/if}
