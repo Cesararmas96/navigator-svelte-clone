@@ -127,7 +127,7 @@ async function handleSubmit(payload: any, type: string, $widget, extra) {
 	} catch (error: any) {
 		console.log(error)
 
-		if (error?.message.includes('User already exists')) {
+		if (error?.message.includes('already exists')) {
 			extra?.handleSetFormErrors([
 				{
 					message: error?.message.split('<br> ')[1] || error,
