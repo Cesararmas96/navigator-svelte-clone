@@ -99,9 +99,9 @@
 			<Profile />
 		</li>
 
-		<li class:hidden={$page.data.program?.attributes?.hide_ticket}>
+		<!-- <li class:hidden={$page.data.program?.attributes?.hide_ticket}>
 			<AnonymousSupport />
-		</li>
+		</li> -->
 
 		<li class:hidden={$page.data.program?.attributes?.hide_support}>
 			<a
