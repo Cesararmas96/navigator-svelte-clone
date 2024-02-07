@@ -3,11 +3,20 @@ import type { Handle } from '@sveltejs/kit'
 
 export const handle: Handle = async ({ event, resolve }) => {
 	let token = event.url.searchParams.get('token') || ''
-	const next = event.url.searchParams.get('next') || event.cookies.get('_program')
+	const next =
+		event.url.searchParams.get('next') || event.cookies.get('_program') || event.cookies.get('next')
+
 	if (!token) {
 		try {
-			if (!event.cookies.get('_session1') || !event.cookies.get('_session2'))
+			if (!event.cookies.get('_session1') || !event.cookies.get('_session2')) {
+				if (
+					event.url.pathname !== '/login' &&
+					event.url.pathname !== '/' &&
+					event.url.pathname !== '/logout'
+				)
+					event.cookies.set('next', event.url.pathname.replace('/', ''))
 				return await resolve(event)
+			}
 			const decoded1 = decrypt(event.cookies.get('_session1'))
 			const decoded2 = decrypt(event.cookies.get('_session2'))
 			if (!decoded1 || !decoded2) return await resolve(event)
@@ -32,7 +41,10 @@ export const handle: Handle = async ({ event, resolve }) => {
 			event.locals.user.aux = session
 			delete event.locals.user.aux.session
 			event.locals.user.token = token
-			if (next) event.locals.user.next = next
+			if (next) {
+				event.locals.user.next = next
+				event.cookies.delete('next')
+			}
 		}
 	} catch (error) {
 		console.log('hooks', error)
