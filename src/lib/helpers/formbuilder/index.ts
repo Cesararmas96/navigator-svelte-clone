@@ -81,9 +81,10 @@ export const handleSubmitForm = async (handleValidateForm: any, type: string, $w
 	const payload = handleValidateForm()
 	console.log(payload)
 	if (!Array.isArray(payload)) {
-		$widget?.params?.model?._ignore?.forEach((item) => delete payload[item])
+		const filteredPayload = { ...payload }
+		$widget?.params?.model?._ignore?.forEach((item) => delete filteredPayload[item])
 
-		return await handleSubmit(payload, type, $widget, extra)
+		return await handleSubmit(filteredPayload, type, $widget, extra)
 	} else {
 		sendErrorNotification('There has been a problem...')
 	}
@@ -104,22 +105,39 @@ async function handleSubmit(payload: any, type: string, $widget, extra) {
 		callback = $widget.callbackUpdate
 	}
 
-	const dataModel = await getApiData(url, method, payload)
+	try {
+		const dataModel = await getApiData(url, method, payload)
 
-	if (dataModel) {
-		if (callback) {
-			callback({
-				rowId: $widget?.rowId,
-				dataModel
-			})
+		if (dataModel) {
+			if (callback) {
+				callback({
+					rowId: $widget?.rowId,
+					dataModel
+				})
+			}
+
+			sendSuccessNotification(dataModel?.message || message)
+
+			return { response: dataModel || message }
+		} else {
+			console.log('Error here', dataModel)
+			sendErrorNotification('There has been a problem...')
+			return false
+		}
+	} catch (error: any) {
+		console.log(error)
+
+		if (error?.message.includes('User already exists')) {
+			extra?.handleSetFormErrors([
+				{
+					message: error?.message.split('<br> ')[1] || error,
+					raw: {
+						path: ['login']
+					}
+				}
+			])
 		}
 
-		sendSuccessNotification(dataModel?.message || message)
-
-		return { response: dataModel || message }
-	} else {
-		console.log('Error here', dataModel)
-		sendErrorNotification('There has been a problem...')
 		return false
 	}
 }
