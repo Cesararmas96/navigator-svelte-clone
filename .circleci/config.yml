@@ -13,6 +13,7 @@ branch_filters: &branch_filters
       only:
         - main
         - dev
+        - develop        
 
 parameters:
   env-tag:
