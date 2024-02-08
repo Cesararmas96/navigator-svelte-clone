@@ -1,0 +1,3 @@
+FROM https://553449903150.dkr.ecr.us-east-2.amazonaws.com/navigator-svelte-tf:dev
+RUN pnpm run build:production
+CMD ["node", "build/index.js"]
