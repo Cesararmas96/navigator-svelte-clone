@@ -29,12 +29,18 @@
 	const token = $storeUser?.token
 	let responseServer = null
 
-	async function handleSubmitFormLocal(handleValidateForm: any, type: string, handleResetForm) {
+	async function handleSubmitFormLocal(
+		handleValidateForm: any,
+		type: string,
+		handleResetForm,
+		handleSetFormErrors
+	) {
 		const endpoint = `${schema?.endpoint || meta}`
 
 		const response = await handleSubmitForm(handleValidateForm, type, $widget, {
 			baseUrl,
-			endpoint
+			endpoint,
+			handleSetFormErrors
 		})
 
 		if (response) {
@@ -104,12 +110,23 @@
 				{/if}
 
 				<Form {schema}>
-					<div class="w-full" slot="buttons-footer" let:handleValidateForm let:handleResetForm>
+					<div
+						class="w-full"
+						slot="buttons-footer"
+						let:handleValidateForm
+						let:handleResetForm
+						let:handleSetFormErrors
+					>
 						<div class="flex items-end justify-end">
 							<button
 								class="btn btn-form text-md"
 								on:click={() =>
-									handleSubmitFormLocal(handleValidateForm, 'formSaved', handleResetForm)}
+									handleSubmitFormLocal(
+										handleValidateForm,
+										'formSaved',
+										handleResetForm,
+										handleSetFormErrors
+									)}
 							>
 								<Icon icon="tabler:plus" classes="mr-2" />
 
