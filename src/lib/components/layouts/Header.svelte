@@ -6,7 +6,7 @@
 	import { themeColor, themeMode } from '$lib/stores/preferences'
 	import { page } from '$app/stores'
 	import { iconColor, isIconWhite } from '$lib/helpers/common/common'
-	import AnonymousSupport from '../header/AnonymousSupport.svelte'
+	// import AnonymousSupport from '../header/AnonymousSupport.svelte'
 
 	$: showToggle = $page.route.id?.includes('programs')
 	const toggleDrawer = () => {
@@ -99,9 +99,9 @@
 			<Profile />
 		</li>
 
-		<li class:hidden={$page.data.program?.attributes?.hide_ticket}>
+		<!-- <li class:hidden={$page.data.program?.attributes?.hide_ticket}>
 			<AnonymousSupport />
-		</li>
+		</li> -->
 
 		<li class:hidden={$page.data.program?.attributes?.hide_support}>
 			<a
