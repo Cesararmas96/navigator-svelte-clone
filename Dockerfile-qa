@@ -1,3 +1,4 @@
 FROM 553449903150.dkr.ecr.us-east-2.amazonaws.com/navigator-svelte-tf:dev
+WORKDIR /app
 RUN pnpm run build:qa
 CMD ["node", "build/index.js"]
