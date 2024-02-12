@@ -498,3 +498,31 @@
 .text-not-white button {
 	color: inherit;
 }
+
+div[id^='widget-content-'] > .grid {
+	// grid-template-columns: repeat(12, minmax(0, 1fr)); /* Estilos de la cuadrícula por defecto */
+}
+
+/* Estilos para dispositivos móviles */
+@media (max-width: 639px) {
+	div[id^='widget-content-'] > .grid {
+		grid-template-columns: repeat(
+			1,
+			minmax(0, 1fr)
+		); /* Cambio de columnas en dispositivos móviles */
+	}
+}
+
+/* Estilos para tablet */
+@media (min-width: 640px) and (max-width: 1023px) {
+	div[id^='widget-content-'] > .grid {
+		grid-template-columns: repeat(6, minmax(0, 1fr)); /* Cambio de columnas en tablet */
+	}
+}
+
+/* Estilos para dispositivos con tamaño de laptop o mayores */
+@media (min-width: 1024px) {
+	div[id^='widget-content-'] > .grid {
+		grid-template-columns: repeat(12, minmax(0, 1fr)); /* Mantener 12 columnas en tamaño laptop */
+	}
+}
