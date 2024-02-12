@@ -10,11 +10,11 @@
 
 <df-messenger
 	project-id="chatbots-412120"
-	agent-id="183be06c-8d38-4435-9d83-b50a94417712"
+	agent-id="8cf9141c-666b-4446-b4e4-8a87704478f8"
 	language-code="en"
 	max-query-length="-1"
 >
-	<df-messenger-chat-bubble chat-title="Handbook" />
+	<df-messenger-chat-bubble chat-title="SuperBot" />
 </df-messenger>
 
 <style>
