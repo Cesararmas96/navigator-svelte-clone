@@ -70,7 +70,7 @@
 
 	const cardClass = `apiCard-content animate__animated animate__zoomIn card  ${
 		card.class || 'navigator-blue'
-	} h-full overflow-hidden rounded-md border border-light-200 p-6 py-3 hover:-translate-y-0.5 hover:scale-100 hover:shadow-lg dark:border-dark-200 dark:bg-[#22313a]`
+	} h-full overflow-hidden rounded-md border border-light-200 py-3 hover:-translate-y-0.5 hover:scale-100 hover:shadow-lg dark:border-dark-200 dark:bg-[#22313a]`
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
@@ -86,8 +86,8 @@
 		<Spinner fullScreen={false} />
 	{/if}
 	<div class="px-3">
-		<div class="flex h-8 items-center justify-between">
-			<div class={`mb-3 text-3xl font-bold text-white ${fontColor}`}>
+		<div class="mt-1 flex h-8 items-center justify-between">
+			<div class={`mb-4  text-3xl font-semibold text-white ${fontColor}`}>
 				{card.frontMask}
 				{fnFormats(card.data, card.format)}
 				{card.backMask}
@@ -101,9 +101,9 @@
 			</div>
 			<Icon icon={card.icon} size="28" />
 		</div>
-		<div class="text-md font-medium">{card.title}</div>
+		<div class="mb-0 font-semibold">{card.title}</div>
 		{#if card?.footer}
-			<div class="text-sm font-normal text-gray-50">{card.footer}</div>
+			<div class="font-normal text-gray-50">{card.footer}</div>
 		{/if}
 	</div>
 	{#if card.drilldowns && !drilldownOpen}
