@@ -350,6 +350,9 @@
 			// } catch (error) {
 			// 	sendErrorNotification(error)
 			// }
+		},
+		selectSharedData(params: any) {
+			console.log('selectSharedData')
 		}
 	}
 
@@ -426,6 +429,10 @@
 		// rowHeight: 25,
 		autoHeight: true,
 		animateRows: true,
+
+		rowSelection: 'multiple',
+		suppressRowClickSelection: true,
+
 		getRowClass: (params) => {
 			const rowInit = $widget.params.pqgrid?.rowInit
 			const fn = rowInit && gridFunctionsMap[rowInit]

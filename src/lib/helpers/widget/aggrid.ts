@@ -100,6 +100,9 @@ export const generateColumnDefsByDefinition = (widget: any, callbacks: any) => {
 						order: col.order,
 						headerName: col.title,
 						field: key,
+						headerCheckboxSelection: col.checkbox,
+						checkboxSelection: col.checkbox,
+						showDisabledCheckboxes: col.checkbox,
 						format: col.format,
 						cellClass: cellClass(col),
 						cellClassRules: cellClassRules(key, col, widget.params.thresholds),
@@ -281,6 +284,7 @@ export const formatByPattern = (value: number, pattern: string): string => {
 
 		case '##,###.00%':
 		case '#,###.00%':
+		case '#,###,00%':
 			result = fnFormatPercent(value, '0.00%', 2)
 			break
 
