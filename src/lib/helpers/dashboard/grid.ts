@@ -19,12 +19,12 @@ export const loadV2Locations = (
 	const widgets: any[] = []
 	let x: number = 0
 	let y: number = 0
-
 	if (widgetLocation) {
 		const locations = _dashboard.attributes.cols.split(',') || [_dashboard.attributes.cols]
 		Object.keys(widgetLocation).forEach(function callback(value: any, index: number) {
 			Object.entries(widgetLocation[value]).map(([key, item]: [string, any]) => {
-				const data = _widgets.find((item) => item.widget_id === key) || {}
+				const data = _widgets.find((item) => item.widget_id === key)
+				if (!data) return
 				const title = data.title
 				data.resize_on_load = true
 				let w = !isMobile ? parseInt(locations[index]) * (cols / 12) : cols
@@ -77,7 +77,8 @@ export const loadV3Locations = (
 	// } else {
 	return Object.entries(widgetLocation)
 		.map(([key, item]: [string, any]) => {
-			const data = _widgets.find((item) => item.title === key || item.widget_slug === key) || null
+			const data =
+				_widgets.find((_item) => _item.title === key || _item.widget_slug === key) || null
 			if (!data) return null
 			return { title: data.title, ...item, data }
 		})
@@ -110,7 +111,8 @@ export const loadLocalStoredLocations = (
 			})
 			.map(([key, item]: [string, any]) => {
 				if (key === 'timestamp') return null
-				const data = _widgets.find((item) => item.title === key) || {}
+				const data = _widgets.find((item) => item.title === key)
+				if (!data) return null
 				return { title: key, ...item, data }
 			})
 			.filter((item) => item !== null)

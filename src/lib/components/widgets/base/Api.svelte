@@ -17,7 +17,7 @@
 
 	const widgetActions: any = getContext('widgetActions')
 	const dashboard: Writable<any> = getContext('dashboard')
-
+	const sharedData = $widget.query_slug?.dashboard
 	const slug = $widget.query_slug?.slug || $widget.params.query?.slug
 	const conditionsRaw = $widget.conditions
 	const method = $widget.params?.ajax?.method || $widget.params?.ajax?.type
@@ -312,10 +312,12 @@
 	}
 
 	$: if (!$widget.fetch) {
-		if (!$widget.data) {
+		if (!$widget.data && !sharedData) {
 			fetchData()
-		} else {
+		} else if ($widget.data) {
 			data = $widget.data // $dataStore
+		} else if (sharedData) {
+			data = $dashboard.gridItemsData[sharedData] || []
 		}
 		$widget.fetch = true
 	}

@@ -42,9 +42,6 @@
 		filteredTemplates = data.programs.sort(function (program: any, program2: any) {
 			return program.program_id - program2.program_id
 		})
-
-		// users = await getApiData('https://api.dev.navigator.mobileinsight.com/api/v1/ad_users', 'GET')
-		// console.log('users', users)
 	})
 </script>
 

@@ -17,7 +17,6 @@ export const load = async ({ params, fetch, locals, url }) => {
 	const headers = { authorization: `Bearer ${locals.user.token}` }
 
 	const program_slug = next ? next : params.programs
-
 	try {
 		const programs = await getApiData(
 			`programs`,
