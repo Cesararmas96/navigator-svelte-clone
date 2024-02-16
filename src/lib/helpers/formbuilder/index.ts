@@ -3,12 +3,13 @@ import { sendErrorNotification, sendSuccessNotification } from '$lib/stores/toas
 import { merge } from 'lodash-es'
 
 export const getJsonSchema = async (jsonSchema, $widget, credentials) => {
+	jsonSchema = getSchemaComputed(jsonSchema, $widget)
 	jsonSchema['noHeader'] = true
 
 	Object.keys(jsonSchema.properties).map((property) => {
 		if (
 			jsonSchema.properties[property]?.$ref?.api &&
-			jsonSchema.properties[property]?.type === 'object'
+			['object', 'select'].includes(jsonSchema.properties[property]?.type)
 		) {
 			jsonSchema.properties[property].type = 'select'
 
@@ -26,6 +27,21 @@ export const getJsonSchema = async (jsonSchema, $widget, credentials) => {
 			}
 
 			delete jsonSchema.properties[property]?.$ref?.$ref
+		}
+
+		if (jsonSchema.properties[property]?.type === 'search') {
+			jsonSchema.properties[property]['_fetch'] = {
+				url: `${credentials?.baseUrl}/${
+					$widget?.params?.model?.schema?.properties &&
+					$widget?.params?.model?.schema?.properties[property] &&
+					$widget?.params?.model?.schema?.properties[property]?._fetch?.url
+						? $widget?.params?.model?.schema?.properties[property]?._fetch?.url
+						: `api/v1/${$widget?.params?.model?.schema?.properties[property]?._fetch?.api}`
+				}`,
+				headers: {
+					authorization: `Bearer ${credentials?.token}`
+				}
+			}
 		}
 
 		if (jsonSchema.properties[property]?.enum_type) {
