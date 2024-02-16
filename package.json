@@ -4,9 +4,9 @@
 	"private": true,
 	"scripts": {
 		"dev": "vite dev",
-		"build": "vite build",
-		"build:dev": "vite build --mode development",
-		"build:qa": "vite build --mode qa",
+		"build": "NODE_OPTIONS=--max-old-space-size=4096 vite build",
+		"build:dev": "NODE_OPTIONS=--max-old-space-size=4096 vite build --mode development",
+		"build:qa": "NODE_OPTIONS=--max-old-space-size=4096 vite build --mode qa",
 		"preview": "vite preview",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
