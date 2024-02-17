@@ -499,30 +499,38 @@
 	color: inherit;
 }
 
+// Widget KPI Cards
 div[id^='widget-content-'] > .grid {
-	// grid-template-columns: repeat(12, minmax(0, 1fr)); /* Estilos de la cuadrícula por defecto */
+	// grid-template-columns: repeat(12, minmax(0, 1fr));
 }
 
-/* Estilos para dispositivos móviles */
 @media (max-width: 639px) {
 	div[id^='widget-content-'] > .grid {
-		grid-template-columns: repeat(
-			1,
-			minmax(0, 1fr)
-		); /* Cambio de columnas en dispositivos móviles */
+		grid-template-columns: repeat(1, minmax(0, 1fr));
 	}
 }
 
-/* Estilos para tablet */
 @media (min-width: 640px) and (max-width: 1023px) {
 	div[id^='widget-content-'] > .grid {
-		grid-template-columns: repeat(6, minmax(0, 1fr)); /* Cambio de columnas en tablet */
+		grid-template-columns: repeat(6, minmax(0, 1fr));
 	}
 }
 
-/* Estilos para dispositivos con tamaño de laptop o mayores */
 @media (min-width: 1024px) {
 	div[id^='widget-content-'] > .grid {
-		grid-template-columns: repeat(12, minmax(0, 1fr)); /* Mantener 12 columnas en tamaño laptop */
+		grid-template-columns: repeat(12, minmax(0, 1fr));
 	}
+}
+
+// Widget Reward Top
+.rounded-table tr:hover td:nth-child(2),
+.rounded-table tr:hover td:nth-child(3) {
+	transition-duration: 300ms;
+	transition-property: all;
+	transition-timing-function: ease;
+	border: none;
+	@apply bg-theme;
+	transform: translateY(-2px);
+	color: white;
+	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
