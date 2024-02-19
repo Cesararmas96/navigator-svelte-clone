@@ -6,13 +6,8 @@
 	let loading = true
 
 	onMount(() => {
-		const token = localStorage.getItem('token')
-
-		if (token) {
-			goto('/home')
-		} else {
-			goto('/home')
-		}
+		// const token = localStorage.getItem('token')
+		goto('/home')
 		loading = false
 	})
 </script>
