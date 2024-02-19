@@ -76,10 +76,10 @@
 	<main>
 		<div class="main-container dark:text-white-dark min-h-screen text-black">
 			<div class="flex min-h-screen bg-white">
-				<div class="width-full lg: hidden flex-col text-white dark:text-black lg:flex lg:w-4/5">
+				<div class="hidden w-full flex-col text-white dark:text-black lg:!flex lg:!w-4/5">
 					<Carousel images={data.slideshowCarouselData} />
 				</div>
-				<div class="relative flex w-full items-center justify-center lg:w-2/5">
+				<div class="relative flex w-full items-center justify-center lg:!w-2/5">
 					<div class="w-96 md:p-10">
 						<!--                    <h2 class="mb-3 text-3xl font-bold">Navigator</h2>-->
 						<img
