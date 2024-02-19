@@ -102,7 +102,7 @@ export const handleSubmitForm = async (handleValidateForm: any, type: string, $w
 
 		return await handleSubmit(filteredPayload, type, $widget, extra)
 	} else {
-		sendErrorNotification('There has been a problem...')
+		sendErrorNotification('Please review your form responses and complete the required fields.')
 	}
 }
 
