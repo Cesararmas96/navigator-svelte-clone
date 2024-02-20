@@ -8,6 +8,7 @@
 	import { getApiData } from '$lib/services/getData'
 	import { storeUser } from '$lib/stores'
 	import { sendErrorNotification } from '$lib/stores/toast'
+	import { closeModal, openConfirmModal, openModal } from '$lib/helpers/common/modal'
 	import Icon from '$lib/components/common/Icon.svelte'
 	import {
 		getJsonSchema,
@@ -60,6 +61,33 @@
 		}
 	}
 
+	const handleOpenModalForm = async () => {
+		openModal('Form Builder', 'FormBuilder', {
+			model: {
+				params: {
+					model: {
+						url: '/',
+						meta: 'support/api/v1/protect_ticket',
+						primaryKey: 'title',
+						responseAlert: true,
+						schema: {
+							properties: {
+								ticket_id: {
+									readonly: true,
+									disabled: true,
+									default: 1234
+								}
+							}
+						}
+					}
+				},
+				query_slug: {
+					slug: '{BASE_URL_API}/support/api/v1/protect_ticket'
+				}
+			}
+		})
+	}
+
 	onMount(async () => {
 		if ($dashboard?.attributes?.explorer === 'v2') {
 			console.log('resizeAction')
@@ -102,6 +130,8 @@
 				<div class="px-2 pb-2 text-sm text-gray-500 dark:text-gray-400">
 					{description}
 				</div>
+
+				<Button on:click={handleOpenModalForm}>asdasdas</Button>
 
 				{#if responseServer}
 					<Alert color="blue" dismissable>
