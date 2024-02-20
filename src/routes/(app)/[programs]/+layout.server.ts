@@ -49,7 +49,8 @@ export const load = async ({ params, fetch, locals, url }) => {
 		program = programs.find((item: any) => item.program_slug == program_slug)
 	} catch (error) {
 		console.log('error programs', url.origin)
-		throw redirect(302, 'home')
+		if (url.origin.includes('teams')) throw redirect(302, 'restricted')
+		else throw redirect(302, 'home')
 	}
 	try {
 		modules = await getApiData(
