@@ -16,28 +16,6 @@
 			if (image[0] === reward.reward) return item
 		})
 	}
-
-	onMount(() => {
-		const leader1 = document.getElementById('leader-1')!
-		leader1.parentElement?.classList.add('!top-3')
-		leader1.parentElement?.classList.add('!w-9')
-		leader1.parentElement?.classList.add('!h-9')
-		leader1.parentElement?.classList.add('!right-2')
-
-		const leader2 = document.getElementById('leader-2')!
-		leader2.parentElement?.classList.add('!top-2')
-		leader2.parentElement?.classList.add('!w-8')
-		leader2.parentElement?.classList.add('!h-8')
-		leader2.parentElement?.classList.add('!right-1')
-		leader2.parentElement?.style.setProperty('background-color', '#d4d4d4')
-
-		const leader3 = document.getElementById('leader-3')!
-		leader3.parentElement?.classList.add('!top-2')
-		leader3.parentElement?.classList.add('!w-8')
-		leader3.parentElement?.classList.add('!h-8')
-		leader3.parentElement?.classList.add('!right-1')
-		leader3.parentElement?.style.setProperty('background-color', '#ab6528')
-	})
 </script>
 
 {#if rewards.length > 0}
@@ -74,7 +52,7 @@
 							style="height: 200px;"
 						>
 							<div
-								class="scoreboard__podium-rank w-8 rounded-full bg-white text-center text-2xl shadow-lg"
+								class="scoreboard__podium-rank flex h-8 w-8 items-center justify-center rounded-full bg-white text-center text-2xl shadow-lg"
 							>
 								{rewards[1].num_badges}
 							</div>
@@ -117,7 +95,7 @@
 							style="height: 250px;"
 						>
 							<div
-								class="scoreboard__podium-rank w-8 rounded-full bg-white text-center text-2xl shadow-lg"
+								class="scoreboard__podium-rank flex h-8 w-8 items-center justify-center rounded-full bg-white text-center text-2xl shadow-lg"
 							>
 								{rewards[0].num_badges}
 							</div>
@@ -160,7 +138,7 @@
 							style="height: 150px;"
 						>
 							<div
-								class="scoreboard__podium-rank text-gold w-8 rounded-full bg-white text-center text-2xl text-black shadow-lg"
+								class="scoreboard__podium-rank flex h-8 w-8 items-center justify-center rounded-full bg-white text-center text-2xl shadow-lg"
 							>
 								{rewards[2].num_badges}
 							</div>
