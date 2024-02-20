@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { Button, Input, Toggle, Select } from 'flowbite-svelte'
-	import { sendErrorNotification, sendSuccessNotification } from '$lib/stores/toast'
+	import { closeModal } from '$lib/helpers/common/modal'
+	import { sendErrorNotification } from '$lib/stores/toast'
 	import { Form } from '@mixoo/form'
 	import Loading from '$lib/components/common/Loading.svelte'
 	import { onMount } from 'svelte'
@@ -9,9 +9,9 @@
 	import {
 		getJsonSchema,
 		getSchemaComputed,
-		handleSubmitForm,
-		utilFunctionsMap
+		handleSubmitForm
 	} from '$lib/helpers/formbuilder/index'
+	import Icon from '../common/Icon.svelte'
 
 	export let props: {
 		title?: string
@@ -23,7 +23,26 @@
 	let meta: any
 	const baseUrl = import.meta.env.VITE_API_URL
 	const token = $storeUser?.token
-	let responseServer = null
+
+	async function handleSubmitFormLocal(
+		handleValidateForm: any,
+		type: string,
+		handleResetForm,
+		handleSetFormErrors
+	) {
+		const endpoint = `${schema?.endpoint || meta}`
+
+		const response = await handleSubmitForm(handleValidateForm, type, props.model, {
+			baseUrl,
+			endpoint,
+			handleSetFormErrors
+		})
+
+		if (response) {
+			console.log('response', response)
+			closeModal()
+		}
+	}
 
 	onMount(async () => {
 		meta =
@@ -47,91 +66,53 @@
 	})
 </script>
 
-<div class="">
+<div>
 	{#if schema}
-		<div class="">
-			<div class=" ">
-				<div class="">
-					<div class="px-4 pb-4">
-						<Form {schema}>
-							<!-- <div slot="buttons-header" let:handleValidateForm class="hidden">
-								{#if $selectedFormBuilderRecord?.action === 'new'}
-									<Button
-										id="formSaved"
-										class="mb-2 mt-3 w-full rounded p-2 text-sm "
-										on:click={() => {
-											handleSubmitFormLocal(handleValidateForm, 'save')
-										}}
-									>
-										<Icon icon="tabler:plus" classes="mr-1" />{schema &&
-										schema.settings &&
-										schema.settings.showCancel
-											? schema.settings.SubmitLabel
-											: 'Save changes'}
-									</Button>
-								{:else}
-									<Button
-										id="formUpdated"
-										class="mb-2 mt-3 w-full rounded p-2 text-sm "
-										on:click={() => {
-											handleSubmitFormLocal(handleValidateForm, 'update')
-										}}
-									>
-										<Icon icon="tabler:edit" classes="mr-1" />Update Changes
-									</Button>
+		<div class="px-4 pb-4">
+			<div class="mb-2 flex items-center">
+				<h5
+					id="drawer-label"
+					class=" inline-flex items-center text-base font-semibold text-gray-500 dark:text-gray-400"
+				>
+					{title}
+				</h5>
+			</div>
+			<div class="text-sm text-gray-500 dark:text-gray-400">
+				{description}
+			</div>
 
-									<Button
-										id="formSaveAsNew"
-										class="mb-2 w-full rounded p-2 text-sm "
-										outline
-										on:click={() => {
-											handleSubmitFormLocal(handleValidateForm, 'saveAsNew')
-										}}
-									>
-										<Icon icon="tabler:plus" classes="mr-1" />Save as New
-									</Button>
-								{/if}
-							</div>
-							<div slot="buttons-footer" /> -->
-						</Form>
+			<Form {schema}>
+				<div
+					class="w-full"
+					slot="buttons-footer"
+					let:handleValidateForm
+					let:handleResetForm
+					let:handleSetFormErrors
+				>
+					<div class="flex items-end justify-end">
+						<button
+							class="btn btn-form text-md"
+							on:click={(event) => {
+								event.preventDefault()
+								event.stopPropagation()
+
+								handleSubmitFormLocal(
+									handleValidateForm,
+									'formSaved',
+									handleResetForm,
+									handleSetFormErrors
+								)
+							}}
+						>
+							<Icon icon="tabler:plus" classes="mr-2" />
+
+							{schema && schema.settings && schema.settings.SubmitLabel
+								? schema.settings.SubmitLabel
+								: 'Save changes'}
+						</button>
 					</div>
 				</div>
-			</div>
-			<div class="px-2 pb-2">
-				<div>
-					<div class="px-2 pb-2 text-sm text-gray-500 dark:text-gray-400">
-						<!-- {#if $selectedFormBuilderRecord?.action === 'new'}
-							<Button class=" mt-3 w-full rounded text-sm" on:click={() => update('formSaved')}>
-								<Icon icon="tabler:plus" classes="mr-2" />
-								{schema && schema.settings && schema.settings.showSubmit
-									? schema.settings.SubmitLabel
-									: 'Save changes'}</Button
-							>
-						{:else}
-							<Button class=" mt-3 w-full rounded text-sm" on:click={() => update('formUpdated')}>
-								<Icon
-									icon="streamline:interface-edit-write-2-change-document-edit-modify-paper-pencil-write-writing"
-									classes="mr-2"
-								/> Update Changes</Button
-							>
-
-							<Button
-								class=" mt-1 w-full rounded text-sm"
-								outline
-								on:click={() => update('formSaveAsNew')}
-							>
-								<Icon icon="tabler:plus" classes="mr-2" /> Save as New</Button
-							>
-						{/if}
-
-						{#if schema && schema.settings && schema.settings.showCancel}
-							<Button class=" mt-1 w-full rounded text-sm " outline on:click={() => close()}>
-								Cancel
-							</Button>
-						{/if} -->
-					</div>
-				</div>
-			</div>
+			</Form>
 		</div>
 	{:else}
 		<Loading />
