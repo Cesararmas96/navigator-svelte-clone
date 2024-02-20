@@ -4,7 +4,6 @@ import type { Handle } from '@sveltejs/kit'
 export const handle: Handle = async ({ event, resolve }) => {
 	let token = event.url.searchParams.get('token') || ''
 	const troctoken = event.url.searchParams.get('troctoken') || ''
-
 	const next =
 		event.url.searchParams.get('next') || event.cookies.get('_program') || event.cookies.get('next')
 
@@ -27,6 +26,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 			return await resolve(event)
 		}
 	}
+
 	try {
 		let session
 		if (token) {
@@ -67,8 +67,8 @@ export const handle: Handle = async ({ event, resolve }) => {
 			})
 		}
 		if (session) {
-			event.locals.user = session.session
-			event.locals.user.aux = session
+			event.locals.user = { ...session.session }
+			event.locals.user.aux = { ...session }
 			delete event.locals.user.aux.session
 			event.locals.user.token = token || session.token
 			if (next) {
