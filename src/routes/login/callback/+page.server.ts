@@ -11,23 +11,20 @@ export const load: PageServerLoad = async ({ locals, cookies }) => {
 	cookies.set('_session1', token1, {
 		path: '/',
 		httpOnly: true,
-		sameSite: 'none',
 		secure: true, //import.meta.env.ENV === 'production',
 		maxAge: 60 * 60 * 24 * 30
 	})
 	cookies.set('_session2', token2, {
 		path: '/',
 		httpOnly: true,
-		sameSite: 'none',
 		secure: true, //import.meta.env.ENV === 'production',
 		maxAge: 60 * 60 * 24 * 30
 	})
 	cookies.set('_program', locals.user.next, {
 		path: '/',
 		httpOnly: true,
-		sameSite: 'none',
 		secure: true, //import.meta.env.ENV === 'production',
-		maxAge: 60 * 60
+		maxAge: 60 * 60 * 24 * 30
 	})
 	if (locals.user.next) throw redirect(302, `/${locals.user.next}`)
 }
