@@ -72,6 +72,7 @@ export const load = async ({ params, fetch, locals, url }) => {
 			? modules.filter((item: any) => item.program_id === trocModule?.program_id)
 			: []
 	} catch (error) {
+		console.log('error modules', url.origin)
 		if (url.origin.includes('teams')) throw redirect(302, 'restricted')
 		else throw redirect(302, 'home')
 	}
