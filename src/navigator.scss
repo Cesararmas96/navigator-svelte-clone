@@ -535,3 +535,21 @@ div[id^='widget-content-'] > .grid {
 	color: white;
 	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
+
+//Buttons mileage
+.button.button--medium.button--dark {
+	@apply bg-theme;
+}
+
+.search__dialog > form > .form__footer > .search__dialog--footer > form > button.button--dark {
+	font-size: 1.125rem;
+	border: 1px solid rgb(var(--theme-color) / var(--tw-bg-opacity));
+	transition-duration: 0.3s;
+	background-color: white;
+	color: rgb(var(--theme-color) / var(--tw-bg-opacity));
+}
+
+.search__dialog > div:nth-child(3) > div > div:nth-of-type(3) button {
+	@apply bg-theme;
+	color: white;
+}
