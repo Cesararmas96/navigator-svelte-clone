@@ -222,14 +222,34 @@
 		min-height: 350px;
 		align-items: flex-end;
 	}
+	.scoreboard_podiums_Container:nth-child(1) .scoreboard__podium {
+		background: rgb(102, 111, 136);
+		background: linear-gradient(
+			180deg,
+			rgba(102, 111, 136, 1) 0%,
+			rgba(137, 144, 162, 1) 50%,
+			rgba(181, 186, 201, 1) 100%
+		);
+	}
 
 	.scoreboard_podiums_Container:nth-child(2) .scoreboard__podium {
-		background: rgb(157, 100, 8);
-		background: linear-gradient(180deg, rgba(157, 100, 8, 1) 15%, rgba(176, 121, 50, 1) 100%);
+		background: rgb(254, 188, 5);
+		background: linear-gradient(
+			180deg,
+			rgba(254, 188, 5, 1) 0%,
+			rgba(239, 184, 16, 1) 50%,
+			rgba(249, 219, 92, 1) 100%
+		);
 	}
-	.scoreboard__podium {
-		background: rgb(194, 140, 53);
-		background: linear-gradient(47deg, rgba(194, 140, 53, 1) 15%, rgba(235, 171, 87, 1) 100%);
+	.scoreboard_podiums_Container:nth-child(3) .scoreboard__podium {
+		background: rgb(192, 101, 0);
+		background: rgb(192, 101, 0);
+		background: linear-gradient(
+			180deg,
+			rgba(192, 101, 0, 1) 0%,
+			rgba(255, 152, 0, 1) 50%,
+			rgba(249, 177, 2, 1) 100%
+		);
 	}
 
 	.scoreboard__podiums .scoreboard__podium {
