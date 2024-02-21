@@ -1,5 +1,6 @@
 import { getApiData } from '$lib/services/getData'
 import { sendErrorNotification, sendSuccessNotification } from '$lib/stores/toast'
+import { openModal } from '$lib/helpers/common/modal'
 import { merge } from 'lodash-es'
 
 export const getJsonSchema = async (jsonSchema, $widget, credentials) => {
@@ -97,7 +98,7 @@ export const handleSubmitForm = async (handleValidateForm: any, type: string, $w
 	const payload = handleValidateForm()
 	console.log(payload)
 	if (!Array.isArray(payload)) {
-		const filteredPayload = { ...payload }
+		const filteredPayload = { ...payload, ...$widget?.params?.model?.defaults }
 		$widget?.params?.model?._ignore?.forEach((item) => delete filteredPayload[item])
 
 		return await handleSubmit(filteredPayload, type, $widget, extra)
@@ -132,6 +133,16 @@ async function handleSubmit(payload: any, type: string, $widget, extra) {
 				})
 			}
 
+			if (
+				$widget?.params?.model?.callback?.fn &&
+				utilFunctionsMap[$widget?.params?.model?.callback?.fn]
+			) {
+				utilFunctionsMap[$widget.params.model.callback.fn]({
+					data: dataModel,
+					params: $widget.params.model
+				})
+			}
+
 			sendSuccessNotification(dataModel?.message || message)
 
 			return { response: dataModel || message }
@@ -159,11 +170,11 @@ async function handleSubmit(payload: any, type: string, $widget, extra) {
 }
 
 export const utilFunctionsMap: { [key: string]: (params: any) => any } = {
-	supportTicket: supportTicket
+	supportTicket: supportTicket,
+	handleSupportTicketsWithPin: handleSupportTicketsWithPin
 }
 
 export function supportTicket(params) {
-	console.log('paramsparamsparams', params)
 	let message = `${params?.response?.message} <br> ID de ticket ${params?.response?.ticket_number}  `
 
 	if (params?.response?.login_information?.login)
@@ -173,4 +184,37 @@ export function supportTicket(params) {
 		message = message.concat(`<br> Email: ${params?.response?.login_information?.email}`)
 
 	return message
+}
+
+function handleSupportTicketsWithPin(params) {
+	openModal('Security', 'FormBuilder', {
+		model: {
+			params: {
+				model: {
+					url: '/',
+					meta: 'support/api/v1/protect_ticket',
+					primaryKey: 'title',
+					responseAlert: true,
+					schema: {
+						properties: {
+							ticket_id: {
+								type: 'string',
+								readonly: true,
+								readOnly: true,
+								default: params?.data?.ticket?.id
+							}
+						}
+					},
+					defaults: {
+						ticket: {
+							number: params?.data?.ticket?.number,
+							title: params?.data?.ticket?.title,
+							owner_id: params?.data?.ticket?.owner_id,
+							customer_id: params?.data?.ticket?.customer_id
+						}
+					}
+				}
+			}
+		}
+	})
 }

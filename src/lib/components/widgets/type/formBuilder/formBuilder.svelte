@@ -4,7 +4,7 @@
 	import type { Writable } from 'svelte/store'
 	import { Form } from '@mixoo/form'
 	import Loading from '$lib/components/common/Loading.svelte'
-	import { Alert, Button } from 'flowbite-svelte'
+	import { Alert } from 'flowbite-svelte'
 	import { getApiData } from '$lib/services/getData'
 	import { storeUser } from '$lib/stores'
 	import { sendErrorNotification } from '$lib/stores/toast'
