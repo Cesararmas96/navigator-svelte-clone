@@ -198,7 +198,6 @@ function handleSupportTicketsWithPin(params) {
 					schema: {
 						properties: {
 							ticket_id: {
-								type: 'string',
 								readonly: true,
 								readOnly: true,
 								default: params?.data?.ticket?.id
