@@ -16,141 +16,168 @@
 			if (image[0] === reward.reward) return item
 		})
 	}
-
-	onMount(() => {
-		const leader1 = document.getElementById('leader-1')!
-		leader1.parentElement?.classList.add('!top-3')
-		leader1.parentElement?.classList.add('!w-9')
-		leader1.parentElement?.classList.add('!h-9')
-		leader1.parentElement?.classList.add('!right-2')
-
-		const leader2 = document.getElementById('leader-2')!
-		leader2.parentElement?.classList.add('!top-2')
-		leader2.parentElement?.classList.add('!w-8')
-		leader2.parentElement?.classList.add('!h-8')
-		leader2.parentElement?.classList.add('!right-1')
-		leader2.parentElement?.style.setProperty('background-color', '#d4d4d4')
-
-		const leader3 = document.getElementById('leader-3')!
-		leader3.parentElement?.classList.add('!top-2')
-		leader3.parentElement?.classList.add('!w-8')
-		leader3.parentElement?.classList.add('!h-8')
-		leader3.parentElement?.classList.add('!right-1')
-		leader3.parentElement?.style.setProperty('background-color', '#ab6528')
-	})
 </script>
 
 {#if rewards.length > 0}
 	<div class="container">
-		<div
-			class="topLeadersList"
-			style:--leader-0={'20'}
-			style:--leader-1={rewards[1].num_badges}
-			style:--leader-2={rewards[2].num_badges}
-		>
-			<div class="leader">
-				<div class="">
-					<!-- svelte-ignore a11y-missing-attribute -->
-					<img
-						class="image gold"
-						loading="lazy"
-						src="https://cdn-icons-png.flaticon.com/512/2583/2583259.png"
-					/>
-					<div class="crown">
-						<svg
-							id="crown1"
-							fill="#0f74b5"
-							data-name="Layer 1"
-							xmlns="http://www.w3.org/2000/svg"
-							viewBox="0 0 100 50"
-						>
-							<polygon
-								class="cls-1"
-								points="12.7 50 87.5 50 100 0 75 25 50 0 25.6 25 0 0 12.7 50"
-							/>
-						</svg>
+		<div class="scoreboard">
+			<div class="scoreboard__podiums mb-2 mt-2">
+				<div class="scoreboard_podiums_Container">
+					<div class="mb-3 flex flex-col items-center">
+						<div class="mb-1 w-8">
+							<svg
+								class=""
+								fill="#d4d4d4"
+								data-name="Layer 1"
+								xmlns="http://www.w3.org/2000/svg"
+								viewBox="0 0 100 50"
+							>
+								<polygon
+									class="cls-1"
+									points="12.7 50 87.5 50 100 0 75 25 50 0 25.6 25 0 0 12.7 50"
+								/>
+							</svg>
+						</div>
+
+						<img
+							alt=""
+							class="scoreboard_podiums_Container-numberTop w-20 rounded-full border-4 border-gray-300 object-scale-down p-2 shadow"
+							loading="lazy"
+							src="https://cdn-icons-png.flaticon.com/512/2583/2583279.png"
+						/>
 					</div>
-					<div class="leaderName">{rewards[0].display_name}</div>
-					<Indicator color="yellow" border size="xl" placement="top-right">
-						<span id="leader-1" class="text-lg font-bold sm:text-sm">{rewards[0].num_badges}</span>
-					</Indicator>
+					<div class="scoreboard__podium rounded-tl-lg rounded-tr-lg shadow">
+						<div
+							class="scoreboard__podium-base scoreboard__podium-base--second flex flex-col items-center justify-start pt-4"
+							style="height: 200px;"
+						>
+							<div
+								class="scoreboard__podium-rank flex h-8 w-8 items-center justify-center rounded-full bg-white text-center text-2xl shadow-lg"
+							>
+								{rewards[1].num_badges}
+							</div>
+
+							<div
+								class="scoreboard__podium-name sm w-20 pt-3 text-center text-base font-semibold text-white"
+							>
+								{rewards[1].display_name}
+							</div>
+						</div>
+					</div>
 				</div>
-			</div>
-			<div class="leader">
-				<div class="">
-					<!-- svelte-ignore a11y-missing-attribute -->
-					<img
-						class="image silver"
-						loading="lazy"
-						src="https://cdn-icons-png.flaticon.com/512/2583/2583279.png"
-					/>
-					<div class="crown">
-						<svg
-							id="crown1"
-							fill="#0f74b5"
-							data-name="Layer 1"
-							xmlns="http://www.w3.org/2000/svg"
-							viewBox="0 0 100 50"
-						>
-							<polygon
-								class="cls-1"
-								points="12.7 50 87.5 50 100 0 75 25 50 0 25.6 25 0 0 12.7 50"
-							/>
-						</svg>
+				<div class="scoreboard_podiums_Container">
+					<div class="mb-3 flex flex-col items-center">
+						<div class="mb-1 w-10">
+							<svg
+								class=""
+								fill="#faca15"
+								data-name="Layer 1"
+								xmlns="http://www.w3.org/2000/svg"
+								viewBox="0 0 100 50"
+							>
+								<polygon
+									class="cls-1"
+									points="12.7 50 87.5 50 100 0 75 25 50 0 25.6 25 0 0 12.7 50"
+								/>
+							</svg>
+						</div>
+
+						<img
+							class="scoreboard_podiums_Container-numberTop w-24 rounded-full border-4 border-yellow-300 object-scale-down p-2 shadow"
+							loading="lazy"
+							src="https://cdn-icons-png.flaticon.com/512/2583/2583259.png"
+							alt=""
+						/>
 					</div>
-					<div class="leaderName">{rewards[1].display_name}</div>
-					<Indicator color="blue" border size="xl" placement="top-right">
-						<span id="leader-2" class="text-lg font-bold sm:text-sm">{rewards[1].num_badges}</span>
-					</Indicator>
+					<div class="scoreboard__podium rounded-tl-lg rounded-tr-lg shadow">
+						<div
+							class="scoreboard__podium-base scoreboard__podium-base--first flex flex-col items-center justify-start pt-4"
+							style="height: 250px;"
+						>
+							<div
+								class="scoreboard__podium-rank flex h-8 w-8 items-center justify-center rounded-full bg-white text-center text-2xl shadow-lg"
+							>
+								{rewards[0].num_badges}
+							</div>
+
+							<div
+								class="scoreboard__podium-name w-20 pt-3 text-center text-base font-semibold text-white"
+							>
+								{rewards[0].display_name}
+							</div>
+						</div>
+					</div>
 				</div>
-			</div>
-			<div class="leader">
-				<div class="">
-					<!-- svelte-ignore a11y-missing-attribute -->
-					<img
-						class="image bronze"
-						loading="lazy"
-						src="https://cdn-icons-png.flaticon.com/512/2583/2583398.png"
-					/>
-					<div class="crown">
-						<svg
-							id="crown1"
-							fill="#0f74b5"
-							data-name="Layer 1"
-							xmlns="http://www.w3.org/2000/svg"
-							viewBox="0 0 100 50"
-						>
-							<polygon
-								class="cls-1"
-								points="12.7 50 87.5 50 100 0 75 25 50 0 25.6 25 0 0 12.7 50"
-							/>
-						</svg>
+				<div class="scoreboard_podiums_Container">
+					<div class="mb-3 flex flex-col items-center">
+						<div class="mb-1 w-8 shadow">
+							<svg
+								class=""
+								fill="#fb923c"
+								data-name="Layer 1"
+								xmlns="http://www.w3.org/2000/svg"
+								viewBox="0 0 100 50"
+							>
+								<polygon
+									class="cls-1"
+									points="12.7 50 87.5 50 100 0 75 25 50 0 25.6 25 0 0 12.7 50"
+								/>
+							</svg>
+						</div>
+
+						<img
+							class="scoreboard_podiums_Container-numberTop w-20 rounded-full border-4 border-orange-300 object-scale-down p-2 shadow"
+							loading="lazy"
+							src="https://cdn-icons-png.flaticon.com/512/2583/2583398.png"
+							alt=""
+						/>
 					</div>
-					<div class="leaderName">{rewards[2].display_name}</div>
-					<Indicator color="blue" border size="xl" placement="top-right">
-						<span id="leader-3" class="text-lg font-bold sm:text-sm">{rewards[2].num_badges}</span>
-					</Indicator>
+					<div class="scoreboard__podium rounded-tl-lg rounded-tr-lg shadow">
+						<div
+							class="scoreboard__podium-base scoreboard__podium-base--third flex flex-col items-center justify-start pt-4"
+							style="height: 150px;"
+						>
+							<div
+								class="scoreboard__podium-rank flex h-8 w-8 items-center justify-center rounded-full bg-white text-center text-2xl shadow-lg"
+							>
+								{rewards[2].num_badges}
+							</div>
+
+							<div
+								class="scoreboard__podium-name w-20 pt-3 text-center text-base font-semibold text-white"
+							>
+								{rewards[2].display_name}
+							</div>
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>
 		<div class="playerslist">
-			<table class="table-striped table-hover table-responsive-sm table">
+			<table class="rounded-table table table-auto">
+				<thead>
+					<tr class="text-base text-gray-500">
+						<th class="w-0">#</th>
+						<th class="">Names</th>
+						<th class="text-center">Points</th>
+					</tr>
+				</thead>
 				<tbody>
 					{#each rewards as reward, rewardIdx}
 						{#if rewardIdx > 2}
 							<tr>
-								<th scope="row">{rewardIdx + 1}</th>
-								<td class="w-auto">
+								<td class="rounded-table-td font-semibold">{rewardIdx + 1}</td>
+								<td class="rounded-table-td">
 									<div class="flex items-center">
 										<!-- svelte-ignore a11y-missing-attribute -->
 										<img
-											class="rounded-circle"
+											class=""
 											src="https://cdn-icons-png.flaticon.com/512/2583/2583290.png"
 											width="30"
-										/><span class="ml-2">{reward.display_name}</span>
+										/><span class="font-semibold">{reward.display_name}</span>
 									</div>
 								</td>
-								<td>{reward.num_badges}</td>
+								<td class="rounded-table-td text-center font-semibold">{reward.num_badges}</td>
 							</tr>
 						{/if}
 					{/each}
@@ -162,204 +189,95 @@
 
 <style>
 	.container {
-		max-width: 750px;
+		max-width: 700px;
 		margin: auto;
 	}
-	.container .leader {
-		display: flex;
-	}
-	.container .crown {
-		position: absolute;
-		left: 50%;
-		transform: translateX(-50%);
-	}
-	.container .crown svg {
-		width: 3rem;
-	}
-	.container .image {
-		height: 80px;
-		object-fit: cover;
-		width: 80px;
-		/* background-color: black; */
-		border-radius: 50%;
-	}
-	.container .topLeadersList {
-		display: flex;
-		position: relative;
-		min-height: 120px;
-		/* padding-top: 3rem; */
-		margin-top: 35px;
-	}
-	.container .topLeadersList .image {
-		border-radius: 50%;
-	}
-	.container .topLeadersList .image.gold {
-		border: 3px solid gold;
-	}
-	.container .topLeadersList .image.silver {
-		border: 3px solid silver;
-	}
-	.container .topLeadersList .image.bronze {
-		border: 3px solid #ab6528;
+
+	.rounded-table tr td:nth-child(2) {
+		border-radius: 17px 0 0 17px;
 	}
 
-	.container .topLeadersList .leader:nth-child(1) {
-		color: black;
-		background-color: var(--leader-0, '');
-		position: absolute;
-		left: 50%;
-		transform: translateX(-50%);
+	.rounded-table tr td:nth-child(3) {
+		border-radius: 0 17px 17px 0;
 	}
-	.container .topLeadersList .leader:nth-child(1) .image {
+
+	.rounded-table tr:hover td:nth-child(2) {
+		border-radius: 17px 0 0 17px;
+	}
+
+	.rounded-table tr:hover td:nth-child(3) {
+		border-radius: 0 17px 17px 0;
+	}
+
+	.scoreboard {
+		display: flex;
+		margin: 0 0;
+		flex-direction: column;
+	}
+
+	.scoreboard__podiums {
+		display: flex;
+		flex-direction: row;
+		justify-content: space-around;
+		min-height: 350px;
+		align-items: flex-end;
+	}
+
+	.scoreboard_podiums_Container:nth-child(2) .scoreboard__podium {
+		background: rgb(157, 100, 8);
+		background: linear-gradient(180deg, rgba(157, 100, 8, 1) 15%, rgba(176, 121, 50, 1) 100%);
+	}
+	.scoreboard__podium {
+		background: rgb(194, 140, 53);
+		background: linear-gradient(47deg, rgba(194, 140, 53, 1) 15%, rgba(235, 171, 87, 1) 100%);
+	}
+
+	.scoreboard__podiums .scoreboard__podium {
+		display: flex;
+		flex-direction: column;
+		align-self: flex-end;
+		flex-wrap: wrap;
+		flex: 1;
+	}
+
+	.scoreboard__podium-base {
 		width: 150px;
-		height: 150px;
-		padding: 6px;
-	}
-	.container .topLeadersList .leader:nth-child(1) .crown {
-		top: -20%;
-	}
-	.container .topLeadersList .leader:nth-child(1) .crown svg {
-		fill: #ffc500;
-	}
-	.container .topLeadersList .leader:nth-child(2) {
-		color: black;
-		position: absolute;
-		left: 15%;
-		transform: translateX(-15%);
-		bottom: -20%;
-	}
-	.container .topLeadersList .leader:nth-child(2) .image {
-		width: 110px;
-		height: 110px;
-		padding: 6px;
-	}
-	.container .topLeadersList .leader:nth-child(2) .crown {
-		top: -25%;
-	}
-	.container .topLeadersList .leader:nth-child(2) .crown svg {
-		fill: #d4d4d4;
 	}
 
-	.container .topLeadersList .leader:nth-child(3) {
-		color: black;
-		position: absolute;
-		left: 85%;
-		transform: translateX(-85%);
-		bottom: -20%;
-	}
-	.container .topLeadersList .leader:nth-child(3) .image {
-		min-width: 110px;
-		min-height: 110px;
-		padding: 6px;
-	}
-	.container .topLeadersList .leader:nth-child(3) .crown {
-		top: -25%;
-	}
-	.container .topLeadersList .leader:nth-child(3) .crown svg {
-		fill: #ab6528;
-	}
-	.container .leaderName {
-		position: absolute;
-		text-align: center;
-		left: 50%;
-		font-weight: bold;
-		transform: translateX(-50%);
-		font-size: 18px;
-		line-height: 1.2;
-		margin-top: 0.5rem;
-	}
-	.container .player {
-		background-color: #330b7775;
-		display: grid;
-		grid-template-columns: 0.4fr 3fr 1fr 1fr 1fr 1fr 1fr 1fr;
-		align-items: center;
-		min-height: 42px;
-		text-align: center;
-		padding-right: 0.4rem;
-	}
-	.container .player .image {
-		width: 28px;
-		height: 28px;
-		border: 1.5px solid white;
-	}
-	.container .table {
-		margin-right: 0.1rem;
-		/* display: grid; */
-		font-size: 14px;
-		/* grid-template-columns: 0.4fr 3fr 1fr 1fr 1fr 1fr 1fr 1fr; */
-		text-align: center;
-	}
-	.container .table div:nth-child(2) {
-		text-align: left;
-		margin-left: 5px;
-	}
-	.container .table .image {
-		width: 20px;
-		height: 20px;
-	}
-	.container .playerslist {
-		margin-top: 7rem;
-		overflow: hidden;
-	}
-	.container .playerslist .player:nth-child(odd) {
-		background-color: #b159ffcc;
-		align-items: center;
-	}
-	.container .user {
-		display: flex;
-		align-items: center;
-		gap: 4px;
-	}
-	.container .list {
-		overflow: scroll;
-		height: 20rem;
-		overflow-x: hidden;
+	.scoreboard__podiums .scoreboard__podium-base {
+		max-width: 150px;
+		border-radius: 10px 10px 0 0;
 	}
 
-	@media only screen and (max-width: 768px) {
-		.container .topLeadersList .leader:nth-child(1) .image {
-			width: 90px;
-			height: 90px;
-			padding: 4px;
-		}
-
-		.container .topLeadersList .leader:nth-child(1) .crown {
-			top: -25%;
-		}
-
-		.container .topLeadersList .leader:nth-child(1) .crown svg {
-			width: 2rem;
-			margin-bottom: 2px;
-		}
-
-		/* ------------------------------------------------------ */
-		.container .topLeadersList .leader:nth-child(2) .image {
-			width: 85px;
-			height: 85px;
-			padding: 4px;
-		}
-
-		.container .topLeadersList .leader:nth-child(2) .crown svg {
-			width: 2rem;
-			margin-bottom: 2px;
-		}
-		/* ------------------------------------------------------ */
-
-		.container .topLeadersList .leader:nth-child(3) .image {
-			min-width: 85px;
-			min-height: 85px;
-			padding: 4px;
-		}
-
-		.container .topLeadersList .leader:nth-child(3) .crown svg {
-			top: -15%;
-			width: 2rem;
-		}
-	}
-
-	@media (max-width: 640px) {
-		.container .leaderName {
+	@media (max-width: 767px) {
+		.scoreboard__podium-rank {
+			width: 30px;
 			font-size: 15px;
+			width: 24px;
+		}
+
+		.scoreboard__podium-name {
+			font-size: 10px;
+			padding-left: 2px;
+			padding-right: 2px;
+		}
+
+		.scoreboard_podiums_Container-numberTop {
+			width: 70px;
+		}
+
+		.scoreboard_podiums_Container:nth-child(2) .scoreboard_podiums_Container-numberTop {
+			width: 80px;
+		}
+
+		.scoreboard__podium {
+			display: flex;
+			flex-direction: row;
+		}
+
+		.scoreboard__podium-base {
+			max-width: 100px;
+			width: auto;
 		}
 	}
 </style>
