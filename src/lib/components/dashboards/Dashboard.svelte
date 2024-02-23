@@ -395,7 +395,15 @@
 					meta: 'api/v1/badge_assign',
 					primaryKey: 'reward_id',
 					schema: {
-						$withoutDefs: true
+						$withoutDefs: true,
+						properties: {
+							reward_id: {
+								readOnly: false,
+								$ref: {
+									url: ' '
+								}
+							}
+						}
 					}
 				}
 			},

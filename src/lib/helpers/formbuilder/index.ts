@@ -14,12 +14,18 @@ export const getJsonSchema = async (jsonSchema, $widget, credentials) => {
 		) {
 			jsonSchema.properties[property].type = 'select'
 
+			if (jsonSchema.properties[property]?.endpoint)
+				jsonSchema.properties[property].$ref.api = jsonSchema.properties[property].endpoint
+
 			jsonSchema.properties[property].$ref['_fetch'] = {
 				baseUrl: `${credentials?.baseUrl}/${
 					$widget?.params?.model?.schema?.properties &&
 					$widget?.params?.model?.schema?.properties[property] &&
 					$widget?.params?.model?.schema?.properties[property]?.$ref?.url
-						? $widget?.params?.model?.schema?.properties[property]?.$ref?.url
+						? $widget?.params?.model?.schema?.properties[property]?.$ref?.url &&
+						  $widget?.params?.model?.schema?.properties[property]?.$ref?.url === ' '
+							? ''
+							: $widget?.params?.model?.schema?.properties[property]?.$ref?.url
 						: 'api/v1/'
 				}`,
 				headers: {
@@ -171,11 +177,13 @@ async function handleSubmit(payload: any, type: string, $widget, extra) {
 
 export const utilFunctionsMap: { [key: string]: (params: any) => any } = {
 	supportTicket: supportTicket,
-	handleSupportTicketsWithPin: handleSupportTicketsWithPin
+	handleSupportTicketsWithPin: handleSupportTicketsWithPin,
+	handleSupportTicketsWithPinForm: handleSupportTicketsWithPinForm,
+	handleCloseFormBottom: handleCloseFormBottom
 }
 
 export function supportTicket(params) {
-	let message = `${params?.response?.message} <br> ID de ticket ${params?.response?.ticket_number}  `
+	let message = `${params?.response?.message} <br> Ticket ID	${params?.response?.ticket_number}  `
 
 	if (params?.response?.login_information?.login)
 		message = message.concat(`<br> Login: ${params?.response?.login_information?.login}`)
@@ -216,4 +224,41 @@ function handleSupportTicketsWithPin(params) {
 			}
 		}
 	})
+}
+
+function handleSupportTicketsWithPinForm(params) {
+	return {
+		params: {
+			model: {
+				url: '/',
+				meta: 'support/api/v1/protect_ticket',
+				primaryKey: 'title',
+				responseAlert: true,
+				callback: {
+					form: 'handleCloseFormBottom'
+				},
+				schema: {
+					properties: {
+						ticket_id: {
+							readonly: true,
+							readOnly: true,
+							default: params?.data?.ticket?.id
+						}
+					}
+				},
+				defaults: {
+					ticket: {
+						number: params?.data?.ticket?.number,
+						title: params?.data?.ticket?.title,
+						owner_id: params?.data?.ticket?.owner_id,
+						customer_id: params?.data?.ticket?.customer_id
+					}
+				}
+			}
+		}
+	}
+}
+
+function handleCloseFormBottom(params) {
+	return 'CloseFormBottom'
 }
