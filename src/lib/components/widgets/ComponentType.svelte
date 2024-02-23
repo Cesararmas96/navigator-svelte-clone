@@ -36,6 +36,7 @@
 
 	onMount(async () => {
 		if (!$widget.data) $widget.data = data
+		console.log('classbase', `./type/${classbase}/${classbase}.svelte`)
 		Thing = (await import(`./type/${classbase}/${classbase}.svelte`)).default
 		// if ($widget.resize_on_load) resizeComponentContent()
 	})

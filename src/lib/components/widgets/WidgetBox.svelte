@@ -17,6 +17,7 @@
 	let color: string = ''
 	let border: boolean
 	let draggable: boolean
+	let showShared: boolean = false
 
 	const dispatch = createEventDispatcher()
 
@@ -95,6 +96,12 @@
 		}, 100)
 	}
 
+	const showSharedWidgets = (show: boolean) => {
+		dispatch('handleSharedWidgetsVisibility', !show && Boolean($widgetStore.query_slug?.dashboard))
+		console.log('showSharedWidgets', show)
+		// if (show) $widgetStore.fetch = false
+	}
+
 	const initActions = () => {
 		const widgetActions: Writable<any[]> = initWidgetActions()
 
@@ -133,6 +140,11 @@
 				$widgetStore = $selectedWidgetSettings.widget
 				$selectedWidgetSettings = null
 			}
+		})
+
+		addWidgetAction(widgetActions, {
+			name: 'showSharedWidgets',
+			action: showSharedWidgets
 		})
 	}
 

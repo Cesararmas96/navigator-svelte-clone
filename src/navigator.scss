@@ -553,3 +553,7 @@ div[id^='widget-content-'] > .grid {
 	@apply bg-theme;
 	color: white;
 }
+
+.ag-checkbox-input-wrapper {
+	display: flex !important;
+}

@@ -33,12 +33,14 @@ const login: Action = async ({ cookies, request }) => {
 		cookies.set('_session1', token1, {
 			path: '/',
 			httpOnly: true,
+			sameSite: 'none',
 			secure: true, //import.meta.env.ENV === 'production',
 			maxAge: 60 * 60 * 24 * 30
 		})
 		cookies.set('_session2', token2, {
 			path: '/',
 			httpOnly: true,
+			sameSite: 'none',
 			secure: true, //import.meta.env.ENV === 'production',
 			maxAge: 60 * 60 * 24 * 30
 		})

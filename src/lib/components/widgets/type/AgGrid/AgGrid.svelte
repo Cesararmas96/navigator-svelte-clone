@@ -35,11 +35,13 @@
 	export let simpleTable: boolean = false
 
 	const widget = getContext<Writable<any>>('widget')
+	const dashboard = getContext<Writable<any>>('dashboard')
 
 	const formatDefinitionKeys = $widget.format_definition
 		? Object.keys($widget.format_definition).map((key: string) => key)
 		: []
 
+	let gridApi
 	/**
 	 * @description Almacena las funciones de las acciones de los botones en las celdas
 	 */
@@ -351,8 +353,37 @@
 			// 	sendErrorNotification(error)
 			// }
 		},
-		selectSharedData(params: any) {
-			console.log('selectSharedData')
+		async selectSharedData() {
+			const selectedNodes = gridOptions.api.getSelectedNodes()
+			const selectedData = selectedNodes.map((node) => node.data)
+			const params = $widget.params.btnsActions!.top!.selectSharedData!.params
+			let payload: Record<string, any> = {}
+			const stores = selectedData.map((data: any) => {
+				let store: Record<string, any> = {}
+				params.payload_fields.map(async (field: any) => {
+					store[field] = data[field]
+				})
+				return store
+			})
+			payload['stores'] = stores
+
+			console.log('payload', payload)
+
+			$dashboard.gridItemsData = {
+				...$dashboard.gridItemsData,
+				'Optimal Route': [
+					'Leg 1: Head <b>west</b> on <b>SW 18th Terrace</b> toward <b>SW 78th P1</b> for 11.8 mi',
+					'Leg 2: Head <b>north</b> for 8.3 mi',
+					'Leg 3: Head <b>south‹/b> for 20.7 mi',
+					'Leg 4: Head <b>north</b> for 7.2 mi',
+					'Leg 5: Head <b>west</b> toward <b>NW 87th Ave</b> for 4.6 mi',
+					'Leg 6: Head <b>north</b> toward <b>SW 24th St</b>/<wbr/><b>Coral Wy</b> for 1.1 mi'
+				],
+				'Total Duration': [{ 'Total Duration': 102.83 }],
+				'Total Distance': [{ 'Total Distance': 53.68 }]
+			}
+
+			console.log('gridItemsData', $dashboard.gridItemsData)
 		}
 	}
 
@@ -463,6 +494,19 @@
 		// 	return null
 		// }
 	}
+
+	$: if (data) {
+		gridOptions.api?.setRowData(data)
+		const eGridDiv: HTMLElement = document.querySelector(`#grid-${$widget.widget_id}`)!
+		if (eGridDiv) {
+			eGridDiv.classList.remove('hidden')
+			// eGridDiv.style['min-height'] = !$widget.temp
+			// 	? gridHeight($widget.widget_id)
+			// 	: gridInstanceHeight($widget.widget_id)
+			// eGridDiv.style['height'] = eGridDiv.style['min-height']
+		}
+	}
+
 	if ($widget.params?.table?.roll_up?.total_col) {
 		gridOptions['autoGroupColumnDef'] = {
 			groupIncludeFooter: true, // Incluir los totales en el pie de grupo

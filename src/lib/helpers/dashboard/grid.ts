@@ -16,6 +16,7 @@ export const loadV2Locations = (
 	cols: number,
 	isMobile: boolean
 ) => {
+	console.log('loadV2Locations')
 	const widgets: any[] = []
 	let x: number = 0
 	let y: number = 0
@@ -50,10 +51,12 @@ export const loadV3Locations = (
 	cols: number,
 	isMobile: boolean
 ) => {
+	console.log('loadV3Locations')
 	if (!widgetLocation || Object.keys(widgetLocation).length === 0) {
 		let row = 0
 		widgetLocation = {}
 		return _widgets.map((widget: any) => {
+			widget.hidden = widget.query_slug?.dashboard ? true : false
 			widget.resize_on_load = true
 			widgetLocation[widget.title] = {
 				title: widget.title,
@@ -80,6 +83,7 @@ export const loadV3Locations = (
 			const data =
 				_widgets.find((_item) => _item.title === key || _item.widget_slug === key) || null
 			if (!data) return null
+			data.hidden = data.query_slug?.dashboard ? true : false
 			return { title: data.title, ...item, data }
 		})
 		.filter((item) => item !== null)
@@ -113,6 +117,7 @@ export const loadLocalStoredLocations = (
 				if (key === 'timestamp') return null
 				const data = _widgets.find((item) => item.title === key)
 				if (!data) return null
+				data.hidden = data.query_slug?.dashboard ? true : false
 				return { title: key, ...item, data }
 			})
 			.filter((item) => item !== null)

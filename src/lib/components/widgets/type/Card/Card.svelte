@@ -8,13 +8,16 @@
 	export let data: any
 
 	const widget: any = getContext('widget')
-	const dashboard = getContext<Writable<any>>('dashboard')
-	const widgetActions = getContext<Writable<any[]>>('widgetActions')
-	const resizeAction = getWidgetAction($widgetActions, 'resize')
 
 	$: {
+		console.log('buildCards 1', data)
 		buildCards()
 	}
+
+	// $: if (data) {
+	// 	console.log('buildCards 2', data)
+	// 	buildCards()
+	// }
 
 	let cards: any[] = []
 	const trendcard = {}
@@ -29,7 +32,8 @@
 
 	function buildCards() {
 		const values = data ? data[0] : []
-
+		console.log('data', data)
+		console.log('values', values)
 		Object.keys(values).map((card, cardIndex) => {
 			let configExtend = (format_definition && format_definition[card]) || {}
 
@@ -60,10 +64,10 @@
 	}
 
 	onMount(() => {
-		if ($dashboard?.attributes?.explorer === 'v2') {
-			console.log('resizeAction')
-			resizeAction.action()
-		}
+		// if ($dashboard?.attributes?.explorer === 'v2') {
+		// 	console.log('resizeAction')
+		// 	resizeAction.action()
+		// }
 	})
 </script>
 
