@@ -68,7 +68,7 @@
 		const prepareJsonSchema = await getApiData(`${slug}:meta`, 'GET', conditions)
 
 		if (prepareJsonSchema) {
-			const jsonSchema = await getJsonSchema(prepareJsonSchema, $selectedFormBuilderRecord, {
+			const jsonSchema = await getJsonSchema(prepareJsonSchema, $selectedFormBuilderWidget, {
 				baseUrl,
 				token
 			})

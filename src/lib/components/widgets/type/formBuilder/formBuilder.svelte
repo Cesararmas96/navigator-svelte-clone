@@ -24,6 +24,8 @@
 	let title: string = ''
 	let description: string = ''
 	let schema: any
+	let schemaBottom: any
+	let formBottomWidget: any
 	let meta: any
 	const baseUrl = import.meta.env.VITE_API_URL
 	const token = $storeUser?.token
@@ -37,22 +39,40 @@
 	) {
 		const endpoint = `${schema?.endpoint || meta}`
 
-		const response = await handleSubmitForm(handleValidateForm, type, $widget, {
+		const reference = type === 'formBottom' ? formBottomWidget : $widget
+
+		const response = await handleSubmitForm(handleValidateForm, type, reference, {
 			baseUrl,
 			endpoint,
 			handleSetFormErrors
 		})
 
 		if (response) {
-			if ($widget?.params?.model?.responseAlert) {
+			if (reference?.params?.model?.responseAlert) {
 				if (
-					$widget?.params?.model?.responseAlert?.callback &&
-					utilFunctionsMap[$widget?.params?.model?.responseAlert?.callback]
+					reference?.params?.model?.responseAlert?.callback &&
+					utilFunctionsMap[reference?.params?.model?.responseAlert?.callback]
 				) {
 					responseServer =
-						utilFunctionsMap[$widget?.params?.model?.responseAlert?.callback](response)
+						utilFunctionsMap[reference?.params?.model?.responseAlert?.callback](response)
 				} else {
 					responseServer = response?.response?.message
+				}
+			}
+
+			if (
+				reference?.params?.model?.callback?.form &&
+				utilFunctionsMap[reference?.params?.model?.callback?.form]
+			) {
+				formBottomWidget = utilFunctionsMap[reference.params.model.callback.form]({
+					data: response.response,
+					params: reference.params.model
+				})
+
+				if (formBottomWidget === 'CloseFormBottom') {
+					schemaBottom = null
+				} else {
+					getModel(formBottomWidget, 'bottom')
 				}
 			}
 
@@ -60,27 +80,36 @@
 		}
 	}
 
-	onMount(async () => {
-		if ($dashboard?.attributes?.explorer === 'v2') {
-			console.log('resizeAction')
-			resizeAction.action()
-		}
-
-		meta = $widget.params.model && $widget.params.model.meta ? $widget.params.model.meta : null
+	async function getModel(reference, _type = 'default') {
+		meta =
+			reference.params.model && reference.params.model.meta ? reference.params.model.meta : null
 
 		const prepareJsonSchema = await getApiData(`${baseUrl}/${meta}:meta`, 'GET')
 		if (prepareJsonSchema) {
-			const jsonSchema = await getJsonSchema(prepareJsonSchema, $widget, { baseUrl, token })
+			const jsonSchema = await getJsonSchema(prepareJsonSchema, reference, { baseUrl, token })
 
-			schema = getSchemaComputed(jsonSchema, $widget)
+			if (_type === 'bottom') {
+				schemaBottom = getSchemaComputed(jsonSchema, reference)
+			} else {
+				schema = getSchemaComputed(jsonSchema, reference)
+			}
 
-			if (schema) {
+			if (_type === 'default') {
 				title = `${jsonSchema?.title}`
 				description = jsonSchema?.description
 			}
 		} else {
 			sendErrorNotification('The form could not be loaded')
 		}
+	}
+
+	onMount(() => {
+		if ($dashboard?.attributes?.explorer === 'v2') {
+			console.log('resizeAction')
+			resizeAction.action()
+		}
+
+		getModel($widget)
 	})
 </script>
 
@@ -103,12 +132,6 @@
 					{description}
 				</div>
 
-				{#if responseServer}
-					<Alert color="blue" dismissable>
-						{@html responseServer}
-					</Alert>
-				{/if}
-
 				<Form {schema}>
 					<div
 						class="w-full"
@@ -130,13 +153,64 @@
 							>
 								<Icon icon="tabler:plus" classes="mr-2" />
 
-								{schema && schema.settings && schema.settings.showCancel
+								{schema && schema.settings && schema.settings.SubmitLabel
 									? schema.settings.SubmitLabel
 									: 'Save changes'}
 							</button>
 						</div>
 					</div>
 				</Form>
+
+				{#if responseServer}
+					<div class="pt-6">
+						<Alert color="blue" dismissable>
+							{@html responseServer}
+						</Alert>
+					</div>
+				{/if}
+
+				{#if schemaBottom}
+					<div class="mt-2 flex items-center">
+						<h5
+							class="inline-flex items-center text-base font-semibold text-gray-500 dark:text-gray-400"
+						>
+							<Icon icon="mdi:widgets-outline" classes="mr-1" size="20px" />
+							{schemaBottom?.title}
+						</h5>
+					</div>
+					<div class="text-sm text-gray-500 dark:text-gray-400">
+						{schemaBottom?.description}
+					</div>
+
+					<Form schema={schemaBottom}>
+						<div
+							class="w-full"
+							slot="buttons-footer"
+							let:handleValidateForm
+							let:handleResetForm
+							let:handleSetFormErrors
+						>
+							<div class="flex items-end justify-end">
+								<button
+									class="btn btn-form text-md"
+									on:click={() =>
+										handleSubmitFormLocal(
+											handleValidateForm,
+											'formBottom',
+											handleResetForm,
+											handleSetFormErrors
+										)}
+								>
+									<Icon icon="tabler:plus" classes="mr-2" />
+
+									{schemaBottom && schemaBottom.settings && schemaBottom.settings.SubmitLabel
+										? schemaBottom.settings.SubmitLabel
+										: 'Save changes'}
+								</button>
+							</div>
+						</div>
+					</Form>
+				{/if}
 			</div>
 		{:else}
 			<Loading />
