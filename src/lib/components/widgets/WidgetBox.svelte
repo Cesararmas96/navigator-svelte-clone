@@ -196,7 +196,7 @@
 	class:widget-drilldown-open={$widgetStore?.instances && $widgetStore?.instances?.length > 0}
 	class:card={!fixed}
 	class:relative={isMobileDevice}
-	class={`justify-content-between widget-bg-color flex h-full w-full flex-col rounded-lg p-1 ${bgTypeClass(
+	class={`justify-content-between widget-bg-color fadeInScaleUpElement flex h-full w-full flex-col rounded-lg p-1 ${bgTypeClass(
 		background
 	)}`}
 	on:mouseenter={() => {
@@ -246,5 +246,23 @@
 	.widget-drilldown-open {
 		box-shadow: rgba(0, 0, 0, 0.35) 0px 0px 15px;
 		z-index: 10;
+	}
+
+	@keyframes fadeInScaleUp {
+		from {
+			opacity: 0;
+			transform: scale(0.95);
+		}
+		to {
+			opacity: 1;
+			transform: scale(1);
+		}
+	}
+
+	.fadeInScaleUpElement {
+		animation-name: fadeInScaleUp;
+		animation-duration: 0.5s;
+		animation-fill-mode: forwards;
+		animation-timing-function: ease-out;
 	}
 </style>

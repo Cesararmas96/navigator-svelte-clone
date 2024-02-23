@@ -434,13 +434,15 @@
 	const handleWidgetInsert = async (_widget: any) => {
 		loading.set(true)
 		try {
+			const title = `${_widget.title} #${generateRandomString()}`
 			const payload = {
 				program_id: dashboard.program_id,
 				dashboard_id: dashboard.dashboard_id,
-				title: `New Widget - ${_widget.title} #${generateRandomString()}`,
+				title,
 				template_id: _widget.template_id,
 				user_id: $storeUser?.user_id,
 				attributes: {
+					title,
 					user_id: $storeUser?.user_id
 				}
 			}
@@ -542,11 +544,12 @@
 						y={item.y}
 						w={item.w}
 						h={item.h}
-						class="grid-item"
+						class="grid-item {item.data.params.hidden ? 'hidden' : ''}"
 						activeClass="grid-item-active"
 						previewClass="bg-red-500 rounded"
 						resizable={dashboard?.attributes?.user_id === $storeUser?.user_id}
-						movable={true}
+						movable={!dashboard?.attributes?.disable_drag ||
+							dashboard?.attributes?.user_id === $storeUser?.user_id}
 						on:change={(e) => {
 							if (dashboard?.attributes?.user_id === $storeUser?.user_id) changeItemSize(item)
 						}}
@@ -567,6 +570,9 @@
 							on:handleResizable={(e) => {
 								item.data.params.settings.resizable = e.detail.resizable && !e.detail.fixed
 							}}
+							on:handleSharedWidgetsVisibility={(e) => {
+								item.data.params.hidden = e.detail
+							}}
 						>
 							<Widget
 								{widget}
@@ -574,7 +580,8 @@
 								{isToolbarVisible}
 								{isOwner}
 								bind:reload={item.reload}
-								isDraggable={true}
+								isDraggable={!dashboard?.attributes?.disable_drag ||
+									dashboard?.attributes?.user_id === $storeUser?.user_id}
 								on:handleInstanceResize={() => handleResizable(item)}
 							/>
 						</WidgetBox>
