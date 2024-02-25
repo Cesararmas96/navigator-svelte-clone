@@ -55,7 +55,6 @@
 	initWidgetTop()
 
 	onMount(() => {
-		console.log(widget)
 		widget.params.settings.toolbar.clone = false
 
 		if (widget.widget_type_id) {
