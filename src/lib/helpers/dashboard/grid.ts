@@ -317,7 +317,7 @@ export const resizeItem = (item: any, items: any[]) => {
 	const height = header + content + widgetInstances
 	const prevousHeight = maxHeight(item.y, items)
 	if (item.data?.instances?.length > 0) {
-		item._h = item.h
+		item._h = item._h ? item._h : item.h
 		item.h = Math.ceil(height / (rowHeight + 1))
 	} else {
 		if (!item._h) {
@@ -327,6 +327,7 @@ export const resizeItem = (item: any, items: any[]) => {
 			delete item._h
 		}
 	}
+
 	return reorderAfterResize(item, prevousHeight, items)
 }
 
@@ -501,7 +502,7 @@ const reorderAfterResize = (item: any, prevousHeight: number, items: any[]) => {
 	let existInLine: boolean = false
 	items.map((i) => {
 		if (i.y > item.y) {
-			if (existInLine || (item.x >= i.x && item.x <= i.w - 1)) {
+			if (existInLine || (item.x >= i.x && item.x <= i.x + i.w - 1)) {
 				existInLine = true
 				i.y += height
 			}

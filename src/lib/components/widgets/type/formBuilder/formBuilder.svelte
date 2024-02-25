@@ -15,7 +15,7 @@
 		handleSubmitForm,
 		utilFunctionsMap
 	} from '$lib/helpers/formbuilder/index'
-	import { addInstance } from '$lib/helpers/widget/instances'
+	import { addInstance, clearInstances } from '$lib/helpers/widget/instances'
 	import { merge } from 'lodash-es'
 
 	export let data: any
@@ -114,16 +114,16 @@
 		getModel($widget)
 	})
 
-	const showDD = () => {
+	const showDD = async () => {
+		await clearInstances(widget)
+
 		const title = $widget.title
 
 		let drilldowns: Record<string, any>
 		drilldowns = {
 			...$widget.params.drilldowns,
 			title: `${title}`,
-			attributes: {
-				icon: 'fa fa-table'
-			},
+			attributes: {},
 			classbase: 'EditorWysiwyg',
 
 			dashboard_id: $widget.dashboard_id,
