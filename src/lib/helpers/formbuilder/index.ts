@@ -128,6 +128,9 @@ async function handleSubmit(payload: any, type: string, $widget, extra) {
 		callback = $widget.callbackUpdate
 	}
 
+	if (extra?.method) method = extra.method
+	if (extra?.message) message = extra.message
+
 	try {
 		const dataModel = await getApiData(url, method, payload)
 
@@ -179,6 +182,7 @@ export const utilFunctionsMap: { [key: string]: (params: any) => any } = {
 	supportTicket: supportTicket,
 	handleSupportTicketsWithPin: handleSupportTicketsWithPin,
 	handleSupportTicketsWithPinForm: handleSupportTicketsWithPinForm,
+	handleActiveDrilldown: handleActiveDrilldown,
 	handleCloseFormBottom: handleCloseFormBottom
 }
 
@@ -257,6 +261,10 @@ function handleSupportTicketsWithPinForm(params) {
 			}
 		}
 	}
+}
+
+function handleActiveDrilldown(params) {
+	console.log(params)
 }
 
 function handleCloseFormBottom(params) {
