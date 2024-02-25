@@ -2,6 +2,7 @@ import { getApiData } from '$lib/services/getData'
 import { sendErrorNotification, sendSuccessNotification } from '$lib/stores/toast'
 import { openModal } from '$lib/helpers/common/modal'
 import { merge } from 'lodash-es'
+import { addInstance } from '$lib/helpers/widget/instances'
 
 export const getJsonSchema = async (jsonSchema, $widget, credentials) => {
 	jsonSchema = getSchemaComputed(jsonSchema, $widget)
@@ -148,7 +149,11 @@ async function handleSubmit(payload: any, type: string, $widget, extra) {
 			) {
 				utilFunctionsMap[$widget.params.model.callback.fn]({
 					data: dataModel,
-					params: $widget.params.model
+					params: $widget.params.model,
+					extra: {
+						extra,
+						widget: $widget
+					}
 				})
 			}
 
@@ -265,6 +270,33 @@ function handleSupportTicketsWithPinForm(params) {
 
 function handleActiveDrilldown(params) {
 	console.log(params)
+
+	const title = params.extra.widget.title
+
+	const drilldowns: Record<string, any> = {
+		...params.extra.widget.params.drilldowns,
+		title: `${title}`,
+		attributes: {
+			icon: 'fa fa-table'
+		},
+		classbase: 'EditorWysiwyg',
+
+		dashboard_id: params.extra.widget.dashboard_id,
+		module_id: params.extra.module_id,
+		program_id: params.extra.widget.program_id,
+		widget_type_id: 'media-editor-wysiwyg',
+		parent: params.extra.widget.widget_id,
+
+		params: {
+			settings: merge(
+				{},
+				params.extra.widget.params.settings,
+				params.extra.widget.params.drilldowns.params?.settings
+			)
+		}
+	}
+
+	addInstance(params.extra?.extra?.widgetContext, drilldowns)
 }
 
 function handleCloseFormBottom(params) {

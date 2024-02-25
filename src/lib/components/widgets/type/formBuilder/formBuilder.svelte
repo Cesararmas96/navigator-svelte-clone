@@ -15,8 +15,6 @@
 		handleSubmitForm,
 		utilFunctionsMap
 	} from '$lib/helpers/formbuilder/index'
-	import { addInstance } from '$lib/helpers/widget/instances'
-	import { merge } from 'lodash-es'
 
 	export let data: any
 	const widget: any = getContext('widget')
@@ -45,6 +43,7 @@
 			baseUrl,
 			endpoint,
 			handleSetFormErrors,
+			widgetContext: widget,
 			...reference?.params?.model?.extras
 		})
 
@@ -112,32 +111,6 @@
 
 		getModel($widget)
 	})
-
-	const showDD = () => {
-		const title = $widget.title
-
-		let drilldowns: Record<string, any>
-		drilldowns = {
-			...$widget.params.drilldowns,
-			title: `${title}`,
-			attributes: {
-				icon: 'fa fa-table'
-			},
-			classbase: 'EditorWysiwyg',
-
-			dashboard_id: $widget.dashboard_id,
-			module_id: $widget.module_id,
-			program_id: $widget.program_id,
-			widget_type_id: 'media-editor-wysiwyg',
-			parent: $widget.widget_id,
-
-			params: {
-				settings: merge({}, $widget.params.settings, $widget.params.drilldowns.params?.settings)
-			}
-		}
-
-		addInstance(widget, drilldowns)
-	}
 </script>
 
 {#if data}
@@ -239,7 +212,6 @@
 					</Form>
 				{/if}
 			</div>
-			<button class="btn btn-form text-md" on:click={showDD}>DD</button>
 		{:else}
 			<Loading />
 		{/if}
