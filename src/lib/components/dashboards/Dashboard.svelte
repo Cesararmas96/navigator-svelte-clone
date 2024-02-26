@@ -398,9 +398,113 @@
 						$withoutDefs: true,
 						properties: {
 							reward_id: {
+								nullable: false,
 								readOnly: false,
 								$ref: {
 									url: ' '
+								}
+							},
+							user_id: {
+								_schema: {
+									type: 'object',
+									title: 'User',
+									noHeader: true,
+									properties: {
+										email: {
+											type: 'string',
+											attrs: {
+												format: null,
+												placeholder: null
+											},
+											order: 3,
+											nullable: true,
+											readOnly: false,
+											maxLength: 254
+										},
+										last_name: {
+											type: 'string',
+											attrs: {
+												format: null,
+												placeholder: null
+											},
+											order: 2,
+											nullable: true,
+											readOnly: false
+										},
+										first_name: {
+											type: 'string',
+											attrs: {
+												format: null,
+												placeholder: null
+											},
+											order: 1,
+											nullable: true,
+											readOnly: false
+										}
+									},
+									description: 'View Model for getting Users.'
+								},
+								_result: {
+									columns: {
+										given_name: {
+											hidden: true
+										},
+										display_name: {
+											order: 2,
+											title: 'Name'
+										},
+										email: {
+											order: 1,
+											title: 'Email'
+										},
+										job_title: {
+											order: 4,
+											title: 'Job Title',
+											hidden: true
+										},
+										mobile: {
+											hidden: true
+										},
+										phones: {
+											hidden: true
+										},
+										last_name: {
+											hidden: true
+										},
+										zammad_created: {
+											hidden: true
+										},
+										job_code_title: {
+											hidden: true
+										},
+										preferred_language: {
+											hidden: true
+										},
+										position_id: {
+											hidden: true
+										},
+										people_id: {
+											hidden: true
+										},
+										office_location: {
+											hidden: true
+										},
+										created_at: {
+											hidden: true
+										},
+										username: {
+											primary: true,
+
+											order: 1,
+											title: 'Email'
+										},
+										associate_id: {
+											hidden: true
+										},
+										associate_oid: {
+											hidden: true
+										}
+									}
 								}
 							}
 						}
