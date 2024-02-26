@@ -26,7 +26,6 @@
 	let schema: any
 	let schemaBottom: any
 	let formBottomWidget: any
-	let meta: any
 	const baseUrl = import.meta.env.VITE_API_URL
 	const token = $storeUser?.token
 	let responseServer = null
@@ -37,14 +36,15 @@
 		handleResetForm,
 		handleSetFormErrors
 	) {
-		const endpoint = `${schema?.endpoint || meta}`
-
 		const reference = type === 'formBottom' ? formBottomWidget : $widget
+		const endpoint = `${reference?.endpoint || reference?.params?.model?.meta}`
 
 		const response = await handleSubmitForm(handleValidateForm, type, reference, {
 			baseUrl,
 			endpoint,
-			handleSetFormErrors
+			handleSetFormErrors,
+			widgetContext: widget,
+			...reference?.params?.model?.extras
 		})
 
 		if (response) {
@@ -69,9 +69,9 @@
 					params: reference.params.model
 				})
 
-				if (formBottomWidget === 'CloseFormBottom') {
-					schemaBottom = null
-				} else {
+				schemaBottom = null
+
+				if (formBottomWidget !== 'CloseFormBottom') {
 					getModel(formBottomWidget, 'bottom')
 				}
 			}
@@ -81,10 +81,10 @@
 	}
 
 	async function getModel(reference, _type = 'default') {
-		meta =
-			reference.params.model && reference.params.model.meta ? reference.params.model.meta : null
-
-		const prepareJsonSchema = await getApiData(`${baseUrl}/${meta}:meta`, 'GET')
+		const prepareJsonSchema = await getApiData(
+			`${baseUrl}/${reference?.params?.model?.meta}:meta`,
+			'GET'
+		)
 		if (prepareJsonSchema) {
 			const jsonSchema = await getJsonSchema(prepareJsonSchema, reference, { baseUrl, token })
 
@@ -116,19 +116,19 @@
 {#if data}
 	<div class="m-2 gap-1">
 		<div class="" />
+		{#if $widget?.params?.model?.static?.top}
+			{@html $widget.params.model.static.top}
+		{/if}
 
 		{#if schema}
 			<div class="px-4 pb-4">
 				<div class="mb-2 flex items-center">
-					<h5
-						id="drawer-label"
-						class=" inline-flex items-center text-base font-semibold text-gray-500 dark:text-gray-400"
-					>
-						<Icon icon="mdi:widgets-outline" classes="mr-1" size="20px" />
+					<h5 class=" inline-flex items-center text-base font-semibold">
+						<Icon icon="mdi:widgets-outline" classes="mr-1" size="16px" />
 						{title}
 					</h5>
 				</div>
-				<div class="px-2 pb-2 text-sm text-gray-500 dark:text-gray-400">
+				<div class="px-2 pb-2 text-md font-bold text-heading">
 					{description}
 				</div>
 

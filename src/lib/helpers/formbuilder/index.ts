@@ -2,6 +2,7 @@ import { getApiData } from '$lib/services/getData'
 import { sendErrorNotification, sendSuccessNotification } from '$lib/stores/toast'
 import { openModal } from '$lib/helpers/common/modal'
 import { merge } from 'lodash-es'
+import { addInstance, clearInstances } from '$lib/helpers/widget/instances'
 
 export const getJsonSchema = async (jsonSchema, $widget, credentials) => {
 	jsonSchema = getSchemaComputed(jsonSchema, $widget)
@@ -10,7 +11,8 @@ export const getJsonSchema = async (jsonSchema, $widget, credentials) => {
 	Object.keys(jsonSchema.properties).map((property) => {
 		if (
 			jsonSchema.properties[property]?.$ref?.api &&
-			['object', 'select'].includes(jsonSchema.properties[property]?.type)
+			['object', 'select'].includes(jsonSchema.properties[property]?.type) &&
+			jsonSchema.properties[property]?.['ui:widget'] !== 'adv-search'
 		) {
 			jsonSchema.properties[property].type = 'select'
 
@@ -36,19 +38,30 @@ export const getJsonSchema = async (jsonSchema, $widget, credentials) => {
 			delete jsonSchema.properties[property]?.$ref?.$ref
 		}
 
-		if (jsonSchema.properties[property]?.type === 'search') {
+		if (
+			jsonSchema.properties[property]?.type === 'search' ||
+			jsonSchema.properties[property]?.['ui:widget'] === 'adv-search'
+		) {
+			jsonSchema.properties[property].type = 'search'
+
 			jsonSchema.properties[property]['_fetch'] = {
 				url: `${credentials?.baseUrl}/${
 					$widget?.params?.model?.schema?.properties &&
 					$widget?.params?.model?.schema?.properties[property] &&
 					$widget?.params?.model?.schema?.properties[property]?._fetch?.url
 						? $widget?.params?.model?.schema?.properties[property]?._fetch?.url
-						: `api/v1/${$widget?.params?.model?.schema?.properties[property]?._fetch?.api}`
+						: `api/v1/${jsonSchema.properties[property]?.$ref?.api}`
 				}`,
 				headers: {
 					authorization: `Bearer ${credentials?.token}`
-				}
+				},
+				id: jsonSchema.properties[property]?.$ref?.id,
+				label: jsonSchema.properties[property]?.$ref?.value
 			}
+
+			// jsonSchema.properties[property]['_schema'] = {}
+			// jsonSchema.properties[property]['_result'] = {}
+			delete jsonSchema.properties[property]?.$ref
 		}
 
 		if (jsonSchema.properties[property]?.enum_type) {
@@ -88,7 +101,7 @@ export const getJsonSchema = async (jsonSchema, $widget, credentials) => {
 		}
 	})
 
-	// console.log(JSON.stringify(jsonSchema))
+	console.log(JSON.stringify(jsonSchema))
 	return jsonSchema
 }
 
@@ -128,6 +141,9 @@ async function handleSubmit(payload: any, type: string, $widget, extra) {
 		callback = $widget.callbackUpdate
 	}
 
+	if (extra?.method) method = extra.method
+	if (extra?.message) message = extra.message
+
 	try {
 		const dataModel = await getApiData(url, method, payload)
 
@@ -145,7 +161,11 @@ async function handleSubmit(payload: any, type: string, $widget, extra) {
 			) {
 				utilFunctionsMap[$widget.params.model.callback.fn]({
 					data: dataModel,
-					params: $widget.params.model
+					params: $widget.params.model,
+					extra: {
+						extra,
+						widget: $widget
+					}
 				})
 			}
 
@@ -179,6 +199,7 @@ export const utilFunctionsMap: { [key: string]: (params: any) => any } = {
 	supportTicket: supportTicket,
 	handleSupportTicketsWithPin: handleSupportTicketsWithPin,
 	handleSupportTicketsWithPinForm: handleSupportTicketsWithPinForm,
+	handleActiveDrilldown: handleActiveDrilldown,
 	handleCloseFormBottom: handleCloseFormBottom
 }
 
@@ -257,6 +278,33 @@ function handleSupportTicketsWithPinForm(params) {
 			}
 		}
 	}
+}
+
+async function handleActiveDrilldown(params) {
+	await clearInstances(params.extra?.extra?.widgetContext)
+
+	addInstance(params.extra?.extra?.widgetContext, {
+		// title: `Ticket #${params.data.number}`,
+		title: 'Ticket Status',
+		attributes: {
+			icon: 'iconoir:stats-report'
+		},
+		classbase: 'TicketZammad',
+		program_id: params.extra.widget.program_id,
+		module_id: params.extra.module_id,
+		dashboard_id: params.extra.widget.dashboard_id,
+		widget_type_id: 'media-ticket-zammad',
+		parent: params.extra.widget.widget_id,
+		params: {
+			settings: merge(
+				{},
+				params.extra.widget.params.settings,
+				params.extra.widget.params.drilldowns.params?.settings
+			)
+		},
+		...params.extra.widget.params.drilldowns,
+		ticket: params.data
+	})
 }
 
 function handleCloseFormBottom(params) {

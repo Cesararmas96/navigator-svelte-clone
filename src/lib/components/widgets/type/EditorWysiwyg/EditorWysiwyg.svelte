@@ -1,9 +1,11 @@
 <script lang="ts">
 	import type { Editor } from '@tiptap/core'
 	import { EditorTheme, SvelteEditor } from '@nextlint/svelte'
-	import { getContext } from 'svelte'
+	import { getContext, onMount } from 'svelte'
+	import { getWidgetAction } from '$lib/helpers'
 
 	const widget: any = getContext('widget')
+	const widgetActions: any = getContext('widgetActions')
 
 	export let html = $widget.format_definition.html
 	// import Devtool from './_components/Devtool.svelte'
@@ -65,6 +67,12 @@
 		const previewUrl = URL.createObjectURL(blob)
 		return previewUrl
 	}
+
+	onMount(() => {
+		if (!$widget.temp) return
+		const instanceLoadedAction = getWidgetAction($widgetActions, 'instanceLoaded')
+		instanceLoadedAction.action()
+	})
 </script>
 
 <div class="editor">

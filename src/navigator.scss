@@ -542,16 +542,27 @@ div[id^='widget-content-'] > .grid {
 }
 
 .search__dialog > form > .form__footer > .search__dialog--footer > form > button.button--dark {
-	font-size: 1.125rem;
+	font-size: 14px;
 	border: 1px solid rgb(var(--theme-color) / var(--tw-bg-opacity));
 	transition-duration: 0.3s;
 	background-color: white;
 	color: rgb(var(--theme-color) / var(--tw-bg-opacity));
+	font-weight: 500;
 }
 
 .search__dialog > div:nth-child(3) > div > div:nth-of-type(3) button {
 	@apply bg-theme;
-	color: white;
+	color: rgb(252, 250, 250);
+}
+
+.data-\[state\=checked\]\:bg-primary[data-state='checked'] {
+	background-color: rgb(var(--theme-color) / var(--tw-bg-opacity)) !important;
+	border: 1px solid rgb(var(--theme-color) / var(--tw-bg-opacity));
+}
+
+.search__dialog {
+	background-color: rgb(var(--body-bg) / var(--tw-bg-opacity));
+	color: hsl(var(--muted-foreground) / var(--tw-text-opacity));
 }
 
 .ag-checkbox-input-wrapper {

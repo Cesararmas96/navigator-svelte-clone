@@ -7,7 +7,6 @@
 	export let isMobileDevice: boolean = false
 
 	const widget: any = getContext('widget')
-	const showToolbar: boolean = $widget?.params?.settings?.toolbar?.show
 </script>
 
 <div class="widget-header space-y flex space-x-3">
@@ -18,6 +17,6 @@
 				? $widget?.attributes.title || $widget?.title
 				: undefined}
 		/>
-		{#if showToolbar}<WidgetToolbar {isToolbarVisible} {isMobileDevice} />{/if}
+		<WidgetToolbar {isToolbarVisible} {isMobileDevice} />
 	</div>
 </div>
