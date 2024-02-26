@@ -503,6 +503,7 @@
 
 	const getSortedItems = (items: any[]) => {
 		return items.sort((a, b) => {
+			if (a.order && b.order) return a.order - b.order
 			if (a.y === b.y) return a.x < b.x ? -1 : 1
 			return a.y < b.y ? -1 : 1
 		})
@@ -599,24 +600,29 @@
 		{:else}
 			<div class="grid grid-cols-1 gap-y-3 p-2">
 				{#each getSortedItems($storeDashboard.gridItems) as item}
-					<WidgetBox
-						widget={item.data}
-						resized={false}
-						isMobileDevice={true}
-						let:fixed
-						let:isOwner
-						let:isToolbarVisible
-						let:widget
-					>
-						<Widget
-							{widget}
-							{fixed}
-							{isToolbarVisible}
-							{isOwner}
+					<div class:hidden={item.data.params.hidden}>
+						<WidgetBox
+							widget={item.data}
+							resized={false}
 							isMobileDevice={true}
-							bind:reload={item.reload}
-						/>
-					</WidgetBox>
+							let:fixed
+							let:isOwner
+							let:isToolbarVisible
+							let:widget
+							on:handleSharedWidgetsVisibility={(e) => {
+								item.data.params.hidden = e.detail
+							}}
+						>
+							<Widget
+								{widget}
+								{fixed}
+								{isToolbarVisible}
+								{isOwner}
+								isMobileDevice={true}
+								bind:reload={item.reload}
+							/>
+						</WidgetBox>
+					</div>
 				{/each}
 			</div>
 		{/if}
