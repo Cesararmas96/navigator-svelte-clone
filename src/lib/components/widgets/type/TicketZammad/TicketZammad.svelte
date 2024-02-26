@@ -66,11 +66,11 @@
 	<div class="mb-4 text-center">
 		<div class="text-lg font-bold text-heading">{ticket?.title}</div>
 		<div class="text-muted">
-			Ticket #{ticket.number} - Created at {moment(ticket?.created_at).format('YYYY-MM-DD')}
+			Ticket #{ticket.number} - Last Updated {moment(ticket?.updated_at).format('YYYY-MM-DD')}
 		</div>
 	</div>
 
-	<div class="mb-6 flex items-center">
+	<!-- <div class="mb-6 flex items-center">
 		<div
 			class="icon mr-3 grid h-9 w-9 place-content-center rounded-full bg-light-200 font-light dark:bg-dark-200"
 		>
@@ -79,7 +79,37 @@
 		<div class="flex-1 pr-3">
 			<div class="text-sm text-muted">Agent</div>
 		</div>
-		<div class="font-bold text-heading">{ticket?.owner_id}</div>
+		<div class="font-bold text-heading">{ticket?.owner_id}</div> -->
+	<!-- <a href="" class="icon font-light hover:opacity-75">
+			<Icon icon="tabler:copy" size="18" />
+		</a> -->
+	<!-- </div> -->
+
+	<div class="mb-6 flex items-center">
+		<div
+			class="icon mr-3 grid h-9 w-9 place-content-center rounded-full bg-light-200 font-light dark:bg-dark-200"
+		>
+			<Icon icon="tabler:status-change" size="18" />
+		</div>
+		<div class="flex-1 pr-3">
+			<div class="text-sm text-muted">State</div>
+		</div>
+		<div class="font-bold text-heading">{status[ticket?.state_id]}</div>
+		<!-- <a href="" class="icon font-light hover:opacity-75">
+			<Icon icon="tabler:copy" size="18" />
+		</a> -->
+	</div>
+
+	<div class="mb-6 flex items-center">
+		<div
+			class="icon mr-3 grid h-9 w-9 place-content-center rounded-full bg-light-200 font-light dark:bg-dark-200"
+		>
+			<Icon icon="tabler:calendar-month" size="18" />
+		</div>
+		<div class="flex-1 pr-3">
+			<div class="text-sm text-muted">Created At</div>
+		</div>
+		<div class="font-bold text-heading">{moment(ticket?.created_at).format('YYYY-MM-DD')}</div>
 		<!-- <a href="" class="icon font-light hover:opacity-75">
 			<Icon icon="tabler:copy" size="18" />
 		</a> -->
@@ -110,21 +140,6 @@
 			<div class="text-sm text-muted">Following</div>
 		</div>
 		<div class="font-bold text-heading">{ticket?.following}</div>
-		<!-- <a href="" class="icon font-light hover:opacity-75">
-			<Icon icon="tabler:copy" size="18" />
-		</a> -->
-	</div>
-
-	<div class="mb-6 flex items-center">
-		<div
-			class="icon mr-3 grid h-9 w-9 place-content-center rounded-full bg-light-200 font-light dark:bg-dark-200"
-		>
-			<Icon icon="tabler:status-change" size="18" />
-		</div>
-		<div class="flex-1 pr-3">
-			<div class="text-sm text-muted">State</div>
-		</div>
-		<div class="font-bold text-heading">{status[ticket?.state_id]}</div>
 		<!-- <a href="" class="icon font-light hover:opacity-75">
 			<Icon icon="tabler:copy" size="18" />
 		</a> -->

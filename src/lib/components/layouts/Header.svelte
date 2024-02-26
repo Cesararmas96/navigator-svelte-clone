@@ -39,7 +39,7 @@
 				<!-- <Icon icon="tabler:layout-sidebar" size="20px" classes="btn-sidebar-toggle" /> -->
 			</button>
 		{/if}
-		<NavBrand href="/home" class="">
+		<NavBrand class="">
 			<span class=" ml-4 self-center whitespace-nowrap text-3xl font-extrabold dark:text-white">
 				{#if $page.params.programs}
 					{#if $page.data.program?.attributes?.logo_text}
