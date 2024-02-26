@@ -2,7 +2,7 @@ import { getApiData } from '$lib/services/getData'
 import { sendErrorNotification, sendSuccessNotification } from '$lib/stores/toast'
 import { openModal } from '$lib/helpers/common/modal'
 import { merge } from 'lodash-es'
-import { addInstance } from '$lib/helpers/widget/instances'
+import { addInstance, clearInstances } from '$lib/helpers/widget/instances'
 
 export const getJsonSchema = async (jsonSchema, $widget, credentials) => {
 	jsonSchema = getSchemaComputed(jsonSchema, $widget)
@@ -268,35 +268,31 @@ function handleSupportTicketsWithPinForm(params) {
 	}
 }
 
-function handleActiveDrilldown(params) {
-	console.log(params)
+async function handleActiveDrilldown(params) {
+	await clearInstances(params.extra?.extra?.widgetContext)
 
-	const title = params.extra.widget.title
-
-	const drilldowns: Record<string, any> = {
-		...params.extra.widget.params.drilldowns,
-		title: `${title}`,
+	addInstance(params.extra?.extra?.widgetContext, {
+		// title: `Ticket #${params.data.number}`,
+		title: 'Ticket Status',
 		attributes: {
-			icon: 'fa fa-table'
+			icon: 'iconoir:stats-report'
 		},
-		classbase: 'EditorWysiwyg',
-
-		dashboard_id: params.extra.widget.dashboard_id,
-		module_id: params.extra.module_id,
+		classbase: 'TicketZammad',
 		program_id: params.extra.widget.program_id,
-		widget_type_id: 'media-editor-wysiwyg',
+		module_id: params.extra.module_id,
+		dashboard_id: params.extra.widget.dashboard_id,
+		widget_type_id: 'media-ticket-zammad',
 		parent: params.extra.widget.widget_id,
-
 		params: {
 			settings: merge(
 				{},
 				params.extra.widget.params.settings,
 				params.extra.widget.params.drilldowns.params?.settings
 			)
-		}
-	}
-
-	addInstance(params.extra?.extra?.widgetContext, drilldowns)
+		},
+		...params.extra.widget.params.drilldowns,
+		ticket: params.data
+	})
 }
 
 function handleCloseFormBottom(params) {
