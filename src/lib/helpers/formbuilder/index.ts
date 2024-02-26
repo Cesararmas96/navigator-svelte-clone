@@ -2,6 +2,7 @@ import { getApiData } from '$lib/services/getData'
 import { sendErrorNotification, sendSuccessNotification } from '$lib/stores/toast'
 import { openModal } from '$lib/helpers/common/modal'
 import { merge } from 'lodash-es'
+import { addInstance, clearInstances } from '$lib/helpers/widget/instances'
 
 export const getJsonSchema = async (jsonSchema, $widget, credentials) => {
 	jsonSchema = getSchemaComputed(jsonSchema, $widget)
@@ -128,6 +129,9 @@ async function handleSubmit(payload: any, type: string, $widget, extra) {
 		callback = $widget.callbackUpdate
 	}
 
+	if (extra?.method) method = extra.method
+	if (extra?.message) message = extra.message
+
 	try {
 		const dataModel = await getApiData(url, method, payload)
 
@@ -145,7 +149,11 @@ async function handleSubmit(payload: any, type: string, $widget, extra) {
 			) {
 				utilFunctionsMap[$widget.params.model.callback.fn]({
 					data: dataModel,
-					params: $widget.params.model
+					params: $widget.params.model,
+					extra: {
+						extra,
+						widget: $widget
+					}
 				})
 			}
 
@@ -179,6 +187,7 @@ export const utilFunctionsMap: { [key: string]: (params: any) => any } = {
 	supportTicket: supportTicket,
 	handleSupportTicketsWithPin: handleSupportTicketsWithPin,
 	handleSupportTicketsWithPinForm: handleSupportTicketsWithPinForm,
+	handleActiveDrilldown: handleActiveDrilldown,
 	handleCloseFormBottom: handleCloseFormBottom
 }
 
@@ -257,6 +266,33 @@ function handleSupportTicketsWithPinForm(params) {
 			}
 		}
 	}
+}
+
+async function handleActiveDrilldown(params) {
+	await clearInstances(params.extra?.extra?.widgetContext)
+
+	addInstance(params.extra?.extra?.widgetContext, {
+		// title: `Ticket #${params.data.number}`,
+		title: 'Ticket Status',
+		attributes: {
+			icon: 'iconoir:stats-report'
+		},
+		classbase: 'TicketZammad',
+		program_id: params.extra.widget.program_id,
+		module_id: params.extra.module_id,
+		dashboard_id: params.extra.widget.dashboard_id,
+		widget_type_id: 'media-ticket-zammad',
+		parent: params.extra.widget.widget_id,
+		params: {
+			settings: merge(
+				{},
+				params.extra.widget.params.settings,
+				params.extra.widget.params.drilldowns.params?.settings
+			)
+		},
+		...params.extra.widget.params.drilldowns,
+		ticket: params.data
+	})
 }
 
 function handleCloseFormBottom(params) {
