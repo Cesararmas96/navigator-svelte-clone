@@ -11,7 +11,8 @@ export const getJsonSchema = async (jsonSchema, $widget, credentials) => {
 	Object.keys(jsonSchema.properties).map((property) => {
 		if (
 			jsonSchema.properties[property]?.$ref?.api &&
-			['object', 'select'].includes(jsonSchema.properties[property]?.type)
+			['object', 'select'].includes(jsonSchema.properties[property]?.type) &&
+			jsonSchema.properties[property]?.['ui:widget'] !== 'adv-search'
 		) {
 			jsonSchema.properties[property].type = 'select'
 
@@ -37,19 +38,30 @@ export const getJsonSchema = async (jsonSchema, $widget, credentials) => {
 			delete jsonSchema.properties[property]?.$ref?.$ref
 		}
 
-		if (jsonSchema.properties[property]?.type === 'search') {
+		if (
+			jsonSchema.properties[property]?.type === 'search' ||
+			jsonSchema.properties[property]?.['ui:widget'] === 'adv-search'
+		) {
+			jsonSchema.properties[property].type = 'search'
+
 			jsonSchema.properties[property]['_fetch'] = {
 				url: `${credentials?.baseUrl}/${
 					$widget?.params?.model?.schema?.properties &&
 					$widget?.params?.model?.schema?.properties[property] &&
 					$widget?.params?.model?.schema?.properties[property]?._fetch?.url
 						? $widget?.params?.model?.schema?.properties[property]?._fetch?.url
-						: `api/v1/${$widget?.params?.model?.schema?.properties[property]?._fetch?.api}`
+						: `api/v1/${jsonSchema.properties[property]?.$ref?.api}`
 				}`,
 				headers: {
 					authorization: `Bearer ${credentials?.token}`
-				}
+				},
+				id: jsonSchema.properties[property]?.$ref?.id,
+				label: jsonSchema.properties[property]?.$ref?.value
 			}
+
+			// jsonSchema.properties[property]['_schema'] = {}
+			// jsonSchema.properties[property]['_result'] = {}
+			delete jsonSchema.properties[property]?.$ref
 		}
 
 		if (jsonSchema.properties[property]?.enum_type) {
@@ -89,7 +101,7 @@ export const getJsonSchema = async (jsonSchema, $widget, credentials) => {
 		}
 	})
 
-	// console.log(JSON.stringify(jsonSchema))
+	console.log(JSON.stringify(jsonSchema))
 	return jsonSchema
 }
 
