@@ -101,7 +101,7 @@ export const getJsonSchema = async (jsonSchema, $widget, credentials) => {
 		}
 	})
 
-	console.log(JSON.stringify(jsonSchema))
+	// console.log(JSON.stringify(jsonSchema))
 	return jsonSchema
 }
 
