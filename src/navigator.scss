@@ -564,3 +564,13 @@ div[id^='widget-content-'] > .grid {
 	background-color: rgb(var(--body-bg) / var(--tw-bg-opacity));
 	color: hsl(var(--muted-foreground) / var(--tw-text-opacity));
 }
+
+.editor p,
+.editor ol {
+	font-size: 13px;
+}
+
+.ui.form {
+	font-size: 13px;
+	color: var(--text-heading);
+}
