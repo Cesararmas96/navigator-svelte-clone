@@ -175,7 +175,7 @@
 		border = $widgetStore?.params?.settings?.appearance?.border
 	} else {
 		opacity = 100
-		background = ''
+		background = $widgetStore?.params?.settings?.appearance?.background || ''
 		backgroundRGB = ''
 		color = ''
 		border = false
