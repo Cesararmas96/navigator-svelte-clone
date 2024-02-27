@@ -19,7 +19,7 @@
 
 	const baseUrl = import.meta.env.VITE_API_URL
 	let primaryKey: string = ''
-	const token = $storeUser?.token
+	let token = ''
 	let title: string = ''
 	let description: string = ''
 	let schema: any
@@ -41,6 +41,7 @@
 	}
 
 	$: if ($selectedFormBuilderWidget && $selectedFormBuilderRecord) {
+		token = $storeUser?.token
 		const slug = $selectedFormBuilderWidget.query_slug.slug
 		const conditions = $selectedFormBuilderWidget.conditions
 		const keys = $selectedFormBuilderWidget?.params?.model?.keys || []
