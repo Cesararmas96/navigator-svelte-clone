@@ -333,7 +333,6 @@
 		$dashboard.gridItemsData[sharedData] &&
 		!$dashboard.gridItemsData[sharedData].loaded
 	) {
-		console.log('sharedData', sharedData)
 		const showSharedWidgets = getWidgetAction($widgetActions, 'showSharedWidgets')
 		showSharedWidgets.action(true)
 		$dashboard.gridItemsData[sharedData].loaded = true

@@ -98,7 +98,6 @@
 
 	const showSharedWidgets = (show: boolean) => {
 		dispatch('handleSharedWidgetsVisibility', !show && Boolean($widgetStore.query_slug?.dashboard))
-		console.log('showSharedWidgets', show)
 		// if (show) $widgetStore.fetch = false
 	}
 
