@@ -71,34 +71,36 @@
 	$: $storeDashboard = dashboard
 
 	/* Codigo temporal para simular los widgets con data compartida */
-	$storeDashboard.gridItemsData = {
-		stores: [
-			{
-				store_id: 3397,
-				store_name: 'Miami Gardens-WM - #3397',
-				latitude: 25.935725,
-				longitude: -80.207676
-			},
-			{
-				store_id: 6397,
-				store_name: 'MIAMI-WM-#6397',
-				latitude: 25.623903,
-				longitude: -80.395205
-			},
-			{
-				store_id: 1680,
-				store_name: 'KENDALL-WM  - #1680',
-				latitude: 25.685314,
-				longitude: -80.448545
-			},
-			{
-				store_id: 2814,
-				store_name: 'HIALEAH-WM - #2814',
-				latitude: 25.858609,
-				longitude: -80.325508
-			}
-		]
-	}
+	setTimeout(() => {
+		$storeDashboard.gridItemsData = {
+			stores: [
+				{
+					store_id: 3397,
+					store_name: 'Miami Gardens-WM - #3397',
+					latitude: 25.935725,
+					longitude: -80.207676
+				},
+				{
+					store_id: 6397,
+					store_name: 'MIAMI-WM-#6397',
+					latitude: 25.623903,
+					longitude: -80.395205
+				},
+				{
+					store_id: 1680,
+					store_name: 'KENDALL-WM  - #1680',
+					latitude: 25.685314,
+					longitude: -80.448545
+				},
+				{
+					store_id: 2814,
+					store_name: 'HIALEAH-WM - #2814',
+					latitude: 25.858609,
+					longitude: -80.325508
+				}
+			]
+		}
+	}, 3000)
 
 	$: if (!$storeDashboard.loaded) {
 		filterComponent = null
@@ -240,6 +242,7 @@
 				dashboard.attributes.widget_location || setNewLocations
 					? loadV3Locations(dashboard.widget_location, widgets, cols, isMobile())
 					: loadV2Locations(dashboard.widget_location, dashboard, widgets, cols, isMobile())
+			console.log('items', items)
 
 			$storeDashboard.gridItems = [...items]
 		} catch (error: any) {

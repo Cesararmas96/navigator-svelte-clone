@@ -1,14 +1,18 @@
 <script lang="ts">
 	import { Timeline, TimelineItem } from 'flowbite-svelte'
-	import jsonData from '../../../../../data/widgetTimelineData.json'
-	import { iconColor } from '$lib/helpers/common/common'
-	import { themeColor } from '$lib/stores/preferences'
 	import { getApiData } from '$lib/services/getData'
 	import { sendErrorNotification } from '$lib/stores/toast'
+	import { getContext } from 'svelte'
+	import type { Writable } from 'svelte/store'
+	import Icon from '$lib/components/common/Icon.svelte'
 
 	export let data: any
 
-	let badges: any[] = []
+	const widget: Writable<any> = getContext('widget')
+
+	const itemDef = $widget.format_definition
+
+	let images: any[] = []
 	const baseUrl = import.meta.env.VITE_API_URL
 
 	interface Event {
@@ -18,14 +22,29 @@
 		icon: string
 	}
 
+	// {
+	// 	title: 'reward',
+	// 	description: 'display_name',
+	// 	icon: 'reward_group',
+	// 	date: 'awarded_at'
+	// }
+
 	function orderByDate(events: any[]): Event[] {
-		const parsedEvents = events.map((event) => ({
-			// ...event,
-			title: event.reward,
-			description: event.display_name || event.reward_group || event.message,
-			icon: event.reward_group,
-			date: new Date(event.awarded_at)
-		}))
+		const parsedEvents = events.map((event) => {
+			return typeof event === 'string'
+				? {
+						title: undefined,
+						description: event,
+						icon: undefined,
+						date: new Date()
+				  }
+				: {
+						title: event[itemDef.title],
+						description: event[itemDef.description],
+						icon: event[itemDef.icon],
+						date: new Date(event[itemDef.date])
+				  }
+		})
 
 		parsedEvents.sort((a, b) => a.date.getTime() - b.date.getTime())
 
@@ -42,14 +61,14 @@
 		).catch((error) => {
 			sendErrorNotification(error)
 		})
-		if (response) badges = response
+		if (response) images = response
 	}
 
-	const getBadge = (reward) => {
-		const item = badges.find((item: any) => {
+	const getImage = (event) => {
+		const item = images.find((item: any) => {
 			if (typeof item === 'string') return false
 			const image = item?.filename.split('.png' || '.jpg')
-			if (image[0] === reward.title) return item
+			if (image[0] === event.title) return item
 		})
 		return `${import.meta.env.VITE_API_URL}/static/images/badges/${item?.filename}`
 	}
@@ -62,15 +81,21 @@
 
 <Timeline order="vertical" class="mx-5 my-3">
 	{#each orderedData as el}
-		<TimelineItem title={el.title} date={el.date}>
+		<TimelineItem title={el.title} date={el.title ? el.date : undefined}>
 			<svelte:fragment slot="icon">
 				<span
 					class={`absolute -left-3 flex h-6 w-6 items-center justify-center rounded-full bg-primary text-white ring-4 ring-primary`}
 				>
-					<img src={getBadge(el)} alt="Navigator" />
+					{#if Object.keys(itemDef).length === 0}
+						<Icon icon={$widget.params?.items_icon || 'material-symbols:timer-outline-rounded'} />
+					{:else}
+						<img src={getImage(el)} alt="Navigator" />
+					{/if}
 				</span>
 			</svelte:fragment>
-			<p class="mb-4 text-base font-normal text-gray-500 dark:text-gray-400">{el.description}</p>
+			<p class="mb-4 text-base font-normal text-gray-500 dark:text-gray-400">
+				{@html el.description}
+			</p>
 		</TimelineItem>
 	{/each}
 </Timeline>
