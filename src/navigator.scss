@@ -565,6 +565,71 @@ div[id^='widget-content-'] > .grid {
 	color: hsl(var(--muted-foreground) / var(--tw-text-opacity));
 }
 
+// WeProtectU
+.editor p,
+.editor ol {
+	font-size: 13px;
+}
+
+.ui.form {
+	font-size: 13px;
+	// color: var(--text-heading);
+}
+
+.form__label {
+	font-weight: bold;
+	color: var(--body-color);
+}
+
+.select__header {
+	opacity: 1;
+}
+
+.select__option,
+.select__header,
+.input__main {
+	font-size: 13px;
+}
+
+.input__main::placeholder,
+.textarea__main::placeholder {
+	color: var(--light);
+}
+
+.ui.radio label {
+	font-weight: 500;
+	font-size: 13px;
+	color: var(--body-color);
+}
+
+input[type='radio']:after {
+	width: 15px;
+	height: 15px;
+	border-radius: 15px;
+	top: -2px;
+	left: -1px;
+	position: relative;
+	// background-color: #d1d3d1;
+	content: '';
+	display: inline-block;
+	visibility: visible;
+	// border: 5px solid white;
+}
+
+input[type='radio']:checked:after {
+	width: 18px;
+	height: 18px;
+	border-radius: 18px;
+	top: -2px;
+	left: -2px;
+	position: relative;
+	background-color: rgb(var(--theme-color) / var(--tw-bg-opacity)) !important;
+	content: '';
+	display: inline-block;
+	visibility: visible;
+	border: 2px solid white;
+}
+
 .ag-checkbox-input-wrapper {
 	display: flex !important;
 }
