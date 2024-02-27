@@ -169,7 +169,7 @@ async function handleSubmit(payload: any, type: string, $widget, extra) {
 				})
 			}
 
-			sendSuccessNotification(dataModel?.message || message)
+			sendSuccessNotification($widget?.params?.model?.message || dataModel?.message || message)
 
 			return { response: dataModel || message }
 		} else {

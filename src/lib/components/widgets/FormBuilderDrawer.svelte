@@ -114,13 +114,13 @@
 			})
 		}
 
-		schema = getSchemaComputed(jsonSchema, $selectedFormBuilderRecord)
+		schema = getSchemaComputed(jsonSchema, $selectedFormBuilderWidget)
 	}
 
 	async function handleSubmitFormLocal(handleValidateForm: any, type: string) {
 		const endpoint = `${schema?.endpoint || $selectedFormBuilderWidget.params?.model?.meta}`
 
-		const response = await handleSubmitForm(handleValidateForm, type, $selectedFormBuilderRecord, {
+		const response = await handleSubmitForm(handleValidateForm, type, $selectedFormBuilderWidget, {
 			baseUrl,
 			endpoint,
 			primaryKey
