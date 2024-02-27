@@ -397,6 +397,7 @@
 				model: {
 					meta: 'api/v1/badge_assign',
 					primaryKey: 'reward_id',
+					message: 'Reward Successfully Assigned',
 					schema: {
 						$withoutDefs: true,
 						properties: {
@@ -408,6 +409,9 @@
 								}
 							},
 							user_id: {
+								_fetch: {
+									id: 'user_id'
+								},
 								_schema: {
 									type: 'object',
 									title: 'User',
@@ -468,6 +472,9 @@
 										mobile: {
 											hidden: true
 										},
+										userid: {
+											hidden: true
+										},
 										phones: {
 											hidden: true
 										},
@@ -496,10 +503,12 @@
 											hidden: true
 										},
 										username: {
+											hidden: true
+										},
+										user_id: {
 											primary: true,
-
 											order: 1,
-											title: 'Email'
+											title: 'ID'
 										},
 										associate_id: {
 											hidden: true
