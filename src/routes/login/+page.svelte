@@ -1,60 +1,18 @@
 <script lang="ts">
 	import { Button, Input, Label, P, Tooltip } from 'flowbite-svelte'
-	import { onMount } from 'svelte'
 	import { enhance } from '$app/forms'
-	import {
-		buildImageUrls,
-		extractSubdomain,
-		filterAuthMethods,
-		removeBasicAuth
-	} from '$lib/helpers/login/login'
 	import type { ActionData } from './$types'
 	import Carousel from '$lib/components/common/Carousel.svelte'
-	import { getApiData } from '$lib/services/getData'
 	import Icon from '$lib/components/common/Icon.svelte'
+
+	export let data
+	const { filteredObject, images } = data
 
 	export let form: ActionData
 
 	const apiUrl = import.meta.env.VITE_API_URL
 
-	//TODO: Agregar esta variable en las variables de entorno
-	const apiImages = import.meta.env.VITE_API_URL_IMAGES
 	let showPassword: boolean = false
-
-	const getLoginData = async () => {
-		try {
-			const subdomain = extractSubdomain()
-			const rootLink = `${apiImages}/api/v2/services/images/`
-
-			const [data] = await getApiData(
-				`${apiUrl}/api/v1/clients?subdomain_prefix=${subdomain}`,
-				'GET'
-			)
-			return buildImageUrls(data, rootLink)
-		} catch (error) {
-			console.error('Failed to fetch company data:', error)
-			return null
-		}
-	}
-
-	let filteredObject: Record<string, any> = {}
-	const importLoginMethods = async (data: any) => {
-		const { authMethods } = data
-		try {
-			const totalAuthMethods = await getApiData(`${apiUrl}/api/v1/auth/methods`, 'GET')
-			filteredObject = filterAuthMethods(totalAuthMethods, authMethods)
-			filteredObject = removeBasicAuth(filteredObject)
-			return filteredObject
-		} catch (error) {
-			console.error('Failed to fetch login methods:', error)
-			return null
-		}
-	}
-	let data: any
-	onMount(async () => {
-		data = await getLoginData()
-		importLoginMethods(data)
-	})
 
 	const errorCodes = {
 		'400':
@@ -72,19 +30,19 @@
 	}
 </script>
 
-{#if data}
+{#if images}
 	<main>
 		<div class="main-container dark:text-white-dark min-h-screen text-black">
 			<div class="flex min-h-screen bg-white">
 				<div class="hidden w-full flex-col text-white dark:text-black lg:!flex lg:!w-4/5">
-					<Carousel images={data.slideshowCarouselData} />
+					<Carousel images={images.slideshowCarouselData} />
 				</div>
 				<div class="relative flex w-full items-center justify-center lg:!w-2/5">
 					<div class="w-96 md:p-10">
 						<!--                    <h2 class="mb-3 text-3xl font-bold">Navigator</h2>-->
 						<img
-							src={data.logoClientUrl}
-							alt="{data.client}-logo"
+							src={images.logoClientUrl}
+							alt="{images.client}-logo"
 							style="max-width: 200px"
 							class="ml-auto mr-auto flex"
 						/>

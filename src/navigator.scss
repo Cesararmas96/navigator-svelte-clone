@@ -629,3 +629,7 @@ input[type='radio']:checked:after {
 	visibility: visible;
 	border: 2px solid white;
 }
+
+.ag-checkbox-input-wrapper {
+	display: flex !important;
+}

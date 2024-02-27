@@ -115,7 +115,6 @@ export const getSchemaComputed = (jsonSchema: Record<string, unknown>, $widget) 
 
 export const handleSubmitForm = async (handleValidateForm: any, type: string, $widget, extra) => {
 	const payload = handleValidateForm()
-	console.log(payload)
 	if (!Array.isArray(payload)) {
 		const filteredPayload = { ...payload, ...$widget?.params?.model?.defaults }
 		$widget?.params?.model?._ignore?.forEach((item) => delete filteredPayload[item])

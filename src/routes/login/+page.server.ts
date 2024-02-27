@@ -1,9 +1,33 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { fail, redirect } from '@sveltejs/kit'
 import type { Action, Actions, PageServerLoad } from './$types'
 import { encrypt } from '$lib/helpers/auth/auth'
+import { buildImageUrls, filterAuthMethods, removeBasicAuth } from '$lib/helpers/login/login'
+import { getApiData } from '$lib/services/getData'
 
-export const load: PageServerLoad = async ({ locals }) => {
+export const load: PageServerLoad = async ({ locals, url }) => {
 	if (locals.user) throw redirect(302, '/')
+
+	const apiUrl = import.meta.env.VITE_API_URL
+	const tenant = url.hostname.split('.')[0]
+	const rootLink = `${import.meta.env.VITE_API_URL_IMAGES}/api/v2/services/images/`
+
+	const resp = await getApiData(`${apiUrl}/api/v1/clients?subdomain_prefix=${tenant}`, 'GET')
+	const data = resp[0]
+
+	const images = buildImageUrls(data, rootLink)
+	const { authMethods } = images
+
+	let filteredObject: Record<string, any> = {}
+
+	const totalAuthMethods = await getApiData(`${apiUrl}/api/v1/auth/methods`, 'GET')
+	filteredObject = filterAuthMethods(totalAuthMethods, authMethods)
+	filteredObject = removeBasicAuth(filteredObject)
+
+	return {
+		filteredObject,
+		images
+	}
 }
 
 const login: Action = async ({ cookies, request }) => {
@@ -33,12 +57,14 @@ const login: Action = async ({ cookies, request }) => {
 		cookies.set('_session1', token1, {
 			path: '/',
 			httpOnly: true,
+			sameSite: 'none',
 			secure: true, //import.meta.env.ENV === 'production',
 			maxAge: 60 * 60 * 24 * 30
 		})
 		cookies.set('_session2', token2, {
 			path: '/',
 			httpOnly: true,
+			sameSite: 'none',
 			secure: true, //import.meta.env.ENV === 'production',
 			maxAge: 60 * 60 * 24 * 30
 		})
