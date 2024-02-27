@@ -412,6 +412,9 @@
 								_fetch: {
 									id: 'user_id'
 								},
+								_modal: {
+									title: 'Find Employee'
+								},
 								_schema: {
 									type: 'object',
 									title: 'User',
@@ -485,6 +488,9 @@
 											hidden: true
 										},
 										job_code_title: {
+											hidden: true
+										},
+										alt_email: {
 											hidden: true
 										},
 										preferred_language: {

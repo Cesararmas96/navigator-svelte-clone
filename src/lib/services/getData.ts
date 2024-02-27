@@ -74,8 +74,11 @@ export async function getData(
 		// if (validResponseStatus.includes(response?.status)) {
 
 		if (response?.status === 204) return null
-		if (response?.status === 500)
-			throw new Error(`500 Internal Server Error<br>Server got itself in trouble`)
+		if (response?.status === 500) {
+			const error = `500 Internal Server Error<br>Server got itself in trouble`
+			sendErrorNotification(`Request error: ${response.status}:<br> ${error}`)
+			throw new Error(error)
+		}
 		if (response?.status === 401)
 			throw new Error(`Signature Failed or Expired:<br>Signature verification failed`)
 
