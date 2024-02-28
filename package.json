@@ -5,10 +5,10 @@
 	"scripts": {
 		"dev": "vite dev",
 		"build": "NODE_OPTIONS=--max-old-space-size=4096 vite build",
-		"build:dev": "NODE_OPTIONS=--max-old-space-size=4096 vite build --mode development",
-		"build:qa": "NODE_OPTIONS=--max-old-space-size=4096 vite build --mode qa",
-		"build:staging": "NODE_OPTIONS=--max-old-space-size=4096 vite build --mode staging",
-		"build:production": "NODE_OPTIONS=--max-old-space-size=4096 vite build --mode production",
+		"build:dev": "dotenv -e .env.development NODE_OPTIONS=--max-old-space-size=4096 vite build --mode development",
+		"build:qa": "dotenv -e .env.qa NODE_OPTIONS=--max-old-space-size=4096 vite build --mode qa",
+		"build:staging": "dotenv -e .env.staging NODE_OPTIONS=--max-old-space-size=4096 vite build --mode staging",
+		"build:production": "dotenv -e .env.production NODE_OPTIONS=--max-old-space-size=4096 vite build --mode production",
 		"preview": "vite preview",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
@@ -50,7 +50,8 @@
 		"vite": "^4.4.2",
 		"vite-plugin-iso-import": "^1.0.0",
 		"vitest": "^0.34.4",
-		"vitest-dom": "^0.1.1"
+		"vitest-dom": "^0.1.1",
+		"dotenv": "^16.0.0"
 	},
 	"type": "module",
 	"dependencies": {
