@@ -70,6 +70,38 @@
 
 	$: $storeDashboard = dashboard
 
+	/* Codigo temporal para simular los widgets con data compartida */
+	setTimeout(() => {
+		$storeDashboard.gridItemsData = {
+			stores: [
+				{
+					store_id: 3397,
+					store_name: 'Miami Gardens-WM - #3397',
+					latitude: 25.935725,
+					longitude: -80.207676
+				},
+				{
+					store_id: 6397,
+					store_name: 'MIAMI-WM-#6397',
+					latitude: 25.623903,
+					longitude: -80.395205
+				},
+				{
+					store_id: 1680,
+					store_name: 'KENDALL-WM  - #1680',
+					latitude: 25.685314,
+					longitude: -80.448545
+				},
+				{
+					store_id: 2814,
+					store_name: 'HIALEAH-WM - #2814',
+					latitude: 25.858609,
+					longitude: -80.325508
+				}
+			]
+		}
+	}, 3000)
+
 	$: if (!$storeDashboard.loaded) {
 		filterComponent = null
 		setGridItems($storeDashboard.dashboard_id)
@@ -172,6 +204,7 @@
 		$storeDashboard.gridItems = []
 		try {
 			widgets = await getApiData(`${baseUrl}/api/v2/widgets?dashboard_id=${dashboardId}`, 'GET')
+
 			if (!widgets) return
 			widgets = widgets.map((widget: any) => {
 				widget.widget_slug = widget?.widget_slug || generateSlug(widget.title)
@@ -195,7 +228,7 @@
 				dashboard,
 				widgets,
 				isMobile(),
-				$storeDashboard.widget_location['timestamp'] || 0
+				$storeDashboard.widget_location?.timestamp || 0
 			)!
 			if (items && items.length > 0) {
 				$storeDashboard.gridItems = [...items]
@@ -209,6 +242,7 @@
 				dashboard.attributes.widget_location || setNewLocations
 					? loadV3Locations(dashboard.widget_location, widgets, cols, isMobile())
 					: loadV2Locations(dashboard.widget_location, dashboard, widgets, cols, isMobile())
+			console.log('items', items)
 
 			$storeDashboard.gridItems = [...items]
 		} catch (error: any) {
@@ -363,8 +397,135 @@
 				model: {
 					meta: 'api/v1/badge_assign',
 					primaryKey: 'reward_id',
+					message: 'Reward Successfully Assigned',
 					schema: {
-						$withoutDefs: true
+						$withoutDefs: true,
+						properties: {
+							reward_id: {
+								nullable: false,
+								readOnly: false,
+								$ref: {
+									url: ' '
+								}
+							},
+							user_id: {
+								_fetch: {
+									id: 'user_id'
+								},
+								_modal: {
+									title: 'Find Employee'
+								},
+								_schema: {
+									type: 'object',
+									title: 'User',
+									noHeader: true,
+									properties: {
+										email: {
+											type: 'string',
+											attrs: {
+												format: null,
+												placeholder: null
+											},
+											order: 3,
+											nullable: true,
+											readOnly: false,
+											maxLength: 254
+										},
+										last_name: {
+											type: 'string',
+											attrs: {
+												format: null,
+												placeholder: null
+											},
+											order: 2,
+											nullable: true,
+											readOnly: false
+										},
+										first_name: {
+											type: 'string',
+											attrs: {
+												format: null,
+												placeholder: null
+											},
+											order: 1,
+											nullable: true,
+											readOnly: false
+										}
+									},
+									description: 'View Model for getting Users.'
+								},
+								_result: {
+									columns: {
+										given_name: {
+											hidden: true
+										},
+										display_name: {
+											order: 2,
+											title: 'Name'
+										},
+										email: {
+											order: 1,
+											title: 'Email'
+										},
+										job_title: {
+											order: 4,
+											title: 'Job Title',
+											hidden: true
+										},
+										mobile: {
+											hidden: true
+										},
+										userid: {
+											hidden: true
+										},
+										phones: {
+											hidden: true
+										},
+										last_name: {
+											hidden: true
+										},
+										zammad_created: {
+											hidden: true
+										},
+										job_code_title: {
+											hidden: true
+										},
+										alt_email: {
+											hidden: true
+										},
+										preferred_language: {
+											hidden: true
+										},
+										position_id: {
+											hidden: true
+										},
+										people_id: {
+											hidden: true
+										},
+										office_location: {
+											hidden: true
+										},
+										created_at: {
+											hidden: true
+										},
+										username: {
+											hidden: true
+										},
+										user_id: {
+											primary: true,
+											order: 1,
+											title: 'ID'
+										},
+										associate_id: {
+											hidden: true
+										},
+										associate_oid: {
+											hidden: true
+										}
+									}
+								}
+							}
+						}
 					}
 				}
 			},
@@ -403,13 +564,15 @@
 	const handleWidgetInsert = async (_widget: any) => {
 		loading.set(true)
 		try {
+			const title = `${_widget.title} #${generateRandomString()}`
 			const payload = {
 				program_id: dashboard.program_id,
 				dashboard_id: dashboard.dashboard_id,
-				title: `New Widget - ${_widget.title} #${generateRandomString()}`,
+				title,
 				template_id: _widget.template_id,
 				user_id: $storeUser?.user_id,
 				attributes: {
+					title,
 					user_id: $storeUser?.user_id
 				}
 			}
@@ -462,6 +625,7 @@
 
 	const getSortedItems = (items: any[]) => {
 		return items.sort((a, b) => {
+			if (a.order && b.order) return a.order - b.order
 			if (a.y === b.y) return a.x < b.x ? -1 : 1
 			return a.y < b.y ? -1 : 1
 		})
@@ -511,11 +675,12 @@
 						y={item.y}
 						w={item.w}
 						h={item.h}
-						class="grid-item"
+						class="grid-item {item.data.params.hidden ? 'hidden' : ''}"
 						activeClass="grid-item-active"
 						previewClass="bg-red-500 rounded"
 						resizable={dashboard?.attributes?.user_id === $storeUser?.user_id}
-						movable={true}
+						movable={!dashboard?.attributes?.disable_drag ||
+							dashboard?.attributes?.user_id === $storeUser?.user_id}
 						on:change={(e) => {
 							if (dashboard?.attributes?.user_id === $storeUser?.user_id) changeItemSize(item)
 						}}
@@ -536,6 +701,9 @@
 							on:handleResizable={(e) => {
 								item.data.params.settings.resizable = e.detail.resizable && !e.detail.fixed
 							}}
+							on:handleSharedWidgetsVisibility={(e) => {
+								item.data.params.hidden = e.detail
+							}}
 						>
 							<Widget
 								{widget}
@@ -543,7 +711,8 @@
 								{isToolbarVisible}
 								{isOwner}
 								bind:reload={item.reload}
-								isDraggable={true}
+								isDraggable={!dashboard?.attributes?.disable_drag ||
+									dashboard?.attributes?.user_id === $storeUser?.user_id}
 								on:handleInstanceResize={() => handleResizable(item)}
 							/>
 						</WidgetBox>
@@ -553,24 +722,29 @@
 		{:else}
 			<div class="grid grid-cols-1 gap-y-3 p-2">
 				{#each getSortedItems($storeDashboard.gridItems) as item}
-					<WidgetBox
-						widget={item.data}
-						resized={false}
-						isMobileDevice={true}
-						let:fixed
-						let:isOwner
-						let:isToolbarVisible
-						let:widget
-					>
-						<Widget
-							{widget}
-							{fixed}
-							{isToolbarVisible}
-							{isOwner}
+					<div class:hidden={item.data.params.hidden}>
+						<WidgetBox
+							widget={item.data}
+							resized={false}
 							isMobileDevice={true}
-							bind:reload={item.reload}
-						/>
-					</WidgetBox>
+							let:fixed
+							let:isOwner
+							let:isToolbarVisible
+							let:widget
+							on:handleSharedWidgetsVisibility={(e) => {
+								item.data.params.hidden = e.detail
+							}}
+						>
+							<Widget
+								{widget}
+								{fixed}
+								{isToolbarVisible}
+								{isOwner}
+								isMobileDevice={true}
+								bind:reload={item.reload}
+							/>
+						</WidgetBox>
+					</div>
 				{/each}
 			</div>
 		{/if}

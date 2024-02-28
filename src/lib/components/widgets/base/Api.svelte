@@ -5,7 +5,7 @@
 	import { variablesOperationalProgram } from '$lib/stores/programs'
 	import { getContext } from 'svelte'
 	import type { Writable } from 'svelte/store'
-	import { addWidgetAction } from '$lib/helpers'
+	import { addWidgetAction, getWidgetAction } from '$lib/helpers'
 	import { sendErrorNotification } from '$lib/stores/toast'
 	import { setWidgetTop } from '$lib/helpers/widget/widget-top'
 	import { page } from '$app/stores'
@@ -17,7 +17,7 @@
 
 	const widgetActions: any = getContext('widgetActions')
 	const dashboard: Writable<any> = getContext('dashboard')
-
+	const sharedData = $widget.query_slug?.dashboard
 	const slug = $widget.query_slug?.slug || $widget.params.query?.slug
 	const conditionsRaw = $widget.conditions
 	const method = $widget.params?.ajax?.method || $widget.params?.ajax?.type
@@ -308,16 +308,35 @@
 
 	const fetchRefreshData = () => {
 		$widget.data = null
-		$widget.fetch = false
+		if (!$widget.data && !sharedData) {
+			fetchData()
+		} else if ($widget.data && !sharedData) {
+			data = $widget.data // $dataStore
+		} else if (sharedData && $dashboard.gridItemsData && $dashboard.gridItemsData[sharedData]) {
+			data =
+				$dashboard.gridItemsData && $dashboard.gridItemsData[sharedData]
+					? $dashboard.gridItemsData[sharedData]
+					: []
+
+			if (data) $widget.data = data
+		}
+		$widget.fetch = true
 	}
 
 	$: if (!$widget.fetch) {
-		if (!$widget.data) {
-			fetchData()
-		} else {
-			data = $widget.data // $dataStore
-		}
-		$widget.fetch = true
+		fetchRefreshData()
+	}
+
+	$: if (
+		sharedData &&
+		$dashboard.gridItemsData &&
+		$dashboard.gridItemsData[sharedData] &&
+		!$dashboard.gridItemsData[sharedData].loaded
+	) {
+		const showSharedWidgets = getWidgetAction($widgetActions, 'showSharedWidgets')
+		showSharedWidgets.action(true)
+		$dashboard.gridItemsData[sharedData].loaded = true
+		fetchRefreshData()
 	}
 
 	if ($widget?.params?.filter) {

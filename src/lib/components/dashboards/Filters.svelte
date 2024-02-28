@@ -156,9 +156,9 @@
 </script>
 
 {#if filtersSorted}
-	<div class="grid grid-cols-{cols} gap-4 p-4">
+	<div class="md:grid md:grid-cols-{cols}  md:gap-2 md:p-1">
 		{#each Object.entries(filtersSorted) as [key, value], idx}
-			<div>
+			<div class="mt-4 p-0 pl-2 pr-2 md:mt-0">
 				{#if !value.type}
 					<Single
 						{value}
@@ -176,9 +176,11 @@
 			{#if value.jump}<div class="col-span-{cols - idx - 1}" />{/if}
 		{/each}
 	</div>
-	<div class="border-gay-200 flex flex-row justify-end border-t-[1px] p-4 dark:border-dark-200">
+	<div
+		class="border-gay-200 mt-2 flex flex-row justify-end border-t-[1px] p-4 pr-2 dark:border-dark-200"
+	>
 		<Button
-			class="flex flex-row items-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-white hover:opacity-80 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75"
+			class=" flex flex-row items-center rounded-md bg-primary  px-4 py-2 text-sm font-medium text-white hover:opacity-80 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75"
 			on:click={() => apply()}
 		>
 			<Icon icon="mdi:filter" size="18" classes="mr-1" />

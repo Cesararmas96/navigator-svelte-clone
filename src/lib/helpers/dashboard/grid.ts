@@ -16,15 +16,16 @@ export const loadV2Locations = (
 	cols: number,
 	isMobile: boolean
 ) => {
+	console.log('loadV2Locations')
 	const widgets: any[] = []
 	let x: number = 0
 	let y: number = 0
-
 	if (widgetLocation) {
 		const locations = _dashboard.attributes.cols.split(',') || [_dashboard.attributes.cols]
 		Object.keys(widgetLocation).forEach(function callback(value: any, index: number) {
 			Object.entries(widgetLocation[value]).map(([key, item]: [string, any]) => {
-				const data = _widgets.find((item) => item.widget_id === key) || {}
+				const data = _widgets.find((item) => item.widget_id === key)
+				if (!data) return
 				const title = data.title
 				data.resize_on_load = true
 				let w = !isMobile ? parseInt(locations[index]) * (cols / 12) : cols
@@ -50,10 +51,12 @@ export const loadV3Locations = (
 	cols: number,
 	isMobile: boolean
 ) => {
+	console.log('loadV3Locations')
 	if (!widgetLocation || Object.keys(widgetLocation).length === 0) {
 		let row = 0
 		widgetLocation = {}
 		return _widgets.map((widget: any) => {
+			widget.hidden = widget.query_slug?.dashboard ? true : false
 			widget.resize_on_load = true
 			widgetLocation[widget.title] = {
 				title: widget.title,
@@ -77,8 +80,10 @@ export const loadV3Locations = (
 	// } else {
 	return Object.entries(widgetLocation)
 		.map(([key, item]: [string, any]) => {
-			const data = _widgets.find((item) => item.title === key || item.widget_slug === key) || null
+			const data =
+				_widgets.find((_item) => _item.title === key || _item.widget_slug === key) || null
 			if (!data) return null
+			data.hidden = data.query_slug?.dashboard ? true : false
 			return { title: data.title, ...item, data }
 		})
 		.filter((item) => item !== null)
@@ -110,7 +115,9 @@ export const loadLocalStoredLocations = (
 			})
 			.map(([key, item]: [string, any]) => {
 				if (key === 'timestamp') return null
-				const data = _widgets.find((item) => item.title === key) || {}
+				const data = _widgets.find((item) => item.title === key)
+				if (!data) return null
+				data.hidden = data.query_slug?.dashboard ? true : false
 				return { title: key, ...item, data }
 			})
 			.filter((item) => item !== null)
@@ -315,7 +322,7 @@ export const resizeItem = (item: any, items: any[]) => {
 	const height = header + content + widgetInstances
 	const prevousHeight = maxHeight(item.y, items)
 	if (item.data?.instances?.length > 0) {
-		item._h = item.h
+		item._h = item._h ? item._h : item.h
 		item.h = Math.ceil(height / (rowHeight + 1))
 	} else {
 		if (!item._h) {
@@ -325,6 +332,7 @@ export const resizeItem = (item: any, items: any[]) => {
 			delete item._h
 		}
 	}
+
 	return reorderAfterResize(item, prevousHeight, items)
 }
 
@@ -499,7 +507,7 @@ const reorderAfterResize = (item: any, prevousHeight: number, items: any[]) => {
 	let existInLine: boolean = false
 	items.map((i) => {
 		if (i.y > item.y) {
-			if (existInLine || (item.x >= i.x && item.x <= i.w - 1)) {
+			if (existInLine || (item.x >= i.x && item.x <= i.x + i.w - 1)) {
 				existInLine = true
 				i.y += height
 			}

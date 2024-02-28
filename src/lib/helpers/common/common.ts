@@ -98,6 +98,6 @@ export const iconColor = (themeColor: string | null) => {
 }
 
 export const isIconWhite = (themeColor: string | null) => {
-	const isYellow = themeColor && themeColor === 'yellow'
-	return isDarkMode() || !isYellow
+	const isWhite = themeColor && (themeColor === 'yellow' || themeColor === 'cyan')
+	return isDarkMode() || !isWhite
 }

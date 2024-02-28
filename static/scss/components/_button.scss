@@ -27,6 +27,16 @@
 		}
 	}
 
+	.btn-form {
+		@apply bg-theme
+		text-white;
+
+		&:hover {
+			filter: brightness(0.91);
+			color: white;
+		}
+	}
+
 	.btn-close {
 		@apply h-6
 			w-6

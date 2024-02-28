@@ -73,6 +73,7 @@
 		id={`widget-header-${$widget.widget_id}`}
 		class:mt-1={$widget.temp}
 		class:cursor-move={isDraggable}
+		class:hidden={fixed || !header}
 		class="min-h-8"
 	>
 		{#if !fixed && header}

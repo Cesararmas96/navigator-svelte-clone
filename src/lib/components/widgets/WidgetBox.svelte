@@ -7,6 +7,7 @@
 	import { storeUser } from '$lib/stores'
 	import { themeMode } from '$lib/stores/preferences'
 	import { initWidgetTop } from '$lib/helpers/widget/widget-top'
+	import { merge } from 'lodash-es'
 
 	let isToolbarVisible: boolean = false
 	let fixed: boolean
@@ -16,6 +17,7 @@
 	let color: string = ''
 	let border: boolean
 	let draggable: boolean
+	let showShared: boolean = false
 
 	const dispatch = createEventDispatcher()
 
@@ -94,6 +96,11 @@
 		}, 100)
 	}
 
+	const showSharedWidgets = (show: boolean) => {
+		dispatch('handleSharedWidgetsVisibility', !show && Boolean($widgetStore.query_slug?.dashboard))
+		// if (show) $widgetStore.fetch = false
+	}
+
 	const initActions = () => {
 		const widgetActions: Writable<any[]> = initWidgetActions()
 
@@ -133,6 +140,11 @@
 				$selectedWidgetSettings = null
 			}
 		})
+
+		addWidgetAction(widgetActions, {
+			name: 'showSharedWidgets',
+			action: showSharedWidgets
+		})
 	}
 
 	initActions()
@@ -140,8 +152,12 @@
 
 	// onMount(() => {
 	$widgetStore.instances = []
-	if ($widgetStore.params && !$widgetStore.params?.settings && !$widgetStore.temp) {
-		$widgetStore.params.settings = Object.assign({}, defaultSettings.params.settings)
+	if ($widgetStore.params && !$widgetStore.temp) {
+		$widgetStore.params.settings = merge(
+			{},
+			defaultSettings.params.settings,
+			$widgetStore.params.settings
+		)
 	}
 	$widgetStore.context = 'widget'
 	// })
@@ -159,7 +175,7 @@
 		border = $widgetStore?.params?.settings?.appearance?.border
 	} else {
 		opacity = 100
-		background = ''
+		background = $widgetStore?.params?.settings?.appearance?.background || ''
 		backgroundRGB = ''
 		color = ''
 		border = false
@@ -191,7 +207,7 @@
 	class:widget-drilldown-open={$widgetStore?.instances && $widgetStore?.instances?.length > 0}
 	class:card={!fixed}
 	class:relative={isMobileDevice}
-	class={`justify-content-between widget-bg-color flex h-full w-full flex-col rounded-lg p-1 ${bgTypeClass(
+	class={`justify-content-between widget-bg-color fadeInScaleUpElement flex h-full w-full flex-col rounded-lg p-1 ${bgTypeClass(
 		background
 	)}`}
 	on:mouseenter={() => {
@@ -241,5 +257,23 @@
 	.widget-drilldown-open {
 		box-shadow: rgba(0, 0, 0, 0.35) 0px 0px 15px;
 		z-index: 10;
+	}
+
+	@keyframes fadeInScaleUp {
+		from {
+			opacity: 0;
+			transform: scale(0.95);
+		}
+		to {
+			opacity: 1;
+			transform: scale(1);
+		}
+	}
+
+	.fadeInScaleUpElement {
+		animation-name: fadeInScaleUp;
+		animation-duration: 0.5s;
+		animation-fill-mode: forwards;
+		animation-timing-function: ease-out;
 	}
 </style>

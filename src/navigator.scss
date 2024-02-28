@@ -483,3 +483,175 @@
 	-webkit-filter: drop-shadow(1px 0 0 black);
 	filter: drop-shadow(1px 0 0 black);
 }
+
+// To move css for form builder
+.ui.radio {
+	width: 100%;
+	border: none;
+	margin-bottom: 10px;
+	display: inline-block;
+}
+
+.ui .radio input {
+	width: 16px;
+}
+
+.text-not-white button {
+	color: inherit;
+}
+
+// Widget KPI Cards
+div[id^='widget-content-'] > .grid {
+	// grid-template-columns: repeat(12, minmax(0, 1fr));
+}
+
+@media (max-width: 639px) {
+	div[id^='widget-content-'] > .grid {
+		grid-template-columns: repeat(1, minmax(0, 1fr));
+	}
+}
+
+@media (min-width: 640px) and (max-width: 1023px) {
+	div[id^='widget-content-'] > .grid {
+		grid-template-columns: repeat(6, minmax(0, 1fr));
+	}
+}
+
+@media (min-width: 1024px) {
+	div[id^='widget-content-'] > .grid {
+		grid-template-columns: repeat(12, minmax(0, 1fr));
+	}
+}
+
+// Widget Reward Top
+.rounded-table tr:hover td:nth-child(2),
+.rounded-table tr:hover td:nth-child(3) {
+	transition-duration: 300ms;
+	transition-property: all;
+	transition-timing-function: ease;
+	border: none;
+	@apply bg-theme;
+	transform: translateY(-2px);
+	color: white;
+	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+//Buttons mileage
+.button.button--medium.button--dark {
+	@apply bg-theme;
+}
+
+.search__dialog > form > .form__footer > .search__dialog--footer > form > button.button--dark {
+	font-size: 14px;
+	border: 1px solid rgb(var(--theme-color) / var(--tw-bg-opacity));
+	transition-duration: 0.3s;
+	background-color: white;
+	color: rgb(var(--theme-color) / var(--tw-bg-opacity));
+	font-weight: 500;
+}
+
+.search__dialog
+	> form
+	> .form__footer
+	> .search__dialog--footer
+	> form
+	> button.button--dark:hover {
+	background-color: rgb(var(--theme-color));
+	color: #fff;
+}
+
+.search__dialog > div:nth-child(3) > div > div:nth-of-type(3) button {
+	@apply bg-theme;
+	color: rgb(252, 250, 250);
+}
+
+.data-\[state\=checked\]\:bg-primary[data-state='checked'] {
+	background-color: rgb(var(--theme-color) / var(--tw-bg-opacity)) !important;
+	border: 1px solid rgb(var(--theme-color) / var(--tw-bg-opacity));
+}
+
+.search__dialog {
+	background-color: rgb(var(--body-bg) / var(--tw-bg-opacity));
+	color: hsl(var(--muted-foreground) / var(--tw-text-opacity));
+}
+// WeProtectU
+.editor p,
+.editor ol {
+	font-size: 13px;
+}
+
+.ui.form {
+	font-size: 13px;
+}
+
+// error label
+.form__error {
+	margin-top: 5px;
+	font-size: 11px;
+}
+
+.form__label {
+	font-weight: bold;
+	color: var(--body-color);
+}
+
+[data-theme='dark'] .textarea__main {
+	color: white;
+}
+
+[data-theme='dark'] .select__options {
+	border-color: var(--dark);
+	color: var(--body-color);
+	background-color: rgb(var(--body-bg));
+}
+
+.select__header {
+	opacity: 1;
+}
+
+.select__option,
+.select__header,
+.input__main {
+	font-size: 13px;
+}
+
+.input__main::placeholder,
+.textarea__main::placeholder {
+	color: var(--light);
+}
+
+.ui.radio label {
+	font-weight: 500;
+	font-size: 13px;
+	color: var(--body-color);
+}
+
+input[type='radio']:after {
+	width: 15px;
+	height: 15px;
+	border-radius: 15px;
+	top: -2px;
+	left: -1px;
+	position: relative;
+	content: '';
+	display: inline-block;
+	visibility: visible;
+}
+
+input[type='radio']:checked:after {
+	width: 18px;
+	height: 18px;
+	border-radius: 18px;
+	top: -2px;
+	left: -2px;
+	position: relative;
+	background-color: rgb(var(--theme-color) / var(--tw-bg-opacity)) !important;
+	content: '';
+	display: inline-block;
+	visibility: visible;
+	border: 2px solid white;
+}
+
+.ag-checkbox-input-wrapper {
+	display: flex !important;
+}

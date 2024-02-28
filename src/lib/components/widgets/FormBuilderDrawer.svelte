@@ -19,7 +19,7 @@
 
 	const baseUrl = import.meta.env.VITE_API_URL
 	let primaryKey: string = ''
-	const token = $storeUser?.token
+	let token = ''
 	let title: string = ''
 	let description: string = ''
 	let schema: any
@@ -41,6 +41,7 @@
 	}
 
 	$: if ($selectedFormBuilderWidget && $selectedFormBuilderRecord) {
+		token = $storeUser?.token
 		const slug = $selectedFormBuilderWidget.query_slug.slug
 		const conditions = $selectedFormBuilderWidget.conditions
 		const keys = $selectedFormBuilderWidget?.params?.model?.keys || []
@@ -68,7 +69,7 @@
 		const prepareJsonSchema = await getApiData(`${slug}:meta`, 'GET', conditions)
 
 		if (prepareJsonSchema) {
-			const jsonSchema = await getJsonSchema(prepareJsonSchema, $selectedFormBuilderRecord, {
+			const jsonSchema = await getJsonSchema(prepareJsonSchema, $selectedFormBuilderWidget, {
 				baseUrl,
 				token
 			})
@@ -114,13 +115,13 @@
 			})
 		}
 
-		schema = getSchemaComputed(jsonSchema, $selectedFormBuilderRecord)
+		schema = getSchemaComputed(jsonSchema, $selectedFormBuilderWidget)
 	}
 
 	async function handleSubmitFormLocal(handleValidateForm: any, type: string) {
 		const endpoint = `${schema?.endpoint || $selectedFormBuilderWidget.params?.model?.meta}`
 
-		const response = await handleSubmitForm(handleValidateForm, type, $selectedFormBuilderRecord, {
+		const response = await handleSubmitForm(handleValidateForm, type, $selectedFormBuilderWidget, {
 			baseUrl,
 			endpoint,
 			primaryKey
@@ -141,18 +142,20 @@
 	id="sidebarSettings"
 	class="w-[350px] p-0"
 >
-	<div class="sticky top-0 z-10 flex w-full flex-col bg-inherit bg-white p-2 dark:bg-gray-800">
+	<div
+		class="sticky top-0 z-10 flex w-full flex-col bg-inherit bg-white pl-2 pr-2 pt-2 dark:bg-gray-800"
+	>
 		<div class="mb-1 flex items-center">
 			<h5
 				id="drawer-label"
-				class=" inline-flex items-center text-base font-semibold text-gray-500 dark:text-gray-400"
+				class="ml-0 inline-flex items-center text-lg font-semibold text-gray-500 dark:text-gray-400"
 			>
 				<Icon icon="mdi:widgets-outline" classes="mr-1" size="20px" />
 				{title}
 			</h5>
 			<CloseButton on:click={() => close()} class="dark:text-white" />
 		</div>
-		<div class="px-2 pb-1 text-sm text-gray-500 dark:text-gray-400">
+		<div class=" ml-1 text-lg text-gray-500 dark:text-gray-400">
 			{description}
 		</div>
 	</div>
@@ -161,7 +164,7 @@
 		<div class="flex h-[88%] flex-col">
 			<div class="relative flex-grow">
 				<div class="absolute h-full w-full overflow-y-auto">
-					<div class="px-4 pb-4">
+					<div class=" px-4 pb-4 pt-0">
 						<Form {schema}>
 							<div slot="buttons-header" let:handleValidateForm class="hidden">
 								{#if $selectedFormBuilderRecord?.action === 'new'}
@@ -234,7 +237,11 @@
 						{/if}
 
 						{#if schema && schema.settings && schema.settings.showCancel}
-							<Button class=" mt-1 w-full rounded text-sm " outline on:click={() => close()}>
+							<Button
+								class=" mt-1 w-full rounded text-sm transition dark:bg-slate-50"
+								outline
+								on:click={() => close()}
+							>
 								Cancel
 							</Button>
 						{/if}

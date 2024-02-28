@@ -6,18 +6,21 @@
 	import { themeColor, themeMode } from '$lib/stores/preferences'
 	import { page } from '$app/stores'
 	import { iconColor, isIconWhite } from '$lib/helpers/common/common'
-	import AnonymousSupport from '../header/AnonymousSupport.svelte'
+	// import AnonymousSupport from '../header/AnonymousSupport.svelte'
 
 	$: showToggle = $page.route.id?.includes('programs')
 	const toggleDrawer = () => {
 		$sidebarMin = true
 		$menuHidden = !$menuHidden
 	}
+
+	let _iconColor = iconColor($themeColor)
+	$: if ($themeColor || $themeMode) _iconColor = iconColor($themeColor)
 </script>
 
 <header
 	class="relative z-20 flex h-16 flex-shrink-0 items-center rounded-b-lg bg-theme shadow-md shadow-theme/20 dark:bg-[#1b2931] dark:text-heading dark:shadow-none print:hidden"
-	class:text-white={!isIconWhite($themeColor)}
+	class:text-white={isIconWhite($themeColor)}
 >
 	<!-- Logo -->
 	<div class="flex flex-shrink-0 items-center px-5 lg:w-[var(--sidebar-width)]">
@@ -36,17 +39,23 @@
 				<!-- <Icon icon="tabler:layout-sidebar" size="20px" classes="btn-sidebar-toggle" /> -->
 			</button>
 		{/if}
-		<NavBrand href="/home" class="">
-			<span class="ml-4 self-center whitespace-nowrap text-xl font-semibold dark:text-white">
+		<NavBrand class="">
+			<span class=" ml-4 self-center whitespace-nowrap text-3xl font-extrabold dark:text-white">
 				{#if $page.params.programs}
-					<img
-						src="{import.meta.env.VITE_BASE_URL}/assets/img/programs/{$page.params
-							.programs}/sidebar.png"
-						alt="logo {$page.params.programs}"
-						id="logo"
-						class={`${$page.params.programs}_${$themeColor}`}
-						width="120"
-					/>
+					{#if $page.data.program?.attributes?.logo_text}
+						<span class="logo-text color{iconColor($themeColor)}"
+							>{$page.data.program.attributes.logo_text}</span
+						>
+					{:else}
+						<img
+							src="{import.meta.env.VITE_BASE_URL}/assets/img/programs/{$page.params
+								.programs}/sidebar.png"
+							alt="logo {$page.params.programs}"
+							id="logo"
+							class={`${$page.params.programs}_${$themeColor}`}
+							width="120"
+						/>
+					{/if}
 				{:else}
 					<img src="/images/header-logo-troc-{$themeMode}.png" alt="Navigator" width="120" />
 				{/if}
@@ -80,28 +89,38 @@
 		<li
 			id="preferences"
 			class="dropdown-header mx-1 block"
-			class:hidden={$page.data.trocModule?.attributes?.hide_settings}
+			class:hidden={$page.data.program?.attributes?.hide_settings}
 		>
 			<Preferences />
 		</li>
 
 		<!-- Profile -->
-		<li class="relative mx-1 md:block" class:hidden={$page.data.trocModule?.attributes?.hide_menu}>
+		<li class="relative mx-1 md:block" class:hidden={$page.data.program?.attributes?.hide_menu}>
 			<Profile />
 		</li>
 
-		<li class:hidden={$page.data.trocModule?.attributes?.hide_ticket}>
+		<!-- <li class:hidden={$page.data.program?.attributes?.hide_ticket}>
 			<AnonymousSupport />
-		</li>
+		</li> -->
 
-		<li class:hidden={$page.data.trocModule?.attributes?.hide_support}>
+		<li class:hidden={$page.data.program?.attributes?.hide_support}>
 			<a
 				href="https://support.trocdigital.io/"
 				target="_blank"
 				class="icon mx-2 grid h-6 w-6 place-content-center text-2xl font-light hover:bg-white/10 aria-expanded:bg-white/20"
 			>
-				<img src="/images/icons/support{iconColor($themeColor)}.svg" alt="Navigator" />
+				<img src="/images/icons/support{_iconColor}.svg" alt="Navigator" />
 			</a>
 		</li>
 	</ul>
 </header>
+
+<style>
+	.logo-text {
+		font-family: Arial, Helvetica, sans-serif;
+		font-size: 1.6rem;
+	}
+	.color-white {
+		color: white;
+	}
+</style>

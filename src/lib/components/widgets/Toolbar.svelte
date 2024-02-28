@@ -57,8 +57,8 @@
 	}
 
 	let toolbarItems
-	let listOutOfMenu
-	let listInMenu
+	let listOutOfMenu: any[] = []
+	let listInMenu: any[] = []
 
 	let modal: any = getContext('modal')
 
@@ -287,6 +287,8 @@
 			}
 		}
 
+		if (!$widget?.params?.settings?.toolbar?.show) return
+
 		listOutOfMenu = Object.keys(toolbarItems).filter(
 			(item) => toolbarItems[item].show && !toolbarItems[item].showInMenu
 		)
@@ -320,32 +322,33 @@
 
 			{#if !toolbar.help && $widget.description}<ToolbarHelp helpText={$widget.description} />{/if}
 
-			<Tooltip
-				placement="bottom"
-				class={`z-10 ${isMobileDevice ? 'hidden' : ''}`}
-				triggeredBy="#more-actions">More</Tooltip
-			>
-			<button
-				id="more-actions"
-				type="button"
-				class="icon btn hover:bg-light-100 dark:hover:bg-dark-200"
-				aria-expanded="false"
-				aria-haspopup="true"
-			>
-				<Icon icon="tabler:dots-vertical" size="18" />
-			</button>
-			<Dropdown class="w-36" bind:open={menuOpen}>
-				{#each listInMenu as item}
-					<svelte:component
-						this={toolbarItems[item].component}
-						showInMenu={toolbarItems[item].showInMenu}
-						item={toolbarItems[item].item}
-						{isMobileDevice}
-						on:itemClick={() => (menuOpen = false)}
-					/>
-				{/each}
-			</Dropdown>
-
+			{#if listInMenu.length > 0}
+				<Tooltip
+					placement="bottom"
+					class={`z-10 ${isMobileDevice ? 'hidden' : ''}`}
+					triggeredBy="#more-actions">More</Tooltip
+				>
+				<button
+					id="more-actions"
+					type="button"
+					class="icon btn hover:bg-light-100 dark:hover:bg-dark-200"
+					aria-expanded="false"
+					aria-haspopup="true"
+				>
+					<Icon icon="tabler:dots-vertical" size="18" />
+				</button>
+				<Dropdown class="w-36" bind:open={menuOpen}>
+					{#each listInMenu as item}
+						<svelte:component
+							this={toolbarItems[item].component}
+							showInMenu={toolbarItems[item].showInMenu}
+							item={toolbarItems[item].item}
+							{isMobileDevice}
+							on:itemClick={() => (menuOpen = false)}
+						/>
+					{/each}
+				</Dropdown>
+			{/if}
 			{#if isWidgetOwner || $widget.temp || ($widget.cloned && !$widget.shared)}
 				<ToolbarClose />
 			{/if}

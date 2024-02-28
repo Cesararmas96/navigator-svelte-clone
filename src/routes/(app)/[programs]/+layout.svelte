@@ -9,6 +9,9 @@
 	import { storeUser } from '$lib/stores/session.js'
 	import { page } from '$app/stores'
 	import { postData } from '$lib/services/getData.js'
+	import { isIconWhite } from '$lib/helpers/common/common.js'
+	import { themeColor } from '$lib/stores/preferences.js'
+	import ChatGoogle from '$lib/components/common/ChatGoogle.svelte'
 
 	export let data
 	$: $storeModule = data.trocModule
@@ -51,7 +54,11 @@
 
 <Sidebar menu={data.menu} />
 
-<div id="content" class={$sidebarMin ? 'content-alt' : ''}>
+<div
+	id="content"
+	class={$sidebarMin ? 'content-alt' : ''}
+	class:text-not-white={!isIconWhite($themeColor)}
+>
 	<Breadcrumb />
 
 	<div data-simplebar>
@@ -63,3 +70,7 @@
 		</main>
 	</div>
 </div>
+
+{#if data.program?.attributes?.chat_google}
+	<ChatGoogle />
+{/if}
