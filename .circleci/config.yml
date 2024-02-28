@@ -12,8 +12,7 @@ branch_filters: &branch_filters
     branches:
       only:
         - main
-        - dev
-        - develop        
+        - develop
 
 parameters:
   env-tag:
@@ -29,11 +28,13 @@ parameters:
     default: "us-east-2"
     type: string
 
+environment:
+  DOCKER_BUILDKIT: 1
+
 jobs:
   build-docker-image:
     machine:
       image: ubuntu-2004:202201-02
-    resource_class: medium
     parameters:
       env-tag:
         type: string
@@ -61,27 +62,45 @@ jobs:
             sudo su root -c "ssh-keyscan -H github.com >> /etc/ssh/ssh_known_hosts" 
 
       - run:
+          name: Build and tag Docker image
+          command: |
+            docker build -t image:latest .
+            docker tag image:latest <<pipeline.parameters.ecr>>:<< pipeline.number >>
+            docker tag image:latest <<pipeline.parameters.ecr>>:<<parameters.env-tag>>
+      - run:
           name: Login to Amazon ECR
           command: |
             aws ecr get-login-password --region <<pipeline.parameters.region>> | docker login --username AWS --password-stdin <<pipeline.parameters.ecr>>
-
-      - run:
-          name: Build and tag Docker image
-          command: |
-            docker build -f Dockerfile-<<parameters.env-tag>> -t image:latest .
-            docker tag image:latest <<pipeline.parameters.ecr>>:<< pipeline.number >>
-            docker tag image:latest <<pipeline.parameters.ecr>>:<<parameters.env-tag>>
       - run:
           name: Push Docker image to Amazon ECR
           command: |
             docker push <<pipeline.parameters.ecr>>:<< pipeline.number >>
             docker push <<pipeline.parameters.ecr>>:<<parameters.env-tag>>
 
+  build-qa-docker-image:
+    machine:
+      image: ubuntu-2004:202201-02
+    parameters:
+      env-tag:
+        type: string
+        default: "qa"
+    steps:
+      - checkout
+      - run: 
+          name: Install dependencies
+          command: |
+            # Install dependencies and config env.
+      - run:
+          name: Build and tag Docker image for QA
+          command: |
+            docker build -f Dockerfile-qa -t image:<< parameters.env-tag >> .
+            docker tag image:<< parameters.env-tag >> << pipeline.parameters.ecr >>:<< pipeline.number >>
+            docker tag image:<< parameters.env-tag >> << pipeline.parameters.ecr >>:<< parameters.env-tag >>
+
 
   deploy-kube-service: 
     machine:
       image: ubuntu-2004:202201-02
-    resource_class: medium
     parameters:
       env-tag:
         type: string
@@ -126,13 +145,25 @@ jobs:
       - telegram/notify:
           message: Finish Build and Deploy <<pipeline.parameters.service>>-<<parameters.env-tag>>:$CIRCLE_BUILD_NUM
 
- 
+  
+  tag-image:
+    machine:
+      image: ubuntu-2004:202201-02
+    parameters:
+      env-tag:
+        type: string
+    steps:
+      - aws-ecr/tag-image:
+          repo: "navigator-svelte-tf"
+          source-tag: "\"<< pipeline.number >>\""
+          target-tag: <<parameters.env-tag>>    
+        
 workflows:
   build-and-deploy-navigator-svelte:
     jobs:
       - build-docker-image:
           <<: *branch_filters
-          name: "build-svelte-dev"
+          name: "build-navigator-svelte"
           env-tag: "dev"
           context: 
             - navigator-dev
@@ -145,21 +176,21 @@ workflows:
           context:
             - navigator-dev
           requires: 
-            - build-svelte-dev
+            - build-navigator-svelte
       - approve-qa:
           <<: *branch_filters
           name: "approve-navigator-svelte-qa"
           type: approval
           requires: 
-            - deploy-navigator-svelte-dev
-      - build-docker-image:
+            - deploy-navigator-svelte-dev       
+      - tag-image: 
           <<: *branch_filters
-          name: "build-svelte-qa"
+          name: "tag-image-with-qa"
           env-tag: "qa"
           context:
             - navigator-dev
-          requires:
-            - approve-navigator-svelte-qa           
+          requires: 
+            - approve-navigator-svelte-qa
       - deploy-kube-service:
           <<: *branch_filters
           name: "deploy-navigator-svelte-qa"
@@ -169,44 +200,43 @@ workflows:
           context: 
             - navigator-dev
           requires:
-            - build-svelte-qa
+            - tag-image-with-qa
       - approve-staging:
           <<: *branch_filters
           name: "approve-navigator-svelte-staging"
           type: approval
           requires: 
             - deploy-navigator-svelte-qa
-      - build-docker-image:
+      - tag-image: 
           <<: *branch_filters
-          name: "build-svelte-staging"
+          name: "tag-image-with-staging"
           env-tag: "staging"
           context:
             - navigator-dev
-          requires:
+          requires: 
             - approve-navigator-svelte-staging
       - deploy-kube-service:
           <<: *branch_filters
           name: "deploy-navigator-svelte-staging"
           kubeconfig-secret: "troc-services-kubeconfig"
           env-tag: "staging"
-          vpn-target: "https://redash.internal-dev.trocdigital.io"
           context: 
             - navigator-dev
           requires:
-            - build-svelte-staging
+            - tag-image-with-staging
       - approve-production:
           <<: *branch_filters
           name: "approve-navigator-svelte-production"
           type: approval
           requires: 
             - deploy-navigator-svelte-staging
-      - build-docker-image:
+      - tag-image: 
           <<: *branch_filters
-          name: "build-svelte-production"
+          name: "tag-image-with-production"
           env-tag: "production"
           context:
             - navigator-dev
-          requires:
+          requires: 
             - approve-navigator-svelte-production
       - deploy-kube-service:
           <<: *branch_filters
@@ -217,4 +247,4 @@ workflows:
           context: 
             - navigator-production
           requires:
-           - build-svelte-production
+            - tag-image-with-production
