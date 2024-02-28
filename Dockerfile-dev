@@ -1,7 +1,7 @@
 FROM node:18-alpine AS navigator-svelte
 WORKDIR /app
 COPY . .
-RUN npm install -g pnpm && \
+RUN npm install -g pnpm dotenv && \
     pnpm install
 RUN pnpm run build:dev
 RUN rm -f pnpm-lock.yaml && \
