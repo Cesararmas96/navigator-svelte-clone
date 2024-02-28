@@ -550,6 +550,16 @@ div[id^='widget-content-'] > .grid {
 	font-weight: 500;
 }
 
+.search__dialog
+	> form
+	> .form__footer
+	> .search__dialog--footer
+	> form
+	> button.button--dark:hover {
+	background-color: rgb(var(--theme-color));
+	color: #fff;
+}
+
 .search__dialog > div:nth-child(3) > div > div:nth-of-type(3) button {
 	@apply bg-theme;
 	color: rgb(252, 250, 250);
@@ -564,7 +574,6 @@ div[id^='widget-content-'] > .grid {
 	background-color: rgb(var(--body-bg) / var(--tw-bg-opacity));
 	color: hsl(var(--muted-foreground) / var(--tw-text-opacity));
 }
-
 // WeProtectU
 .editor p,
 .editor ol {
@@ -573,12 +582,27 @@ div[id^='widget-content-'] > .grid {
 
 .ui.form {
 	font-size: 13px;
-	// color: var(--text-heading);
+}
+
+// error label
+.form__error {
+	margin-top: 5px;
+	font-size: 11px;
 }
 
 .form__label {
 	font-weight: bold;
 	color: var(--body-color);
+}
+
+[data-theme='dark'] .textarea__main {
+	color: white;
+}
+
+[data-theme='dark'] .select__options {
+	border-color: var(--dark);
+	color: var(--body-color);
+	background-color: rgb(var(--body-bg));
 }
 
 .select__header {
@@ -609,11 +633,9 @@ input[type='radio']:after {
 	top: -2px;
 	left: -1px;
 	position: relative;
-	// background-color: #d1d3d1;
 	content: '';
 	display: inline-block;
 	visibility: visible;
-	// border: 5px solid white;
 }
 
 input[type='radio']:checked:after {
