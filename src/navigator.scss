@@ -574,7 +574,6 @@ div[id^='widget-content-'] > .grid {
 	background-color: rgb(var(--body-bg) / var(--tw-bg-opacity));
 	color: hsl(var(--muted-foreground) / var(--tw-text-opacity));
 }
-
 // WeProtectU
 .editor p,
 .editor ol {
@@ -592,6 +591,10 @@ div[id^='widget-content-'] > .grid {
 .form__label {
 	font-weight: bold;
 	color: var(--body-color);
+}
+
+[data-theme='dark'] .textarea__main {
+	color: white;
 }
 
 [data-theme='dark'] .select__options {
