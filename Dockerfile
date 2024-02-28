@@ -1,8 +1,7 @@
 FROM node:18-alpine AS navigator-svelte
 WORKDIR /app
 COPY . .
-RUN npm install -g pnpm dotenv && \
-    pnpm install
+RUN npm install -g pnpm  && pnpm install -g dotenv && pnpm install 
 RUN pnpm run build:dev
 RUN rm -f pnpm-lock.yaml && \
     rm -rf src/ static/ docker-compose.yml
