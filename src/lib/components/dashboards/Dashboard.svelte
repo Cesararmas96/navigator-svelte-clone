@@ -415,45 +415,6 @@
 								_modal: {
 									title: 'Find Employee'
 								},
-								_schema: {
-									type: 'object',
-									title: 'User',
-									noHeader: true,
-									properties: {
-										email: {
-											type: 'string',
-											attrs: {
-												format: null,
-												placeholder: null
-											},
-											order: 3,
-											nullable: true,
-											readOnly: false,
-											maxLength: 254
-										},
-										last_name: {
-											type: 'string',
-											attrs: {
-												format: null,
-												placeholder: null
-											},
-											order: 2,
-											nullable: true,
-											readOnly: false
-										},
-										first_name: {
-											type: 'string',
-											attrs: {
-												format: null,
-												placeholder: null
-											},
-											order: 1,
-											nullable: true,
-											readOnly: false
-										}
-									},
-									description: 'View Model for getting Users.'
-								},
 								_result: {
 									columns: {
 										given_name: {

@@ -11,8 +11,6 @@
 	import Icon from '../common/Icon.svelte'
 	import { menuHidden, sidebarMin } from '$lib/stores/sidebar'
 	import { onMount } from 'svelte'
-	import { storeUser } from '$lib/stores'
-
 	interface menuItem {
 		type: string
 		name: string
@@ -100,7 +98,7 @@
 >
 	<SidebarWrapper divClass="px-3 py-4" data-simplebar>
 		<SidebarGroup>
-			{#if !$storeUser.next}
+			{#if $page.data.tenant === 'navigator' || $page.data.tenant === 'navigator-new'}
 				<SidebarItem
 					label={$page.data.programs.length > 1 ? 'Return to programs' : 'Hold sidebar'}
 					href="/home"

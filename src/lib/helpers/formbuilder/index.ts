@@ -4,6 +4,8 @@ import { openModal } from '$lib/helpers/common/modal'
 import { merge } from 'lodash-es'
 import { addInstance, clearInstances } from '$lib/helpers/widget/instances'
 
+let $defs
+
 export const getJsonSchema = async (jsonSchema, $widget, credentials) => {
 	jsonSchema = getSchemaComputed(jsonSchema, $widget)
 	jsonSchema['noHeader'] = true
@@ -59,7 +61,23 @@ export const getJsonSchema = async (jsonSchema, $widget, credentials) => {
 				label: jsonSchema.properties[property]?.$ref?.value
 			}
 
-			// jsonSchema.properties[property]['_schema'] = {}
+			if ($defs && $defs[property] && jsonSchema.properties[property]['ui:widget:filterby']) {
+				const _schema = {
+					type: 'object',
+					title: '',
+					noHeader: true,
+					properties: {},
+					description: ''
+				}
+				jsonSchema.properties[property]['ui:widget:filterby'].map((item) => {
+					if ($defs[property]?.properties[item]) {
+						_schema.properties[item] = $defs[property].properties[item]
+					}
+				})
+
+				jsonSchema.properties[property]['_schema'] = _schema
+			}
+
 			// jsonSchema.properties[property]['_result'] = {}
 			delete jsonSchema.properties[property]?.$ref
 		}
@@ -107,6 +125,7 @@ export const getJsonSchema = async (jsonSchema, $widget, credentials) => {
 
 export const getSchemaComputed = (jsonSchema: Record<string, unknown>, $widget) => {
 	if ($widget?.params?.model?.schema?.$withoutDefs && jsonSchema?.$defs) {
+		$defs = jsonSchema.$defs
 		delete jsonSchema.$defs
 	}
 
