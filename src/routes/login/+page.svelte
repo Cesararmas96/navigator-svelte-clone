@@ -132,7 +132,7 @@
 									{:else}
 										<li>
 											<Button
-												href={`${apiUrl}${method.uri}?redirect_uri=${redirecURI}}`}
+												href={`${apiUrl}${method.uri}?redirect_uri=${redirecURI}`}
 												outline
 												color={method.color || 'light'}
 												class="ml-auto mr-auto flex w-full"

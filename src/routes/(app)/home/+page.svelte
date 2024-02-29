@@ -3,7 +3,6 @@
 	import Icon from '$lib/components/common/Icon.svelte'
 	import Loading from '$lib/components/common/Loading.svelte'
 	import Card from '$lib/components/home/Card.svelte'
-	import { getApiData } from '$lib/services/getData.js'
 	import { storePrograms } from '$lib/stores/programs'
 	import { storeUser } from '$lib/stores/session.js'
 	import { Input } from 'flowbite-svelte'
@@ -13,7 +12,7 @@
 	$storePrograms = data.programs
 	$storeUser = data.user
 
-	const types = data.programType.map((type) => {
+	const types = data.programType?.map((type) => {
 		return {
 			label: type.name,
 			value: type.id
@@ -26,7 +25,7 @@
 	function filterCategories() {
 		filteredTemplates = []
 		searchTerm = searchTerm.toLowerCase()
-		const aux = data.programs.filter((program) => {
+		const aux = data.programs?.filter((program) => {
 			return (
 				program.program_name.toLowerCase().includes(searchTerm) &&
 				(!selectedValue || program.program_type_id == selectedValue)
@@ -39,7 +38,7 @@
 	}
 	// let users
 	onMount(async () => {
-		filteredTemplates = data.programs.sort(function (program: any, program2: any) {
+		filteredTemplates = data.programs?.sort(function (program: any, program2: any) {
 			return program.program_id - program2.program_id
 		})
 	})
