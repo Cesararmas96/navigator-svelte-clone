@@ -13,7 +13,7 @@
 
 	const apiUrl = import.meta.env.VITE_API_URL
 
-	const redirecURI = $page.url.origin
+	const redirecURI = `${$page.url.origin}/login/callback`
 
 	let showPassword: boolean = false
 
