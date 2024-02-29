@@ -8,6 +8,7 @@ export const load: PageServerLoad = async ({ locals, cookies }) => {
 	const half = Math.ceil(locals.user.token.length / 2)
 	const token1 = encrypt(locals.user.token.slice(0, half))
 	const token2 = encrypt(locals.user.token.slice(half))
+
 	cookies.set('_session1', token1, {
 		path: '/',
 		httpOnly: true,
@@ -15,6 +16,7 @@ export const load: PageServerLoad = async ({ locals, cookies }) => {
 		secure: true, //import.meta.env.ENV === 'production',
 		maxAge: 60 * 60 * 24 * 30
 	})
+
 	cookies.set('_session2', token2, {
 		path: '/',
 		httpOnly: true,
@@ -22,12 +24,16 @@ export const load: PageServerLoad = async ({ locals, cookies }) => {
 		secure: true, //import.meta.env.ENV === 'production',
 		maxAge: 60 * 60 * 24 * 30
 	})
-	cookies.set('_program', locals.user.next, {
-		path: '/',
-		httpOnly: true,
-		sameSite: 'none',
-		secure: true, //import.meta.env.ENV === 'production',
-		maxAge: 60 * 60
-	})
-	if (locals.user.next) throw redirect(302, `/${locals.user.next}`)
+
+	if (locals.user?.next) {
+		cookies.set('_program', locals.user.next, {
+			path: '/',
+			httpOnly: true,
+			sameSite: 'none',
+			secure: true, //import.meta.env.ENV === 'production',
+			maxAge: 60 * 60
+		})
+		throw redirect(302, `/${locals.user.next}`)
+	}
+	throw redirect(302, '/')
 }
