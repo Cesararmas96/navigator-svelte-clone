@@ -8,7 +8,7 @@ export const load = async ({ params, fetch, locals, url }) => {
 
 	const urlBase = import.meta.env.VITE_API_URL
 
-	const token = url.searchParams.get('token') || locals.user?.token
+	const token = locals.user?.token
 	const headers = token ? { authorization: `Bearer ${token}` } : {}
 
 	const dashboard = await getApiData(
