@@ -38,6 +38,22 @@ export const handle: Handle = async ({ event, resolve }) => {
 				}
 			})
 			session = await rawSession.json()
+			const half = Math.ceil(token.length / 2)
+			const token1 = encrypt(token.slice(0, half))
+			const token2 = encrypt(token.slice(half))
+
+			event.cookies.set('_session1', token1, {
+				path: '/',
+				httpOnly: true,
+				secure: true, //import.meta.env.ENV === 'production',
+				maxAge: 60 * 60 * 24 * 30
+			})
+			event.cookies.set('_session2', token2, {
+				path: '/',
+				httpOnly: true,
+				secure: true, //import.meta.env.ENV === 'production',
+				maxAge: 60 * 60 * 24 * 30
+			})
 		} else if (troctoken) {
 			const rawSession = await fetch(
 				`${import.meta.env.VITE_API_URL}/api/v1/login?auth=${troctoken}`,
