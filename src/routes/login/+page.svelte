@@ -4,6 +4,7 @@
 	import type { ActionData } from './$types'
 	import Carousel from '$lib/components/common/Carousel.svelte'
 	import Icon from '$lib/components/common/Icon.svelte'
+	import { page } from '$app/stores'
 
 	export let data
 	const { filteredObject, images } = data
@@ -11,6 +12,8 @@
 	export let form: ActionData
 
 	const apiUrl = import.meta.env.VITE_API_URL
+
+	const redirecURI = $page.url.origin
 
 	let showPassword: boolean = false
 
@@ -119,9 +122,7 @@
 								{#each Object.values(filteredObject) as method}
 									{#if method.name === 'ADFSAuth'}
 										<Button
-											href={`${apiUrl}${method.uri}?redirect_uri=${
-												import.meta.env.VITE_RESPONSE_URI
-											}`}
+											href={`${apiUrl}${method.uri}?redirect_uri=${redirecURI}`}
 											outline
 											color={method.color || 'light'}
 											class="ml-auto mr-auto flex w-full"
@@ -131,9 +132,7 @@
 									{:else}
 										<li>
 											<Button
-												href={`${apiUrl}${method.uri}?redirect_uri=${
-													import.meta.env.VITE_RESPONSE_URI
-												}}`}
+												href={`${apiUrl}${method.uri}?redirect_uri=${redirecURI}}`}
 												outline
 												color={method.color || 'light'}
 												class="ml-auto mr-auto flex w-full"
