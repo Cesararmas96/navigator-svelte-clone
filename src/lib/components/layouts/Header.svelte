@@ -14,8 +14,6 @@
 		$menuHidden = !$menuHidden
 	}
 
-	console.log($page)
-
 	let _iconColor = iconColor($themeColor)
 	$: if ($themeColor || $themeMode) _iconColor = iconColor($themeColor)
 </script>
