@@ -9,7 +9,11 @@ export const handle: Handle = async ({ event, resolve }) => {
 
 	if (!token && !troctoken) {
 		try {
-			if (!event.cookies.get('_session1') || !event.cookies.get('_session2')) {
+			if (
+				!event.cookies.get('_session1') ||
+				!event.cookies.get('_session2') ||
+				!event.cookies.get('_session3')
+			) {
 				if (
 					event.url.pathname !== '/login' &&
 					event.url.pathname !== '/' &&
@@ -20,8 +24,9 @@ export const handle: Handle = async ({ event, resolve }) => {
 			}
 			const decoded1 = decrypt(event.cookies.get('_session1'))
 			const decoded2 = decrypt(event.cookies.get('_session2'))
-			if (!decoded1 || !decoded2) return await resolve(event)
-			token = decoded1 + decoded2
+			const decoded3 = decrypt(event.cookies.get('_session3'))
+			if (!decoded1 || !decoded2 || !decoded3) return await resolve(event)
+			token = decoded1 + decoded2 + decoded3
 		} catch (error) {
 			return await resolve(event)
 		}
@@ -38,22 +43,6 @@ export const handle: Handle = async ({ event, resolve }) => {
 				}
 			})
 			session = await rawSession.json()
-			const half = Math.ceil(token.length / 2)
-			const token1 = encrypt(token.slice(0, half))
-			const token2 = encrypt(token.slice(half))
-
-			event.cookies.set('_session1', token1, {
-				path: '/',
-				httpOnly: true,
-				secure: true, //import.meta.env.ENV === 'production',
-				maxAge: 60 * 60 * 24 * 30
-			})
-			event.cookies.set('_session2', token2, {
-				path: '/',
-				httpOnly: true,
-				secure: true, //import.meta.env.ENV === 'production',
-				maxAge: 60 * 60 * 24 * 30
-			})
 		} else if (troctoken) {
 			const rawSession = await fetch(
 				`${import.meta.env.VITE_API_URL}/api/v1/login?auth=${troctoken}`,
@@ -65,9 +54,10 @@ export const handle: Handle = async ({ event, resolve }) => {
 				}
 			)
 			session = await rawSession.json()
-			const half = Math.ceil(session.token.length / 2)
-			const token1 = encrypt(session.token.slice(0, half))
-			const token2 = encrypt(session.token.slice(half))
+			const length = Math.ceil(session.token.length / 3)
+			const token1 = encrypt(session.token.substring(0, length))
+			const token2 = encrypt(session.token.substring(length, 2 * length))
+			const token3 = encrypt(session.token.substring(2 * length))
 
 			event.cookies.set('_session1', token1, {
 				path: '/',
@@ -76,6 +66,12 @@ export const handle: Handle = async ({ event, resolve }) => {
 				maxAge: 60 * 60 * 24 * 30
 			})
 			event.cookies.set('_session2', token2, {
+				path: '/',
+				httpOnly: true,
+				secure: true, //import.meta.env.ENV === 'production',
+				maxAge: 60 * 60 * 24 * 30
+			})
+			event.cookies.set('_session3', token3, {
 				path: '/',
 				httpOnly: true,
 				secure: true, //import.meta.env.ENV === 'production',
