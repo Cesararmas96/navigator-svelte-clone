@@ -16,6 +16,10 @@ export const actions: Actions = {
 			path: '/',
 			expires: new Date(0)
 		})
+		cookies.set('_session3', '', {
+			path: '/',
+			expires: new Date(0)
+		})
 		cookies.set('_program', '', {
 			path: '/',
 			expires: new Date(0)
