@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  telegram: woltsu/telegram@0.0.9
+
   aws-ecr: circleci/aws-ecr@8.2.1
 
 
@@ -34,7 +34,7 @@ environment:
 jobs:
   build-docker-image:
     machine:
-      image: ubuntu-2004:202201-02
+      image: default
     parameters:
       env-tag:
         type: string
@@ -79,7 +79,7 @@ jobs:
 
   build-qa-docker-image:
     machine:
-      image: ubuntu-2004:202201-02
+      image: default
     parameters:
       env-tag:
         type: string
@@ -100,7 +100,7 @@ jobs:
 
   deploy-kube-service: 
     machine:
-      image: ubuntu-2004:202201-02
+      image: default
     parameters:
       env-tag:
         type: string
@@ -142,13 +142,11 @@ jobs:
               sudo openvpn --dev tun0 --config /tmp/config.ovpn --up /etc/openvpn/update-systemd-resolved --script-security 2 --route 169.254.0.0 255.255.0.0 net_gateway --route 10.0.0.0 255.255.0.0 vpn_gateway &
             done; 
             kubectl -n <<parameters.env-tag>> rollout restart deployment/<<pipeline.parameters.service>>-<<parameters.env-tag>>
-      - telegram/notify:
-          message: Finish Build and Deploy <<pipeline.parameters.service>>-<<parameters.env-tag>>:$CIRCLE_BUILD_NUM
-
+    
   
   tag-image:
     machine:
-      image: ubuntu-2004:202201-02
+      image: default
     parameters:
       env-tag:
         type: string
