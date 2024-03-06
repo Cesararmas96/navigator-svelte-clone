@@ -8,7 +8,7 @@
 		@apply grid
             h-screen
             grid-rows-[auto_1fr]
-            overflow-hidden
+           
             bg-body
             font-sans
             text-base
@@ -18,10 +18,13 @@
             duration-300;
 	}
 
-      .program {
-            @apply 
-            transition-all
-            ease-in-out
-            duration-300;
-      }
+	.program {
+		@apply transition-all
+            duration-300
+            ease-in-out;
+	}
 }
+
+// body{
+//  overflow-hidden
+// }
