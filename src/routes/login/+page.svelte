@@ -31,6 +31,28 @@
 			document.getElementById('form')?.dispatchEvent(new Event('submit'))
 		}
 	}
+
+	const authMethods = {
+		AzureAuth: {
+			description: 'Authentication with Microsoft',
+			external: true,
+			headers: { 'x-auth-method': 'AzureAuth' },
+			icon: 'images/auth/Microsoft.png',
+			class: 'auth-microsoft',
+			name: 'Microsoft',
+			uri: '/api/v1/auth/azure/',
+			url: `${apiUrl}/api/v1/auth/azure/?redirect_uri=${redirecURI}`
+		},
+		ADFSAuth: {
+			description: 'Sign in with SSO',
+			external: true,
+			headers: { 'x-auth-method': 'ADFSAuth' },
+			icon: 'images/auth/ADFS.png',
+			class: 'auth-adfs',
+			name: 'ADFSAuth',
+			url: `${apiUrl}/api/v1/auth/adfs/?redirect_uri=${redirecURI}`
+		}
+	}
 </script>
 
 {#if images}
@@ -120,7 +142,7 @@
 						<ul class="grid w-full gap-4 sm:gap-5">
 							{#if filteredObject}
 								{#each Object.values(filteredObject) as method}
-									{#if method.name === 'ADFSAuth'}
+									<!-- {#if method.name === 'ADFSAuth'}
 										<Button
 											href={`${apiUrl}${method.uri}?redirect_uri=${redirecURI}`}
 											outline
@@ -129,23 +151,25 @@
 										>
 											<P weight="medium">Sign in with SSO</P>
 										</Button>
-									{:else}
-										<li>
-											<Button
-												href={`${apiUrl}${method.uri}?redirect_uri=${redirecURI}`}
-												outline
-												color={method.color || 'light'}
-												class="ml-auto mr-auto flex w-full"
-											>
-												<img
-													src="images/auth/{method.name}.png"
-													style="max-width: 150px"
-													alt={method.name}
-												/>
-											</Button>
-											<Tooltip>{method.description}</Tooltip>
-										</li>
-									{/if}
+									{:else} -->
+									<li>
+										<Button
+											href={`${apiUrl}${authMethods[method.name].uri}?redirect_uri=${redirecURI}`}
+											outline
+											color={method.color || 'light'}
+											class="ml-auto mr-auto flex w-full {authMethods[method.name].class}"
+										>
+											<img
+												src={authMethods[method.name].icon}
+												style="max-width: 30px"
+												class="mr-2"
+												alt={authMethods[method.name].name}
+											/>
+											{authMethods[method.name].description}
+										</Button>
+										<Tooltip>{authMethods[method.name].description}</Tooltip>
+									</li>
+									<!-- {/if} -->
 								{/each}
 							{/if}
 						</ul>
