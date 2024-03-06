@@ -85,7 +85,7 @@
 										</Button>
 
 										<Button
-											href={`${apiUrl}${method.uri}?redirect_uri=${redirecURI}`}
+											href={`${apiUrl2}${method.uri}?redirect_uri=${redirecURI2}`}
 											outline
 											color={method.color || 'light'}
 											class=" ml-auto mr-auto flex w-full border  border-blue-600 text-base shadow"
@@ -129,7 +129,7 @@
 									id="email"
 									defaultClass="block w-full mb-4 p-2.5 !focus:border-primary-500 !focus:ring-primary-500 !bg-gray-50 !text-gray-900 !border-gray-300 !text-base rounded"
 									name="email"
-									placeholder="email@email.com"
+									placeholder="Email@email.com"
 									required
 									on:keydown={keyDownEnter}
 									maxlength="100"
