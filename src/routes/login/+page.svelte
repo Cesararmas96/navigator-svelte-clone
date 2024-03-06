@@ -89,7 +89,7 @@
 											outline
 											color={method.color || 'light'}
 											class=" ml-auto mr-auto flex w-full border  border-blue-600 text-base shadow"
-											title="Authenticate with Microsoft"
+											title="Authentication with Microsoft"
 										>
 											<img src="/images/icons/microsoft-logo.png" alt="microsoft" class="w-6" />
 											<p class="ml-2 text-black">Sign in with Microsoft</p>
