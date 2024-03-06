@@ -15,10 +15,6 @@
 
 	const redirecURI = `${$page.url.origin}/login/callback`
 
-	const apiUrl2 = import.meta.env.VITE_API_URL
-
-	const redirecURI2 = `${$page.url.origin}/login/callback`
-
 	let showPassword: boolean = false
 
 	let year = new Date().getFullYear()
@@ -83,43 +79,39 @@
 						<ul class="grid w-full gap-4 sm:gap-5">
 							{#if filteredObject}
 								{#each Object.values(filteredObject) as method}
-								<li>
+									<!-- {#if method.name === 'ADFSAuth'}
 									<Button
-									 href={authMethods[method.name].url}
-									 outline
-									 color={method.color || 'light'}
-									 class="ml-auto mr-auto flex w-full {authMethods[method.name].class}"
+										href={`${apiUrl}${method.uri}?redirect_uri=${redirecURI}`}
+										
+											href={`${apiUrl}${authMethods[method.name].uri}?redirect_uri=${redirecURI}`}
+
+										outline
+										color={method.color || 'light'}
+										class="ml-auto mr-auto flex w-full"
 									>
-									 <img
-										src={authMethods[method.name].icon}
-										style="max-width: 30px"
-										class="mr-2"
-										alt={authMethods[method.name].name}
-									 />
-									 {authMethods[method.name].description}
+										<P weight="medium">Sign in with SSO</P>
 									</Button>
-									<Tooltip>{authMethods[method.name].description}</Tooltip>
-								 </li>
-<!-- 									
-										<li>
-											<Button
-												href={authMethods[method.name].url}
-												outline
-												color={method.color || 'light'}
-												class=" ml-auto mr-auto flex w-full border {authMethods[method.name].class} border-blue-600 text-base shadow"
-												
-											>
-												<img
-													src={authMethods[method.name].icon}
-													style="max-width: 24px"
-													class=""
-													alt={authMethods[method.name].name}
-												/>
-												<p class="ml-2 text-black"> {authMethods[method.name].description}</p>
-											</Button>
-											<Tooltip>{authMethods[method.name].description}</Tooltip>
-										</li> -->
-									{/if}
+								{:else} -->
+									<li>
+										<Button
+											href={authMethods[method.name].url}
+											weight="24"
+											outline
+											color={method.color || 'light'}
+											class=" ml-auto mr-auto flex w-full border {authMethods[method.name]
+												.class} border-blue-600 text-base shadow"
+										>
+											<img
+												src={authMethods[method.name].icon}
+												style="max-width: 30px"
+												class="mr-2"
+												alt={authMethods[method.name].name}
+											/>
+											{authMethods[method.name].description}
+										</Button>
+										<Tooltip>{authMethods[method.name].description}</Tooltip>
+									</li>
+									<!-- {/if} -->
 								{/each}
 							{/if}
 						</ul>
@@ -198,22 +190,13 @@
 							<div
 								class="mt-10 flex flex-col items-center justify-center text-center text-xs text-gray-500 lg:flex-row lg:justify-center"
 							>
-								<span>
-									<a href="https://trocglobal.com/" class="lg:border-r lg:border-gray-400 lg:pr-1"
-										>Copyright &copy; {year} Navigator by T-ROC, All rights Reserved.</a
-									>
-
-									<a
-										class="lg:border-r lg:border-gray-400 lg:pr-1"
-										href="https://trocglobal.com/privacy-policy/">Privacy Policy</a
-									>
-									<a
-										class="lg:border-r lg:border-gray-400 lg:pr-1"
-										href="https://navigator.trocdigital.io/terms-of-use-agreement"
-										>Terms and Conditions</a
-									>
-									<a href="https://trocglobal.com/cookies-policy/">Cookies Policy</a>
+								<span class="lg:border-r lg:border-gray-400 lg:pr-1"
+									>Copyright &copy; {year} Navigator by T-ROC.</span
+								>
+								<span class="lg:border-r lg:border-gray-400 lg:pl-1 lg:pr-1">
+									All rights Reserved.
 								</span>
+								<span class=" pl-1"> Privacy Policy Terms and Conditions Cookies </span>
 							</div>
 						</div>
 					</div>
@@ -230,8 +213,6 @@
 			bottom: 0;
 			left: 0;
 			width: 100%;
-			margin-top: 8px;
-			padding-bottom: 8px;
 		}
 	}
 </style>
