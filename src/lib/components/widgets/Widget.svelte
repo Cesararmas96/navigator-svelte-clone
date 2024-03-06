@@ -103,7 +103,9 @@
 		class:!h-full={isMobileDevice}
 		class="widget-content relative flex w-full cursor-auto flex-col space-y-4 rounded-md text-sm"
 		on:pointerdown={(event) => {
-			// event.preventDefault()
+			// @ts-ignore
+			if (event?.target?.className?.includes('slider' || 'draggable')) return
+
 			event.stopPropagation()
 		}}
 	>
