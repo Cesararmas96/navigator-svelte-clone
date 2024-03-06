@@ -129,13 +129,18 @@ export const getSchemaComputed = (jsonSchema: Record<string, unknown>, $widget) 
 		delete jsonSchema.$defs
 	}
 
+	if ($widget?.params?.model?.schema?.required) {
+		jsonSchema['required'] = $widget?.params?.model?.schema?.required
+	}
+
 	return merge({}, jsonSchema, $widget?.params?.model?.schema || {})
 }
 
 export const handleSubmitForm = async (handleValidateForm: any, type: string, $widget, extra) => {
 	const payload = handleValidateForm()
+	console.log(payload)
 	if (!Array.isArray(payload)) {
-		const filteredPayload = { ...payload, ...$widget?.params?.model?.defaults }
+		const filteredPayload = { ...$widget?.params?.model?.defaults, ...payload }
 		$widget?.params?.model?._ignore?.forEach((item) => delete filteredPayload[item])
 
 		return await handleSubmit(filteredPayload, type, $widget, extra)
