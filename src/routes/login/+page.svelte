@@ -58,13 +58,13 @@
 </script>
 
 {#if images}
-	<main class="">
+	<main class="h-screen">
 		<div class="dark:text-white-dark text-black">
 			<div class="flex bg-white">
 				<div class="hidden w-full flex-col text-white dark:text-black lg:!flex lg:!w-3/5">
 					<Carousel images={images.slideshowCarouselData} />
 				</div>
-				<div class="flex w-full justify-center lg:!w-2/5">
+				<div class="flex w-full items-center justify-center lg:!w-2/5">
 					<div class="flex w-full flex-col items-center justify-center p-4 sm:p-4">
 						<div class="mb-8 self-start">
 							<img src={images.logoClientUrl} alt="{images.client}-logo" style="max-width: 80px" />
@@ -98,7 +98,6 @@
 										</Button>
 										<Tooltip>{authMethods[method.name].description}</Tooltip>
 									</li>
-									<!-- {/if} -->
 								{/each}
 							{/if}
 						</ul>
@@ -177,9 +176,9 @@
 								</p>
 							{/if}
 
-							<Button color="blue" class="mt-[10px] w-2/5" type="submit">Login</Button>
+							<Button color="blue" class="mt-5 w-2/5 shadow" type="submit">Login</Button>
 						</form>
-						<div class="footer-copyright mt-auto">
+						<div class="absolute bottom-1">
 							<div
 								class="mt-10 flex flex-col items-center justify-center text-center text-xs text-gray-500 lg:flex-row lg:justify-center"
 							>
