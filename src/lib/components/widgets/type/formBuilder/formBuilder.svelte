@@ -122,15 +122,17 @@
 
 		{#if schema}
 			<div class="px-4 pb-4">
-				<div class="mb-2 flex items-center">
-					<h5 class=" inline-flex items-center text-base font-semibold">
-						<Icon icon="mdi:widgets-outline" classes="mr-1" size="16px" />
-						{title}
-					</h5>
-				</div>
-				<div class="px-2 pb-2 text-md font-bold text-heading">
-					{description}
-				</div>
+				{#if !$widget?.params?.model?.static?.hideTitle}
+					<div class="mb-2 flex items-center">
+						<h5 class=" inline-flex items-center text-base font-semibold">
+							<Icon icon="mdi:widgets-outline" classes="mr-1" size="16px" />
+							{title}
+						</h5>
+					</div>
+					<div class="px-2 pb-2 text-md font-bold text-heading">
+						{description}
+					</div>
+				{/if}
 
 				<Form {schema}>
 					<div
