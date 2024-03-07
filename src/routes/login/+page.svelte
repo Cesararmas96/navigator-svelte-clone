@@ -177,7 +177,7 @@
 								</p>
 							{/if}
 
-							<Button color="blue" class="mt-[60px] w-2/5" type="submit">Login</Button>
+							<Button color="blue" class="mt-[10px] w-2/5" type="submit">Login</Button>
 						</form>
 						<div class="footer-copyright mt-auto">
 							<div
