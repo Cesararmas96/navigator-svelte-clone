@@ -58,19 +58,19 @@
 </script>
 
 {#if images}
-	<main class="">
+	<main class="h-screen">
 		<div class="dark:text-white-dark text-black">
 			<div class="flex bg-white">
 				<div class="hidden w-full flex-col text-white dark:text-black lg:!flex lg:!w-3/5">
 					<Carousel images={images.slideshowCarouselData} />
 				</div>
-				<div class="flex w-full justify-center lg:!w-2/5">
-					<div class="flex w-full flex-col p-4 sm:p-4">
-						<div class="mb-8">
+				<div class="flex w-full items-center justify-center lg:!w-2/5">
+					<div class="flex w-full flex-col items-center justify-center p-4 sm:p-4">
+						<div class="mb-8 self-start">
 							<img src={images.logoClientUrl} alt="{images.client}-logo" style="max-width: 80px" />
 						</div>
 
-						<div class=" text-center text-xl font-semibold">Welcome Back</div>
+						<div class="text-center text-2xl font-semibold">Welcome Back</div>
 
 						<div class="mb-8 text-center text-lg text-gray-600">
 							Please select how you want to connect with us
@@ -85,7 +85,7 @@
 											weight="24"
 											outline
 											color={method.color || 'light'}
-											class=" ml-auto mr-auto flex w-full border {authMethods[method.name]
+											class="ml-auto mr-auto flex w-4/5  border {authMethods[method.name]
 												.class} border-blue-600 text-base shadow"
 										>
 											<img
@@ -98,19 +98,24 @@
 										</Button>
 										<Tooltip>{authMethods[method.name].description}</Tooltip>
 									</li>
-									<!-- {/if} -->
 								{/each}
 							{/if}
 						</ul>
 
-						<div class="mt-6 flex items-center">
+						<div class="mt-6 flex w-4/5 items-center justify-center">
 							<div class="h-px flex-grow bg-gray-400 opacity-20" />
 							<span class="flex-shrik px-4 text-gray-600">Or Continue With</span>
 							<div class="h-px flex-grow bg-gray-400 opacity-20" />
 						</div>
 
-						<form id="form" class="mt-4" action="?/login" method="POST" use:enhance>
-							<div>
+						<form
+							id="form"
+							class="mt-4 flex w-4/5 flex-col items-center"
+							action="?/login"
+							method="POST"
+							use:enhance
+						>
+							<div class="w-full">
 								<Label for="email" class="mb-1 font-semibold">Email</Label>
 								<Input
 									type="text"
@@ -123,7 +128,7 @@
 									maxlength="100"
 								/>
 							</div>
-							<div>
+							<div class="w-full">
 								<Label for="password" class="mb-1 font-semibold">Password</Label>
 								<Input
 									id="password"
@@ -149,12 +154,12 @@
 								</Input>
 							</div>
 
-							<div class="mt-2 flex items-center justify-between text-gray-500">
+							<div class="mt-2 flex w-full items-center justify-between text-gray-500">
+								<a class="" href="/">Forgot your password?</a>
 								<div class="">
 									<input type="checkbox" class="" id="remember" value="TER" />
-									<label class="l" for="remember">Remember me</label>
+									<label class="" for="remember">Remember me</label>
 								</div>
-								<a class="" href="/">Forgot your password?</a>
 							</div>
 
 							{#if form?.invalid}
@@ -171,9 +176,9 @@
 								</p>
 							{/if}
 
-							<Button color="blue" class="mt-6 w-full text-lg shadow" type="submit">Login</Button>
+							<Button color="blue" class="mt-5 w-2/5 shadow" type="submit">Login</Button>
 						</form>
-						<div class="footer-copyright mt-auto">
+						<div class="absolute bottom-1">
 							<div
 								class="mt-10 flex flex-col items-center justify-center text-center text-xs text-gray-500 lg:flex-row lg:justify-center"
 							>
