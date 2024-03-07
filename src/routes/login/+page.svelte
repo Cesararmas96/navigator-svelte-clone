@@ -142,19 +142,9 @@
 						<ul class="grid w-full gap-4 sm:gap-5">
 							{#if filteredObject}
 								{#each Object.values(filteredObject) as method}
-									<!-- {#if method.name === 'ADFSAuth'}
-										<Button
-											href={`${apiUrl}${method.uri}?redirect_uri=${redirecURI}`}
-											outline
-											color={method.color || 'light'}
-											class="ml-auto mr-auto flex w-full"
-										>
-											<P weight="medium">Sign in with SSO</P>
-										</Button>
-									{:else} -->
 									<li>
 										<Button
-											href={`${apiUrl}${authMethods[method.name].uri}?redirect_uri=${redirecURI}`}
+											href={authMethods[method.name].url}
 											outline
 											color={method.color || 'light'}
 											class="ml-auto mr-auto flex w-full {authMethods[method.name].class}"
@@ -169,7 +159,6 @@
 										</Button>
 										<Tooltip>{authMethods[method.name].description}</Tooltip>
 									</li>
-									<!-- {/if} -->
 								{/each}
 							{/if}
 						</ul>

@@ -216,6 +216,11 @@ export const gridInstanceHeight = (id: string): any => {
 	return `${contentHeight}px`
 }
 
+export const hidePagination = (formatDefinition: any): any => {
+	formatDefinition = formatDefinition.aggrid ? formatDefinition.aggrid : formatDefinition.pqgrid
+	return formatDefinition.hide_pagination
+}
+
 export const recordsPerPage = (formatDefinition: any): any => {
 	let recordsPerPage = '10'
 	formatDefinition = formatDefinition.aggrid ? formatDefinition.aggrid : formatDefinition.pqgrid

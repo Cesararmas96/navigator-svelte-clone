@@ -10,18 +10,15 @@ export const load = async ({ params, fetch, locals, url }) => {
 	const headers = token ? { authorization: `Bearer ${token}` } : {}
 
 	const programs = await getApiData(
-		`programs`,
-		'POST',
-		{
-			where_cond: {
-				program_slug: locals.user.programs,
-				is_active: true
-			}
-		},
+		`${import.meta.env.VITE_API_URL}/api/v1/programs_user`,
+		'GET',
+		{},
 		{},
 		{ headers },
-		fetch
+		fetch,
+		false
 	)
+
 	const program = programs.find((item: any) => item.program_slug == params.program_slug)
 	const variablesOperational = await getApiData(
 		`${urlBase}/api/v2/variables/${program.program_slug}`,

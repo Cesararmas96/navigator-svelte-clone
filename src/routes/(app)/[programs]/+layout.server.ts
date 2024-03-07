@@ -33,14 +33,9 @@ export const load = async ({ params, fetch, locals, url }) => {
 
 	try {
 		programs = await getApiData(
-			`programs`,
-			'POST',
-			{
-				where_cond: {
-					program_slug: locals.user.programs,
-					is_active: true
-				}
-			},
+			`${import.meta.env.VITE_API_URL}/api/v1/programs_user`,
+			'GET',
+			{},
 			{},
 			{ headers },
 			fetch,

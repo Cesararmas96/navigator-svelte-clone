@@ -6,15 +6,11 @@ export const load = async ({ locals, fetch, url }) => {
 	if (import.meta.env.VITE_ADMIN) throw redirect(302, '/admin')
 	const headers = { authorization: `Bearer ${locals.user.token}` }
 
+	const tenant = url.hostname.split('.')[0]
 	const programs = await getApiData(
-		`programs`,
-		'POST',
-		{
-			where_cond: {
-				program_slug: locals.user.programs,
-				is_active: true
-			}
-		},
+		`${import.meta.env.VITE_API_URL}/api/v1/programs_user`,
+		'GET',
+		{},
 		{},
 		{ headers },
 		fetch,
@@ -24,8 +20,6 @@ export const load = async ({ locals, fetch, url }) => {
 	if (programs.length === 1) throw redirect(302, `/${programs[0].program_slug}`)
 
 	const programType = await getApiData(`program_type`, 'POST', {}, {}, { headers }, fetch)
-
-	const tenant = url.hostname.split('.')[0]
 
 	return { programs, programType, user: locals.user, tenant }
 }
