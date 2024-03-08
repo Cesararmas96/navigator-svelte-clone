@@ -36,7 +36,7 @@
 
 	const authMethods = {
 		AzureAuth: {
-			description: 'Authentication with Microsoft',
+			description: 'Sign in with Microsoft',
 			external: true,
 			headers: { 'x-auth-method': 'AzureAuth' },
 			icon: 'images/auth/Microsoft.png',
@@ -176,7 +176,7 @@
 								</p>
 							{/if}
 
-							<Button color="blue" class="mt-5 w-2/5 shadow" type="submit">Login</Button>
+							<Button color="blue" class="mb-5  w-2/5 shadow" type="submit">Login</Button>
 						</form>
 						<div class="absolute bottom-1">
 							<div
