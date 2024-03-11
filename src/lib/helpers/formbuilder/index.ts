@@ -3,11 +3,13 @@ import { sendErrorNotification, sendSuccessNotification } from '$lib/stores/toas
 import { openModal } from '$lib/helpers/common/modal'
 import { merge } from 'lodash-es'
 import { addInstance, clearInstances } from '$lib/helpers/widget/instances'
+import { storeUser } from '$lib/stores'
+import { get } from 'svelte/store'
 
 let $defs
 
 export const getJsonSchema = async (jsonSchema, $widget, credentials) => {
-	jsonSchema = getSchemaComputed(jsonSchema, $widget)
+	jsonSchema = merge({}, jsonSchema, $widget?.params?.model?.schema || {})
 	jsonSchema['noHeader'] = true
 
 	Object.keys(jsonSchema.properties).map((property) => {
@@ -124,6 +126,8 @@ export const getJsonSchema = async (jsonSchema, $widget, credentials) => {
 }
 
 export const getSchemaComputed = (jsonSchema: Record<string, unknown>, $widget) => {
+	jsonSchema = merge({}, jsonSchema, $widget?.params?.model?.schema || {})
+
 	if ($widget?.params?.model?.schema?.$withoutDefs && jsonSchema?.$defs) {
 		$defs = jsonSchema.$defs
 		delete jsonSchema.$defs
@@ -133,7 +137,17 @@ export const getSchemaComputed = (jsonSchema: Record<string, unknown>, $widget) 
 		jsonSchema['required'] = $widget?.params?.model?.schema?.required
 	}
 
-	return merge({}, jsonSchema, $widget?.params?.model?.schema || {})
+	if (
+		$widget?.params?.model?.callback?.preRender &&
+		utilFunctionsMap[$widget?.params?.model?.callback?.preRender]
+	) {
+		utilFunctionsMap[$widget?.params?.model?.callback?.preRender]({
+			jsonSchema,
+			$widget
+		})
+	}
+
+	return jsonSchema
 }
 
 export const handleSubmitForm = async (handleValidateForm: any, type: string, $widget, extra) => {
@@ -223,7 +237,8 @@ export const utilFunctionsMap: { [key: string]: (params: any) => any } = {
 	handleSupportTicketsWithPin: handleSupportTicketsWithPin,
 	handleSupportTicketsWithPinForm: handleSupportTicketsWithPinForm,
 	handleActiveDrilldown: handleActiveDrilldown,
-	handleCloseFormBottom: handleCloseFormBottom
+	handleCloseFormBottom: handleCloseFormBottom,
+	handlePreRenderMileageSearchStores: handlePreRenderMileageSearchStores
 }
 
 export function supportTicket(params) {
@@ -332,4 +347,20 @@ async function handleActiveDrilldown(params) {
 
 function handleCloseFormBottom(params) {
 	return 'CloseFormBottom'
+}
+
+function handlePreRenderMileageSearchStores(params) {
+	// TODO:
+	const user = get(storeUser)
+
+	if (user?.superuser) {
+		params.jsonSchema.properties.program_slug.attrs.visible = false
+		params.jsonSchema.properties.associate_oid.attrs.visible = false
+		params.jsonSchema['required'] = []
+
+		params.$widget.params.model.defaults = {
+			program_slug: user?.first_name,
+			associate_oid: user?.domain
+		}
+	}
 }
