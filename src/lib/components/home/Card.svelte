@@ -7,6 +7,11 @@
 	export let program: any
 
 	const handleClickProgram = (program: any) => {
+		if (program?.attributes?.url) {
+			window.open(program.attributes.url)
+			return
+		}
+
 		storeProgram.set(program)
 		localStorage.setItem('program', JSON.stringify(program))
 		goto(`/${program.program_slug}`)
