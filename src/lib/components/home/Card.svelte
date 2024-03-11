@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { storeProgram } from '$lib/stores/programs'
 	import { goto } from '$app/navigation'
+	import { Tooltip } from 'flowbite-svelte'
 
 	const baseUrl = import.meta.env.VITE_BASE_URL
 
@@ -65,4 +66,7 @@
 			<h3 class="tracki text-center text-lg font-semibold uppercase">{program.program_name}</h3>
 		</div>
 	</div>
+	{#if program?.attributes?.tooltip}
+		<Tooltip class="z-10">{program?.attributes?.tooltip}</Tooltip>
+	{/if}
 {/if}

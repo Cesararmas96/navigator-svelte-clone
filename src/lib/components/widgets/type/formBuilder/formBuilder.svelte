@@ -46,7 +46,8 @@
 			endpoint,
 			handleSetFormErrors,
 			widgetContext: widget,
-			...reference?.params?.model?.extras
+			...reference?.params?.model?.extras,
+			dashboard
 		})
 
 		if (response) {
