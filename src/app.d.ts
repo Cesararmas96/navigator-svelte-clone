@@ -5,11 +5,12 @@ declare global {
 		interface Locals {
 			//user: UserInfo; // Your type here
 			theme: {
-				mode: string;
-				color: string;
-			},
-			module: any, 
-			user: any,
+				mode: string
+				color: string
+			}
+			client: any
+			module: any
+			user: any
 			token: string
 			tenant: string
 		}
@@ -20,4 +21,4 @@ declare global {
 	}
 }
 
-export {};
+export {}

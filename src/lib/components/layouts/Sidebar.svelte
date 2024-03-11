@@ -98,37 +98,33 @@
 >
 	<SidebarWrapper divClass="px-3 py-4" data-simplebar>
 		<SidebarGroup>
-			{#if $page.data.tenant === 'navigator' || $page.data.tenant === 'navigator-new'}
-				<SidebarItem
-					label={$page.data.programs.length > 1 ? 'Return to programs' : 'Hold sidebar'}
-					href="/home"
-					class="hover:bg-wite/10 px-3 py-2"
-					spanClass="flex-1 text-left menu-text ml-3 whitespace-nowrap"
-					on:click={handleDrawer}
-				>
-					<svelte:fragment slot="icon">
-						{#if $page.data.programs.length > 1}
-							<Icon icon="tabler:arrow-back-up-double" />
-						{:else}
-							<img
-								src="{import.meta.env.VITE_BASE_URL}/assets/img/programs/{$page.params
-									.programs}/icon.png"
-								alt="logo {$page.params.programs}"
-								width="18"
-							/>
-						{/if}
-					</svelte:fragment>
-					<svelte:fragment slot="subtext">
-						{#if $page.data.programs.length === 1}
-							<Icon icon="tabler:arrow-narrow-right" />
-						{/if}
-						<Icon
-							icon="carbon:radio-button{!$sidebarMin ? '-checked' : ''}"
-							classes="max-xl:hidden p-2"
+			<SidebarItem
+				label={$page.data.programs.length > 1 ? 'Return to programs' : ''}
+				href="/home"
+				class="hover:bg-wite/10 px-3 py-2"
+				spanClass="flex-1 text-left menu-text ml-3 whitespace-nowrap"
+				on:click={handleDrawer}
+			>
+				<svelte:fragment slot="icon">
+					{#if $page.data.programs.length > 1}
+						<Icon icon="tabler:arrow-back-up-double" />
+					{:else}
+						<img
+							src="{import.meta.env.VITE_BASE_URL}/assets/img/programs/{$page.params
+								.programs}/icon.png"
+							alt="logo {$page.params.programs}"
+							width="18"
+							class="mr-3"
 						/>
-					</svelte:fragment>
-				</SidebarItem>
-			{/if}
+					{/if}
+				</svelte:fragment>
+				<svelte:fragment slot="subtext">
+					<Icon
+						icon="carbon:radio-button{!$sidebarMin ? '-checked' : ''}"
+						classes="max-xl:hidden p-2"
+					/>
+				</svelte:fragment>
+			</SidebarItem>
 		</SidebarGroup>
 		<SidebarGroup ulClass="space-y-0" border>
 			{#each parentMenu as item}

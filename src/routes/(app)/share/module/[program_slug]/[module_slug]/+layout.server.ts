@@ -8,9 +8,14 @@ export const load = async ({ params, fetch, locals, url }) => {
 
 	const token = url.searchParams.get('token') || locals.user?.token
 	const headers = token ? { authorization: `Bearer ${token}` } : {}
+	const tenant = url.hostname.split('.')[0]
 
+	if (!locals.client || locals.client?.client_slug !== tenant) {
+		const resp = await getApiData(`${urlBase}/api/v1/clients?subdomain_prefix=${tenant}`, 'GET')
+		locals.client = resp[0]
+	}
 	const programs = await getApiData(
-		`${import.meta.env.VITE_API_URL}/api/v1/programs_user`,
+		`${import.meta.env.VITE_API_URL}/api/v1/programs_user?client_slug=${locals.client.client_slug}`,
 		'GET',
 		{},
 		{},
@@ -50,7 +55,6 @@ export const load = async ({ params, fetch, locals, url }) => {
 		{ headers },
 		fetch
 	)
-	const tenant = url.hostname.split('.')[0]
 	const [client] = await getApiData(
 		`${urlBase}/api/v1/clients?subdomain_prefix=${tenant}`,
 		'GET',
