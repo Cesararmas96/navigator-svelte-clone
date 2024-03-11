@@ -12,6 +12,7 @@
 		gridFunctionsMap,
 		gridHeight,
 		gridInstanceHeight,
+		hidePagination,
 		recordsPerPage,
 		setInstancesContentHeight
 	} from '$lib/helpers/widget/aggrid'
@@ -30,6 +31,7 @@
 	import _ from 'lodash'
 	import { addInstance, clearInstances } from '$lib/helpers/widget/instances'
 	import { page } from '$app/stores'
+	import { setWidgetBottom } from '$lib/helpers/widget/widget-bottom'
 
 	export let data: any
 	export let simpleTable: boolean = false
@@ -356,7 +358,7 @@
 		async selectSharedData() {
 			const selectedNodes = gridOptions.api.getSelectedNodes()
 			const selectedData = selectedNodes.map((node) => node.data)
-			const params = $widget.params.btnsActions!.top!.selectSharedData!.params
+			const params = $widget.params.btnsActions!.bottom!.selectSharedData!.params
 			let payload: Record<string, any> = {}
 			const stores = selectedData.map((data: any) => {
 				let store: Record<string, any> = {}
@@ -365,25 +367,49 @@
 				})
 				return store
 			})
+			console.log(stores)
 			payload['stores'] = stores
 
-			console.log('payload', payload)
+			const locations = stores.map((store) => {
+				return { lat: store.latitude, lng: store.longitude }
+			})
 
 			$dashboard.gridItemsData = {
 				...$dashboard.gridItemsData,
-				'Optimal Route': [
-					'Leg 1: Head <b>west</b> on <b>SW 18th Terrace</b> toward <b>SW 78th P1</b> for 11.8 mi',
-					'Leg 2: Head <b>north</b> for 8.3 mi',
-					'Leg 3: Head <b>south‹/b> for 20.7 mi',
-					'Leg 4: Head <b>north</b> for 7.2 mi',
-					'Leg 5: Head <b>west</b> toward <b>NW 87th Ave</b> for 4.6 mi',
-					'Leg 6: Head <b>north</b> toward <b>SW 24th St</b>/<wbr/><b>Coral Wy</b> for 1.1 mi'
-				],
+				'Optimal Route': stores.map((store) => store.store_name),
 				'Total Duration': [{ 'Total Duration': 102.83 }],
-				'Total Distance': [{ 'Total Distance': 53.68 }]
+				'Total Distance': [{ 'Total Distance': 53.68 }],
+				Map: { locations }
 			}
-
-			console.log('gridItemsData', $dashboard.gridItemsData)
+		},
+		async addStores() {
+			// const selectedNodes = gridOptions.api.getSelectedNodes()
+			// const selectedData = selectedNodes.map((node) => node.data)
+			// const params = $widget.params.btnsActions!.top!.selectSharedData!.params
+			// let payload: Record<string, any> = {}
+			// const stores = selectedData.map((data: any) => {
+			// 	let store: Record<string, any> = {}
+			// 	params.payload_fields.map(async (field: any) => {
+			// 		store[field] = data[field]
+			// 	})
+			// 	return store
+			// })
+			// payload['stores'] = stores
+			// console.log('payload', payload)
+			// $dashboard.gridItemsData = {
+			// 	...$dashboard.gridItemsData,
+			// 	'Optimal Route': [
+			// 		'Leg 1: Head <b>west</b> on <b>SW 18th Terrace</b> toward <b>SW 78th P1</b> for 11.8 mi',
+			// 		'Leg 2: Head <b>north</b> for 8.3 mi',
+			// 		'Leg 3: Head <b>south‹/b> for 20.7 mi',
+			// 		'Leg 4: Head <b>north</b> for 7.2 mi',
+			// 		'Leg 5: Head <b>west</b> toward <b>NW 87th Ave</b> for 4.6 mi',
+			// 		'Leg 6: Head <b>north</b> toward <b>SW 24th St</b>/<wbr/><b>Coral Wy</b> for 1.1 mi'
+			// 	],
+			// 	'Total Duration': [{ 'Total Duration': 102.83 }],
+			// 	'Total Distance': [{ 'Total Distance': 53.68 }]
+			// }
+			// console.log('gridItemsData', $dashboard.gridItemsData)
 		}
 	}
 
@@ -453,7 +479,7 @@
 	let gridOptions: any = {
 		//GridOptions = {
 		defaultColDef,
-		pagination: !simpleTable,
+		pagination: !simpleTable && !hidePagination($widget.params),
 		paginationPageSize: recordsPerPage($widget.params),
 		columnDefs,
 		rowData: data ? data : null,
@@ -627,21 +653,33 @@
 		action: (method) => actionBtnMap[method](method)
 	})
 
-	const widgetTop = getContext<Writable<any>>('WidgetTop')
-	setWidgetTop(widgetTop, 'AgGridToolbar', {
-		position: 'top',
-		widgetID: $widget.widget_id,
-		btnsActions: $widget.params.btnsActions,
-		filterCallback: 'agGridFilterTextBox',
-		btnCallback: 'agGridBtnMap'
-	})
+	if ($widget.params?.btnsActions?.top) {
+		const widgetTop = getContext<Writable<any>>('WidgetTop')
+		setWidgetTop(widgetTop, 'AgGridToolbar', {
+			position: 'top',
+			widgetID: $widget.widget_id,
+			btnsActions: $widget.params.btnsActions,
+			filterCallback: 'agGridFilterTextBox',
+			btnCallback: 'agGridBtnMap'
+		})
+	}
+
+	if ($widget.params?.btnsActions?.bottom) {
+		const widgetBottom = getContext<Writable<any>>('WidgetBottom')
+		setWidgetBottom(widgetBottom, 'AgGridToolbar', {
+			position: 'bottom',
+			widgetID: $widget.widget_id,
+			btnsActions: $widget.params.btnsActions,
+			btnCallback: 'agGridBtnMap'
+		})
+	}
 </script>
 
 <div id="aggrid-container-{$widget.widget_id}" class="grid-container flex flex-col">
 	<div
 		id="grid-{$widget.widget_id}"
 		style="width: 100%"
-		class="grid min-h-[300px]"
+		class="grid min-h-[100px]"
 		class:ag-theme-balham={!isDark}
 		class:ag-theme-balham-dark={isDark}
 	/>
@@ -659,7 +697,4 @@
 	}
 
 	/* Estilo para el contenedor */
-	.grid-container {
-		min-height: 250px; /* O la altura que desees */
-	}
 </style>

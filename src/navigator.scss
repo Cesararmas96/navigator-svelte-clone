@@ -605,6 +605,10 @@ div[id^='widget-content-'] > .grid {
 	background-color: rgb(var(--body-bg));
 }
 
+.ui.select .select__header:focus {
+	border: 2px solid rgb(var(--theme-color)) !important ;
+	box-sizing: border-box;
+}
 .select__header {
 	opacity: 1;
 }
@@ -612,7 +616,7 @@ div[id^='widget-content-'] > .grid {
 .select__option,
 .select__header,
 .input__main {
-	font-size: 13px;
+	font-size: 13px !important;
 }
 
 .input__main::placeholder,
@@ -654,4 +658,48 @@ input[type='radio']:checked:after {
 
 .ag-checkbox-input-wrapper {
 	display: flex !important;
+	background-color: red;
 }
+
+// Component Slider
+
+.ui.slider {
+	padding-top: 5px !important;
+}
+.slider__thumb {
+	border: 1px solid rgb(var(--theme-color) / var(--tw-bg-opacity)) !important;
+	font-size: 13px;
+}
+.slider__range {
+	background-color: rgb(var(--theme-color) / var(--tw-bg-opacity)) !important;
+}
+
+.slider__panel {
+	color: var(--body-color);
+}
+
+span.slider__thumb {
+	width: 20px;
+	height: 20px;
+	font-size: 10px;
+	color: rgb(var(--theme-color) / var(--tw-bg-opacity));
+}
+
+.ag-header-cell,
+.ag-ltr .ag-cell {
+	padding-left: 5px !important;
+}
+
+.ag-checkbox-input {
+	background-color: rgb(var(--theme-color) / var(--tw-bg-opacity)) !important;
+	border: 1px solid rgb(var(--theme-color) / var(--tw-bg-opacity));
+}
+
+// .ag-cell-wrapper {
+// background-color: pink;
+// }
+
+// .ag-row {
+// 	background-color: yellow;
+// }
+// .data-\[state\=checked\]\:bg-primary[data-state='checked'] {

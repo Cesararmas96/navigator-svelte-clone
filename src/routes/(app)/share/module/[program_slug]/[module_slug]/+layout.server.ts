@@ -8,20 +8,22 @@ export const load = async ({ params, fetch, locals, url }) => {
 
 	const token = url.searchParams.get('token') || locals.user?.token
 	const headers = token ? { authorization: `Bearer ${token}` } : {}
+	const tenant = url.hostname.split('.')[0]
 
+	if (!locals.client || locals.client?.client_slug !== tenant) {
+		const resp = await getApiData(`${urlBase}/api/v1/clients?subdomain_prefix=${tenant}`, 'GET')
+		locals.client = resp[0]
+	}
 	const programs = await getApiData(
-		`programs`,
-		'POST',
-		{
-			where_cond: {
-				program_slug: locals.user.programs,
-				is_active: true
-			}
-		},
+		`${import.meta.env.VITE_API_URL}/api/v1/programs_user?client_slug=${locals.client.client_slug}`,
+		'GET',
+		{},
 		{},
 		{ headers },
-		fetch
+		fetch,
+		false
 	)
+
 	const program = programs.find((item: any) => item.program_slug == params.program_slug)
 	const variablesOperational = await getApiData(
 		`${urlBase}/api/v2/variables/${program.program_slug}`,
@@ -53,7 +55,6 @@ export const load = async ({ params, fetch, locals, url }) => {
 		{ headers },
 		fetch
 	)
-	const tenant = url.hostname.split('.')[0]
 	const [client] = await getApiData(
 		`${urlBase}/api/v1/clients?subdomain_prefix=${tenant}`,
 		'GET',

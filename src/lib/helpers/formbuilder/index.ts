@@ -3,11 +3,13 @@ import { sendErrorNotification, sendSuccessNotification } from '$lib/stores/toas
 import { openModal } from '$lib/helpers/common/modal'
 import { merge } from 'lodash-es'
 import { addInstance, clearInstances } from '$lib/helpers/widget/instances'
+import { storeUser } from '$lib/stores'
+import { get } from 'svelte/store'
 
 let $defs
 
 export const getJsonSchema = async (jsonSchema, $widget, credentials) => {
-	jsonSchema = getSchemaComputed(jsonSchema, $widget)
+	jsonSchema = merge({}, jsonSchema, $widget?.params?.model?.schema || {})
 	jsonSchema['noHeader'] = true
 
 	Object.keys(jsonSchema.properties).map((property) => {
@@ -124,18 +126,35 @@ export const getJsonSchema = async (jsonSchema, $widget, credentials) => {
 }
 
 export const getSchemaComputed = (jsonSchema: Record<string, unknown>, $widget) => {
+	jsonSchema = merge({}, jsonSchema, $widget?.params?.model?.schema || {})
+
 	if ($widget?.params?.model?.schema?.$withoutDefs && jsonSchema?.$defs) {
 		$defs = jsonSchema.$defs
 		delete jsonSchema.$defs
 	}
 
-	return merge({}, jsonSchema, $widget?.params?.model?.schema || {})
+	if ($widget?.params?.model?.schema?.required) {
+		jsonSchema['required'] = $widget?.params?.model?.schema?.required
+	}
+
+	if (
+		$widget?.params?.model?.callback?.preRender &&
+		utilFunctionsMap[$widget?.params?.model?.callback?.preRender]
+	) {
+		utilFunctionsMap[$widget?.params?.model?.callback?.preRender]({
+			jsonSchema,
+			$widget
+		})
+	}
+
+	return jsonSchema
 }
 
 export const handleSubmitForm = async (handleValidateForm: any, type: string, $widget, extra) => {
 	const payload = handleValidateForm()
+	console.log(payload)
 	if (!Array.isArray(payload)) {
-		const filteredPayload = { ...payload, ...$widget?.params?.model?.defaults }
+		const filteredPayload = { ...$widget?.params?.model?.defaults, ...payload }
 		$widget?.params?.model?._ignore?.forEach((item) => delete filteredPayload[item])
 
 		return await handleSubmit(filteredPayload, type, $widget, extra)
@@ -218,17 +237,23 @@ export const utilFunctionsMap: { [key: string]: (params: any) => any } = {
 	handleSupportTicketsWithPin: handleSupportTicketsWithPin,
 	handleSupportTicketsWithPinForm: handleSupportTicketsWithPinForm,
 	handleActiveDrilldown: handleActiveDrilldown,
-	handleCloseFormBottom: handleCloseFormBottom
+	handleCloseFormBottom: handleCloseFormBottom,
+	handlePreRenderMileageSearchStores: handlePreRenderMileageSearchStores
 }
 
 export function supportTicket(params) {
-	let message = `${params?.response?.message} <br> Ticket ID	${params?.response?.ticket_number}  `
+	// let message = `${params?.response?.message} <br> Ticket ID	${params?.response?.ticket_number}  `
+	let message = `Your report was submitted, and a case was opened under <strong>Ticket ID	${params?.response?.ticket_number}</strong>, please take note of this number in case you want to follow up on this case later. We will promptly review and investigate your submission, and we will make every effort to contact you if you choose to provide your contact information. Your commitment to maintaining a safe and ethical workplace is highly valued. Thank you for your courage in coming forward.`
 
 	if (params?.response?.login_information?.login)
-		message = message.concat(`<br> Login: ${params?.response?.login_information?.login}`)
+		message = message.concat(
+			`<br><br> <strong>Login:</strong> ${params?.response?.login_information?.login}`
+		)
 
 	if (params?.response?.login_information?.email)
-		message = message.concat(`<br> Email: ${params?.response?.login_information?.email}`)
+		message = message.concat(
+			`<br><br> <strong>Email:</strong> ${params?.response?.login_information?.email}`
+		)
 
 	return message
 }
@@ -327,4 +352,20 @@ async function handleActiveDrilldown(params) {
 
 function handleCloseFormBottom(params) {
 	return 'CloseFormBottom'
+}
+
+function handlePreRenderMileageSearchStores(params) {
+	// TODO:
+	const user = get(storeUser)
+
+	if (user?.superuser) {
+		params.jsonSchema.properties.program_slug.attrs.visible = false
+		params.jsonSchema.properties.associate_oid.attrs.visible = false
+		params.jsonSchema['required'] = []
+
+		params.$widget.params.model.defaults = {
+			program_slug: user?.first_name,
+			associate_oid: user?.domain
+		}
+	}
 }

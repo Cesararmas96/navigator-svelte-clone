@@ -39,7 +39,7 @@
 				on:click={() => bCallback.action(btn.method)}
 			>
 				<Icon icon={btn.icon} />
-				{btn.title}
+				<span class="ml-1 text-base">{btn.title}</span>
 			</Button>
 		{/each}
 	</div>

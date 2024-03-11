@@ -28,12 +28,12 @@
 	}
 
 	.btn-form {
-		@apply bg-theme
-		text-white;
+		@apply h-9 rounded-lg bg-theme px-4 py-2
+		text-sm text-white;
 
 		&:hover {
 			filter: brightness(0.91);
-			color: white;
+			// color: white;
 		}
 	}
 

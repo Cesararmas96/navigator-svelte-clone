@@ -2,36 +2,43 @@
 	import { page } from '$app/stores'
 	import { getContext } from 'svelte'
 	import type { Writable } from 'svelte/store'
+	import ContentTopItem from './ContentTopItem.svelte'
 
 	export let widget: Writable<any>
 
 	const dashboard: Writable<any> = getContext('dashboard')
-	const { trocModule } = $page.data
+	const widgetBottom: Writable<any[]> = getContext('WidgetBottom')
 
-	const filters = $dashboard?.filtering_show
-		? { ...$dashboard?.filtering_show }
-		: trocModule?.filtering_show
-		? { ...trocModule?.filtering_show }
-		: {}
+	// const { trocModule } = $page.data
 
-	const filtersArray: any[] = Object.entries(filters?.filtering || {})
-	const filtersSorted: Record<string, any> = Object.fromEntries(
-		filtersArray.sort((a, b) => a[1].order - b[1].order)
-	)
+	// const filters = $dashboard?.filtering_show
+	// 	? { ...$dashboard?.filtering_show }
+	// 	: trocModule?.filtering_show
+	// 	? { ...trocModule?.filtering_show }
+	// 	: {}
 
-	let filtersApplied: string[] = []
+	// const filtersArray: any[] = Object.entries(filters?.filtering || {})
+	// const filtersSorted: Record<string, any> = Object.fromEntries(
+	// 	filtersArray.sort((a, b) => a[1].order - b[1].order)
+	// )
 
-	$: if ($dashboard?.where_new_cond) {
-		// console.log($dashboard.where_new_cond)
-		filtersApplied = []
-		for (const key in $dashboard?.where_new_cond) {
-			const filter = filtersSorted[key.replace('_id', '')]
-			if (!filter || !filter.selected) continue
-			filtersApplied.push(`${filter.name}: ${filter.selected.label}`)
-		}
-		// console.log(filtersApplied)
-	}
+	// let filtersApplied: string[] = []
+
+	// $: if ($dashboard?.where_new_cond) {
+	// 	// console.log($dashboard.where_new_cond)
+	// 	filtersApplied = []
+	// 	for (const key in $dashboard?.where_new_cond) {
+	// 		const filter = filtersSorted[key.replace('_id', '')]
+	// 		if (!filter || !filter.selected) continue
+	// 		filtersApplied.push(`${filter.name}: ${filter.selected.label}`)
+	// 	}
+	// 	// console.log(filtersApplied)
+	// }
 </script>
 
 <!-- <div id={`widget-content-bottom-${$widget.widget_id}`}>{filtersApplied.join(', ')}</div> -->
-<div id={`widget-content-bottom-${$widget.widget_id}`} />
+<div id={`widget-content-bottom-${$widget.widget_id}`}>
+	{#each $widgetBottom as item}
+		<ContentTopItem {item} />
+	{/each}
+</div>

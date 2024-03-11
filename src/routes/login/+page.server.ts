@@ -14,6 +14,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 
 	const resp = await getApiData(`${apiUrl}/api/v1/clients?subdomain_prefix=${tenant}`, 'GET')
 	const data = resp[0]
+	locals.client = data
 
 	const images = buildImageUrls(data, rootLink)
 	const { authMethods } = images
