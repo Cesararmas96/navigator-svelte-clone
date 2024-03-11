@@ -42,7 +42,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 					Authorization: `Bearer ${token}`
 				}
 			})
-			session = await rawSession.json()
+			if (rawSession.status !== 401) session = await rawSession.json()
 		} else if (troctoken) {
 			const rawSession = await fetch(
 				`${import.meta.env.VITE_API_URL}/api/v1/login?auth=${troctoken}`,

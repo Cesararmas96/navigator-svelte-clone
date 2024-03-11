@@ -32,21 +32,23 @@ export const load = async ({ params, fetch, locals, url }) => {
 	)
 
 	try {
+		if (!locals.client || locals.client?.client_slug !== tenant) {
+			const resp = await getApiData(`${urlBase}/api/v1/clients?subdomain_prefix=${tenant}`, 'GET')
+			locals.client = resp[0]
+		}
 		programs = await getApiData(
-			`programs`,
-			'POST',
-			{
-				where_cond: {
-					program_slug: locals.user.programs,
-					is_active: true
-				}
-			},
+			`${import.meta.env.VITE_API_URL}/api/v1/programs_user?client_slug=${
+				locals.client.client_slug
+			}`,
+			'GET',
+			{},
 			{},
 			{ headers },
 			fetch,
 			false
 		)
 		program = programs.find((item: any) => item.program_slug == program_slug)
+		if (!program) throw new Error('No program found')
 	} catch (error) {
 		console.log('error programs', url.origin)
 		if (url.origin.includes('teams')) throw redirect(302, 'error/403')

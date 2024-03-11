@@ -2,13 +2,17 @@
 	import { Timeline, TimelineItem } from 'flowbite-svelte'
 	import { getApiData } from '$lib/services/getData'
 	import { sendErrorNotification } from '$lib/stores/toast'
-	import { getContext } from 'svelte'
+	import { getContext, onMount } from 'svelte'
+	import { actionReorder } from '$lib/helpers/widget/timeline'
 	import type { Writable } from 'svelte/store'
-	import Icon from '$lib/components/common/Icon.svelte'
 
 	export let data: any
 
+	$: if (data) init()
+
 	const widget: Writable<any> = getContext('widget')
+	const dashboard: Writable<any> = getContext('dashboard')
+	const abc = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
 	const itemDef = $widget.format_definition
 
@@ -74,28 +78,73 @@
 	}
 
 	let orderedData: any[] = []
-	loadImages().then(() => {
-		orderedData = orderByDate(data)
+	const init = () => {
+		loadImages().then(() => {
+			orderedData = orderByDate(data)
+		})
+	}
+
+	onMount(() => {
+		init()
 	})
+
+	let draggedIndex = -1
+	let targetIndex = -1
+
+	function dragStart(event, index) {
+		draggedIndex = index
+	}
+
+	function dragOver(event, index) {
+		event.preventDefault()
+		targetIndex = index
+	}
+
+	function drop(event) {
+		event.preventDefault()
+		if (targetIndex < 0 || draggedIndex < 0) return
+		const itemToMove = data.splice(draggedIndex, 1)[0]
+		data.splice(targetIndex, 0, itemToMove)
+		init()
+		draggedIndex = -1
+		targetIndex = -1
+		$widget.params?.reorder?.callback &&
+			actionReorder[$widget.params?.reorder?.callback](dashboard, data)
+	}
 </script>
 
 <Timeline order="vertical" class="mx-5 my-3">
-	{#each orderedData as el}
-		<TimelineItem title={el.title} date={el.title ? el.date : undefined}>
-			<svelte:fragment slot="icon">
-				<span
-					class={`absolute -left-3 flex h-6 w-6 items-center justify-center rounded-full bg-primary text-white ring-4 ring-primary`}
-				>
-					{#if Object.keys(itemDef).length === 0}
-						<Icon icon={$widget.params?.items_icon || 'material-symbols:timer-outline-rounded'} />
-					{:else}
-						<img src={getImage(el)} alt="Navigator" />
-					{/if}
-				</span>
-			</svelte:fragment>
-			<p class="mb-4 text-base font-normal text-gray-500 dark:text-gray-400">
-				{@html el.description}
-			</p>
-		</TimelineItem>
+	{#each orderedData as el, index}
+		<!-- svelte-ignore a11y-no-static-element-interactions -->
+		<div
+			class="draggable block"
+			on:dragstart={(event) => dragStart(event, index)}
+			on:dragover={(event) => dragOver(event, index)}
+			on:drop={drop}
+			draggable={$widget.params?.reorder?.allowed}
+		>
+			<TimelineItem title={el.title} date={el.title ? el.date : undefined} classLi="mb-8">
+				<svelte:fragment slot="icon">
+					<span
+						class="absolute -left-3 flex h-6 w-6 items-center justify-center rounded-full bg-primary text-white ring-4 ring-primary"
+					>
+						{#if Object.keys(itemDef).length === 0}
+							{abc[index]}
+						{:else}
+							<img src={getImage(el)} alt="Navigator" />
+						{/if}
+					</span>
+				</svelte:fragment>
+				<p class="mb-4 text-base font-normal text-gray-500 dark:text-gray-400">
+					{@html el.description}
+				</p>
+			</TimelineItem>
+		</div>
 	{/each}
 </Timeline>
+
+<style>
+	.draggable {
+		transition: transform 0.3s ease-in-out;
+	}
+</style>

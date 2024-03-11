@@ -8,6 +8,7 @@
 	import { themeMode } from '$lib/stores/preferences'
 	import { initWidgetTop } from '$lib/helpers/widget/widget-top'
 	import { merge } from 'lodash-es'
+	import { initWidgetBottom } from '$lib/helpers/widget/widget-bottom'
 
 	let isToolbarVisible: boolean = false
 	let fixed: boolean
@@ -149,6 +150,7 @@
 
 	initActions()
 	initWidgetTop()
+	initWidgetBottom()
 
 	// onMount(() => {
 	$widgetStore.instances = []

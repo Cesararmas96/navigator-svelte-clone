@@ -9,7 +9,7 @@
 
 	const widget: any = getContext('widget')
 
-	$: {
+	$: if (data) {
 		buildCards()
 	}
 
@@ -30,6 +30,7 @@
 			: {}
 
 	function buildCards() {
+		cards = []
 		const values = data ? data[0] : []
 		Object.keys(values).map((card, cardIndex) => {
 			let configExtend = (format_definition && format_definition[card]) || {}

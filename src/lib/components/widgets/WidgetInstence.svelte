@@ -5,6 +5,7 @@
 	import { writable, type Writable } from 'svelte/store'
 	import Spinner from '../common/Spinner.svelte'
 	import { initWidgetTop } from '$lib/helpers/widget/widget-top'
+	import { initWidgetBottom } from '$lib/helpers/widget/widget-bottom'
 
 	export let widget: any
 	export let isToolbarVisible: boolean
@@ -53,6 +54,7 @@
 	initActions()
 	initInstances()
 	initWidgetTop()
+	initWidgetBottom()
 
 	onMount(() => {
 		widget.params.settings.toolbar.clone = false
