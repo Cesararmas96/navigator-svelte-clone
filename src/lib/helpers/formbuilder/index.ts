@@ -242,13 +242,18 @@ export const utilFunctionsMap: { [key: string]: (params: any) => any } = {
 }
 
 export function supportTicket(params) {
-	let message = `${params?.response?.message} <br> Ticket ID	${params?.response?.ticket_number}  `
+	// let message = `${params?.response?.message} <br> Ticket ID	${params?.response?.ticket_number}  `
+	let message = `Your report was submitted, and a case was opened under <strong>Ticket ID	${params?.response?.ticket_number}</strong>, please take note of this number in case you want to follow up on this case later. We will promptly review and investigate your submission, and we will make every effort to contact you if you choose to provide your contact information. Your commitment to maintaining a safe and ethical workplace is highly valued. Thank you for your courage in coming forward.`
 
 	if (params?.response?.login_information?.login)
-		message = message.concat(`<br> Login: ${params?.response?.login_information?.login}`)
+		message = message.concat(
+			`<br><br> <strong>Login:</strong> ${params?.response?.login_information?.login}`
+		)
 
 	if (params?.response?.login_information?.email)
-		message = message.concat(`<br> Email: ${params?.response?.login_information?.email}`)
+		message = message.concat(
+			`<br><br> <strong>Email:</strong> ${params?.response?.login_information?.email}`
+		)
 
 	return message
 }

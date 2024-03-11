@@ -4,7 +4,7 @@
 	import type { Writable } from 'svelte/store'
 	import { Form } from '@mixoo/form'
 	import Loading from '$lib/components/common/Loading.svelte'
-	import { Alert } from 'flowbite-svelte'
+	import { Alert, Spinner } from 'flowbite-svelte'
 	import { getApiData } from '$lib/services/getData'
 	import { storeUser } from '$lib/stores'
 	import { sendErrorNotification } from '$lib/stores/toast'
@@ -26,6 +26,7 @@
 	let schema: any
 	let schemaBottom: any
 	let formBottomWidget: any
+	let loadButton = false
 	const baseUrl = import.meta.env.VITE_API_URL
 	const token = $storeUser?.token
 	let responseServer = null
@@ -36,6 +37,7 @@
 		handleResetForm,
 		handleSetFormErrors
 	) {
+		loadButton = true
 		const reference = type === 'formBottom' ? formBottomWidget : $widget
 		const endpoint = `${reference?.endpoint || reference?.params?.model?.meta}`
 
@@ -78,6 +80,8 @@
 
 			handleResetForm()
 		}
+
+		loadButton = false
 	}
 
 	async function getModel(reference, _type = 'default') {
@@ -143,22 +147,28 @@
 						let:handleSetFormErrors
 					>
 						<div class="flex items-end justify-end">
-							<button
-								class="btn btn-form text-md"
-								on:click={() =>
-									handleSubmitFormLocal(
-										handleValidateForm,
-										'formSaved',
-										handleResetForm,
-										handleSetFormErrors
-									)}
-							>
-								<Icon icon="tabler:plus" classes="mr-2" />
+							{#if loadButton}
+								<button class="btn btn-form text-md" disabled>
+									<Spinner class="me-3" size="4" color="white" />Loading ...
+								</button>
+							{:else}
+								<button
+									class="btn btn-form text-md"
+									on:click={() =>
+										handleSubmitFormLocal(
+											handleValidateForm,
+											'formSaved',
+											handleResetForm,
+											handleSetFormErrors
+										)}
+								>
+									<Icon icon="tabler:plus" classes="mr-2" />
 
-								{schema && schema.settings && schema.settings.SubmitLabel
-									? schema.settings.SubmitLabel
-									: 'Save changes'}
-							</button>
+									{schema && schema.settings && schema.settings.SubmitLabel
+										? schema.settings.SubmitLabel
+										: 'Save changes'}
+								</button>
+							{/if}
 						</div>
 					</div>
 				</Form>
@@ -173,14 +183,12 @@
 
 				{#if schemaBottom}
 					<div class="mt-2 flex items-center">
-						<h5
-							class="inline-flex items-center text-base font-semibold text-gray-500 dark:text-gray-400"
-						>
-							<Icon icon="mdi:widgets-outline" classes="mr-1" size="20px" />
+						<h5 class=" inline-flex items-center text-base font-semibold">
+							<Icon icon="mdi:widgets-outline" classes="mr-1" size="16px" />
 							{schemaBottom?.title}
 						</h5>
 					</div>
-					<div class="text-sm text-gray-500 dark:text-gray-400">
+					<div class="px-2 text-md font-bold text-heading">
 						{schemaBottom?.description}
 					</div>
 
@@ -193,22 +201,28 @@
 							let:handleSetFormErrors
 						>
 							<div class="flex items-end justify-end">
-								<button
-									class="btn btn-form text-md"
-									on:click={() =>
-										handleSubmitFormLocal(
-											handleValidateForm,
-											'formBottom',
-											handleResetForm,
-											handleSetFormErrors
-										)}
-								>
-									<Icon icon="tabler:plus" classes="mr-2" />
+								{#if loadButton}
+									<button class="btn btn-form text-md" disabled>
+										<Spinner class="me-3" size="4" color="white" />Loading ...
+									</button>
+								{:else}
+									<button
+										class="btn btn-form text-md"
+										on:click={() =>
+											handleSubmitFormLocal(
+												handleValidateForm,
+												'formBottom',
+												handleResetForm,
+												handleSetFormErrors
+											)}
+									>
+										<Icon icon="tabler:plus" classes="mr-2" />
 
-									{schemaBottom && schemaBottom.settings && schemaBottom.settings.SubmitLabel
-										? schemaBottom.settings.SubmitLabel
-										: 'Save changes'}
-								</button>
+										{schemaBottom && schemaBottom.settings && schemaBottom.settings.SubmitLabel
+											? schemaBottom.settings.SubmitLabel
+											: 'Save changes'}
+									</button>
+								{/if}
 							</div>
 						</div>
 					</Form>
