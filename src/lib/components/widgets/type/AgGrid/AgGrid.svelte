@@ -357,6 +357,10 @@
 		},
 		async selectSharedData() {
 			const selectedNodes = gridOptions.api.getSelectedNodes()
+			if (selectedNodes.length < 2) {
+				sendErrorNotification('You must select at least two stores')
+				return
+			}
 			const selectedData = selectedNodes.map((node) => node.data)
 			const params = $widget.params.btnsActions!.bottom!.selectSharedData!.params
 			let payload: Record<string, any> = {}
