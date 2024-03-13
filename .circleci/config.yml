@@ -3,6 +3,7 @@ version: 2.1
 orbs:
 
   aws-ecr: circleci/aws-ecr@8.2.1
+  ms-teams-notify: pj8/ms-teams-notify@1.0.1
 
 
 branch_filters: &branch_filters
@@ -76,6 +77,13 @@ jobs:
           command: |
             docker push <<pipeline.parameters.ecr>>:<< pipeline.number >>
             docker push <<pipeline.parameters.ecr>>:<<parameters.env-tag>>
+      - ms-teams-notify/status:
+          fail_only: false
+          success_message: ✅ Build Complete. The Docker image has been successfully built - $CIRCLE_JOB
+          failure_message: 🔴 Build job has failed! -  $CIRCLE_JOB
+          webhook: https://symbits.webhook.office.com/webhookb2/7a795c62-c523-4b6c-aafe-fe7cb7b03d7f@af176793-abc4-423e-8fab-dfc4e2bf8b9d/IncomingWebhook/9d2ada09b468429ca3e4add37ef005d2/4e2aa0ea-56b8-49fe-85cf-05e97d479ba6
+
+
 
   build-qa-docker-image:
     machine:
@@ -142,6 +150,12 @@ jobs:
               sudo openvpn --dev tun0 --config /tmp/config.ovpn --up /etc/openvpn/update-systemd-resolved --script-security 2 --route 169.254.0.0 255.255.0.0 net_gateway --route 10.0.0.0 255.255.0.0 vpn_gateway &
             done; 
             kubectl -n <<parameters.env-tag>> rollout restart deployment/<<pipeline.parameters.service>>-<<parameters.env-tag>>
+      - ms-teams-notify/status:
+          fail_only: false
+          success_message: ✅ Deployment has been successfully built - $CIRCLE_JOB
+          failure_message: 🔴 Deployment job has failed! - $CIRCLE_JOB
+          webhook: https://symbits.webhook.office.com/webhookb2/7a795c62-c523-4b6c-aafe-fe7cb7b03d7f@af176793-abc4-423e-8fab-dfc4e2bf8b9d/IncomingWebhook/9d2ada09b468429ca3e4add37ef005d2/4e2aa0ea-56b8-49fe-85cf-05e97d479ba6
+
     
   
   tag-image:
