@@ -12,6 +12,11 @@ export const getJsonSchema = async (jsonSchema, $widget, credentials) => {
 	jsonSchema = merge({}, jsonSchema, $widget?.params?.model?.schema || {})
 	jsonSchema['noHeader'] = true
 
+	if ($widget?.params?.model?.schema?.$withoutDefs && jsonSchema?.$defs) {
+		$defs = jsonSchema.$defs
+		delete jsonSchema.$defs
+	}
+
 	Object.keys(jsonSchema.properties).map((property) => {
 		if (
 			jsonSchema.properties[property]?.$ref?.api &&
@@ -131,10 +136,10 @@ export const getJsonSchema = async (jsonSchema, $widget, credentials) => {
 export const getSchemaComputed = (jsonSchema: Record<string, unknown>, $widget) => {
 	jsonSchema = merge({}, jsonSchema, $widget?.params?.model?.schema || {})
 
-	if ($widget?.params?.model?.schema?.$withoutDefs && jsonSchema?.$defs) {
-		$defs = jsonSchema.$defs
-		delete jsonSchema.$defs
-	}
+	// if ($widget?.params?.model?.schema?.$withoutDefs && jsonSchema?.$defs) {
+	// 	$defs = jsonSchema.$defs
+	// 	delete jsonSchema.$defs
+	// }
 
 	if ($widget?.params?.model?.schema?.required) {
 		jsonSchema['required'] = $widget?.params?.model?.schema?.required
