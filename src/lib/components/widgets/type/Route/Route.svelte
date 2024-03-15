@@ -5,6 +5,7 @@
 	import { getContext, onMount } from 'svelte'
 	import { actionReorder } from '$lib/helpers/widget/timeline'
 	import type { Writable } from 'svelte/store'
+	import Icon from '$lib/components/common/Icon.svelte'
 
 	export let data: any
 
@@ -16,14 +17,14 @@
 
 	const itemDef = $widget.format_definition
 
-	let images: any[] = []
+	// let images: any[] = []
 	const baseUrl = import.meta.env.VITE_API_URL
 
 	interface Event {
-		title: string
+		title?: string
 		date: string
 		description: string
-		icon: string
+		icon?: string
 	}
 
 	// {
@@ -35,19 +36,12 @@
 
 	function orderByDate(events: any[]): Event[] {
 		const parsedEvents = events.map((event) => {
-			return typeof event === 'string'
-				? {
-						title: undefined,
-						description: event,
-						icon: undefined,
-						date: new Date()
-				  }
-				: {
-						title: event[itemDef.title],
-						description: event[itemDef.description],
-						icon: event[itemDef.icon],
-						date: new Date(event[itemDef.date])
-				  }
+			return {
+				title: undefined,
+				description: event,
+				icon: undefined,
+				date: new Date()
+			}
 		})
 
 		parsedEvents.sort((a, b) => a.date.getTime() - b.date.getTime())
@@ -58,30 +52,30 @@
 		}))
 	}
 
-	const loadImages = async () => {
-		const response = await getApiData(
-			`${baseUrl}/services/files/static/images/badges/`,
-			'GET'
-		).catch((error) => {
-			sendErrorNotification(error)
-		})
-		if (response) images = response
-	}
+	// const loadImages = async () => {
+	// 	const response = await getApiData(
+	// 		`${baseUrl}/services/files/static/images/badges/`,
+	// 		'GET'
+	// 	).catch((error) => {
+	// 		sendErrorNotification(error)
+	// 	})
+	// 	if (response) images = response
+	// }
 
-	const getImage = (event) => {
-		const item = images.find((item: any) => {
-			if (typeof item === 'string') return false
-			const image = item?.filename.split('.png' || '.jpg')
-			if (image[0] === event.title) return item
-		})
-		return `${import.meta.env.VITE_API_URL}/static/images/badges/${item?.filename}`
-	}
+	// const getImage = (event) => {
+	// 	const item = images.find((item: any) => {
+	// 		if (typeof item === 'string') return false
+	// 		const image = item?.filename.split('.png' || '.jpg')
+	// 		if (image[0] === event.title) return item
+	// 	})
+	// 	return `${import.meta.env.VITE_API_URL}/static/images/badges/${item?.filename}`
+	// }
 
 	let orderedData: any[] = []
 	const init = () => {
-		loadImages().then(() => {
-			orderedData = orderByDate(data)
-		})
+		// loadImages().then(() => {
+		orderedData = orderByDate(data)
+		// })
 	}
 
 	onMount(() => {
@@ -113,36 +107,31 @@
 	}
 </script>
 
-<Timeline order="vertical" class="mx-5 my-3">
+<div class="px-2 py-3">
 	{#each orderedData as el, index}
 		<!-- svelte-ignore a11y-no-static-element-interactions -->
 		<div
-			class="draggable block"
+			class="draggable mb-2 flex flex-row items-center justify-between rounded-lg p-2"
 			on:dragstart={(event) => dragStart(event, index)}
 			on:dragover={(event) => dragOver(event, index)}
 			on:drop={drop}
 			draggable={$widget.params?.reorder?.allowed}
 			class:cursor-move={$widget.params?.reorder?.allowed}
 		>
-			<TimelineItem title={el.title} date={el.title ? el.date : undefined} classLi="mb-8">
-				<svelte:fragment slot="icon">
-					<span
-						class="absolute -left-3 flex h-6 w-6 items-center justify-center rounded-full bg-primary text-white ring-4 ring-primary"
-					>
-						{#if Object.keys(itemDef).length === 0}
-							{abc[index]}
-						{:else}
-							<img src={getImage(el)} alt="Navigator" />
-						{/if}
-					</span>
-				</svelte:fragment>
-				<p class="mb-4 text-base font-normal text-gray-500 dark:text-gray-400">
+			<div class="flex flex-row items-center gap-2">
+				<span
+					class="flex h-6 w-6 items-center justify-center rounded-full bg-primary text-white ring-4 ring-primary"
+				>
+					{abc[index]}
+				</span>
+				<p class="draggable text-base font-normal text-gray-500 dark:text-gray-400">
 					{@html el.description}
 				</p>
-			</TimelineItem>
+			</div>
+			<Icon icon="tabler:menu-order" size="16" />
 		</div>
 	{/each}
-</Timeline>
+</div>
 
 <style>
 	.draggable {

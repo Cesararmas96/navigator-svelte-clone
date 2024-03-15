@@ -107,7 +107,9 @@
 				// @ts-ignore
 				typeof event?.target?.className === 'string' &&
 				// @ts-ignore
-				event?.target?.className?.includes('slider' || 'draggable')
+				(event?.target?.className?.includes('slider') ||
+					// @ts-ignore
+					event?.target?.className?.includes('draggable'))
 			)
 				return
 
