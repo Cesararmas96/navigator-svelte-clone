@@ -101,7 +101,10 @@ export const getJsonSchema = async (jsonSchema, $widget, credentials) => {
 			jsonSchema.properties[property].attrs.visible = false
 		}
 
-		if (jsonSchema.properties[property]?.['ui:widget'] === 'ImageUploader') {
+		if (
+			jsonSchema.properties[property]?.['ui:widget'] === 'ImageUploader' ||
+			jsonSchema.properties[property]?.['ui:widget'] === 'dropzone'
+		) {
 			// TODO: improve
 			jsonSchema.properties[property].type = 'upload'
 
@@ -155,7 +158,19 @@ export const handleSubmitForm = async (handleValidateForm: any, type: string, $w
 	console.log(payload)
 	if (!Array.isArray(payload)) {
 		const filteredPayload = { ...$widget?.params?.model?.defaults, ...payload }
-		$widget?.params?.model?._ignore?.forEach((item) => delete filteredPayload[item])
+		$widget?.params?.model?._ignore?.forEach((item) => {
+			if (item.includes('.')) {
+				const recursive = item.split('.')
+
+				filteredPayload[recursive[0]].forEach((recurs) => {
+					if (recurs?.data) recurs.data = recurs.data.split('base64,')[1]
+
+					delete recurs[recursive[1]]
+				})
+			}
+
+			delete filteredPayload[item]
+		})
 
 		return await handleSubmit(filteredPayload, type, $widget, extra)
 	} else {

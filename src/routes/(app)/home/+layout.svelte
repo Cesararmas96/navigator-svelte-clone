@@ -1,11 +1,14 @@
 <script lang="ts">
 	import Footer from '$lib/components/layouts/Footer.svelte'
 	import Header from '$lib/components/layouts/Header.svelte'
+	// import LoadingEnv from '$lib/components/common/LoadingEnv.svelte'
 
 	let width: number
 </script>
 
 <svelte:window bind:innerWidth={width} />
+
+<!-- <LoadingEnv /> -->
 
 <Header />
 

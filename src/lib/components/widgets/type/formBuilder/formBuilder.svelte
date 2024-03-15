@@ -52,6 +52,8 @@
 
 		if (response) {
 			if (reference?.params?.model?.responseAlert) {
+				responseServer = null
+
 				if (
 					reference?.params?.model?.responseAlert?.callback &&
 					utilFunctionsMap[reference?.params?.model?.responseAlert?.callback]
@@ -176,7 +178,13 @@
 
 				{#if responseServer}
 					<div class="pt-6">
-						<Alert color="blue" dismissable>
+						<Alert
+							color="blue"
+							dismissable
+							on:close={() => {
+								responseServer = null
+							}}
+						>
 							{@html responseServer}
 						</Alert>
 					</div>
