@@ -9,7 +9,7 @@
 
 	let locations = []
 
-	$: if (data?.locations && document.getElementById(`#map-${$widget.widget_id}`)) {
+	$: if (data?.locations && document.getElementById(`map-${$widget.widget_id}`)) {
 		locations = data.locations
 		calculateAndDisplayRoute(directionsService, directionsRenderer)
 	}
@@ -72,10 +72,11 @@
 	}
 
 	const resizeMapToContent = () => {
-		const iFrame: HTMLElement = document.querySelector(`#map-${$widget.widget_id}`)!
+		const iFrame: HTMLElement = document.getElementById(`map-${$widget.widget_id}`)!
+		// if (!iFrame) return
 		iFrame.style['min-height'] = contentHeight($widget.widget_id)
 		iFrame.style['height'] = iFrame.style['min-height']
-		$widget.resized = false
+		// $widget.resized = false
 	}
 	addWidgetAction(widgetActions, {
 		name: 'resizeContent',
@@ -84,8 +85,7 @@
 			resizeMapToContent()
 		}
 	})
-
-	$: if (document.querySelector(`#map-${$widget.widget_id}`) && !$widget.param?.hidden) {
+	$: if (!$widget.params?.hidden) {
 		setTimeout(() => {
 			resizeMapToContent()
 		}, 500)
@@ -102,4 +102,4 @@
 	></script>
 </svelte:head>
 
-<div id={`#map-${$widget.widget_id}`} bind:this={mapElement} style="width: 100%; height: 400px;" />
+<div id={`map-${$widget.widget_id}`} bind:this={mapElement} style="width: 100%; height: 400px;" />

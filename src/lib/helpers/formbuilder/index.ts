@@ -197,6 +197,21 @@ async function handleSubmit(payload: any, type: string, $widget, extra) {
 	if (extra?.message) message = extra.message
 
 	try {
+		// code temp
+		if (
+			$widget?.params?.model?.callback?.fn &&
+			utilFunctionsMap[$widget?.params?.model?.callback?.fn]
+		) {
+			utilFunctionsMap[$widget.params.model.callback.fn]({
+				data: [],
+				params: $widget.params.model,
+				extra: {
+					extra,
+					widget: $widget
+				}
+			})
+		}
+
 		const dataModel = await getApiData(url, method, payload)
 
 		if (dataModel) {
@@ -207,19 +222,19 @@ async function handleSubmit(payload: any, type: string, $widget, extra) {
 				})
 			}
 
-			if (
-				$widget?.params?.model?.callback?.fn &&
-				utilFunctionsMap[$widget?.params?.model?.callback?.fn]
-			) {
-				utilFunctionsMap[$widget.params.model.callback.fn]({
-					data: dataModel,
-					params: $widget.params.model,
-					extra: {
-						extra,
-						widget: $widget
-					}
-				})
-			}
+			// if (
+			// 	$widget?.params?.model?.callback?.fn &&
+			// 	utilFunctionsMap[$widget?.params?.model?.callback?.fn]
+			// ) {
+			// 	utilFunctionsMap[$widget.params.model.callback.fn]({
+			// 		data: dataModel,
+			// 		params: $widget.params.model,
+			// 		extra: {
+			// 			extra,
+			// 			widget: $widget
+			// 		}
+			// 	})
+			// }
 
 			sendSuccessNotification($widget?.params?.model?.message || dataModel?.message || message)
 
@@ -253,7 +268,8 @@ export const utilFunctionsMap: { [key: string]: (params: any) => any } = {
 	handleSupportTicketsWithPinForm: handleSupportTicketsWithPinForm,
 	handleActiveDrilldown: handleActiveDrilldown,
 	handleCloseFormBottom: handleCloseFormBottom,
-	handlePreRenderMileageSearchStores: handlePreRenderMileageSearchStores
+	handlePreRenderMileageSearchStores: handlePreRenderMileageSearchStores,
+	handleFunctionMileageSearchStores: handleFunctionMileageSearchStores
 }
 
 export function supportTicket(params) {
@@ -373,7 +389,7 @@ function handlePreRenderMileageSearchStores(params) {
 	// TODO:
 	const user = get(storeUser)
 
-	if (user?.superuser) {
+	if (!user?.superuser) {
 		params.jsonSchema.properties.program_slug.attrs.visible = false
 		params.jsonSchema.properties.associate_oid.attrs.visible = false
 		params.jsonSchema['required'] = []
@@ -383,4 +399,41 @@ function handlePreRenderMileageSearchStores(params) {
 			associate_oid: user?.domain
 		}
 	}
+}
+
+function handleFunctionMileageSearchStores(params) {
+	const dashboard = params.extra.extra.dashboard
+
+	dashboard.update((dashboardItem: any) => {
+		dashboardItem.gridItemsData = {
+			stores: [
+				{
+					store_id: 3397,
+					store_name: 'Miami Gardens-WM - #3397',
+					latitude: 25.935725,
+					longitude: -80.207676
+				},
+				{
+					store_id: 2814,
+					store_name: 'HIALEAH-WM - #2814',
+					latitude: 25.858609,
+					longitude: -80.325508
+				},
+				{
+					store_id: 6397,
+					store_name: 'MIAMI-WM-#6397',
+					latitude: 25.623903,
+					longitude: -80.395205
+				},
+				{
+					store_id: 1680,
+					store_name: 'KENDALL-WM  - #1680',
+					latitude: 25.685314,
+					longitude: -80.448545
+				}
+			]
+		}
+
+		return dashboardItem
+	})
 }
