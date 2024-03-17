@@ -537,6 +537,11 @@ div[id^='widget-content-'] > .grid {
 }
 
 //Buttons mileage
+.btn-form {
+	font-size: 13px !important;
+	font-weight: 500;
+}
+
 .button.button--medium.button--dark {
 	@apply bg-theme;
 }
@@ -593,6 +598,9 @@ div[id^='widget-content-'] > .grid {
 .form__label {
 	font-weight: bold;
 	color: var(--body-color);
+}
+.textarea__main {
+	font-size: 13px;
 }
 
 [data-theme='dark'] .textarea__main {
@@ -695,11 +703,10 @@ span.slider__thumb {
 	border: 1px solid rgb(var(--theme-color) / var(--tw-bg-opacity));
 }
 
-// .ag-cell-wrapper {
-// background-color: pink;
-// }
+.apiCard-content {
+	background: rgb(var(--theme-color) / var(--tw-bg-opacity)) !important;
+}
 
-// .ag-row {
-// 	background-color: yellow;
-// }
-// .data-\[state\=checked\]\:bg-primary[data-state='checked'] {
+.hover\:bg-darken:hover {
+	filter: brightness(90%);
+}

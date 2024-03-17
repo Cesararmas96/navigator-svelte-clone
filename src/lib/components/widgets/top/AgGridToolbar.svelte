@@ -28,12 +28,12 @@
 		<AgGridFilter filterCallback={fCallback.action} />
 	{/if}
 	<div
-		class={'widget-toolbar flex w-full flex-row justify-end px-3 py-3'}
+		class={'widget-toolbar flex w-full flex-row justify-end px-3 py-3 '}
 		class:hidden={buttons.length === 0}
 	>
 		{#each buttons as btn}
 			<Button
-				class={btn.class}
+				class="{btn.class} hover:bg-darken "
 				variant="primary"
 				size="sm"
 				on:click={() => bCallback.action(btn.method)}
