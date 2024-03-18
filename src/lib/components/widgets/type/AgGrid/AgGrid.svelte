@@ -530,10 +530,10 @@
 		const eGridDiv: HTMLElement = document.querySelector(`#grid-${$widget.widget_id}`)!
 		if (eGridDiv) {
 			eGridDiv.classList.remove('hidden')
-			// eGridDiv.style['min-height'] = !$widget.temp
-			// 	? gridHeight($widget.widget_id)
-			// 	: gridInstanceHeight($widget.widget_id)
-			// eGridDiv.style['height'] = eGridDiv.style['min-height']
+			eGridDiv.style['min-height'] = !$widget.temp
+				? gridHeight($widget.widget_id)
+				: gridInstanceHeight($widget.widget_id)
+			eGridDiv.style['height'] = eGridDiv.style['min-height']
 		}
 	}
 
