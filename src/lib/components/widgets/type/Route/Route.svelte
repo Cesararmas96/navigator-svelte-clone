@@ -1,13 +1,15 @@
 <script lang="ts">
-	import { Timeline, TimelineItem } from 'flowbite-svelte'
-	import { getApiData } from '$lib/services/getData'
-	import { sendErrorNotification } from '$lib/stores/toast'
 	import { getContext, onMount } from 'svelte'
 	import { actionReorder } from '$lib/helpers/widget/timeline'
 	import type { Writable } from 'svelte/store'
 	import Icon from '$lib/components/common/Icon.svelte'
+	import { Textarea } from 'flowbite-svelte'
 
 	export let data: any
+
+	const originalRoute = [...data]
+
+	let reason = ''
 
 	$: if (data) init()
 
@@ -104,9 +106,48 @@
 		targetIndex = -1
 		$widget.params?.reorder?.callback &&
 			actionReorder[$widget.params?.reorder?.callback](dashboard, data)
+		isSameRoute()
+	}
+
+	function reorderRoutes(index, direction) {
+		if (direction === 'up' && index > 0) {
+			;[data[index], data[index - 1]] = [data[index - 1], data[index]]
+		} else if (direction === 'down' && index < data.length - 1) {
+			;[data[index], data[index + 1]] = [data[index + 1], data[index]]
+		}
+		init()
+		$widget.params?.reorder?.callback &&
+			actionReorder[$widget.params?.reorder?.callback](dashboard, data)
+		isSameRoute()
+	}
+
+	let sameRoutes = true
+	const isSameRoute = () => {
+		if (originalRoute.length !== data.length) {
+			sameRoutes = false
+			return
+		}
+
+		for (let i = 0; i < originalRoute.length; i++) {
+			if (originalRoute[i] !== data[i]) {
+				sameRoutes = false
+				return
+			}
+		}
+
+		sameRoutes = true
+	}
+
+	const resetRoute = () => {
+		data = [...originalRoute]
+		init()
+		$widget.params?.reorder?.callback &&
+			actionReorder[$widget.params?.reorder?.callback](dashboard, data)
+		isSameRoute()
 	}
 </script>
 
+<!-- svelte-ignore a11y-no-static-element-interactions -->
 <div class="px-2 py-3">
 	{#each orderedData as el, index}
 		<!-- svelte-ignore a11y-no-static-element-interactions -->
@@ -124,13 +165,49 @@
 				>
 					{abc[index]}
 				</span>
-				<p class="draggable text-base font-normal text-gray-500 dark:text-gray-400">
+				<p class="text-base font-normal text-gray-500 dark:text-gray-400">
 					{@html el.description}
 				</p>
 			</div>
-			<Icon icon="tabler:menu-order" size="16" />
+			<div class="flex flex-row gap-1 md:hidden">
+				<Icon
+					icon="tabler:arrow-down"
+					size="16"
+					classes={`btn btn-form h-8 py-0 px-2 ${index === orderedData.length - 1 ? 'hidden' : ''}`}
+					on:click={() => reorderRoutes(index, 'down')}
+				/>
+				<Icon
+					icon="tabler:arrow-up"
+					size="16"
+					classes={`btn btn-form h-8 py-0 px-2 ${index === 0 ? 'hidden' : ''}`}
+					on:click={() => reorderRoutes(index, 'up')}
+				/>
+			</div>
+			<div class="hidden md:flex"><Icon icon="tabler:menu-order" size="16" /></div>
 		</div>
 	{/each}
+	{#if !sameRoutes}
+		<div class="flex justify-end p-2">
+			<button class="btn btn-form" on:click={resetRoute}>Reset to Optimal Route</button>
+		</div>
+		<div class="flex flex-col p-2">
+			<label for="reason" class="mt-2">Reason for altering the Optimal Route (mandatory):</label>
+			<Textarea
+				id="reason"
+				name="textarea"
+				rows="5"
+				bind:value={reason}
+				class="form-control w-full rounded bg-white/75 p-2 text-base placeholder:text-muted dark:bg-dark-100/50"
+				placeholder="Explain the reason why you will take a different route from the optimal one. Changing it can increase the overall mileage and lead to additional costs"
+			/>
+		</div>
+	{/if}
+	<div class="flex justify-end p-2">
+		<button
+			class="btn btn-form disabled:cursor-not-allowed disabled:opacity-50"
+			disabled={!sameRoutes && reason === ''}>Submit Route</button
+		>
+	</div>
 </div>
 
 <style>

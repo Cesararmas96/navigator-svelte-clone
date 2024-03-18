@@ -703,10 +703,29 @@ span.slider__thumb {
 	border: 1px solid rgb(var(--theme-color) / var(--tw-bg-opacity));
 }
 
+// .ag-cell-wrapper {
+// background-color: pink;
+// }
+
+// .ag-row {
+// 	background-color: yellow;
+// }
+// .data-\[state\=checked\]\:bg-primary[data-state='checked'] {
+
 .apiCard-content {
 	background: rgb(var(--theme-color) / var(--tw-bg-opacity)) !important;
 }
 
 .hover\:bg-darken:hover {
 	filter: brightness(90%);
+}
+
+@media (min-width: 768px) {
+	.md\:hidden {
+		display: none !important;
+	}
+
+	.md\:flex {
+		display: flex !important;
+	}
 }
