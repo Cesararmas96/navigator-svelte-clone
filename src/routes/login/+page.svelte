@@ -61,12 +61,27 @@
 	<main class="h-screen">
 		<div class="dark:text-white-dark text-black">
 			<div class="flex bg-white">
-				<div class="hidden w-full flex-col text-white dark:text-black lg:!flex lg:!w-3/5">
+				<div
+					class="hidden w-full flex-col !justify-center text-white dark:text-black lg:!flex lg:!w-3/5"
+				>
 					<Carousel images={images.slideshowCarouselData} />
+					<div class="absolute bottom-1 ml-2">
+						<div
+							class="mt-10 flex flex-col items-center justify-center text-center text-xs text-gray-500 lg:flex-row lg:justify-center"
+						>
+							<span class="lg:border-r lg:border-gray-400 lg:pr-1"
+								>Copyright &copy; {year} Navigator by T-ROC.</span
+							>
+							<span class="lg:border-r lg:border-gray-400 lg:pl-1 lg:pr-1">
+								All rights Reserved.
+							</span>
+							<span class=" pl-1"> Privacy Policy Terms and Conditions Cookies </span>
+						</div>
+					</div>
 				</div>
 				<div class="flex w-full items-center justify-center lg:!w-2/5">
-					<div class="flex w-full flex-col items-center justify-center p-4 sm:p-4">
-						<div class="mb-8 self-start">
+					<div class=" m-2 flex w-full flex-col items-center justify-center pl-2 pr-2 sm:p-4">
+						<div class="mb-5 self-start">
 							<img src={images.logoClientUrl} alt="{images.client}-logo" style="max-width: 80px" />
 						</div>
 
@@ -86,11 +101,11 @@
 											outline
 											color={method.color || 'light'}
 											class="ml-auto mr-auto flex w-4/5  border {authMethods[method.name]
-												.class} border-blue-600 text-base shadow"
+												.class} border-blue-600 p-2 text-base shadow"
 										>
 											<img
 												src={authMethods[method.name].icon}
-												style="max-width: 30px"
+												style="max-width: 25px"
 												class="mr-2"
 												alt={authMethods[method.name].name}
 											/>
@@ -120,7 +135,7 @@
 								<Input
 									type="text"
 									id="email"
-									defaultClass="block w-full mb-4 p-2.5 !focus:border-primary-500 !focus:ring-primary-500 !bg-gray-50 !text-gray-900 !border-gray-300 !text-base rounded"
+									defaultClass="block w-full mb-4 p-2.5  !bg-gray-50 !text-gray-900 !border-gray-300 !text-base rounded"
 									name="email"
 									placeholder="Email@email.com"
 									required
@@ -133,7 +148,7 @@
 								<Input
 									id="password"
 									type={showPassword ? 'text' : 'password'}
-									defaultClass="block w-full p-2.5 !focus:border-primary-500 !focus:ring-primary-500 !bg-gray-50 !text-gray-900 !border-gray-300 !text-base rounded"
+									defaultClass="block w-full  !bg-gray-50 !text-gray-900 !border-gray-300 !text-base rounded"
 									name="password"
 									placeholder="**********"
 									required
@@ -155,20 +170,29 @@
 							</div>
 
 							<div class="mt-2 flex w-full items-center justify-between text-gray-500">
-								<a class="" href="/">Forgot your password?</a>
-								<div class="">
-									<input type="checkbox" class="" id="remember" value="TER" />
-									<label class="" for="remember">Remember me</label>
+								<div class="flex items-center">
+									<input
+										type="checkbox"
+										class="mr-2 h-4 w-4 shrink-0 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+										id="remember"
+										value="TER"
+									/>
+									<label for="remember">Remember me</label>
 								</div>
+								<a class=" text-blue-600 hover:underline" href="/">Forgot your password?</a>
 							</div>
 
 							{#if form?.invalid}
-								<p class="error mb-4 mt-4">Username and password is required.</p>
+								<p
+									class="mb-2 mt-2 w-full rounded-md border bg-red-100 p-2 text-center text-red-500"
+								>
+									Username and password is required.
+								</p>
 							{/if}
 
 							{#if form?.credentials}
 								<p
-									class="mb-4 mt-4 w-full rounded-md border bg-red-100 p-2 text-center text-red-500"
+									class="mb-2 mt-2 w-full rounded-md border bg-red-100 p-2 text-center text-red-500"
 								>
 									{errorCodes[form?.message?.status]
 										? errorCodes[form?.message?.status]
@@ -176,21 +200,14 @@
 								</p>
 							{/if}
 
-							<Button color="blue" class="mb-5  w-2/5 shadow" type="submit">Login</Button>
-						</form>
-						<div class="absolute bottom-1">
-							<div
-								class="mt-10 flex flex-col items-center justify-center text-center text-xs text-gray-500 lg:flex-row lg:justify-center"
-							>
-								<span class="lg:border-r lg:border-gray-400 lg:pr-1"
-									>Copyright &copy; {year} Navigator by T-ROC.</span
+							<div class="mt-5 w-full">
+								<Button
+									color="blue"
+									class="w-full rounded bg-blue-600 text-sm font-semibold text-white shadow-xl hover:bg-blue-700 focus:outline-none"
+									type="submit">Login</Button
 								>
-								<span class="lg:border-r lg:border-gray-400 lg:pl-1 lg:pr-1">
-									All rights Reserved.
-								</span>
-								<span class=" pl-1"> Privacy Policy Terms and Conditions Cookies </span>
 							</div>
-						</div>
+						</form>
 					</div>
 				</div>
 			</div>
