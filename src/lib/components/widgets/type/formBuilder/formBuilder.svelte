@@ -156,7 +156,7 @@
 								</button>
 							{:else}
 								<button
-									class="btn btn-form text-md"
+									class="btn btn-form text-md dark:text-white"
 									on:click={() =>
 										handleSubmitFormLocal(
 											handleValidateForm,

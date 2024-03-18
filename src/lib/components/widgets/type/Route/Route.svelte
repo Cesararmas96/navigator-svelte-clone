@@ -120,7 +120,7 @@
 		>
 			<div class="flex flex-row items-center gap-2">
 				<span
-					class="flex h-6 w-6 items-center justify-center rounded-full bg-primary text-white ring-4 ring-primary"
+					class="flex h-6 w-6 items-center justify-center rounded-full bg-primary text-white ring-4 ring-primary dark:text-black"
 				>
 					{abc[index]}
 				</span>

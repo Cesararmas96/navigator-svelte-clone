@@ -52,13 +52,19 @@
 
 		<div class="flex flex-row justify-end gap-1">
 			{#if alert.callbackBtn}
-				<Button {color} class="px-4 py-2" on:click={onClick}>{alert.callbackBtn}</Button>
+				<Button {color} class="px-4 py-2 dark:text-white" on:click={onClick}
+					>{alert.callbackBtn}</Button
+				>
 			{/if}
 			{#if alert.callback1Btn}
-				<Button {color} class="px-4 py-2" on:click={onClick1}>{alert.callback1Btn}</Button>
+				<Button {color} class="px-4 py-2 dark:text-white" on:click={onClick1}
+					>{alert.callback1Btn}</Button
+				>
 			{/if}
 			{#if alert.callback2Btn}
-				<Button {color} outline class="px-4 py-2" on:click={onClick2}>{alert.callback2Btn}</Button>
+				<Button {color} outline class="px-4 py-2 dark:text-white" on:click={onClick2}
+					>{alert.callback2Btn}</Button
+				>
 			{/if}
 		</div>
 	</div>
