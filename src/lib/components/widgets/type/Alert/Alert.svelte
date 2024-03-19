@@ -10,6 +10,9 @@
 	const dashboard: any = getContext('dashboard')
 
 	export let alert: AlertMessage = $widget.format_definition
+	export let data: any
+
+	$: if (data) alert.message = data.message
 
 	type Color = 'red' | 'green' | 'yellow' | 'blue'
 	type Type = 'error' | 'success' | 'warning' | 'info'
@@ -45,9 +48,9 @@
 		<div class="flex flex-col items-start justify-center">
 			<div class="flex items-center gap-3">
 				<Icon icon={types[alert.type]?.icon} size="18" />
-				<span class="text-lg font-medium">{alert.title}</span>
+				<span class="text-lg font-medium">{@html alert.title}</span>
 			</div>
-			{#if alert.message}<p class="mb-2 mt-2">{alert.message}</p>{/if}
+			{#if alert.message}<p class="mb-2 mt-2">{@html alert.message}</p>{/if}
 		</div>
 
 		<div class="flex flex-row justify-end gap-1">

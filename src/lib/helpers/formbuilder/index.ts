@@ -274,7 +274,9 @@ export const utilFunctionsMap: { [key: string]: (params: any) => any } = {
 	handleActiveDrilldown: handleActiveDrilldown,
 	handleCloseFormBottom: handleCloseFormBottom,
 	handlePreRenderMileageSearchStores: handlePreRenderMileageSearchStores,
-	handleFunctionMileageSearchStores: handleFunctionMileageSearchStores
+	handleFunctionMileageSearchStores: handleFunctionMileageSearchStores,
+	handlePreRenderProServicesSearchEmployee: handlePreRenderProServicesSearchEmployee,
+	handleFunctionProServicesSearchEmployees: handleFunctionProServicesSearchEmployees
 }
 
 export function supportTicket(params) {
@@ -437,6 +439,56 @@ function handleFunctionMileageSearchStores(params) {
 					longitude: -80.448545
 				}
 			]
+		}
+
+		return dashboardItem
+	})
+}
+
+function handlePreRenderProServicesSearchEmployee(params) {
+	// TODO:
+	const user = get(storeUser)
+	if (!user?.superuser) {
+		params.jsonSchema.properties.program_slug.attrs.visible = false
+		params.jsonSchema.properties.associate_oid.attrs.visible = false
+		params.jsonSchema['required'] = []
+
+		params.$widget.params.model.defaults = {
+			program_slug: user?.first_name,
+			associate_oid: user?.domain
+		}
+	}
+}
+
+function handleFunctionProServicesSearchEmployees(params) {
+	const dashboard = params.extra.extra.dashboard
+
+	dashboard.update((dashboardItem: any) => {
+		dashboardItem.gridItemsData = {
+			employees: [
+				{
+					employee_id: 3397,
+					fullname: 'Ricardio Giannotti',
+					address: 'Miami Gardens-WM'
+				},
+				{
+					employee_id: 2814,
+					fullname: 'Jose Mendoza',
+					address: 'HIALEAH-WM'
+				},
+				{
+					employee_id: 6397,
+					fullname: 'Jesus Lara',
+					address: 'MIAMI-WM'
+				},
+				{
+					employee_id: 1680,
+					fullname: 'Eduardo Santaella',
+					address: 'KENDALL-WM'
+				}
+			],
+			message:
+				'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.'
 		}
 
 		return dashboardItem

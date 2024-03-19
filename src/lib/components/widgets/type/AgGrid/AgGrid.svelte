@@ -371,7 +371,6 @@
 				})
 				return store
 			})
-			console.log(stores)
 			payload['stores'] = stores
 
 			const locations = stores.map((store) => {
@@ -414,6 +413,29 @@
 			// 	'Total Distance': [{ 'Total Distance': 53.68 }]
 			// }
 			// console.log('gridItemsData', $dashboard.gridItemsData)
+		},
+		async selectProServiceEmployees() {
+			const selectedNodes = gridOptions.api.getSelectedNodes()
+			if (selectedNodes.length < 1) {
+				sendErrorNotification('You must select at least one employee')
+				return
+			}
+			const selectedData = selectedNodes.map((node) => node.data)
+			const params = $widget.params.btnsActions!.bottom!.selectProServiceEmployees!.params
+			let payload: Record<string, any> = {}
+			const employees = selectedData.map((data: any) => {
+				let employee: Record<string, any> = {}
+				params.payload_fields.map(async (field: any) => {
+					employee[field] = data[field]
+				})
+				return employee
+			})
+			payload['employees'] = employees
+
+			$dashboard.gridItemsData = {
+				...$dashboard.gridItemsData,
+				show_message: { message: $dashboard.gridItemsData['message'] }
+			}
 		}
 	}
 
