@@ -202,7 +202,9 @@ export const gridHeight = (id: string): any => {
 	const toolbarTop = toolbarTopEL ? toolbarTopEL.offsetHeight : 0
 	const toolbarBottomEL = document.getElementById(`widget-content-bottom-${id}`)
 	const toolbarBottom = toolbarBottomEL ? toolbarBottomEL.offsetHeight : 0
-	const contentHeight = mainHeight - toolbarTop - toolbarBottom
+	const instancesEL = document.getElementById(`widget-instances-${id}`)
+	const instances = instancesEL ? instancesEL.offsetHeight : 0
+	const contentHeight = mainHeight - toolbarTop - toolbarBottom - instances
 	return `${contentHeight}px`
 }
 
