@@ -648,11 +648,12 @@
 		}
 	}
 
+	let innerWidth: number
 	/**
 	 * @description Actualiza la configuración de la tabla cuando se cambia el tamaño de la tabla
 	 */
 	function onGridSizeChanged(event: any) {
-		gridOptions.api!.sizeColumnsToFit()
+		if (innerWidth >= 1024) gridOptions.api!.sizeColumnsToFit()
 		const scrollModel = $widget.params.pqgrid?.scrollModel
 		if (scrollModel && scrollModel?.autoFit === false) {
 			event.columnApi.autoSizeAllColumns(true)
@@ -767,6 +768,8 @@
 		})
 	}
 </script>
+
+<svelte:window bind:innerWidth />
 
 <div id="aggrid-container-{$widget.widget_id}" class="grid-container flex flex-col">
 	<div

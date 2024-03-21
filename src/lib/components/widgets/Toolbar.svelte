@@ -320,7 +320,7 @@
 				/>
 			{/each}
 
-			{#if !toolbar.help && $widget.description}<ToolbarHelp helpText={$widget.description} />{/if}
+			{#if toolbar.help && $widget.description}<ToolbarHelp helpText={$widget.description} />{/if}
 
 			{#if listInMenu.length > 0}
 				<Tooltip

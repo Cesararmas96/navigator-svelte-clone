@@ -29,9 +29,15 @@
 		resizeIFrameToContent()
 	})
 
-	$: if (document.querySelector(`#iframe-${$widget.widget_id}`) && !$widget.param?.hidden) {
+	let resized: boolean = false
+	$: if (
+		document.querySelector(`#iframe-${$widget.widget_id}`) &&
+		!$widget.param?.hidden &&
+		!resized
+	) {
 		setTimeout(() => {
 			resizeIFrameToContent()
+			resized = true
 		}, 500)
 	}
 

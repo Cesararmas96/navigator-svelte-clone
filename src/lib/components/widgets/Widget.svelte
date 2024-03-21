@@ -64,7 +64,9 @@
 	class:p-1={!$widget.temp && !$widget.collapse && !isMobileDevice}
 	class:mobile={isMobileDevice}
 	class="w-full"
-	style:min-height={$widget?.attributes?.min_height ? $widget?.attributes?.min_height : 'auto'}
+	style:min-height={$widget?.attributes?.min_height && isMobileDevice
+		? $widget?.attributes?.min_height
+		: 'auto'}
 >
 	{#if $widget.loading}
 		<Spinner fullScreen={false} />
