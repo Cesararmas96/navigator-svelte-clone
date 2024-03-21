@@ -12,20 +12,13 @@
 
 	let url: string = $widget.format_definition?.url || $widget.url
 
-	function loadIframe() {
-		createMediaSettings(widget)
-
-		url = $widget.format_definition.url || $widget.url
+	let tempUrl
+	$: if ($widget.data && $widget.data.url !== tempUrl) {
+		tempUrl = $widget.data.url
+		$widget.loading = true
 	}
 
-	// $: if ($widget?.saved) {
-	// 	loadIframe()
-	// 	$widget.saved = null
-	// }
-
 	onMount(() => {
-		// loadIframe()
-		// setContentHeight($widget.widget_id)
 		resizeIFrameToContent()
 	})
 
@@ -69,7 +62,12 @@
 	/>
 {:else if $widget.format_definition?.type && $widget.format_definition?.type === 'img'}
 	<!-- svelte-ignore a11y-missing-attribute -->
-	<img id="iframe-{$widget.widget_id}" src={$widget.data.url} width="100%" />
+	<img
+		id="iframe-{$widget.widget_id}"
+		src={$widget.data.url}
+		width="100%"
+		on:load={() => ($widget.loading = false)}
+	/>
 {:else}
 	<embed id="iframe-{$widget.widget_id}" type="text/html" src={$widget.url} width="100%" />
 {/if}
