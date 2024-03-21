@@ -5,12 +5,12 @@
 	import type { Writable } from 'svelte/store'
 	import { addWidgetAction } from '$lib/helpers'
 
-	export const data: any = null
+	export let data: any = null
 
 	const widget: any = getContext('widget')
 	const widgetActions = getContext<Writable<any[]>>('widgetActions')
 
-	let url: string = $widget.format_definition.url || $widget.url
+	let url: string = $widget.format_definition?.url || $widget.url
 
 	function loadIframe() {
 		createMediaSettings(widget)
@@ -37,6 +37,7 @@
 
 	const resizeIFrameToContent = () => {
 		const iFrame: HTMLElement = document.querySelector(`#iframe-${$widget.widget_id}`)!
+		if (!iFrame) return
 		iFrame.style['min-height'] = contentHeight($widget.widget_id)
 		iFrame.style['height'] = iFrame.style['min-height']
 		$widget.resized = false
@@ -50,7 +51,7 @@
 	})
 </script>
 
-{#if $widget.format_definition.type && $widget.format_definition.type === 'iframe'}
+{#if $widget.format_definition?.type && $widget.format_definition?.type === 'iframe'}
 	<!-- svelte-ignore a11y-missing-attribute -->
 	<iframe
 		id="iframe-{$widget.widget_id}"
@@ -60,6 +61,9 @@
 		loading="lazy"
 		referrerpolicy="no-referrer-when-downgrade"
 	/>
+{:else if $widget.format_definition?.type && $widget.format_definition?.type === 'img'}
+	<!-- svelte-ignore a11y-missing-attribute -->
+	<img id="iframe-{$widget.widget_id}" src={$widget.data.url} width="100%" />
 {:else}
 	<embed id="iframe-{$widget.widget_id}" type="text/html" src={$widget.url} width="100%" />
 {/if}

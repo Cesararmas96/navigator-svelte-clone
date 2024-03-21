@@ -15,6 +15,7 @@
 
 	const handleCloseInstance = (e: any) => {
 		removeInstance(widget, e.detail)
+		if ($widget.instances.length > 0) return
 		setTimeout(() => {
 			dispatch('handleInstanceResize', 'close')
 		}, 100)
@@ -26,18 +27,20 @@
 	class:hidden={!$widget.instances || $widget.instances.length === 0}
 >
 	{#if $widget.instances}
-		{#each $widget.instances as instance}
-			<WidgetInstence
-				widget={instance}
-				{isToolbarVisible}
-				{fixed}
-				{isOwner}
-				on:handleInstanceResize
-				on:handleCloseInstance={handleCloseInstance}
-				let:widget
-			>
-				<Widget {widget} {isToolbarVisible} {fixed} {isOwner} />
-			</WidgetInstence>
-		{/each}
+		<div class={`grid grid-cols-${$widget.instances.length} gap-2`}>
+			{#each $widget.instances as instance}
+				<WidgetInstence
+					widget={instance}
+					{isToolbarVisible}
+					{fixed}
+					{isOwner}
+					on:handleInstanceResize
+					on:handleCloseInstance={handleCloseInstance}
+					let:widget
+				>
+					<Widget {widget} {isToolbarVisible} {fixed} {isOwner} />
+				</WidgetInstence>
+			{/each}
+		</div>
 	{/if}
 </div>

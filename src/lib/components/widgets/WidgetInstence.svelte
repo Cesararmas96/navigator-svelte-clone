@@ -67,6 +67,6 @@
 	})
 </script>
 
-<div class:invisible={!instanceLoaded}>
+<div class="relative" class:invisible={!instanceLoaded}>
 	<slot widget={widgetStore} {isToolbarVisible} {fixed} {isOwner} />
 </div>

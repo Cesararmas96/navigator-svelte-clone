@@ -32,6 +32,7 @@
 	import { addInstance, clearInstances } from '$lib/helpers/widget/instances'
 	import { page } from '$app/stores'
 	import { setWidgetBottom } from '$lib/helpers/widget/widget-bottom'
+	import { merge } from 'lodash-es'
 
 	export let data: any
 	export let simpleTable: boolean = false
@@ -194,6 +195,8 @@
 			// if (drilldownOpen) return
 			$widget.params.drilldowns?.cellClick
 				? actionBtnMap[$widget.params.drilldowns.cellClick](params.srcElement.dataset)
+				: $widget.params.sharedData?.cellClick
+				? actionBtnMap[$widget.params.sharedData.cellClick](params.srcElement.dataset)
 				: actionBtnMap['cellClickDefault'](params.srcElement.dataset)
 		},
 		async addWidgetDrilldownTempTaskMonitor(params: any) {
@@ -436,6 +439,69 @@
 				...$dashboard.gridItemsData,
 				show_message: { message: $dashboard.gridItemsData['message'] }
 			}
+		},
+		async addMapWidgets(params: any) {
+			let { data, colDef, rowId, colId } = params
+			data = JSON.parse(data)
+			colDef = JSON.parse(colDef)
+
+			$dashboard.gridItemsData = {
+				...$dashboard.gridItemsData,
+				opt_map_url: { url: data['opt_map_url'] },
+				map_url: { url: data['map_url'] }
+			}
+
+			// $widget.instance_loading = true
+			// await clearInstances(widget)
+			// const drilldowns: any[] = []
+
+			// const title = 'Map'
+			// drilldowns.push({
+			// 	title: `${title}`,
+			// 	attributes: {
+			// 		icon: 'fa fa-table',
+			// 		min_height: '500px'
+			// 	},
+			// 	classbase: 'Iframe',
+
+			// 	dashboard_id: $widget.dashboard_id,
+			// 	module_id: $widget.module_id,
+			// 	program_id: $widget.program_id,
+			// 	widget_type_id: 'media-iframe',
+			// 	parent: $widget.widget_id,
+			// 	url: data['map_url'],
+			// 	params: {
+			// 		settings: merge({}, $widget.params.settings, { toolbar: { show: false } })
+			// 	},
+			// 	format_definition: {
+			// 		type: 'iframe'
+			// 	}
+			// })
+			// drilldowns.push({
+			// 	title: `${title} - Optimal Route`,
+			// 	attributes: {
+			// 		icon: 'fa fa-table',
+			// 		min_height: '500px'
+			// 	},
+			// 	classbase: 'Iframe',
+
+			// 	dashboard_id: $widget.dashboard_id,
+			// 	module_id: $widget.module_id,
+			// 	program_id: $widget.program_id,
+			// 	widget_type_id: 'media-iframe',
+			// 	parent: $widget.widget_id,
+			// 	url: data['opt_map_url'],
+			// 	params: {
+			// 		settings: merge({}, $widget.params.settings, { toolbar: { show: false } })
+			// 	},
+			// 	format_definition: {
+			// 		type: 'iframe'
+			// 	}
+			// })
+			// addInstance(widget, drilldowns[0])
+			// addInstance(widget, drilldowns[1])
+			// $widget.instance_loading = false
+			// console.log('drilldowns')
 		}
 	}
 
@@ -548,6 +614,7 @@
 	}
 
 	$: if (data) {
+		// console.log('ENTRO AGGRID', data)
 		gridOptions.api?.setRowData(data)
 		const eGridDiv: HTMLElement = document.querySelector(`#grid-${$widget.widget_id}`)!
 		if (eGridDiv) {
