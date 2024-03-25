@@ -170,6 +170,8 @@ export const cellClass = (formatDefinition: any): string => {
 	let cellClass = ''
 	cellClass += !formatDefinition.align && formatDefinition.format ? ' text-right' : ''
 	cellClass += formatDefinition.align ? ` text-${formatDefinition.align}` : ''
+	if (formatDefinition.render) cellClass += ` action-${formatDefinition.render}`
+
 	return cellClass
 }
 
@@ -791,17 +793,28 @@ function clickCell(
 	callback?: Record<string, () => void> | (() => void),
 	colDef?: Record<string, any>
 ) {
+	const icon = document.createElement('iconify-icon')
+	icon.icon = 'tabler:hand-finger'
+	icon.classList.add('ml-1')
+	icon.dataset.colId = params.column.colId
+	icon.dataset.data = JSON.stringify(params.data)
+	icon.dataset.colDef = JSON.stringify(colDef)
+	icon.dataset.rowId = params.rowIndex
+	icon.addEventListener('click', (event) => {
+		event.preventDefault()
+		callback!['postRenderOpenDrilldown']()
+	})
+
 	const div = document.createElement('div')
-	div.classList.add('cursor-pointer')
+	div.classList.add('ag-cell-clickable')
 	div.dataset.colId = params.column.colId
 	div.dataset.data = JSON.stringify(params.data)
 	div.dataset.colDef = JSON.stringify(colDef)
 	div.dataset.rowId = params.rowIndex
 	div.addEventListener('click', callback!['postRenderOpenDrilldown'])
 	div.title = 'Click for details'
-	div.innerHTML = `${
-		params.data[params.column.colId]
-	} <iconify-icon icon="tabler:hand-finger"></iconify-icon></div>`
+	div.innerHTML = `${params.data[params.column.colId]}`
+	div.appendChild(icon)
 	return div
 }
 
