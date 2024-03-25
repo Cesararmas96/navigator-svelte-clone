@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { getContext, onMount } from 'svelte'
-	import { createMediaSettings } from '../../base/settings/media'
 	import { contentHeight, setContentHeight } from '$lib/helpers/widget/widget'
 	import type { Writable } from 'svelte/store'
 	import { addWidgetAction } from '$lib/helpers'

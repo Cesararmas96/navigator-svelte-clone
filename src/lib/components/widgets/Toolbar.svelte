@@ -29,6 +29,7 @@
 		/(https:\/\/www\.|http:\/\/www\.|https:\/\/|http:\/\/)?[a-zA-Z]{2,}(\.[a-zA-Z]{2,})(\.[a-zA-Z]{2,})?\/[a-zA-Z0-9]{2,}|((https:\/\/www\.|http:\/\/www\.|https:\/\/|http:\/\/)?[a-zA-Z]{2,}(\.[a-zA-Z]{2,})(\.[a-zA-Z]{2,})?)|(https:\/\/www\.|http:\/\/www\.|https:\/\/|http:\/\/)?[a-zA-Z0-9]{2,}\.[a-zA-Z0-9]{2,}\.[a-zA-Z0-9]{2,}(\.[a-zA-Z0-9]{2,})?/
 
 	let isWidgetOwner: boolean = $dashboard?.attributes?.user_id === $storeUser?.user_id
+	let isSharedByDashboard: boolean = Boolean($widget?.query_slug?.dashboard)
 	let menuOpen = false
 	$: if (!isToolbarVisible) {
 		menuOpen = false
@@ -296,6 +297,14 @@
 			(item) => toolbarItems[item].show && toolbarItems[item].showInMenu
 		)
 	}
+
+	const chageZIndex = () => {
+		const el = document.getElementById($widget.widget_id)
+		setTimeout(() => {
+			if (menuOpen) el?.classList.add('z-50')
+			else el?.classList.remove('z-50')
+		}, 100)
+	}
 </script>
 
 {#if toolbarItems}
@@ -334,6 +343,7 @@
 					class="icon btn hover:bg-light-100 dark:hover:bg-dark-200"
 					aria-expanded="false"
 					aria-haspopup="true"
+					on:click={chageZIndex}
 				>
 					<Icon icon="tabler:dots-vertical" size="18" />
 				</button>
@@ -344,12 +354,15 @@
 							showInMenu={toolbarItems[item].showInMenu}
 							item={toolbarItems[item].item}
 							{isMobileDevice}
-							on:itemClick={() => (menuOpen = false)}
+							on:itemClick={() => {
+								menuOpen = false
+								chageZIndex()
+							}}
 						/>
 					{/each}
 				</Dropdown>
 			{/if}
-			{#if isWidgetOwner || $widget.temp || ($widget.cloned && !$widget.shared)}
+			{#if isWidgetOwner || isSharedByDashboard || $widget.temp || ($widget.cloned && !$widget.shared)}
 				<ToolbarClose />
 			{/if}
 		</div>

@@ -7,10 +7,14 @@
 	import { deleteData } from '$lib/services/getData'
 	import { sendErrorNotification } from '$lib/stores/toast'
 	import { openConfirmModal } from '$lib/helpers/common/modal'
+	import { storeUser } from '$lib/stores'
 
 	export let isMobileDevice: boolean = false
 
-	const widget = getContext<Writable<any>>('widget')
+	let widget = getContext<Writable<any>>('widget')
+	let dashboard = getContext<Writable<any>>('dashboard')
+
+	const deleteWidget = $dashboard.attributes?.user_id === $storeUser?.user_id
 
 	const widgetActions = getContext<Writable<any[]>>('widgetActions')
 	const removeAction = getWidgetAction($widgetActions, 'remove')
@@ -21,7 +25,10 @@
 			closeInstanceAction.action()
 		} else if ($widget.cloned) {
 			removeAction.action()
-		} else {
+		} else if (Boolean($widget?.query_slug?.dashboard) && !deleteWidget) {
+			const showSharedWidgets = getWidgetAction($widgetActions, 'showSharedWidgets')
+			showSharedWidgets.action(false)
+		} else if (deleteWidget) {
 			openConfirmModal({
 				description: `You're about to permanently delete this. This process is irreversible.`,
 				type: 'warning',
@@ -43,6 +50,6 @@
 </script>
 
 <button on:click={closeWidget} class="icon btn hover:bg-light-100 dark:hover:bg-dark-200">
-	<Icon icon="tabler:x" size="18" />
+	<Icon icon="tabler:x" size="18" classes={deleteWidget ? 'text-red-700' : ''} />
 </button>
 <Tooltip placement="bottom" class={`z-10 ${isMobileDevice ? 'hidden' : ''}`}>Remove</Tooltip>

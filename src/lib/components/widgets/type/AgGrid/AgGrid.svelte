@@ -576,7 +576,7 @@
 		columnDefs,
 		rowData: data ? data : null,
 		// rowHeight: 25,
-		autoHeight: true,
+		// autoHeight: true,
 		animateRows: true,
 
 		rowSelection: 'multiple',
