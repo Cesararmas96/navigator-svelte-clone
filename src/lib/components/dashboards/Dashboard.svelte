@@ -547,7 +547,7 @@
 		!isMobileDevice() && !isShared
 			? `height: calc(100vh - ${175 + clientHeight}px)`
 			: haveBreadcrumb
-			? `height: calc(100vh - 110px)`
+			? `height: calc(100vh - 174px)`
 			: ''
 
 	$: isMobileDevice = () => innerWidth < 1024
