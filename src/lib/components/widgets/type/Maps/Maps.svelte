@@ -48,20 +48,17 @@
 		locations.push(locationsTemp.find((l) => l.label === 'D'))
 	}
 
-	$: if (data?.url && document.getElementById(`map-${$widget.widget_id}`)) {
-		loadUrl()
-		calculateAndDisplayRoute(directionsService, directionsRenderer)
-	}
-
 	let tempUrl
 	$: if (
 		data?.url &&
 		data?.url !== tempUrl &&
 		document.getElementById(`map-${$widget.widget_id}`)
 	) {
+		$widget.loading = true
 		tempUrl = data?.url
-		// $widget.loading = true
 		loadUrl()
+		calculateAndDisplayRoute(directionsService, directionsRenderer)
+		$widget.loading = false
 	}
 
 	const widget: any = getContext('widget')
