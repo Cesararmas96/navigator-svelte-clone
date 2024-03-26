@@ -509,6 +509,10 @@ div[id^='widget-content-'] > .grid {
 	div[id^='widget-content-'] > .grid {
 		grid-template-columns: repeat(1, minmax(0, 1fr));
 	}
+
+	.form__group {
+		grid-column: span 12 !important;
+	}
 }
 
 @media (min-width: 640px) and (max-width: 1023px) {
@@ -728,4 +732,12 @@ span.slider__thumb {
 	.md\:flex {
 		display: flex !important;
 	}
+}
+
+//boseu
+.form__group {
+	align-self: center;
+}
+.switch__main[data-state='checked'] {
+	background-color: rgb(var(--theme-color)) !important;
 }
