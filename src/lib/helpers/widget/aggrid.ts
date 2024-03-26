@@ -103,7 +103,7 @@ export const generateColumnDefsByDefinition = (widget: any, callbacks: any) => {
 						headerCheckboxSelection: col.checkbox,
 						checkboxSelection: col.checkbox,
 						showDisabledCheckboxes: col.checkbox,
-						format: col.format,
+						// format: col.format,
 						cellClass: cellClass(col),
 						cellClassRules: cellClassRules(key, col, widget.params.thresholds),
 						headerClass: headerClass(col),
