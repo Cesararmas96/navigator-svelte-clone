@@ -162,7 +162,7 @@ export const handleSubmitForm = async (handleValidateForm: any, type: string, $w
 	const payload = handleValidateForm()
 	console.log(payload)
 	if (!Array.isArray(payload)) {
-		const filteredPayload = { ...$widget?.params?.model?.defaults, ...payload }
+		let filteredPayload = { ...$widget?.params?.model?.defaults, ...payload }
 		$widget?.params?.model?._ignore?.forEach((item) => {
 			if (item.includes('.')) {
 				const recursive = item.split('.')
@@ -176,6 +176,20 @@ export const handleSubmitForm = async (handleValidateForm: any, type: string, $w
 
 			delete filteredPayload[item]
 		})
+
+		if (
+			$widget?.params?.model?.callback?.preFetch &&
+			utilFunctionsMap[$widget?.params?.model?.callback?.preFetch]
+		) {
+			filteredPayload = utilFunctionsMap[$widget.params.model.callback.preFetch]({
+				data: filteredPayload,
+				params: $widget.params.model,
+				extra: {
+					extra,
+					widget: $widget
+				}
+			})
+		}
 
 		return await handleSubmit(filteredPayload, type, $widget, extra)
 	} else {
@@ -202,21 +216,6 @@ async function handleSubmit(payload: any, type: string, $widget, extra) {
 	if (extra?.message) message = extra.message
 
 	try {
-		// code temp
-		if (
-			$widget?.params?.model?.callback?.fn &&
-			utilFunctionsMap[$widget?.params?.model?.callback?.fn]
-		) {
-			utilFunctionsMap[$widget.params.model.callback.fn]({
-				data: [],
-				params: $widget.params.model,
-				extra: {
-					extra,
-					widget: $widget
-				}
-			})
-		}
-
 		const dataModel = await getApiData(url, method, payload)
 
 		if (dataModel) {
@@ -227,19 +226,19 @@ async function handleSubmit(payload: any, type: string, $widget, extra) {
 				})
 			}
 
-			// if (
-			// 	$widget?.params?.model?.callback?.fn &&
-			// 	utilFunctionsMap[$widget?.params?.model?.callback?.fn]
-			// ) {
-			// 	utilFunctionsMap[$widget.params.model.callback.fn]({
-			// 		data: dataModel,
-			// 		params: $widget.params.model,
-			// 		extra: {
-			// 			extra,
-			// 			widget: $widget
-			// 		}
-			// 	})
-			// }
+			if (
+				$widget?.params?.model?.callback?.fn &&
+				utilFunctionsMap[$widget?.params?.model?.callback?.fn]
+			) {
+				utilFunctionsMap[$widget.params.model.callback.fn]({
+					data: dataModel,
+					params: $widget.params.model,
+					extra: {
+						extra,
+						widget: $widget
+					}
+				})
+			}
 
 			sendSuccessNotification($widget?.params?.model?.message || dataModel?.message || message)
 
@@ -276,7 +275,8 @@ export const utilFunctionsMap: { [key: string]: (params: any) => any } = {
 	handlePreRenderMileageSearchStores: handlePreRenderMileageSearchStores,
 	handleFunctionMileageSearchStores: handleFunctionMileageSearchStores,
 	handlePreRenderProServicesSearchEmployee: handlePreRenderProServicesSearchEmployee,
-	handleFunctionProServicesSearchEmployees: handleFunctionProServicesSearchEmployees
+	handleFunctionProServicesSearchEmployees: handleFunctionProServicesSearchEmployees,
+	handleFunctionCallbackPrePayloadTicketForBose: handleFunctionCallbackPrePayloadTicketForBose
 }
 
 export function supportTicket(params) {
@@ -493,4 +493,26 @@ function handleFunctionProServicesSearchEmployees(params) {
 
 		return dashboardItem
 	})
+}
+
+function handleFunctionCallbackPrePayloadTicketForBose(params) {
+	const formData = params.data
+
+	switch (formData?.bose_sla_tier) {
+		case '1.Platinum': {
+			formData['priority'] = 'priority 3'
+			break
+		}
+		case '2.Gold': {
+			formData['priority'] = 'priority 2'
+			break
+		}
+		case '3.Silver': {
+			formData['priority'] = 'priority 1'
+			break
+		}
+	}
+
+	console.log(formData)
+	return formData
 }
