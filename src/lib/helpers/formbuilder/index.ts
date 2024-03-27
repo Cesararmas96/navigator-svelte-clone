@@ -167,11 +167,12 @@ export const handleSubmitForm = async (handleValidateForm: any, type: string, $w
 			if (item.includes('.')) {
 				const recursive = item.split('.')
 
-				filteredPayload[recursive[0]].forEach((recurs) => {
-					if (recurs?.data) recurs.data = recurs.data.split('base64,')[1]
+				filteredPayload[recursive[0]] &&
+					filteredPayload[recursive[0]].forEach((recurs) => {
+						if (recurs?.data) recurs.data = recurs.data.split('base64,')[1]
 
-					delete recurs[recursive[1]]
-				})
+						delete recurs[recursive[1]]
+					})
 			}
 
 			delete filteredPayload[item]
@@ -500,15 +501,15 @@ function handleFunctionCallbackPrePayloadTicketForBose(params) {
 
 	switch (formData?.bose_sla_tier) {
 		case '1.Platinum': {
-			formData['priority'] = 'priority 3'
+			formData['priority_id'] = '3 high'
 			break
 		}
 		case '2.Gold': {
-			formData['priority'] = 'priority 2'
+			formData['priority_id'] = '2 normal'
 			break
 		}
 		case '3.Silver': {
-			formData['priority'] = 'priority 1'
+			formData['priority_id'] = '1 low'
 			break
 		}
 	}
