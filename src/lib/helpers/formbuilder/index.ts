@@ -514,6 +514,18 @@ function handleFunctionCallbackPrePayloadTicketForBose(params) {
 		}
 	}
 
+	if (!formData?.bose_parts_needed) {
+		delete formData['bose_how_many_parts']
+		for (let i = 1; i <= 8; i++) {
+			delete formData[`bose_part${i}`]
+			delete formData[`bose_part${i}_backorder`]
+			delete formData[`bose_part${i}_order`]
+			delete formData[`bose_part${i}_order_date`]
+			delete formData[`bose_part${i}_shipped`]
+			delete formData[`bose_part${i}_tracking`]
+		}
+	}
+
 	console.log(formData)
 	return formData
 }
