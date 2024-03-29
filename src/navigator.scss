@@ -764,17 +764,19 @@ input[type='datetime-local'][data-theme='dark'] {
 	border-color: #27272a !important;
 }
 
-.part_1,
-.part_2,
-.part_3,
-.part_4,
-.part_5,
-.part_6,
-.part_7,
-.part_8 {
-	grid-column: span 12 !important;
-}
+@media (min-width: 768px) {
+	.part_1,
+	.part_2,
+	.part_3,
+	.part_4,
+	.part_5,
+	.part_6,
+	.part_7,
+	.part_8 {
+		grid-column: span 12 !important;
+	}
 
-.tracking_number {
-	grid-column: span 4 !important;
+	.tracking_number {
+		grid-column: span 4 !important;
+	}
 }
