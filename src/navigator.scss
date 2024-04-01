@@ -735,6 +735,11 @@ span.slider__thumb {
 }
 
 //boseu
+
+.ui.select .select__header:focus {
+	border: none !important;
+}
+
 .form__group--horizontal {
 	padding-top: 16px;
 }
