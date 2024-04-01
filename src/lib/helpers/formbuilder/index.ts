@@ -269,6 +269,7 @@ async function handleSubmit(payload: any, type: string, $widget, extra) {
 
 export const utilFunctionsMap: { [key: string]: (params: any) => any } = {
 	supportTicket: supportTicket,
+	supportTicketBose: supportTicketBose,
 	handleSupportTicketsWithPin: handleSupportTicketsWithPin,
 	handleSupportTicketsWithPinForm: handleSupportTicketsWithPinForm,
 	handleActiveDrilldown: handleActiveDrilldown,
