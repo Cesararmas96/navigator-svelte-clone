@@ -305,6 +305,8 @@
 			else el?.classList.remove('z-50')
 		}, 100)
 	}
+
+	$: console.log(toolbar.show, $widget.description)
 </script>
 
 {#if toolbarItems}
@@ -320,47 +322,49 @@
 		}}
 	>
 		<div class="flex flex-row justify-end pl-0" class:pr-2={isMobileDevice}>
-			{#each listOutOfMenu as item}
-				<svelte:component
-					this={toolbarItems[item].component}
-					showInMenu={toolbarItems[item].showInMenu}
-					item={toolbarItems[item].item}
-					{isMobileDevice}
-				/>
-			{/each}
+			{#if toolbar.show}
+				{#each listOutOfMenu as item}
+					<svelte:component
+						this={toolbarItems[item].component}
+						showInMenu={toolbarItems[item].showInMenu}
+						item={toolbarItems[item].item}
+						{isMobileDevice}
+					/>
+				{/each}
 
-			{#if toolbar.help && $widget.description}<ToolbarHelp helpText={$widget.description} />{/if}
+				{#if toolbar.help && $widget.description}<ToolbarHelp helpText={$widget.description} />{/if}
 
-			{#if listInMenu.length > 0}
-				<Tooltip
-					placement="bottom"
-					class={`z-10 ${isMobileDevice ? 'hidden' : ''}`}
-					triggeredBy="#more-actions">More</Tooltip
-				>
-				<button
-					id="more-actions"
-					type="button"
-					class="icon btn hover:bg-light-100 dark:hover:bg-dark-200"
-					aria-expanded="false"
-					aria-haspopup="true"
-					on:click={chageZIndex}
-				>
-					<Icon icon="tabler:dots-vertical" size="18" />
-				</button>
-				<Dropdown class="w-36" bind:open={menuOpen}>
-					{#each listInMenu as item}
-						<svelte:component
-							this={toolbarItems[item].component}
-							showInMenu={toolbarItems[item].showInMenu}
-							item={toolbarItems[item].item}
-							{isMobileDevice}
-							on:itemClick={() => {
-								menuOpen = false
-								chageZIndex()
-							}}
-						/>
-					{/each}
-				</Dropdown>
+				{#if listInMenu.length > 0}
+					<Tooltip
+						placement="bottom"
+						class={`z-10 ${isMobileDevice ? 'hidden' : ''}`}
+						triggeredBy="#more-actions">More</Tooltip
+					>
+					<button
+						id="more-actions"
+						type="button"
+						class="icon btn hover:bg-light-100 dark:hover:bg-dark-200"
+						aria-expanded="false"
+						aria-haspopup="true"
+						on:click={chageZIndex}
+					>
+						<Icon icon="tabler:dots-vertical" size="18" />
+					</button>
+					<Dropdown class="w-36" bind:open={menuOpen}>
+						{#each listInMenu as item}
+							<svelte:component
+								this={toolbarItems[item].component}
+								showInMenu={toolbarItems[item].showInMenu}
+								item={toolbarItems[item].item}
+								{isMobileDevice}
+								on:itemClick={() => {
+									menuOpen = false
+									chageZIndex()
+								}}
+							/>
+						{/each}
+					</Dropdown>
+				{/if}
 			{/if}
 			{#if isWidgetOwner || isSharedByDashboard || $widget.temp || ($widget.cloned && !$widget.shared)}
 				<ToolbarClose />
