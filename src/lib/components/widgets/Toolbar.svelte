@@ -305,8 +305,6 @@
 			else el?.classList.remove('z-50')
 		}, 100)
 	}
-
-	$: console.log(toolbar.show, $widget.description)
 </script>
 
 {#if toolbarItems}
