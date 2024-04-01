@@ -297,6 +297,13 @@ export function supportTicket(params) {
 	return message
 }
 
+export function supportTicketBose(params) {
+	// let message = `${params?.response?.message} <br> Ticket ID	${params?.response?.ticket_number}  `
+	const message = `Your report was submitted, and a case was opened under <strong>Ticket ID ${params?.response?.ticket_number}</strong>, please take note of this number in case you want to follow up on this ticket later.`
+
+	return message
+}
+
 function handleSupportTicketsWithPin(params) {
 	openModal('Security', 'FormBuilder', {
 		model: {
