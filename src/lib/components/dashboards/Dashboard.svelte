@@ -567,6 +567,16 @@
 
 <svelte:window bind:innerWidth />
 
+<svelte:head>
+	<script
+		async
+		defer
+		src="https://maps.googleapis.com/maps/api/js?key={import.meta.env
+			.VITE_GOOGLE_MAPS_KEY}&libraries=places,marker,drawing,geometry&loading=async"
+		type="text/javascript"
+	></script>
+</svelte:head>
+
 {#if Boolean($storeDashboard?.allow_filtering) && Boolean($storeDashboard?.attributes?.sticky)}
 	<section bind:clientHeight>
 		<svelte:component this={filterComponent} bind:open={filtersOpen} />
