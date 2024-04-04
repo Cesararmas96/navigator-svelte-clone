@@ -70,9 +70,7 @@
 
 	$: $storeDashboard = dashboard
 
-	console.log(dashboard.attributes.items_data)
 	if (dashboard.attributes?.items_data) {
-		console.log('entro')
 		$storeDashboard.gridItemsData = { ...dashboard.attributes.items_data }
 	}
 
