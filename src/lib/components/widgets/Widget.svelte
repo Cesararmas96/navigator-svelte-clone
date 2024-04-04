@@ -62,8 +62,11 @@
 	class:absolute={!$widget?.temp && !$widget?.collapse && !$widget?.layout && !isMobileDevice}
 	class:-ml-1={!$widget.temp && !$widget.collapse && !isMobileDevice}
 	class:p-1={!$widget.temp && !$widget.collapse && !isMobileDevice}
+	class:mobile={isMobileDevice}
 	class="w-full"
-	style:min-height={$widget?.attributes?.min_height ? $widget?.attributes?.min_height : 'auto'}
+	style:min-height={$widget?.attributes?.min_height && isMobileDevice
+		? $widget?.attributes?.min_height
+		: 'auto'}
 >
 	{#if $widget.loading}
 		<Spinner fullScreen={false} />
@@ -103,8 +106,15 @@
 		class:!h-full={isMobileDevice}
 		class="widget-content relative flex w-full cursor-auto flex-col space-y-4 rounded-md text-sm"
 		on:pointerdown={(event) => {
-			// @ts-ignore
-			if (event?.target?.className?.includes('slider' || 'draggable')) return
+			if (
+				// @ts-ignore
+				typeof event?.target?.className === 'string' &&
+				// @ts-ignore
+				(event?.target?.className?.includes('slider') ||
+					// @ts-ignore
+					event?.target?.className?.includes('draggable'))
+			)
+				return
 
 			event.stopPropagation()
 		}}

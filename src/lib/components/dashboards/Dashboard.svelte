@@ -70,37 +70,9 @@
 
 	$: $storeDashboard = dashboard
 
-	/* Codigo temporal para simular los widgets con data compartida */
-	setTimeout(() => {
-		$storeDashboard.gridItemsData = {
-			stores: [
-				{
-					store_id: 3397,
-					store_name: 'Miami Gardens-WM - #3397',
-					latitude: 25.935725,
-					longitude: -80.207676
-				},
-				{
-					store_id: 2814,
-					store_name: 'HIALEAH-WM - #2814',
-					latitude: 25.858609,
-					longitude: -80.325508
-				},
-				{
-					store_id: 6397,
-					store_name: 'MIAMI-WM-#6397',
-					latitude: 25.623903,
-					longitude: -80.395205
-				},
-				{
-					store_id: 1680,
-					store_name: 'KENDALL-WM  - #1680',
-					latitude: 25.685314,
-					longitude: -80.448545
-				}
-			]
-		}
-	}, 3000)
+	if (dashboard.attributes?.items_data) {
+		$storeDashboard.gridItemsData = { ...dashboard.attributes.items_data }
+	}
 
 	$: if (!$storeDashboard.loaded) {
 		filterComponent = null
@@ -579,7 +551,7 @@
 		!isMobileDevice() && !isShared
 			? `height: calc(100vh - ${175 + clientHeight}px)`
 			: haveBreadcrumb
-			? `height: calc(100vh - 110px)`
+			? `height: calc(100vh - 174px)`
 			: ''
 
 	$: isMobileDevice = () => innerWidth < 1024
@@ -598,6 +570,16 @@
 </script>
 
 <svelte:window bind:innerWidth />
+
+<svelte:head>
+	<script
+		async
+		defer
+		src="https://maps.googleapis.com/maps/api/js?key={import.meta.env
+			.VITE_GOOGLE_MAPS_KEY}&libraries=places,marker,drawing,geometry&loading=async"
+		type="text/javascript"
+	></script>
+</svelte:head>
 
 {#if Boolean($storeDashboard?.allow_filtering) && Boolean($storeDashboard?.attributes?.sticky)}
 	<section bind:clientHeight>
@@ -630,7 +612,7 @@
 				bind:controller={gridController}
 				on:change={updateLocations}
 			>
-				{#each $storeDashboard.gridItems as item}
+				{#each $storeDashboard.gridItems as item (item.data.widget_id)}
 					<GridItem
 						x={item.x}
 						y={item.y}
@@ -682,7 +664,7 @@
 			</Grid>
 		{:else}
 			<div class="grid grid-cols-1 gap-y-3 p-2">
-				{#each getSortedItems($storeDashboard.gridItems) as item}
+				{#each getSortedItems($storeDashboard.gridItems) as item (item.data.widget_id)}
 					<div class:hidden={item.data.params.hidden}>
 						<WidgetBox
 							widget={item.data}

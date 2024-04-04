@@ -122,6 +122,7 @@
 			on:dragover={(event) => dragOver(event, index)}
 			on:drop={drop}
 			draggable={$widget.params?.reorder?.allowed}
+			class:cursor-move={$widget.params?.reorder?.allowed}
 		>
 			<TimelineItem title={el.title} date={el.title ? el.date : undefined} classLi="mb-8">
 				<svelte:fragment slot="icon">

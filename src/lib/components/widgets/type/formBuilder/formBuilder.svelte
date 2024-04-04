@@ -46,11 +46,14 @@
 			endpoint,
 			handleSetFormErrors,
 			widgetContext: widget,
-			...reference?.params?.model?.extras
+			...reference?.params?.model?.extras,
+			dashboard
 		})
 
 		if (response) {
 			if (reference?.params?.model?.responseAlert) {
+				responseServer = null
+
 				if (
 					reference?.params?.model?.responseAlert?.callback &&
 					utilFunctionsMap[reference?.params?.model?.responseAlert?.callback]
@@ -153,7 +156,7 @@
 								</button>
 							{:else}
 								<button
-									class="btn btn-form text-md"
+									class="btn btn-form text-md dark:text-white"
 									on:click={() =>
 										handleSubmitFormLocal(
 											handleValidateForm,
@@ -175,7 +178,13 @@
 
 				{#if responseServer}
 					<div class="pt-6">
-						<Alert color="blue" dismissable>
+						<Alert
+							color="blue"
+							dismissable
+							on:close={() => {
+								responseServer = null
+							}}
+						>
 							{@html responseServer}
 						</Alert>
 					</div>

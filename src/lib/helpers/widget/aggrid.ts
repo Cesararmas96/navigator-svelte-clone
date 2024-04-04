@@ -103,7 +103,7 @@ export const generateColumnDefsByDefinition = (widget: any, callbacks: any) => {
 						headerCheckboxSelection: col.checkbox,
 						checkboxSelection: col.checkbox,
 						showDisabledCheckboxes: col.checkbox,
-						format: col.format,
+						// format: col.format,
 						cellClass: cellClass(col),
 						cellClassRules: cellClassRules(key, col, widget.params.thresholds),
 						headerClass: headerClass(col),
@@ -170,6 +170,8 @@ export const cellClass = (formatDefinition: any): string => {
 	let cellClass = ''
 	cellClass += !formatDefinition.align && formatDefinition.format ? ' text-right' : ''
 	cellClass += formatDefinition.align ? ` text-${formatDefinition.align}` : ''
+	if (formatDefinition.render) cellClass += ` action-${formatDefinition.render}`
+
 	return cellClass
 }
 
@@ -202,7 +204,9 @@ export const gridHeight = (id: string): any => {
 	const toolbarTop = toolbarTopEL ? toolbarTopEL.offsetHeight : 0
 	const toolbarBottomEL = document.getElementById(`widget-content-bottom-${id}`)
 	const toolbarBottom = toolbarBottomEL ? toolbarBottomEL.offsetHeight : 0
-	const contentHeight = mainHeight - toolbarTop - toolbarBottom
+	const instancesEL = document.getElementById(`widget-instances-${id}`)
+	const instances = instancesEL ? instancesEL.offsetHeight : 0
+	const contentHeight = mainHeight - toolbarTop - toolbarBottom - instances
 	return `${contentHeight}px`
 }
 
@@ -598,11 +602,15 @@ function jsonPretty(params: any) {
 	}
 }
 
-function dateAndTime(params: any) {
+function dateAndTime(
+	params: any,
+	callback?: Record<string, () => void> | (() => void),
+	colDef?: Record<string, any>
+) {
 	try {
 		if (params.column.colId && params.data[params.column.colId]) {
 			const date = moment.tz(params.data[params.column.colId], 'America/New_York')
-			return date.format('ddd, MMM DD YYYY, HH:mm:ss')
+			return date.format(colDef?.format || 'ddd, MMM DD YYYY, HH:mm:ss')
 		}
 	} catch (error) {
 		console.log(error)
@@ -789,17 +797,28 @@ function clickCell(
 	callback?: Record<string, () => void> | (() => void),
 	colDef?: Record<string, any>
 ) {
+	const icon = document.createElement('iconify-icon')
+	icon.icon = 'tabler:hand-finger'
+	icon.classList.add('ml-1')
+	icon.dataset.colId = params.column.colId
+	icon.dataset.data = JSON.stringify(params.data)
+	icon.dataset.colDef = JSON.stringify(colDef)
+	icon.dataset.rowId = params.rowIndex
+	icon.addEventListener('click', (event) => {
+		event.preventDefault()
+		callback!['postRenderOpenDrilldown']()
+	})
+
 	const div = document.createElement('div')
-	div.classList.add('cursor-pointer')
+	div.classList.add('ag-cell-clickable')
 	div.dataset.colId = params.column.colId
 	div.dataset.data = JSON.stringify(params.data)
 	div.dataset.colDef = JSON.stringify(colDef)
 	div.dataset.rowId = params.rowIndex
 	div.addEventListener('click', callback!['postRenderOpenDrilldown'])
 	div.title = 'Click for details'
-	div.innerHTML = `${
-		params.data[params.column.colId]
-	} <iconify-icon icon="tabler:hand-finger"></iconify-icon></div>`
+	div.innerHTML = `${params.data[params.column.colId]}`
+	div.appendChild(icon)
 	return div
 }
 

@@ -32,6 +32,7 @@
 	import { addInstance, clearInstances } from '$lib/helpers/widget/instances'
 	import { page } from '$app/stores'
 	import { setWidgetBottom } from '$lib/helpers/widget/widget-bottom'
+	import { merge } from 'lodash-es'
 
 	export let data: any
 	export let simpleTable: boolean = false
@@ -194,6 +195,8 @@
 			// if (drilldownOpen) return
 			$widget.params.drilldowns?.cellClick
 				? actionBtnMap[$widget.params.drilldowns.cellClick](params.srcElement.dataset)
+				: $widget.params.sharedData?.cellClick
+				? actionBtnMap[$widget.params.sharedData.cellClick](params.srcElement.dataset)
 				: actionBtnMap['cellClickDefault'](params.srcElement.dataset)
 		},
 		async addWidgetDrilldownTempTaskMonitor(params: any) {
@@ -357,6 +360,10 @@
 		},
 		async selectSharedData() {
 			const selectedNodes = gridOptions.api.getSelectedNodes()
+			if (selectedNodes.length < 2) {
+				sendErrorNotification('You must select at least two stores')
+				return
+			}
 			const selectedData = selectedNodes.map((node) => node.data)
 			const params = $widget.params.btnsActions!.bottom!.selectSharedData!.params
 			let payload: Record<string, any> = {}
@@ -367,7 +374,6 @@
 				})
 				return store
 			})
-			console.log(stores)
 			payload['stores'] = stores
 
 			const locations = stores.map((store) => {
@@ -410,6 +416,92 @@
 			// 	'Total Distance': [{ 'Total Distance': 53.68 }]
 			// }
 			// console.log('gridItemsData', $dashboard.gridItemsData)
+		},
+		async selectProServiceEmployees() {
+			const selectedNodes = gridOptions.api.getSelectedNodes()
+			if (selectedNodes.length < 1) {
+				sendErrorNotification('You must select at least one employee')
+				return
+			}
+			const selectedData = selectedNodes.map((node) => node.data)
+			const params = $widget.params.btnsActions!.bottom!.selectProServiceEmployees!.params
+			let payload: Record<string, any> = {}
+			const employees = selectedData.map((data: any) => {
+				let employee: Record<string, any> = {}
+				params.payload_fields.map(async (field: any) => {
+					employee[field] = data[field]
+				})
+				return employee
+			})
+			payload['employees'] = employees
+
+			$dashboard.gridItemsData = {
+				...$dashboard.gridItemsData,
+				show_message: { message: $dashboard.gridItemsData['message'] }
+			}
+		},
+		async addMapWidgets(params: any) {
+			let { data, colDef, rowId, colId } = params
+			data = JSON.parse(data)
+			colDef = JSON.parse(colDef)
+
+			$dashboard.gridItemsData = {
+				...$dashboard.gridItemsData,
+				opt_map_url: { url: data['opt_map_url'] },
+				map_url: { url: data['map_url'] }
+			}
+
+			// $widget.instance_loading = true
+			// await clearInstances(widget)
+			// const drilldowns: any[] = []
+
+			// const title = 'Map'
+			// drilldowns.push({
+			// 	title: `${title}`,
+			// 	attributes: {
+			// 		icon: 'fa fa-table',
+			// 		min_height: '500px'
+			// 	},
+			// 	classbase: 'Iframe',
+
+			// 	dashboard_id: $widget.dashboard_id,
+			// 	module_id: $widget.module_id,
+			// 	program_id: $widget.program_id,
+			// 	widget_type_id: 'media-iframe',
+			// 	parent: $widget.widget_id,
+			// 	url: data['map_url'],
+			// 	params: {
+			// 		settings: merge({}, $widget.params.settings, { toolbar: { show: false } })
+			// 	},
+			// 	format_definition: {
+			// 		type: 'iframe'
+			// 	}
+			// })
+			// drilldowns.push({
+			// 	title: `${title} - Optimal Route`,
+			// 	attributes: {
+			// 		icon: 'fa fa-table',
+			// 		min_height: '500px'
+			// 	},
+			// 	classbase: 'Iframe',
+
+			// 	dashboard_id: $widget.dashboard_id,
+			// 	module_id: $widget.module_id,
+			// 	program_id: $widget.program_id,
+			// 	widget_type_id: 'media-iframe',
+			// 	parent: $widget.widget_id,
+			// 	url: data['opt_map_url'],
+			// 	params: {
+			// 		settings: merge({}, $widget.params.settings, { toolbar: { show: false } })
+			// 	},
+			// 	format_definition: {
+			// 		type: 'iframe'
+			// 	}
+			// })
+			// addInstance(widget, drilldowns[0])
+			// addInstance(widget, drilldowns[1])
+			// $widget.instance_loading = false
+			// console.log('drilldowns')
 		}
 	}
 
@@ -484,7 +576,7 @@
 		columnDefs,
 		rowData: data ? data : null,
 		// rowHeight: 25,
-		autoHeight: true,
+		// autoHeight: true,
 		animateRows: true,
 
 		rowSelection: 'multiple',
@@ -522,14 +614,15 @@
 	}
 
 	$: if (data) {
+		// console.log('ENTRO AGGRID', data)
 		gridOptions.api?.setRowData(data)
 		const eGridDiv: HTMLElement = document.querySelector(`#grid-${$widget.widget_id}`)!
 		if (eGridDiv) {
 			eGridDiv.classList.remove('hidden')
-			// eGridDiv.style['min-height'] = !$widget.temp
-			// 	? gridHeight($widget.widget_id)
-			// 	: gridInstanceHeight($widget.widget_id)
-			// eGridDiv.style['height'] = eGridDiv.style['min-height']
+			eGridDiv.style['min-height'] = !$widget.temp
+				? gridHeight($widget.widget_id)
+				: gridInstanceHeight($widget.widget_id)
+			eGridDiv.style['height'] = eGridDiv.style['min-height']
 		}
 	}
 
@@ -555,11 +648,12 @@
 		}
 	}
 
+	let innerWidth: number
 	/**
 	 * @description Actualiza la configuración de la tabla cuando se cambia el tamaño de la tabla
 	 */
 	function onGridSizeChanged(event: any) {
-		gridOptions.api!.sizeColumnsToFit()
+		if (innerWidth >= 1024) gridOptions.api!.sizeColumnsToFit()
 		const scrollModel = $widget.params.pqgrid?.scrollModel
 		if (scrollModel && scrollModel?.autoFit === false) {
 			event.columnApi.autoSizeAllColumns(true)
@@ -674,6 +768,8 @@
 		})
 	}
 </script>
+
+<svelte:window bind:innerWidth />
 
 <div id="aggrid-container-{$widget.widget_id}" class="grid-container flex flex-col">
 	<div

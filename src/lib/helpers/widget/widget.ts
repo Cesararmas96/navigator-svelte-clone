@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const contentHeight = (id: string): any => {
+export const contentHeight = (id: string, extraPX = 0): any => {
 	const widgetHeight = document.getElementById(`widget-${id}`)!.offsetHeight
 	const headerHeight = document.getElementById(`widget-header-${id}`)!.offsetHeight
-	const contentHeight = widgetHeight - headerHeight - 8
+	const contentHeight = widgetHeight - headerHeight - extraPX - 8
 	return `${contentHeight}px`
 }
 
