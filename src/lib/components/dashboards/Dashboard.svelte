@@ -70,6 +70,10 @@
 
 	$: $storeDashboard = dashboard
 
+	if (dashboard.attributes?.items_data) {
+		$storeDashboard.gridItemsData = { ...dashboard.attributes.items_data }
+	}
+
 	$: if (!$storeDashboard.loaded) {
 		filterComponent = null
 		setGridItems($storeDashboard.dashboard_id)
@@ -608,7 +612,7 @@
 				bind:controller={gridController}
 				on:change={updateLocations}
 			>
-				{#each $storeDashboard.gridItems as item}
+				{#each $storeDashboard.gridItems as item (item.data.widget_id)}
 					<GridItem
 						x={item.x}
 						y={item.y}
@@ -660,7 +664,7 @@
 			</Grid>
 		{:else}
 			<div class="grid grid-cols-1 gap-y-3 p-2">
-				{#each getSortedItems($storeDashboard.gridItems) as item}
+				{#each getSortedItems($storeDashboard.gridItems) as item (item.data.widget_id)}
 					<div class:hidden={item.data.params.hidden}>
 						<WidgetBox
 							widget={item.data}
