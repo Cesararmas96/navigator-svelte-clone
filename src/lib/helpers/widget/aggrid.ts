@@ -602,11 +602,15 @@ function jsonPretty(params: any) {
 	}
 }
 
-function dateAndTime(params: any) {
+function dateAndTime(
+	params: any,
+	callback?: Record<string, () => void> | (() => void),
+	colDef?: Record<string, any>
+) {
 	try {
 		if (params.column.colId && params.data[params.column.colId]) {
 			const date = moment.tz(params.data[params.column.colId], 'America/New_York')
-			return date.format('ddd, MMM DD YYYY, HH:mm:ss')
+			return date.format(colDef?.format || 'ddd, MMM DD YYYY, HH:mm:ss')
 		}
 	} catch (error) {
 		console.log(error)
