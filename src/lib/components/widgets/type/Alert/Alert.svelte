@@ -12,7 +12,7 @@
 	export let alert: AlertMessage = $widget.format_definition
 	export let data: any
 
-	$: if (data) alert.message = data.message
+	$: if (data?.message) alert.message = data.message
 
 	type Color = 'red' | 'green' | 'yellow' | 'blue'
 	type Type = 'error' | 'success' | 'warning' | 'info'
