@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { storeUser } from '$lib/stores'
 import { sendErrorNotification } from '$lib/stores/toast'
+import { error } from '@sveltejs/kit'
 import { get } from 'svelte/store'
 
 /**
@@ -84,14 +85,16 @@ export async function getData(
 
 		if (!response?.ok) {
 			let statusText = ''
-			const responseError = await response.json()
-			if (responseError && responseError.message) {
-				statusText = responseError.message
-			} else if (responseError?.error) {
-				statusText = responseError.error
-			} else if (responseError && responseError.payload) {
-				statusText = responseError.payload
-			} else {
+			try {
+				const responseError = await response.json()
+				if (responseError && responseError.message) {
+					statusText = responseError.message
+				} else if (responseError?.error) {
+					statusText = responseError.error
+				} else if (responseError && responseError.payload) {
+					statusText = responseError.payload
+				}
+			} catch (err) {
 				statusText = response.statusText || 'Request error'
 				statusText = response.statusText.includes('reason')
 					? JSON.parse(response.statusText).reason
@@ -99,12 +102,15 @@ export async function getData(
 			}
 
 			if (showErrorNotification)
-				sendErrorNotification(`Request error: ${response.status}:<br> ${statusText}`)
-			throw new Error(`Request error: ${response.status}:<br> ${statusText}`)
+				sendErrorNotification(`Request error: ${response.status}:<br>${statusText}`)
+			throw error(
+				response.status,
+				`Request error: ${response.status}:<br>${statusText}<div class="api-error hidden mt-2">API URL:<br>${url}</div>`
+			)
 		}
 		return await response.json()
 	} catch (error) {
-		console.log(error)
+		if (showErrorNotification) sendErrorNotification(error)
 		throw error
 	}
 }

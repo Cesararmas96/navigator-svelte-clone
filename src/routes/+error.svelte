@@ -1,3 +1,7 @@
+<script lang="ts">
+	import { page } from '$app/stores'
+</script>
+
 <div class="flex h-screen overflow-y-auto p-5">
 	<div class="card m-auto w-full max-w-xl p-8 text-center">
 		<img class="mb-4 inline-block w-16" src="/img/misc/coming-soon.svg" alt="" />
@@ -14,6 +18,17 @@
 				<li>Contact us if the problem persists or if you need further assistance.</li>
 			</ul>
 			<p>We apologize for the inconvenience and appreciate your patience.</p>
+			{#if $page.error && $page.url.searchParams.get('debug')}
+				<div class=" mx-auto mt-4 max-w-2xl">
+					<div class="rounded-md bg-gray-900 p-4 text-white">
+						<div class="overflow-auto">
+							<pre id="code" class="flex text-gray-300">
+								<code class="flex flex-col text-white">{@html $page.error.message}</code>
+							</pre>
+						</div>
+					</div>
+				</div>
+			{/if}
 		</div>
 
 		<div class="text-center text-muted">
