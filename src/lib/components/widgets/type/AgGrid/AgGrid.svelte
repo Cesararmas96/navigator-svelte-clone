@@ -653,7 +653,16 @@
 	 * @description Actualiza la configuración de la tabla cuando se cambia el tamaño de la tabla
 	 */
 	function onGridSizeChanged(event: any) {
-		if (innerWidth >= 1024) gridOptions.api!.sizeColumnsToFit()
+		const columnLimits = Object.keys($widget.format_definition)
+			.map((key: any) => {
+				return {
+					key: key,
+					minWidth: $widget.format_definition[key]?.minWidth
+				}
+			})
+			.filter((column: any) => column.minWidth)
+
+		if (innerWidth >= 1024) gridOptions.api!.sizeColumnsToFit({ columnLimits })
 		const scrollModel = $widget.params.pqgrid?.scrollModel
 		if (scrollModel && scrollModel?.autoFit === false) {
 			event.columnApi.autoSizeAllColumns(true)
