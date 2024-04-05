@@ -204,13 +204,13 @@ async function handleSubmit(payload: any, type: string, $widget, extra) {
 	let url = `${extra.baseUrl}/${endpoint}`
 	let method = 'PUT'
 	let message = 'Successfully created'
-	let callback = $widget.callbackNew
+	let callback = extra?.options?.callbackNew
 
 	if (type === 'update') {
 		url = `${url}${extra.primaryKey}`
 		method = 'POST'
 		message = 'Successfully updated'
-		callback = $widget.callbackUpdate
+		callback = extra?.options?.callbackUpdate
 	}
 
 	if (extra?.method) method = extra.method
@@ -222,8 +222,8 @@ async function handleSubmit(payload: any, type: string, $widget, extra) {
 		if (dataModel) {
 			if (callback) {
 				callback({
-					rowId: $widget?.rowId,
-					dataModel
+					rowId: extra?.options?.rowId,
+					dataModel: Array.isArray(dataModel) ? dataModel[0] : dataModel
 				})
 			}
 
@@ -534,6 +534,5 @@ function handleFunctionCallbackPrePayloadTicketForBose(params) {
 		}
 	}
 
-	console.log(formData)
 	return formData
 }

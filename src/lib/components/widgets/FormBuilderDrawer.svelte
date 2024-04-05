@@ -81,7 +81,9 @@
 			}
 
 			if (schema) {
-				title = `${capitalizeWord(record.action)} ${jsonSchema?.title}`
+				title = `${capitalizeWord(record.action)} ${jsonSchema?.title} ${
+					record.action === 'edit' ? `#${primaryKey}` : ''
+				}`
 				description = jsonSchema?.description
 			}
 		} else {
@@ -124,7 +126,8 @@
 		const response = await handleSubmitForm(handleValidateForm, type, $selectedFormBuilderWidget, {
 			baseUrl,
 			endpoint,
-			primaryKey
+			primaryKey,
+			options: $selectedFormBuilderRecord
 		})
 
 		if (response) {
