@@ -5,8 +5,6 @@ import { isoImport } from 'vite-plugin-iso-import'
 export default defineConfig({
 	plugins: [sveltekit(), isoImport()],
 
-	// envDir: './env',
-
 	css: {
 		preprocessorOptions: {
 			scss: {
