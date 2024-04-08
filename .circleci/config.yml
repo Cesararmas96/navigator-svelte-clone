@@ -32,7 +32,7 @@ parameters:
 jobs:
   build-docker-image:
     machine:
-      image: ubuntu-2004:202201-02
+      image: default
     resource_class: medium
     parameters:
       env-tag:
@@ -80,7 +80,7 @@ jobs:
 
   deploy-kube-service: 
     machine:
-      image: ubuntu-2004:202201-02
+      image: default
     resource_class: medium
     parameters:
       env-tag:
