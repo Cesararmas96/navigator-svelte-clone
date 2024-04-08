@@ -5,7 +5,7 @@
 	"scripts": {
 		"dev": "vite dev",
 		"build": "NODE_OPTIONS=--max-old-space-size=4096 vite build",
-		"build:dev": "NODE_OPTIONS=--max-old-space-size=4096 vite build --mode development",
+		"build:dev": " NODE_ENV=production NODE_OPTIONS=--max-old-space-size=4096 vite build --mode development",
 		"build:qa": "NODE_OPTIONS=--max-old-space-size=4096 vite build --mode qa",
 		"build:staging": "NODE_OPTIONS=--max-old-space-size=4096 vite build --mode staging",
 		"build:production": "NODE_OPTIONS=--max-old-space-size=4096 vite build --mode production",
