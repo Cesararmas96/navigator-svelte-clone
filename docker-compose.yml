@@ -14,7 +14,7 @@ services:
       - TZ=America/Buenos_Aires
     # Points to a file with the sensitive environment variables
     env_file:
-      - ./env/.env.${NODE_ENV}
+      - ./env/.env.development
     restart: unless-stopped
     ports:
       - '3000:5050'
