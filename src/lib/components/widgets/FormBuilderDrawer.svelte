@@ -40,7 +40,7 @@
 		primaryKey = ''
 	}
 
-	$: if ($selectedFormBuilderWidget && $selectedFormBuilderRecord) {
+	$: if ($selectedFormBuilderWidget && $selectedFormBuilderRecord && !primaryKey) {
 		token = $storeUser?.token
 		const slug = $selectedFormBuilderWidget.query_slug.slug
 		const conditions = $selectedFormBuilderWidget.conditions
@@ -115,6 +115,8 @@
 			Object.keys(jsonSchema.properties).map((property) => {
 				jsonSchema.properties[property].default = dataSchema[property]
 			})
+
+			$selectedFormBuilderWidget['modelByID'] = dataSchema
 		}
 
 		schema = getSchemaComputed(jsonSchema, $selectedFormBuilderWidget)
@@ -230,13 +232,15 @@
 								/> Update Changes</Button
 							>
 
-							<Button
-								class=" mt-1 w-full rounded text-sm"
-								outline
-								on:click={() => update('formSaveAsNew')}
-							>
-								<Icon icon="tabler:plus" classes="mr-2" /> Save as New</Button
-							>
+							{#if !(schema && schema.settings && schema.settings.hideSaveAsNew)}
+								<Button
+									class=" mt-1 w-full rounded text-sm"
+									outline
+									on:click={() => update('formSaveAsNew')}
+								>
+									<Icon icon="tabler:plus" classes="mr-2" /> Save as New</Button
+								>
+							{/if}
 						{/if}
 
 						{#if schema && schema.settings && schema.settings.showCancel}
