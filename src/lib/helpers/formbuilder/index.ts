@@ -224,7 +224,11 @@ async function handleSubmit(payload: any, type: string, $widget, extra) {
 			if (callback) {
 				callback({
 					rowId: extra?.options?.rowId,
-					dataModel: Array.isArray(dataModel) ? dataModel[0] : dataModel
+					dataModel: Array.isArray(dataModel)
+						? dataModel[0]
+						: $widget?.params?.model?.response?.model
+						? dataModel[$widget?.params?.model?.response?.model]
+						: dataModel
 				})
 			}
 

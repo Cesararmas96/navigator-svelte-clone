@@ -120,6 +120,7 @@
 		}
 
 		schema = getSchemaComputed(jsonSchema, $selectedFormBuilderWidget)
+		// console.log(JSON.stringify(schema))
 	}
 
 	async function handleSubmitFormLocal(handleValidateForm: any, type: string) {

@@ -577,6 +577,7 @@ export const gridCellBuildFunctionsMap: {
 	dateAndTime: dateAndTime,
 	isActiveYesOrNo: isActiveYesOrNo,
 	tasksActions: tasksActions,
+	ticketsForBoseZammad: ticketsForBoseZammad,
 	clickCell: clickCell
 	// btnsRenderTasksActions: btnsRenderTasksActions
 }
@@ -733,6 +734,41 @@ function tasksActions(
 			a.innerHTML = title
 			return a
 		}
+	} catch (error) {
+		console.log(error)
+	}
+}
+
+function ticketsForBoseZammad(params: any) {
+	try {
+		const status = params.data[params.column.colId]
+		let badge = 'secondary'
+		let title = 'Idle'
+
+		switch (status) {
+			case 1:
+				badge = 'info'
+				title = 'New'
+				break
+			case 2:
+				badge = 'primary'
+				title = 'Open'
+				break
+			case 3:
+				badge = 'warning'
+				title = 'Pending Reminder'
+				break
+			case 4:
+				badge = 'success'
+				title = 'Merged'
+				break
+			case 6:
+				badge = 'danger'
+				title = 'Pending Close'
+				break
+		}
+
+		return `<span class="badge badge-${badge}">${title}</span></a>`
 	} catch (error) {
 		console.log(error)
 	}
