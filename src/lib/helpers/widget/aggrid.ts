@@ -778,7 +778,11 @@ function ticketsForBoseZammad(params: any) {
 				break
 		}
 
-		return `<span class="badge badge-${badge}">${title}</span></a>`
+		const span = document.createElement('span')
+		span.classList.add('badge')
+		span.classList.add(`badge-${badge}`)
+		span.innerHTML = title
+		return span
 	} catch (error) {
 		console.log(error)
 	}
