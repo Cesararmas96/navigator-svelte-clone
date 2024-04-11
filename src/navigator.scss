@@ -593,6 +593,44 @@ div[id^='widget-content-'] > .grid {
 	font-size: 13px;
 }
 
+// 2 ,3 level dropdown
+[data-theme='dark'] .ui-dropdown__sub-content,
+[data-theme='dark'] .ui-dropdown__content {
+	background-color: rgb(var(--body-bg) / var(--tw-bg-opacity));
+	border-color: #27272a;
+	margin: -10px;
+}
+
+.ui-dropdown__content.item-dropdown-menu > .ui-dropdown__sub-content:nth-child(2) {
+	margin: 10px;
+}
+
+.ui-dropdown__item,
+.ui-dropdown__sub-trigger {
+	width: 300px;
+	padding: 1.1rem 0.75rem;
+	font-size: 13px;
+	height: 1.8rem;
+	line-height: 1.25rem;
+	color: var(--body-color);
+	margin: 2px auto;
+}
+
+.ui-dropdown__sub-trigger__icon[data-state='open'] svg {
+	transform: scale(1.5);
+}
+
+.ui-dropdown__sub-trigger[data-state='open'] {
+	font-weight: bold;
+	color: var(--body-color);
+}
+
+@media screen and (max-width: 625px) {
+	.ui-dropdown__sub-content {
+		left: 0 !important;
+	}
+}
+
 // error label
 .form__error {
 	margin-top: 5px;
