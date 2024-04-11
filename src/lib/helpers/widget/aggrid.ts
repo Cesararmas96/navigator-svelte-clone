@@ -116,7 +116,6 @@ export const generateColumnDefsByDefinition = (widget: any, callbacks: any) => {
 						cellRenderer: (params: ValueGetterParams) => {
 							if (col.render && gridCellBuildFunctionsMap[col.render])
 								return gridCellBuildFunctionsMap[col.render](params, callbacks, col)
-
 							// if ($widget.params.pqgrid?.formulas && Array.isArray($widget.params.pqgrid?.formulas)) {
 							// 	$widget.params.pqgrid.formulas.map((formula: any, formulaIndex: number) => {
 							// 		if (typeof formulaFunctionsMap[formula[1]] === 'function') {
@@ -584,9 +583,11 @@ export const gridCellBuildFunctionsMap: {
 function modulesActive(params: any) {
 	if (params.column.colId === 'active') {
 		const cls = params.data[params.column.colId] ? 'badge-success' : 'badge-danger'
-		return `<span class='badge ${cls}'>${
-			params.data[params.column.colId] ? 'Active' : 'Disable'
-		}</span>`
+		const span = document.createElement('span')
+		span.classList.add('badge')
+		span.classList.add(cls)
+		span.innerHTML = params.data[params.column.colId] ? 'Active' : 'Disable'
+		return span
 	}
 }
 
@@ -627,7 +628,11 @@ function isActiveYesOrNo(
 		const title = !active ? 'No' : 'Yes'
 		const cls = params.data[params.column.colId] ? 'badge-success' : 'badge-danger'
 		if (!colDef!.postRender) {
-			return `<span class='badge ${cls}'>${title}</span>`
+			const span = document.createElement('span')
+			span.classList.add('badge')
+			span.classList.add(cls)
+			span.innerHTML = title
+			return span
 		} else {
 			const a = document.createElement('a')
 			a.dataset.colId = params.column.colId
@@ -716,7 +721,12 @@ function tasksActions(
 				break
 		}
 		if (!params.data['traceback']) {
-			return `<span class="badge badge-${badge}" title="${status}">${title}</span></a>`
+			const span = document.createElement('span')
+			span.classList.add('badge')
+			span.classList.add('badge-' + badge)
+			span.title = status
+			span.innerHTML = title
+			return span
 		} else {
 			const a = document.createElement('a')
 			a.dataset.action = 'btnBadge'
