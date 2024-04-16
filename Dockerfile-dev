@@ -1,6 +1,7 @@
 FROM node:18-alpine AS navigator-svelte
 WORKDIR /app
 COPY . .
+RUN cp ./env/.env.development .env
 RUN npm install -g pnpm && \
     pnpm install
 RUN pnpm run build:dev

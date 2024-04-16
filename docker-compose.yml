@@ -1,4 +1,4 @@
-version: "3"
+version: '3'
 services:
   external:
     container_name: external
@@ -6,15 +6,15 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    user: "node"
+    user: 'node'
     environment:
       # Internal server error messages will not send stacktrace to the browser in production
-      - NODE_ENV=production
+      # - NODE_ENV=production
       # Sets the timezone of the containers OS
       - TZ=America/Buenos_Aires
     # Points to a file with the sensitive environment variables
-    env_file:
-      - .env
+    # env_file:
+    #   - ./env/.env.development
     restart: unless-stopped
     ports:
-      - "3000:5050"
+      - '3000:5050'

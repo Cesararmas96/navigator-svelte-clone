@@ -20,10 +20,11 @@ export const getJsonSchema = async (jsonSchema, $widget, credentials) => {
 	Object.keys(jsonSchema.properties).map((property) => {
 		if (
 			jsonSchema.properties[property]?.$ref?.api &&
-			['object', 'select'].includes(jsonSchema.properties[property]?.type) &&
+			['object', 'select', 'dropdown'].includes(jsonSchema.properties[property]?.type) &&
 			jsonSchema.properties[property]?.['ui:widget'] !== 'adv-search'
 		) {
-			jsonSchema.properties[property].type = 'select'
+			jsonSchema.properties[property].type =
+				jsonSchema.properties[property].type === 'dropdown' ? 'dropdown' : 'select'
 
 			if (jsonSchema.properties[property]?.endpoint)
 				jsonSchema.properties[property].$ref.api = jsonSchema.properties[property].endpoint
@@ -223,7 +224,11 @@ async function handleSubmit(payload: any, type: string, $widget, extra) {
 			if (callback) {
 				callback({
 					rowId: extra?.options?.rowId,
-					dataModel: Array.isArray(dataModel) ? dataModel[0] : dataModel
+					dataModel: Array.isArray(dataModel)
+						? dataModel[0]
+						: $widget?.params?.model?.response?.model
+						? dataModel[$widget?.params?.model?.response?.model]
+						: dataModel
 				})
 			}
 
@@ -252,7 +257,7 @@ async function handleSubmit(payload: any, type: string, $widget, extra) {
 	} catch (error: any) {
 		console.log(error)
 
-		if (error?.message.includes('already exists')) {
+		if (error?.message?.includes('already exists')) {
 			extra?.handleSetFormErrors([
 				{
 					message: error?.message.split('<br> ')[1] || error,
@@ -278,7 +283,8 @@ export const utilFunctionsMap: { [key: string]: (params: any) => any } = {
 	handleFunctionMileageSearchStores: handleFunctionMileageSearchStores,
 	handlePreRenderProServicesSearchEmployee: handlePreRenderProServicesSearchEmployee,
 	handleFunctionProServicesSearchEmployees: handleFunctionProServicesSearchEmployees,
-	handleFunctionCallbackPrePayloadTicketForBose: handleFunctionCallbackPrePayloadTicketForBose
+	handleFunctionCallbackPrePayloadTicketForBose: handleFunctionCallbackPrePayloadTicketForBose,
+	handleFunctionCallbackPrePayloadRequiredInHide: handleFunctionCallbackPrePayloadRequiredInHide
 }
 
 export function supportTicket(params) {
@@ -533,6 +539,16 @@ function handleFunctionCallbackPrePayloadTicketForBose(params) {
 			delete formData[`bose_part${i}_tracking`]
 		}
 	}
+
+	return formData
+}
+
+function handleFunctionCallbackPrePayloadRequiredInHide(params) {
+	const formData = params.data
+
+	params?.params?.callback?.defaults.forEach((item) => {
+		formData[item] = params?.extra?.widget?.modelByID[item]
+	})
 
 	return formData
 }

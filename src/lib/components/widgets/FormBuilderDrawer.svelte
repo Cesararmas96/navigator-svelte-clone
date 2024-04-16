@@ -40,7 +40,7 @@
 		primaryKey = ''
 	}
 
-	$: if ($selectedFormBuilderWidget && $selectedFormBuilderRecord) {
+	$: if ($selectedFormBuilderWidget && $selectedFormBuilderRecord && !primaryKey) {
 		token = $storeUser?.token
 		const slug = $selectedFormBuilderWidget.query_slug.slug
 		const conditions = $selectedFormBuilderWidget.conditions
@@ -115,9 +115,12 @@
 			Object.keys(jsonSchema.properties).map((property) => {
 				jsonSchema.properties[property].default = dataSchema[property]
 			})
+
+			$selectedFormBuilderWidget['modelByID'] = dataSchema
 		}
 
 		schema = getSchemaComputed(jsonSchema, $selectedFormBuilderWidget)
+		// console.log(JSON.stringify(schema))
 	}
 
 	async function handleSubmitFormLocal(handleValidateForm: any, type: string) {
@@ -164,7 +167,7 @@
 	</div>
 
 	{#if schema}
-		<div class="flex h-[88%] flex-col">
+		<div class="flex h-[90%] flex-col">
 			<div class="relative flex-grow">
 				<div class="absolute h-full w-full overflow-y-auto">
 					<div class=" px-4 pb-4 pt-0">
@@ -212,9 +215,9 @@
 					</div>
 				</div>
 			</div>
-			<div class="px-2 pb-2">
+			<div class="px-2">
 				<div>
-					<div class="px-2 pb-2 text-sm text-gray-500 dark:text-gray-400">
+					<div class="px-2 pb-0 text-sm text-gray-500 dark:text-gray-400">
 						{#if $selectedFormBuilderRecord?.action === 'new'}
 							<Button class=" mt-3 w-full rounded text-sm" on:click={() => update('formSaved')}>
 								<Icon icon="tabler:plus" classes="mr-2" />
@@ -230,18 +233,20 @@
 								/> Update Changes</Button
 							>
 
-							<Button
-								class=" mt-1 w-full rounded text-sm"
-								outline
-								on:click={() => update('formSaveAsNew')}
-							>
-								<Icon icon="tabler:plus" classes="mr-2" /> Save as New</Button
-							>
+							{#if !(schema && schema.settings && schema.settings.hideSaveAsNew)}
+								<Button
+									class=" mt-1 w-full rounded text-sm"
+									outline
+									on:click={() => update('formSaveAsNew')}
+								>
+									<Icon icon="tabler:plus" classes="mr-2" /> Save as New</Button
+								>
+							{/if}
 						{/if}
 
 						{#if schema && schema.settings && schema.settings.showCancel}
 							<Button
-								class=" mt-1 w-full rounded text-sm transition dark:bg-slate-50"
+								class=" mt-1 w-full rounded text-sm transition"
 								outline
 								on:click={() => close()}
 							>
