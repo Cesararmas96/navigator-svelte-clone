@@ -6,7 +6,7 @@ RUN npm install -g pnpm && \
 RUN pnpm run build:dev
 RUN rm -f pnpm-lock.yaml && \
     rm -rf src/ static/ docker-compose.yml
-CMD ["node", "--max-old-space-size=8192", "build/index.js"]
+CMD ["node", "--max-old-space-size=4096", "build/index.js"]
 
 
 
