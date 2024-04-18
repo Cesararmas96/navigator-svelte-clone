@@ -15,6 +15,13 @@
 		handleSubmitForm,
 		utilFunctionsMap
 	} from '$lib/helpers/formbuilder/index'
+	import { Recaptcha, recaptcha, observer } from 'svelte-recaptcha-v2'
+	import {
+		onCaptchaClose,
+		onCaptchaError,
+		onCaptchaExpire,
+		onCaptchaReady
+	} from '$lib/helpers/login/login'
 
 	export let data: any
 	const widget: any = getContext('widget')
@@ -30,6 +37,11 @@
 	const baseUrl = import.meta.env.VITE_API_URL
 	const token = $storeUser?.token
 	let responseServer = null
+	let recaptchaToken
+
+	const onCaptchaSuccess = (event) => {
+		recaptchaToken = event.detail.token
+	}
 
 	async function handleSubmitFormLocal(
 		handleValidateForm: any,
@@ -80,7 +92,7 @@
 					getModel(formBottomWidget, 'bottom')
 				}
 			}
-
+			recaptchaToken = null
 			handleResetForm()
 		}
 
@@ -149,6 +161,20 @@
 						let:handleResetForm
 						let:handleSetFormErrors
 					>
+						{#if $widget?.params?.model?.recaptcha && !recaptchaToken}
+							<div class="recaptcha my-2 flex justify-center">
+								<Recaptcha
+									sitekey={import.meta.env.VITE_GOOGLE_RECAPTCHA_SITE_KEY}
+									size={'normal'}
+									on:success={onCaptchaSuccess}
+									on:error={onCaptchaError}
+									on:expired={onCaptchaExpire}
+									on:close={onCaptchaClose}
+									on:ready={onCaptchaReady}
+								/>
+							</div>
+						{/if}
+
 						<div class="flex items-end justify-end">
 							{#if loadButton}
 								<button class="btn btn-form text-md" disabled>
@@ -156,7 +182,8 @@
 								</button>
 							{:else}
 								<button
-									class="btn btn-form text-md dark:text-white"
+									class="btn btn-form text-md disabled:text-gray-400 disabled:hover:cursor-not-allowed dark:text-white"
+									disabled={$widget?.params?.model?.recaptcha && !recaptchaToken}
 									on:click={() =>
 										handleSubmitFormLocal(
 											handleValidateForm,
