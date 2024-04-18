@@ -9,7 +9,7 @@ import { dashboards } from './[model]/models/dashboards'
 import { widgets, widgets_template, widgets_types } from './[model]/models/widgets'
 
 export const load = async ({ locals }) => {
-	if (!locals.user) throw redirect(302, '/login')
+	if (!locals.user || !locals.user.token) throw redirect(302, '/login')
 
 	const reports: any[] = [
 		{
