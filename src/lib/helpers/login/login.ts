@@ -1,3 +1,8 @@
+import { page } from '$app/stores'
+import { sendErrorNotification } from '$lib/stores/toast'
+import { redirect } from '@sveltejs/kit'
+import { get } from 'svelte/store'
+
 export const buildImageUrls = (data, rootLink) => {
 	const { branding, slideshow, client, auth_backends: authMethods } = data
 	const { favicon, icon, logo_client, logo_home, sidebar } = branding
@@ -33,4 +38,43 @@ export const removeBasicAuth = (authMethods) => {
 	// Removes BasicAuth method, as it is applied by default
 	delete authMethods.BasicAuth
 	return authMethods
+}
+
+export const onCaptchaReady = (event) => {
+	console.log('recaptcha init has completed.')
+	/*
+	 │You can enable your form button here.
+	 */
+}
+
+export const onCaptchaError = (event) => {
+	console.log('recaptcha init has failed.', event)
+	/*
+	 │Usually due to incorrect siteKey.
+	 |Make sure you have the correct siteKey..
+	 */
+}
+
+export const onCaptchaExpire = (event) => {
+	console.log('recaptcha api has expired')
+	/*
+	 │Normally, you wouldn't need to do anything.
+	 │Recaptcha should reinit itself automatically.
+	 */
+}
+
+export const onCaptchaOpen = (event) => {
+	console.log('google decided to challange the user')
+	/*
+	 │This fires when the puzzle frame pops.
+	 */
+}
+
+export const onCaptchaClose = (event) => {
+	console.log('google decided to challange the user')
+	/*
+	 │This fires when the puzzle frame closes.
+	 │Usually happens when the user clicks outside
+	 |the modal frame.
+	 */
 }

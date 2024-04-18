@@ -45,6 +45,7 @@
 		"svelte": "^4.1.1",
 		"svelte-check": "^3.4.3",
 		"svelte-paginate": "^0.1.0",
+		"svelte-recaptcha-v2": "^0.0.2",
 		"sveltekit-embed": "^0.0.12",
 		"tailwindcss": "^3.4.1",
 		"tslib": "^2.4.1",
