@@ -5,7 +5,7 @@ import { redirect, error } from '@sveltejs/kit'
 // export const ssr = false;
 
 export const load = async ({ params, fetch, locals, url }) => {
-	if (!locals.user) throw redirect(302, '/login')
+	if (!locals.user || !locals.user.token) throw redirect(302, '/login')
 
 	const next = locals.user.next
 	if (next && params.programs !== next) {
