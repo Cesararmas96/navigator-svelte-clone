@@ -39,6 +39,31 @@
 	let responseServer = null
 	let recaptchaToken
 
+	let State = {
+		idle: 'idle',
+		requesting: 'requesting',
+		success: 'success'
+	}
+	let state = State.idle
+
+	function onSubmit() {
+		state = State.requesting
+		doRecaptcha()
+	}
+
+	function doRecaptcha() {
+		grecaptcha.ready(function () {
+			console.log('ready')
+			grecaptcha
+				.execute(import.meta.env.VITE_GOOGLE_RECAPTCHA_SITE_KEY, { action: 'submit' })
+				.then(function (t) {
+					console.log('token', t)
+					state = State.success
+					recaptchaToken = t
+				})
+		})
+	}
+
 	const onCaptchaSuccess = (event) => {
 		recaptchaToken = event.detail.token
 	}
@@ -49,6 +74,8 @@
 		handleResetForm,
 		handleSetFormErrors
 	) {
+		onSubmit()
+
 		loadButton = true
 		const reference = type === 'formBottom' ? formBottomWidget : $widget
 		const endpoint = `${reference?.endpoint || reference?.params?.model?.meta}`
@@ -132,13 +159,23 @@
 	})
 </script>
 
+<svelte:head>
+	<script
+		src="https://www.google.com/recaptcha/api.js?render={import.meta.env
+			.VITE_GOOGLE_RECAPTCHA_SITE_KEY}"
+		async
+		defer
+	></script>
+</svelte:head>
+
 {#if data}
 	<div class="m-2 gap-1">
 		<div class="" />
 		{#if $widget?.params?.model?.static?.top}
 			{@html $widget.params.model.static.top}
 		{/if}
-
+		<div>state: {state}</div>
+		token:<br />{recaptchaToken}
 		{#if schema}
 			<div class="px-4 pb-4">
 				{#if !$widget?.params?.model?.static?.hideTitle}
@@ -161,7 +198,7 @@
 						let:handleResetForm
 						let:handleSetFormErrors
 					>
-						{#if $widget?.params?.model?.recaptcha && !recaptchaToken}
+						<!-- {#if $widget?.params?.model?.recaptcha && !recaptchaToken}
 							<div class="recaptcha my-2 flex justify-center">
 								<Recaptcha
 									sitekey={import.meta.env.VITE_GOOGLE_RECAPTCHA_SITE_KEY}
@@ -173,7 +210,7 @@
 									on:ready={onCaptchaReady}
 								/>
 							</div>
-						{/if}
+						{/if} -->
 
 						<div class="flex items-end justify-end">
 							{#if loadButton}
@@ -183,7 +220,6 @@
 							{:else}
 								<button
 									class="btn btn-form text-md disabled:text-gray-400 disabled:hover:cursor-not-allowed dark:text-white"
-									disabled={$widget?.params?.model?.recaptcha && !recaptchaToken}
 									on:click={() =>
 										handleSubmitFormLocal(
 											handleValidateForm,
