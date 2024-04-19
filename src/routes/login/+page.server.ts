@@ -78,6 +78,7 @@ const login: Action = async ({ cookies, request }) => {
 			maxAge: 60 * 60 * 24 * 30
 		})
 		cookies.delete('_program')
+		cookies.delete('_apikey')
 	} else {
 		return fail(400, { credentials: true, message: await response.json() })
 	}

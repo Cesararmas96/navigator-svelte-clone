@@ -6,8 +6,11 @@ export const load = async ({ params, fetch, locals, url }) => {
 	if (!locals.user || !locals.user.token) throw redirect(302, '/login')
 	const urlBase = import.meta.env.VITE_API_URL
 
-	const token = url.searchParams.get('token') || locals.user?.token
-	const headers = token ? { authorization: `Bearer ${token}` } : {}
+	const headers = locals.user?.token
+		? !locals.user?.apikey
+			? { authorization: `Bearer ${locals.user?.token}` }
+			: { 'x-api-key': locals.user?.token }
+		: {}
 	const tenant = url.hostname.split('.')[0]
 
 	if (!locals.client || locals.client?.client_slug !== tenant) {

@@ -14,7 +14,9 @@ export const load = async ({ params, fetch, locals, url }) => {
 
 	const urlBase = import.meta.env.VITE_API_URL
 
-	const headers = { authorization: `Bearer ${locals.user.token}` }
+	const headers = !locals.user?.apikey
+		? { authorization: `Bearer ${locals.user?.token}` }
+		: { 'x-api-key': locals.user?.token }
 
 	const program_slug = next ? next : params.programs
 	const tenant = url.hostname.split('.')[0]

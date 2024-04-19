@@ -115,6 +115,16 @@ export async function getData(
 	}
 }
 
+const getAuthHeader = () => {
+	const user = get(storeUser)
+	const headers = user?.token
+		? !user?.apikey
+			? { authorization: `Bearer ${user?.token}` }
+			: { 'x-api-key': user?.token }
+		: {}
+	return { ...headers }
+}
+
 export async function getApiData(
 	url: string,
 	method = 'POST',
@@ -124,16 +134,12 @@ export async function getApiData(
 	myFetch?: any,
 	showErrorNotification = true
 ) {
-	if (!options?.headers?.authorization) {
-		const user = get(storeUser)
-
-		if (user?.token) {
-			const headers = { authorization: `Bearer ${user?.token}` }
-			options = { ...options, headers }
-		}
+	if (!options?.headers?.authorization && !options?.headers?.['x-api-key']) {
+		const headers = getAuthHeader()
+		options = { ...options, headers }
 	}
 	const response = await getData(
-		getQuerySlug(url),
+		getQuerySlug(url, options?.headers),
 		method,
 		payload,
 		queryParams,
@@ -149,15 +155,11 @@ export async function patchData(
 	payload: Record<string, any> = {},
 	showErrorNotification = true
 ) {
-	let options
-	const user = get(storeUser)
-	if (user?.token) {
-		const headers = { authorization: `Bearer ${user?.token}` }
-		options = { ...options, headers }
-	}
+	const headers = getAuthHeader()
+	const options = { headers }
 
 	const response = await getData(
-		getQuerySlug(url),
+		getQuerySlug(url, headers),
 		'PATCH',
 		payload,
 		{},
@@ -173,15 +175,17 @@ export async function postData(
 	payload: Record<string, any> = {},
 	showErrorNotification = true
 ) {
-	let options
-	const user = get(storeUser)
-	if (user?.token) {
-		const headers = { authorization: `Bearer ${user?.token}` }
-		options = { ...options, headers }
-	}
+	// let options
+	// const user = get(storeUser)
+	// if (user?.token) {
+	// 	const headers = !user?.apikey ? { authorization: `Bearer ${user?.token}` } : {}
+	// 	options = { ...options, headers }
+	// }
+	const headers = getAuthHeader()
+	const options = { headers }
 
 	const response = await getData(
-		getQuerySlug(url),
+		getQuerySlug(url, headers),
 		'POST',
 		payload,
 		{},
@@ -197,15 +201,11 @@ export async function putData(
 	payload: Record<string, any> = {},
 	showErrorNotification = true
 ) {
-	let options
-	const user = get(storeUser)
-	if (user?.token) {
-		const headers = { authorization: `Bearer ${user?.token}` }
-		options = { ...options, headers }
-	}
+	const headers = getAuthHeader()
+	const options = { headers }
 
 	const response = await getData(
-		getQuerySlug(url),
+		getQuerySlug(url, headers),
 		'PUT',
 		payload,
 		{},
@@ -221,15 +221,11 @@ export async function deleteData(
 	payload: Record<string, any> = {},
 	showErrorNotification = true
 ) {
-	let options
-	const user = get(storeUser)
-	if (user?.token) {
-		const headers = { authorization: `Bearer ${user?.token}` }
-		options = { ...options, headers }
-	}
+	const headers = getAuthHeader()
+	const options = { headers }
 
 	const response = await getData(
-		getQuerySlug(url),
+		getQuerySlug(url, headers),
 		'DELETE',
 		payload,
 		{},
@@ -240,7 +236,7 @@ export async function deleteData(
 	return { ...response }
 }
 
-const getQuerySlug = (widgetSlug: any) => {
+const getQuerySlug = (widgetSlug: any, headers: any) => {
 	let slugQuery = widgetSlug
 
 	if (Array.isArray(slugQuery)) {
@@ -259,6 +255,7 @@ const getQuerySlug = (widgetSlug: any) => {
 				? slugQuery
 				: `${import.meta.env.VITE_API_URL}/api/v2/services/queries/${slugQuery}`
 	}
+	if (headers['x-api-key']) slugNew += `?apikey=${headers['x-api-key']}`
 
 	return slugNew
 }

@@ -36,6 +36,7 @@
 	let loadButton = false
 	const baseUrl = import.meta.env.VITE_API_URL
 	const token = $storeUser?.token
+	const apikey = $storeUser?.apikey
 	let responseServer = null
 	let recaptchaToken
 
@@ -132,7 +133,11 @@
 			'GET'
 		)
 		if (prepareJsonSchema) {
-			const jsonSchema = await getJsonSchema(prepareJsonSchema, reference, { baseUrl, token })
+			const jsonSchema = await getJsonSchema(prepareJsonSchema, reference, {
+				baseUrl,
+				token,
+				apikey
+			})
 
 			if (_type === 'bottom') {
 				schemaBottom = getSchemaComputed(jsonSchema, reference)
