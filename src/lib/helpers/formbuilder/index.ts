@@ -18,6 +18,10 @@ export const getJsonSchema = async (jsonSchema, $widget, credentials) => {
 	}
 
 	Object.keys(jsonSchema.properties).map((property) => {
+		if (jsonSchema.properties[property]?.enum_type?.type) {
+			delete jsonSchema.properties[property]?.enum_type?.type
+		}
+
 		if (
 			jsonSchema.properties[property]?.$ref?.api &&
 			['object', 'select', 'dropdown'].includes(jsonSchema.properties[property]?.type) &&
