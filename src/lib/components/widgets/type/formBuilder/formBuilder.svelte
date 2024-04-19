@@ -15,13 +15,6 @@
 		handleSubmitForm,
 		utilFunctionsMap
 	} from '$lib/helpers/formbuilder/index'
-	import { Recaptcha, recaptcha, observer } from 'svelte-recaptcha-v2'
-	import {
-		onCaptchaClose,
-		onCaptchaError,
-		onCaptchaExpire,
-		onCaptchaReady
-	} from '$lib/helpers/login/login'
 
 	export let data: any
 	const widget: any = getContext('widget')
@@ -46,22 +39,31 @@
 	}
 	let state = State.idle
 
-	function onSubmit() {
-		state = State.requesting
-		doRecaptcha()
-	}
-
-	function doRecaptcha() {
-		grecaptcha.ready(function () {
-			console.log('ready')
-			grecaptcha
-				.execute(import.meta.env.VITE_GOOGLE_RECAPTCHA_SITE_KEY, { action: 'submit' })
-				.then(function (t) {
-					console.log('token', t)
-					state = State.success
-					recaptchaToken = t
-				})
-		})
+	async function doRecaptcha(
+		handleValidateForm: any,
+		type: string,
+		handleResetForm,
+		handleSetFormErrors
+	) {
+		if ($widget?.params?.model?.recaptcha) {
+			state = State.requesting
+			grecaptcha.ready(function () {
+				try {
+					grecaptcha
+						.execute(import.meta.env.VITE_GOOGLE_RECAPTCHA_SITE_KEY, { action: 'submit' })
+						.then(function (t) {
+							state = State.success
+							recaptchaToken = t
+							handleSubmitFormLocal(handleValidateForm, type, handleResetForm, handleSetFormErrors)
+						})
+				} catch (error) {
+					state = State.idle
+					sendErrorNotification(error)
+				}
+			})
+		} else {
+			handleSubmitFormLocal(handleValidateForm, type, handleResetForm, handleSetFormErrors)
+		}
 	}
 
 	const onCaptchaSuccess = (event) => {
@@ -74,8 +76,6 @@
 		handleResetForm,
 		handleSetFormErrors
 	) {
-		onSubmit()
-
 		loadButton = true
 		const reference = type === 'formBottom' ? formBottomWidget : $widget
 		const endpoint = `${reference?.endpoint || reference?.params?.model?.meta}`
@@ -160,12 +160,14 @@
 </script>
 
 <svelte:head>
-	<script
-		src="https://www.google.com/recaptcha/api.js?render={import.meta.env
-			.VITE_GOOGLE_RECAPTCHA_SITE_KEY}"
-		async
-		defer
-	></script>
+	{#if $widget?.params?.model?.recaptcha}
+		<script
+			src="https://www.google.com/recaptcha/api.js?render={import.meta.env
+				.VITE_GOOGLE_RECAPTCHA_SITE_KEY}"
+			async
+			defer
+		></script>
+	{/if}
 </svelte:head>
 
 {#if data}
@@ -174,8 +176,6 @@
 		{#if $widget?.params?.model?.static?.top}
 			{@html $widget.params.model.static.top}
 		{/if}
-		<div>state: {state}</div>
-		token:<br />{recaptchaToken}
 		{#if schema}
 			<div class="px-4 pb-4">
 				{#if !$widget?.params?.model?.static?.hideTitle}
@@ -198,20 +198,6 @@
 						let:handleResetForm
 						let:handleSetFormErrors
 					>
-						<!-- {#if $widget?.params?.model?.recaptcha && !recaptchaToken}
-							<div class="recaptcha my-2 flex justify-center">
-								<Recaptcha
-									sitekey={import.meta.env.VITE_GOOGLE_RECAPTCHA_SITE_KEY}
-									size={'normal'}
-									on:success={onCaptchaSuccess}
-									on:error={onCaptchaError}
-									on:expired={onCaptchaExpire}
-									on:close={onCaptchaClose}
-									on:ready={onCaptchaReady}
-								/>
-							</div>
-						{/if} -->
-
 						<div class="flex items-end justify-end">
 							{#if loadButton}
 								<button class="btn btn-form text-md" disabled>
@@ -221,7 +207,7 @@
 								<button
 									class="btn btn-form text-md disabled:text-gray-400 disabled:hover:cursor-not-allowed dark:text-white"
 									on:click={() =>
-										handleSubmitFormLocal(
+										doRecaptcha(
 											handleValidateForm,
 											'formSaved',
 											handleResetForm,
