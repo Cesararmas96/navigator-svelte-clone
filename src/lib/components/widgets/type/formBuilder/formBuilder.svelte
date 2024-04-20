@@ -138,6 +138,7 @@
 				schemaBottom = getSchemaComputed(jsonSchema, reference)
 			} else {
 				schema = getSchemaComputed(jsonSchema, reference)
+				// console.log(JSON.stringify(schema))
 			}
 
 			if (_type === 'default') {
