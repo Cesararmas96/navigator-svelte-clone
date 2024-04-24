@@ -1,11 +1,14 @@
 import { decrypt, encrypt } from '$lib/helpers/auth/auth'
-import type { Handle } from '@sveltejs/kit'
+import { redirect, type Handle } from '@sveltejs/kit'
 
 export const handle: Handle = async ({ event, resolve }) => {
 	let token = event.url.searchParams.get('token') || ''
 	const troctoken = event.url.searchParams.get('troctoken') || ''
 	const next =
 		event.url.searchParams.get('next') || event.cookies.get('_program') || event.cookies.get('next')
+
+	if (token && event.url.pathname !== '/login/callback')
+		throw redirect(302, `/login/callback?token=${token}&next=${next}`)
 
 	if (!token && !troctoken) {
 		try {
@@ -54,6 +57,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 				}
 			)
 			session = await rawSession.json()
+			token = session.token
 			const length = Math.ceil(session.token.length / 3)
 			const token1 = encrypt(session.token.substring(0, length))
 			const token2 = encrypt(session.token.substring(length, 2 * length))
@@ -82,7 +86,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 			event.locals.user = { ...session.session }
 			event.locals.user.aux = { ...session }
 			delete event.locals.user.aux.session
-			event.locals.user.token = token || session.token
+			event.locals.user.token = token
 			if (next) {
 				event.locals.user.next = next
 				event.cookies.delete('next')

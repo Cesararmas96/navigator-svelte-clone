@@ -7,6 +7,8 @@ import { storeUser } from '$lib/stores'
 import { get } from 'svelte/store'
 
 let $defs
+let $endSchema
+const $boolYesOrNot: string[] = []
 
 export const getJsonSchema = async (jsonSchema, $widget, credentials) => {
 	jsonSchema = merge({}, jsonSchema, $widget?.params?.model?.schema || {})
@@ -18,6 +20,18 @@ export const getJsonSchema = async (jsonSchema, $widget, credentials) => {
 	}
 
 	Object.keys(jsonSchema.properties).map((property) => {
+		if (jsonSchema.properties[property]?.enum_type?.type) {
+			if (jsonSchema.properties[property]['ui:bool']) {
+				$boolYesOrNot.push(property)
+			}
+
+			delete jsonSchema.properties[property]?.enum_type?.type
+		}
+
+		if (jsonSchema.properties[property]?.type === 'array') {
+			jsonSchema.properties[property].type = 'select'
+		}
+
 		if (
 			jsonSchema.properties[property]?.$ref?.api &&
 			['object', 'select', 'dropdown'].includes(jsonSchema.properties[property]?.type) &&
@@ -103,9 +117,9 @@ export const getJsonSchema = async (jsonSchema, $widget, credentials) => {
 			jsonSchema.properties[property]['format'] = 'textarea'
 		}
 
-		if (jsonSchema.properties[property]?.type === 'datetime') {
-			jsonSchema.properties[property].attrs.visible = false
-		}
+		// if (jsonSchema.properties[property]?.type === 'datetime') {
+		// 	jsonSchema.properties[property].attrs.visible = false
+		// }
 
 		if (
 			jsonSchema.properties[property]?.['ui:widget'] === 'ImageUploader' ||
@@ -156,6 +170,8 @@ export const getSchemaComputed = (jsonSchema: Record<string, unknown>, $widget) 
 		})
 	}
 
+	$endSchema = jsonSchema
+
 	return jsonSchema
 }
 
@@ -178,6 +194,17 @@ export const handleSubmitForm = async (handleValidateForm: any, type: string, $w
 
 			delete filteredPayload[item]
 		})
+
+		if ($boolYesOrNot.length > 0) {
+			filteredPayload = utilFunctionsMap['handleFunctionBooleanYesOrNot']({
+				data: filteredPayload,
+				params: $widget.params.model,
+				extra: {
+					extra,
+					widget: $widget
+				}
+			})
+		}
 
 		if (
 			$widget?.params?.model?.callback?.preFetch &&
@@ -284,7 +311,8 @@ export const utilFunctionsMap: { [key: string]: (params: any) => any } = {
 	handlePreRenderProServicesSearchEmployee: handlePreRenderProServicesSearchEmployee,
 	handleFunctionProServicesSearchEmployees: handleFunctionProServicesSearchEmployees,
 	handleFunctionCallbackPrePayloadTicketForBose: handleFunctionCallbackPrePayloadTicketForBose,
-	handleFunctionCallbackPrePayloadRequiredInHide: handleFunctionCallbackPrePayloadRequiredInHide
+	handleFunctionCallbackPrePayloadRequiredInHide: handleFunctionCallbackPrePayloadRequiredInHide,
+	handleFunctionBooleanYesOrNot: handleFunctionBooleanYesOrNot
 }
 
 export function supportTicket(params) {
@@ -548,6 +576,24 @@ function handleFunctionCallbackPrePayloadRequiredInHide(params) {
 
 	params?.params?.callback?.defaults.forEach((item) => {
 		formData[item] = params?.extra?.widget?.modelByID[item]
+	})
+
+	return formData
+}
+
+function handleFunctionBooleanYesOrNot(params) {
+	const formData = params.data
+
+	Object.keys(formData).forEach((item) => {
+		if ($boolYesOrNot.includes(item)) {
+			const $enum = $endSchema.properties[item]?.items?.enum?.find(
+				(itemEnum) => itemEnum.value === formData[item]
+			)
+
+			if ($enum) {
+				formData[item] = $enum
+			}
+		}
 	})
 
 	return formData

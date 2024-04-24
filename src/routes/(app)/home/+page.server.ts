@@ -2,8 +2,9 @@ import { getApiData } from '$lib/services/getData'
 import { redirect } from '@sveltejs/kit'
 
 export const load = async ({ locals, fetch, url }) => {
-	if (!locals.user) throw redirect(302, '/')
+	if (!locals.user || !locals.user.token) throw redirect(302, '/login')
 	if (import.meta.env.VITE_ADMIN) throw redirect(302, '/admin')
+
 	const headers = { authorization: `Bearer ${locals.user.token}` }
 
 	const tenant = url.hostname.split('.')[0]

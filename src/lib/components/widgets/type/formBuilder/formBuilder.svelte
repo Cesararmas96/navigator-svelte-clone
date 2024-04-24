@@ -30,6 +30,45 @@
 	const baseUrl = import.meta.env.VITE_API_URL
 	const token = $storeUser?.token
 	let responseServer = null
+	let recaptchaToken
+
+	let State = {
+		idle: 'idle',
+		requesting: 'requesting',
+		success: 'success'
+	}
+	let state = State.idle
+
+	async function doRecaptcha(
+		handleValidateForm: any,
+		type: string,
+		handleResetForm,
+		handleSetFormErrors
+	) {
+		if ($widget?.params?.model?.recaptcha) {
+			state = State.requesting
+			grecaptcha.ready(function () {
+				try {
+					grecaptcha
+						.execute(import.meta.env.VITE_GOOGLE_RECAPTCHA_SITE_KEY, { action: 'submit' })
+						.then(function (t) {
+							state = State.success
+							recaptchaToken = t
+							handleSubmitFormLocal(handleValidateForm, type, handleResetForm, handleSetFormErrors)
+						})
+				} catch (error) {
+					state = State.idle
+					sendErrorNotification(error)
+				}
+			})
+		} else {
+			handleSubmitFormLocal(handleValidateForm, type, handleResetForm, handleSetFormErrors)
+		}
+	}
+
+	const onCaptchaSuccess = (event) => {
+		recaptchaToken = event.detail.token
+	}
 
 	async function handleSubmitFormLocal(
 		handleValidateForm: any,
@@ -80,7 +119,7 @@
 					getModel(formBottomWidget, 'bottom')
 				}
 			}
-
+			recaptchaToken = null
 			handleResetForm()
 		}
 
@@ -99,6 +138,7 @@
 				schemaBottom = getSchemaComputed(jsonSchema, reference)
 			} else {
 				schema = getSchemaComputed(jsonSchema, reference)
+				// console.log(JSON.stringify(schema))
 			}
 
 			if (_type === 'default') {
@@ -120,13 +160,23 @@
 	})
 </script>
 
+<svelte:head>
+	{#if $widget?.params?.model?.recaptcha}
+		<script
+			src="https://www.google.com/recaptcha/api.js?render={import.meta.env
+				.VITE_GOOGLE_RECAPTCHA_SITE_KEY}"
+			async
+			defer
+		></script>
+	{/if}
+</svelte:head>
+
 {#if data}
 	<div class="m-2 gap-1">
 		<div class="" />
 		{#if $widget?.params?.model?.static?.top}
 			{@html $widget.params.model.static.top}
 		{/if}
-
 		{#if schema}
 			<div class="px-4 pb-4">
 				{#if !$widget?.params?.model?.static?.hideTitle}
@@ -156,9 +206,9 @@
 								</button>
 							{:else}
 								<button
-									class="btn btn-form text-md dark:text-white"
+									class="btn btn-form text-md disabled:text-gray-400 disabled:hover:cursor-not-allowed dark:text-white"
 									on:click={() =>
-										handleSubmitFormLocal(
+										doRecaptcha(
 											handleValidateForm,
 											'formSaved',
 											handleResetForm,

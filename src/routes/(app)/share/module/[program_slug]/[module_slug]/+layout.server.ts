@@ -3,7 +3,7 @@ import { getApiData } from '$lib/services/getData'
 import { redirect } from '@sveltejs/kit'
 
 export const load = async ({ params, fetch, locals, url }) => {
-	if (!locals.user) throw redirect(302, '/login')
+	if (!locals.user || !locals.user.token) throw redirect(302, '/login')
 	const urlBase = import.meta.env.VITE_API_URL
 
 	const token = url.searchParams.get('token') || locals.user?.token
