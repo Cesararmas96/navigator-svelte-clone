@@ -117,9 +117,9 @@ export const getJsonSchema = async (jsonSchema, $widget, credentials) => {
 			jsonSchema.properties[property]['format'] = 'textarea'
 		}
 
-		if (jsonSchema.properties[property]?.type === 'datetime') {
-			jsonSchema.properties[property].attrs.visible = false
-		}
+		// if (jsonSchema.properties[property]?.type === 'datetime') {
+		// 	jsonSchema.properties[property].attrs.visible = false
+		// }
 
 		if (
 			jsonSchema.properties[property]?.['ui:widget'] === 'ImageUploader' ||

@@ -59,7 +59,7 @@
 	"type": "module",
 	"dependencies": {
 		"@floating-ui/dom": "^1.4.5",
-		"@mixoo/form": "^4.1.4",
+		"@mixoo/form": "^4.2.0",
 		"@mixoo/ui": "^1.3.2",
 		"@nextlint/core": "^1.2.0",
 		"@nextlint/svelte": "^1.1.2",
