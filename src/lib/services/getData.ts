@@ -35,7 +35,6 @@ export async function getData(
 		if (!validMethods.includes(method.toUpperCase())) {
 			throw new Error('The provided HTTP method is not valid.')
 		}
-
 		// Build URL if continue with query parameters
 		const searchParams = new URLSearchParams(queryParams).toString()
 		const urlWithParams = searchParams ? `${url}?${searchParams}` : url
@@ -43,7 +42,6 @@ export async function getData(
 		// Add authentication token handling here
 		const loggedIn = true
 		// Temporarily
-
 		options.headers = options.headers || {}
 
 		// Configure the "Content-Type" header
@@ -60,25 +58,22 @@ export async function getData(
 
 		const configRequest: RequestInit = {
 			method,
-			headers: headers,
+			headers,
 			body: JSON.stringify(payload)
 		}
 		if (method === 'GET') delete configRequest.body
 
-		let response: any
-		if (myFetch) {
-			response = await myFetch(`${urlWithParams}`, configRequest)
-		} else {
-			response = await fetch(`${urlWithParams}`, configRequest)
-		}
+		const response = myFetch
+			? await myFetch(urlWithParams, configRequest)
+			: await fetch(urlWithParams, configRequest)
 		// const validResponseStatus = [200, 202]
 		// if (validResponseStatus.includes(response?.status)) {
 
 		if (response?.status === 204) return null
 		if (response?.status === 500) {
-			const error = `500 Internal Server Error<br>Server got itself in trouble`
-			sendErrorNotification(`Request error: ${response.status}:<br> ${error}`)
-			throw new Error(error)
+			const errorMessage = `500 Internal Server Error<br>Server got itself in trouble`
+			sendErrorNotification(`Request error: ${response.status}:<br> ${errorMessage}`)
+			throw error(response.status, response.statusText)
 		}
 		if (response?.status === 401)
 			throw new Error(`Signature Failed or Expired:<br>Signature verification failed`)
@@ -134,12 +129,12 @@ export async function getApiData(
 	myFetch?: any,
 	showErrorNotification = true
 ) {
-	if (!options?.headers?.authorization && !options?.headers?.['x-api-key']) {
+	if (!options?.headers?.authorization && !options?.headers?.['x-api-key'] && !options['no-auth']) {
 		const headers = getAuthHeader()
 		options = { ...options, headers }
 	}
 	const response = await getData(
-		getQuerySlug(url, options?.headers),
+		getQuerySlug(url),
 		method,
 		payload,
 		queryParams,
@@ -159,7 +154,7 @@ export async function patchData(
 	const options = { headers }
 
 	const response = await getData(
-		getQuerySlug(url, headers),
+		getQuerySlug(url),
 		'PATCH',
 		payload,
 		{},
@@ -185,7 +180,7 @@ export async function postData(
 	const options = { headers }
 
 	const response = await getData(
-		getQuerySlug(url, headers),
+		getQuerySlug(url),
 		'POST',
 		payload,
 		{},
@@ -205,7 +200,7 @@ export async function putData(
 	const options = { headers }
 
 	const response = await getData(
-		getQuerySlug(url, headers),
+		getQuerySlug(url),
 		'PUT',
 		payload,
 		{},
@@ -225,7 +220,7 @@ export async function deleteData(
 	const options = { headers }
 
 	const response = await getData(
-		getQuerySlug(url, headers),
+		getQuerySlug(url),
 		'DELETE',
 		payload,
 		{},
@@ -236,7 +231,7 @@ export async function deleteData(
 	return { ...response }
 }
 
-const getQuerySlug = (widgetSlug: any, headers: any) => {
+const getQuerySlug = (widgetSlug: any) => {
 	let slugQuery = widgetSlug
 
 	if (Array.isArray(slugQuery)) {
@@ -255,7 +250,6 @@ const getQuerySlug = (widgetSlug: any, headers: any) => {
 				? slugQuery
 				: `${import.meta.env.VITE_API_URL}/api/v2/services/queries/${slugQuery}`
 	}
-	if (headers['x-api-key']) slugNew += `?apikey=${headers['x-api-key']}`
 
 	return slugNew
 }

@@ -5,12 +5,6 @@ export const load = async ({ locals, fetch, url }) => {
 	if (!locals.user || !locals.user?.token) throw redirect(302, '/login')
 	if (import.meta.env.VITE_ADMIN) throw redirect(302, '/admin')
 
-	// const apikey = locals.user?.apikey && locals.user?.token ? `&apikey=${locals.user?.token}` : ''
-	// const headers =
-	// 	!locals.user?.apikey && locals.user?.token
-	// 		? { authorization: `Bearer ${locals.user?.token}` }
-	// 		: {}
-
 	const headers = !locals.user?.apikey
 		? { authorization: `Bearer ${locals.user?.token}` }
 		: { 'x-api-key': locals.user?.token }
@@ -20,7 +14,12 @@ export const load = async ({ locals, fetch, url }) => {
 	if (!locals.client || locals.client?.client_slug !== tenant) {
 		const resp = await getApiData(
 			`${import.meta.env.VITE_API_URL}/api/v1/clients?subdomain_prefix=${tenant}`,
-			'GET'
+			'GET',
+			{},
+			{},
+			{ 'no-auth': true },
+			fetch,
+			false
 		)
 		locals.client = resp[0]
 	}

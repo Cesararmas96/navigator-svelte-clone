@@ -2,7 +2,7 @@ import { decrypt, encrypt } from '$lib/helpers/auth/auth'
 import { redirect, type Handle } from '@sveltejs/kit'
 
 export const handle: Handle = async ({ event, resolve }) => {
-	let token = event.url.searchParams.get('token') || ''
+	let token: string = event.url.searchParams.get('token') || ''
 	let apikey: undefined | string = event.url.searchParams.get('apikey') || ''
 	const troctoken = event.url.searchParams.get('auth') || ''
 	const next =
@@ -27,14 +27,14 @@ export const handle: Handle = async ({ event, resolve }) => {
 					event.cookies.set('next', event.url.pathname.replace('/', ''))
 				return await resolve(event)
 			}
-			if (haveCookieApiKey) {
-				apikey = event.cookies.get('_apikey')
-			} else if (haveCookieSession) {
+			if (haveCookieSession) {
 				const decoded1 = decrypt(event.cookies.get('_session1'))
 				const decoded2 = decrypt(event.cookies.get('_session2'))
 				const decoded3 = decrypt(event.cookies.get('_session3'))
 				if (!decoded1 || !decoded2 || !decoded3) return await resolve(event)
 				token = decoded1 + decoded2 + decoded3
+			} else if (haveCookieApiKey) {
+				apikey = event.cookies.get('_apikey')
 			}
 		} catch (error) {
 			return await resolve(event)
@@ -51,8 +51,12 @@ export const handle: Handle = async ({ event, resolve }) => {
 					Authorization: `Bearer ${token}`
 				}
 			})
-			if (rawSession.status !== 401) session = await rawSession.json()
-		} else if (troctoken || apikey) {
+			if (rawSession.status !== 401) {
+				session = await rawSession.json()
+				apikey = undefined
+			}
+		}
+		if (!session && (troctoken || apikey)) {
 			const rawSession = apikey
 				? await fetch(`${import.meta.env.VITE_API_URL}/api/v1/login?apikey=${apikey}`, {
 						method: 'GET',
@@ -69,7 +73,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 				  })
 			session = await rawSession.json()
 
-			token = session.token
+			token = apikey ? apikey : session.token
 
 			if (!apikey) {
 				const length = Math.ceil(token.length / 3)
