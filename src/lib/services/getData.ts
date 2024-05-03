@@ -35,7 +35,6 @@ export async function getData(
 		if (!validMethods.includes(method.toUpperCase())) {
 			throw new Error('The provided HTTP method is not valid.')
 		}
-
 		// Build URL if continue with query parameters
 		const searchParams = new URLSearchParams(queryParams).toString()
 		const urlWithParams = searchParams ? `${url}?${searchParams}` : url
@@ -43,7 +42,6 @@ export async function getData(
 		// Add authentication token handling here
 		const loggedIn = true
 		// Temporarily
-
 		options.headers = options.headers || {}
 
 		// Configure the "Content-Type" header
@@ -60,25 +58,22 @@ export async function getData(
 
 		const configRequest: RequestInit = {
 			method,
-			headers: headers,
+			headers,
 			body: JSON.stringify(payload)
 		}
 		if (method === 'GET') delete configRequest.body
 
-		let response: any
-		if (myFetch) {
-			response = await myFetch(`${urlWithParams}`, configRequest)
-		} else {
-			response = await fetch(`${urlWithParams}`, configRequest)
-		}
+		const response = myFetch
+			? await myFetch(urlWithParams, configRequest)
+			: await fetch(urlWithParams, configRequest)
 		// const validResponseStatus = [200, 202]
 		// if (validResponseStatus.includes(response?.status)) {
 
 		if (response?.status === 204) return null
 		if (response?.status === 500) {
-			const error = `500 Internal Server Error<br>Server got itself in trouble`
-			sendErrorNotification(`Request error: ${response.status}:<br> ${error}`)
-			throw new Error(error)
+			const errorMessage = `500 Internal Server Error<br>Server got itself in trouble`
+			sendErrorNotification(`Request error: ${response.status}:<br> ${errorMessage}`)
+			throw error(response.status, response.statusText)
 		}
 		if (response?.status === 401)
 			throw new Error(`Signature Failed or Expired:<br>Signature verification failed`)
@@ -115,6 +110,16 @@ export async function getData(
 	}
 }
 
+const getAuthHeader = () => {
+	const user = get(storeUser)
+	const headers = user?.token
+		? !user?.apikey
+			? { authorization: `Bearer ${user?.token}` }
+			: { 'x-api-key': user?.token }
+		: {}
+	return { ...headers }
+}
+
 export async function getApiData(
 	url: string,
 	method = 'POST',
@@ -124,13 +129,9 @@ export async function getApiData(
 	myFetch?: any,
 	showErrorNotification = true
 ) {
-	if (!options?.headers?.authorization) {
-		const user = get(storeUser)
-
-		if (user?.token) {
-			const headers = { authorization: `Bearer ${user?.token}` }
-			options = { ...options, headers }
-		}
+	if (!options?.headers?.authorization && !options?.headers?.['x-api-key'] && !options['no-auth']) {
+		const headers = getAuthHeader()
+		options = { ...options, headers }
 	}
 	const response = await getData(
 		getQuerySlug(url),
@@ -149,12 +150,8 @@ export async function patchData(
 	payload: Record<string, any> = {},
 	showErrorNotification = true
 ) {
-	let options
-	const user = get(storeUser)
-	if (user?.token) {
-		const headers = { authorization: `Bearer ${user?.token}` }
-		options = { ...options, headers }
-	}
+	const headers = getAuthHeader()
+	const options = { headers }
 
 	const response = await getData(
 		getQuerySlug(url),
@@ -173,12 +170,14 @@ export async function postData(
 	payload: Record<string, any> = {},
 	showErrorNotification = true
 ) {
-	let options
-	const user = get(storeUser)
-	if (user?.token) {
-		const headers = { authorization: `Bearer ${user?.token}` }
-		options = { ...options, headers }
-	}
+	// let options
+	// const user = get(storeUser)
+	// if (user?.token) {
+	// 	const headers = !user?.apikey ? { authorization: `Bearer ${user?.token}` } : {}
+	// 	options = { ...options, headers }
+	// }
+	const headers = getAuthHeader()
+	const options = { headers }
 
 	const response = await getData(
 		getQuerySlug(url),
@@ -197,12 +196,8 @@ export async function putData(
 	payload: Record<string, any> = {},
 	showErrorNotification = true
 ) {
-	let options
-	const user = get(storeUser)
-	if (user?.token) {
-		const headers = { authorization: `Bearer ${user?.token}` }
-		options = { ...options, headers }
-	}
+	const headers = getAuthHeader()
+	const options = { headers }
 
 	const response = await getData(
 		getQuerySlug(url),
@@ -221,12 +216,8 @@ export async function deleteData(
 	payload: Record<string, any> = {},
 	showErrorNotification = true
 ) {
-	let options
-	const user = get(storeUser)
-	if (user?.token) {
-		const headers = { authorization: `Bearer ${user?.token}` }
-		options = { ...options, headers }
-	}
+	const headers = getAuthHeader()
+	const options = { headers }
 
 	const response = await getData(
 		getQuerySlug(url),
