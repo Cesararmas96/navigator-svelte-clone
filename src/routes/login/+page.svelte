@@ -99,9 +99,10 @@
 											href={authMethods[method.name].url}
 											weight="24"
 											outline
-											color={method.color || 'light'}
-											class="ml-auto mr-auto flex w-4/5  border {authMethods[method.name]
-												.class} border-blue-600 p-2 text-base shadow"
+											color={method.color}
+											class="ml-auto mr-auto flex w-4/5 border text-gray-600 hover:bg-slate-100 hover:text-gray-700 {authMethods[
+												method.name
+											].class} border-blue-600 p-2 text-base shadow"
 										>
 											<img
 												src={authMethods[method.name].icon}
