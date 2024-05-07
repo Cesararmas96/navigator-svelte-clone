@@ -9,14 +9,14 @@
 
 <Avatar
 	src="/images/troc.png"
-	class="avatarProfile dark:bg-gray-0 {!$storeUser.apikey
+	class="avatarProfile dark:bg-gray-0 {!$storeUser?.apikey
 		? 'cursor-pointer hover:bg-white/10 dark:hover:bg-gray-600'
 		: ''} bg-white/0 "
 	rounded
 	border={false}
 	size={'sm'}
 />
-{#if !$storeUser.apikey}
+{#if !$storeUser?.apikey}
 	<Dropdown triggeredBy=".avatarProfile" containerClass="min-w-[150px]">
 		<div>
 			<DropdownItem>
