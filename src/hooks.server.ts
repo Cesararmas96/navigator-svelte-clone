@@ -17,8 +17,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 				event.cookies.get('_session1') ||
 				event.cookies.get('_session2') ||
 				event.cookies.get('_session3')
-			const haveCookieApiKey = Boolean(event.cookies.get('_apikey'))
-			if (!haveCookieApiKey && !haveCookieSession) {
+			if (!haveCookieSession) {
 				if (
 					event.url.pathname !== '/login' &&
 					event.url.pathname !== '/' &&
@@ -33,8 +32,6 @@ export const handle: Handle = async ({ event, resolve }) => {
 				const decoded3 = decrypt(event.cookies.get('_session3'))
 				if (!decoded1 || !decoded2 || !decoded3) return await resolve(event)
 				token = decoded1 + decoded2 + decoded3
-			} else if (haveCookieApiKey) {
-				apikey = event.cookies.get('_apikey')
 			}
 		} catch (error) {
 			return await resolve(event)
@@ -99,20 +96,13 @@ export const handle: Handle = async ({ event, resolve }) => {
 					secure: true, //import.meta.env.ENV === 'production',
 					maxAge: 60 * 60 * 24 * 30
 				})
-			} else {
-				event.cookies.set('_apikey', apikey, {
-					path: '/',
-					httpOnly: true,
-					secure: true, //import.meta.env.ENV === 'production',
-					maxAge: 60 * 60 * 24 * 30
-				})
 			}
 		}
 		if (session) {
 			event.locals.user = { ...session.session }
 			event.locals.user.aux = { ...session }
 			delete event.locals.user.aux.session
-			event.locals.user.token = token
+			event.locals.user.token = apikey ? apikey : token
 			event.locals.user.apikey = apikey ? true : false
 			if (next) {
 				event.locals.user.next = next

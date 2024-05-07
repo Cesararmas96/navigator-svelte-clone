@@ -40,7 +40,8 @@ export const load: PageServerLoad = async ({ locals, cookies }) => {
 			secure: true, //import.meta.env.ENV === 'production',
 			maxAge: 60 * 60
 		})
-		throw redirect(302, `/${locals.user.next}`)
+		const url = `/${locals.user.next}${locals.user.apikey ? '?apikey=' + locals.user.token : ''}`
+		throw redirect(302, url)
 	}
 	throw redirect(302, '/')
 }
