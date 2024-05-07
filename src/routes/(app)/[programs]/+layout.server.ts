@@ -9,7 +9,8 @@ export const load = async ({ params, fetch, locals, url }) => {
 
 	const next = locals.user.next
 	if (next && params.programs !== next) {
-		throw redirect(302, `/${next}`)
+		const url = `/${next}${locals.user.apikey ? '?apikey=' + locals.user.token : ''}`
+		throw redirect(302, url)
 	}
 
 	const urlBase = import.meta.env.VITE_API_URL

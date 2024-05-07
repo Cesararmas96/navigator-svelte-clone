@@ -40,9 +40,9 @@ export const getJsonSchema = async (jsonSchema, $widget, credentials) => {
 							: $widget?.params?.model?.schema?.properties[property]?.$ref?.url
 						: 'api/v1/'
 				}`,
-				headers: {
-					authorization: `Bearer ${credentials?.token}`
-				}
+				headers: !credentials?.apikey
+					? { authorization: `Bearer ${credentials?.token}` }
+					: { 'x-api-key': credentials?.token }
 			}
 
 			delete jsonSchema.properties[property]?.$ref?.$ref
@@ -62,9 +62,9 @@ export const getJsonSchema = async (jsonSchema, $widget, credentials) => {
 						? $widget?.params?.model?.schema?.properties[property]?._fetch?.url
 						: `api/v1/${jsonSchema.properties[property]?.$ref?.api}`
 				}`,
-				headers: {
-					authorization: `Bearer ${credentials?.token}`
-				},
+				headers: !credentials?.apikey
+					? { authorization: `Bearer ${credentials?.token}` }
+					: { 'x-api-key': credentials?.token },
 				id: jsonSchema.properties[property]?.$ref?.id,
 				label: jsonSchema.properties[property]?.$ref?.value
 			}
@@ -120,9 +120,9 @@ export const getJsonSchema = async (jsonSchema, $widget, credentials) => {
 				url: `${credentials?.baseUrl}/services/files/static/images/badges/`,
 				method: 'PUT',
 				payload: 'file_name',
-				headers: {
-					authorization: `Bearer ${credentials?.token}`
-				}
+				headers: !credentials?.apikey
+					? { authorization: `Bearer ${credentials?.token}` }
+					: { 'x-api-key': credentials?.token }
 			}
 
 			if (jsonSchema.properties[property]?.['ui:help'])
