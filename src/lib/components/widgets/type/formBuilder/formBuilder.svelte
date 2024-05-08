@@ -40,35 +40,41 @@
 	}
 	let state = State.idle
 
-	async function doRecaptcha(
-		handleValidateForm: any,
-		type: string,
-		handleResetForm,
-		handleSetFormErrors
-	) {
-		if ($widget?.params?.model?.recaptcha) {
-			state = State.requesting
-			grecaptcha.ready(function () {
-				try {
-					grecaptcha
-						.execute(import.meta.env.VITE_GOOGLE_RECAPTCHA_SITE_KEY, { action: 'submit' })
-						.then(function (t) {
-							state = State.success
-							recaptchaToken = t
-							handleSubmitFormLocal(handleValidateForm, type, handleResetForm, handleSetFormErrors)
-						})
-				} catch (error) {
-					state = State.idle
-					sendErrorNotification(error)
-				}
-			})
-		} else {
-			handleSubmitFormLocal(handleValidateForm, type, handleResetForm, handleSetFormErrors)
-		}
-	}
+	// async function doRecaptcha(
+	// 	handleValidateForm: any,
+	// 	type: string,
+	// 	handleResetForm,
+	// 	handleSetFormErrors
+	// ) {
+	// 	if ($widget?.params?.model?.recaptcha) {
+	// 		state = State.requesting
+	// 		grecaptcha.ready(function () {
+	// 			try {
+	// 				grecaptcha
+	// 					.execute(import.meta.env.VITE_GOOGLE_RECAPTCHA_SITE_KEY, { action: 'submit' })
+	// 					.then(function (t) {
+	// 						state = State.success
+	// 						recaptchaToken = t
+	// 						handleSubmitFormLocal(handleValidateForm, type, handleResetForm, handleSetFormErrors)
+	// 					})
+	// 			} catch (error) {
+	// 				state = State.idle
+	// 				sendErrorNotification(error)
+	// 			}
+	// 		})
+	// 	} else {
+	// 		handleSubmitFormLocal(handleValidateForm, type, handleResetForm, handleSetFormErrors)
+	// 	}
+	// }
 
-	const onCaptchaSuccess = (event) => {
-		recaptchaToken = event.detail.token
+	async function getCaptcha() {
+		await new Promise((resolve, reject) => {
+			grecaptcha.ready(resolve)
+		})
+		const token = await grecaptcha.execute(import.meta.env.VITE_GOOGLE_RECAPTCHA_SITE_KEY, {
+			action: 'fbForm'
+		})
+		return token
 	}
 
 	async function handleSubmitFormLocal(
@@ -78,6 +84,10 @@
 		handleSetFormErrors
 	) {
 		loadButton = true
+
+		let tokenCaptcha = await getCaptcha()
+		console.log('tokenCaptcha: ' + tokenCaptcha)
+
 		const reference = type === 'formBottom' ? formBottomWidget : $widget
 		const endpoint = `${reference?.endpoint || reference?.params?.model?.meta}`
 
@@ -87,7 +97,8 @@
 			handleSetFormErrors,
 			widgetContext: widget,
 			...reference?.params?.model?.extras,
-			dashboard
+			dashboard,
+			tokenCaptcha
 		})
 
 		if (response) {
@@ -213,7 +224,7 @@
 								<button
 									class="btn btn-form text-md disabled:text-gray-400 disabled:hover:cursor-not-allowed dark:text-white"
 									on:click={() =>
-										doRecaptcha(
+										handleSubmitFormLocal(
 											handleValidateForm,
 											'formSaved',
 											handleResetForm,

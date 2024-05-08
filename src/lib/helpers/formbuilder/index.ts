@@ -1,4 +1,4 @@
-import { getApiData } from '$lib/services/getData'
+import { getApiData, postData } from '$lib/services/getData'
 import { sendErrorNotification, sendSuccessNotification } from '$lib/stores/toast'
 import { openModal } from '$lib/helpers/common/modal'
 import { merge } from 'lodash-es'
@@ -227,6 +227,9 @@ export const handleSubmitForm = async (handleValidateForm: any, type: string, $w
 }
 
 async function handleSubmit(payload: any, type: string, $widget, extra) {
+	const secretKey = import.meta.env.VITE_GOOGLE_RECAPTCHA_SECRET_KEY
+	const verifyUrl = `https://www.google.com/recaptcha/api/siteverify?secret=${secretKey}&response=${extra.tokenCaptcha}`
+
 	const endpoint = extra.endpoint
 
 	let url = `${extra.baseUrl}/${endpoint}`
@@ -245,6 +248,18 @@ async function handleSubmit(payload: any, type: string, $widget, extra) {
 	if (extra?.message) message = extra.message
 
 	try {
+		if ($widget.param?.model?.recaptcha && payload.title.toLowerCase().includes('captcha')) {
+			const response = await postData(verifyUrl, {}, false)
+			const data = await response.json()
+			console.log(data)
+			if (!data.success || data.score <= 0.5) {
+				sendErrorNotification('Verificación de reCAPTCHA fallida')
+				return false
+			} else {
+				sendSuccessNotification('Verificación de reCAPTCHA exitosa')
+			}
+		}
+
 		const dataModel = await getApiData(url, method, payload)
 
 		if (dataModel) {
