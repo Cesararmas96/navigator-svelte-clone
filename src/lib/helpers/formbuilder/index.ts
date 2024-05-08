@@ -8,9 +8,12 @@ import { get } from 'svelte/store'
 
 let $defs
 let $endSchema
+let $baseURL
 const $boolYesOrNot: string[] = []
 
 export const getJsonSchema = async (jsonSchema, $widget, credentials) => {
+	$baseURL = credentials?.baseUrl
+
 	jsonSchema = merge({}, jsonSchema, $widget?.params?.model?.schema || {})
 	jsonSchema['noHeader'] = true
 
@@ -309,6 +312,7 @@ export const utilFunctionsMap: { [key: string]: (params: any) => any } = {
 	handlePreRenderMileageSearchStores: handlePreRenderMileageSearchStores,
 	handleFunctionMileageSearchStores: handleFunctionMileageSearchStores,
 	handlePreRenderProServicesSearchEmployee: handlePreRenderProServicesSearchEmployee,
+	handlePreRenderWeProtectUforPublic: handlePreRenderWeProtectUforPublic,
 	handleFunctionProServicesSearchEmployees: handleFunctionProServicesSearchEmployees,
 	handleFunctionCallbackPrePayloadTicketForBose: handleFunctionCallbackPrePayloadTicketForBose,
 	handleFunctionCallbackPrePayloadRequiredInHide: handleFunctionCallbackPrePayloadRequiredInHide,
@@ -501,6 +505,24 @@ function handlePreRenderProServicesSearchEmployee(params) {
 			associate_oid: user?.domain
 		}
 	}
+}
+
+async function handlePreRenderWeProtectUforPublic(params) {
+	const user = get(storeUser)
+
+	if (user?.apikey) {
+		// const dataUsersGuests = await getApiData('troc_guest_users', 'GET')
+		// const userFind = dataUsersGuests.find((item) => item.username === user.username)
+
+		// if (userFind) {
+		params.jsonSchema.properties.custom_radio.items.enum =
+			params.jsonSchema.properties.custom_radio.items.enum.filter(
+				(item) => item.value !== 'non_anonymous'
+			)
+		// }
+	}
+
+	return params.jsonSchema
 }
 
 function handleFunctionProServicesSearchEmployees(params) {
