@@ -248,7 +248,8 @@ async function handleSubmit(payload: any, type: string, $widget, extra) {
 	if (extra?.message) message = extra.message
 
 	try {
-		if ($widget.param?.model?.recaptcha && payload.title.toLowerCase().includes('captcha')) {
+		console.log($widget.params?.model?.recaptcha, payload.title.toLowerCase().includes('captcha'))
+		if ($widget.params?.model?.recaptcha && payload.title.toLowerCase().includes('captcha')) {
 			const response = await postData(verifyUrl, {}, false)
 			const data = await response.json()
 			console.log(data)
