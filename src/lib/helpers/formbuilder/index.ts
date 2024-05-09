@@ -180,7 +180,7 @@ export const getSchemaComputed = async (jsonSchema: Record<string, unknown>, $wi
 
 export const handleSubmitForm = async (handleValidateForm: any, type: string, $widget, extra) => {
 	const payload = handleValidateForm()
-	console.log(payload)
+
 	if (!Array.isArray(payload)) {
 		let filteredPayload = { ...$widget?.params?.model?.defaults, ...payload }
 		$widget?.params?.model?._ignore?.forEach((item) => {
@@ -223,6 +223,10 @@ export const handleSubmitForm = async (handleValidateForm: any, type: string, $w
 			})
 		}
 
+		if (extra.tokenCaptcha) {
+			filteredPayload = { ...filteredPayload, ctoken: extra.tokenCaptcha }
+		}
+
 		return await handleSubmit(filteredPayload, type, $widget, extra)
 	} else {
 		sendErrorNotification('Please review your form responses and complete the required fields.')
@@ -230,9 +234,6 @@ export const handleSubmitForm = async (handleValidateForm: any, type: string, $w
 }
 
 async function handleSubmit(payload: any, type: string, $widget, extra) {
-	const secretKey = import.meta.env.VITE_GOOGLE_RECAPTCHA_SECRET_KEY
-	const verifyUrl = `https://www.google.com/recaptcha/api/siteverify?secret=${secretKey}&response=${extra.tokenCaptcha}`
-
 	const endpoint = extra.endpoint
 
 	let url = `${extra.baseUrl}/${endpoint}`
@@ -251,19 +252,6 @@ async function handleSubmit(payload: any, type: string, $widget, extra) {
 	if (extra?.message) message = extra.message
 
 	try {
-		console.log($widget.params?.model?.recaptcha, payload.title.toLowerCase().includes('captcha'))
-		if ($widget.params?.model?.recaptcha && payload.title.toLowerCase().includes('captcha')) {
-			const response = await postData(verifyUrl, {}, false)
-			const data = await response.json()
-			console.log(data)
-			if (!data.success || data.score <= 0.5) {
-				sendErrorNotification('Verificación de reCAPTCHA fallida')
-				return false
-			} else {
-				sendSuccessNotification('Verificación de reCAPTCHA exitosa')
-			}
-		}
-
 		const dataModel = await getApiData(url, method, payload)
 
 		if (dataModel) {

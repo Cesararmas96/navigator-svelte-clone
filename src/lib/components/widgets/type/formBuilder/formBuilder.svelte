@@ -83,9 +83,10 @@
 		handleResetForm,
 		handleSetFormErrors
 	) {
+		console.log('handleSubmitFormLocal')
 		loadButton = true
 
-		let tokenCaptcha = await getCaptcha()
+		const tokenCaptcha = $widget.params?.model?.recaptcha ? await getCaptcha() : ''
 		console.log('tokenCaptcha: ' + tokenCaptcha)
 
 		const reference = type === 'formBottom' ? formBottomWidget : $widget
@@ -180,7 +181,7 @@
 	{#if $widget?.params?.model?.recaptcha}
 		<script
 			src="https://www.google.com/recaptcha/api.js?render={import.meta.env
-				.VITE_GOOGLE_RECAPTCHA_SITE_KEY}"
+				.VITE_GOOGLE_RECAPTCHA_SITE_KEY}&hl=en"
 			async
 			defer
 		></script>
