@@ -140,9 +140,9 @@
 			})
 
 			if (_type === 'bottom') {
-				schemaBottom = getSchemaComputed(jsonSchema, reference)
+				schemaBottom = await getSchemaComputed(jsonSchema, reference)
 			} else {
-				schema = getSchemaComputed(jsonSchema, reference)
+				schema = await getSchemaComputed(jsonSchema, reference)
 				// console.log(JSON.stringify(schema))
 			}
 

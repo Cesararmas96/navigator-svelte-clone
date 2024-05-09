@@ -54,7 +54,7 @@
 		if (prepareJsonSchema) {
 			const jsonSchema = await getJsonSchema(prepareJsonSchema, props.model, { baseUrl, token })
 
-			schema = getSchemaComputed(jsonSchema, props.model)
+			schema = await getSchemaComputed(jsonSchema, props.model)
 
 			if (schema) {
 				title = `${jsonSchema?.title}`
