@@ -151,7 +151,7 @@ export const getJsonSchema = async (jsonSchema, $widget, credentials) => {
 	return jsonSchema
 }
 
-export const getSchemaComputed = (jsonSchema: Record<string, unknown>, $widget) => {
+export const getSchemaComputed = async (jsonSchema: Record<string, unknown>, $widget) => {
 	jsonSchema = merge({}, jsonSchema, $widget?.params?.model?.schema || {})
 
 	// if ($widget?.params?.model?.schema?.$withoutDefs && jsonSchema?.$defs) {
@@ -167,7 +167,7 @@ export const getSchemaComputed = (jsonSchema: Record<string, unknown>, $widget) 
 		$widget?.params?.model?.callback?.preRender &&
 		utilFunctionsMap[$widget?.params?.model?.callback?.preRender]
 	) {
-		utilFunctionsMap[$widget?.params?.model?.callback?.preRender]({
+		jsonSchema = await utilFunctionsMap[$widget?.params?.model?.callback?.preRender]({
 			jsonSchema,
 			$widget
 		})
@@ -469,6 +469,8 @@ function handlePreRenderMileageSearchStores(params) {
 			associate_oid: user?.domain
 		}
 	}
+
+	return params.jsonSchema
 }
 
 function handleFunctionMileageSearchStores(params) {
@@ -521,21 +523,23 @@ function handlePreRenderProServicesSearchEmployee(params) {
 			associate_oid: user?.domain
 		}
 	}
+
+	return params.jsonSchema
 }
 
 async function handlePreRenderWeProtectUforPublic(params) {
 	const user = get(storeUser)
 
 	if (user?.apikey) {
-		// const dataUsersGuests = await getApiData('troc_guest_users', 'GET')
-		// const userFind = dataUsersGuests.find((item) => item.username === user.username)
+		const dataUsersGuests = await getApiData('troc_guest_users', 'GET')
+		const userFind = dataUsersGuests.find((item) => item.username === user.username)
 
-		// if (userFind) {
-		params.jsonSchema.properties.custom_radio.items.enum =
-			params.jsonSchema.properties.custom_radio.items.enum.filter(
-				(item) => item.value !== 'non_anonymous'
-			)
-		// }
+		if (userFind) {
+			params.jsonSchema.properties.custom_radio.items.enum =
+				params.jsonSchema.properties.custom_radio.items.enum.filter(
+					(item) => item.value !== 'non_anonymous'
+				)
+		}
 	}
 
 	return params.jsonSchema

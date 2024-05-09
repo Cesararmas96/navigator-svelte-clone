@@ -77,7 +77,7 @@
 			if (primaryKey) {
 				getModelByID(jsonSchema, record, slug, conditions)
 			} else {
-				schema = getSchemaComputed(jsonSchema, $selectedFormBuilderWidget)
+				schema = await getSchemaComputed(jsonSchema, $selectedFormBuilderWidget)
 			}
 
 			if (schema) {
@@ -119,7 +119,7 @@
 			$selectedFormBuilderWidget['modelByID'] = dataSchema
 		}
 
-		schema = getSchemaComputed(jsonSchema, $selectedFormBuilderWidget)
+		schema = await getSchemaComputed(jsonSchema, $selectedFormBuilderWidget)
 		// console.log(JSON.stringify(schema))
 	}
 
