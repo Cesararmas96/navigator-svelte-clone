@@ -87,7 +87,6 @@
 		loadButton = true
 
 		const tokenCaptcha = $widget.params?.model?.recaptcha ? await getCaptcha() : ''
-		console.log('tokenCaptcha: ' + tokenCaptcha)
 
 		const reference = type === 'formBottom' ? formBottomWidget : $widget
 		const endpoint = `${reference?.endpoint || reference?.params?.model?.meta}`
@@ -178,14 +177,12 @@
 </script>
 
 <svelte:head>
-	{#if $widget?.params?.model?.recaptcha}
-		<script
-			src="https://www.google.com/recaptcha/api.js?render={import.meta.env
-				.VITE_GOOGLE_RECAPTCHA_SITE_KEY}&hl=en"
-			async
-			defer
-		></script>
-	{/if}
+	<script
+		src="https://www.google.com/recaptcha/api.js?render={import.meta.env
+			.VITE_GOOGLE_RECAPTCHA_SITE_KEY}{$widget?.params?.model?.recaptcha ? '' : '1'}&hl=en"
+		async
+		defer
+	></script>
 </svelte:head>
 
 {#if data}
