@@ -1,4 +1,4 @@
-import { getApiData } from '$lib/services/getData'
+import { getApiData, postData } from '$lib/services/getData'
 import { sendErrorNotification, sendSuccessNotification } from '$lib/stores/toast'
 import { openModal } from '$lib/helpers/common/modal'
 import { merge } from 'lodash-es'
@@ -8,9 +8,12 @@ import { get } from 'svelte/store'
 
 let $defs
 let $endSchema
+let $baseURL
 const $boolYesOrNot: string[] = []
 
 export const getJsonSchema = async (jsonSchema, $widget, credentials) => {
+	$baseURL = credentials?.baseUrl
+
 	jsonSchema = merge({}, jsonSchema, $widget?.params?.model?.schema || {})
 	jsonSchema['noHeader'] = true
 
@@ -54,9 +57,9 @@ export const getJsonSchema = async (jsonSchema, $widget, credentials) => {
 							: $widget?.params?.model?.schema?.properties[property]?.$ref?.url
 						: 'api/v1/'
 				}`,
-				headers: {
-					authorization: `Bearer ${credentials?.token}`
-				}
+				headers: !credentials?.apikey
+					? { authorization: `Bearer ${credentials?.token}` }
+					: { 'x-api-key': credentials?.token }
 			}
 
 			delete jsonSchema.properties[property]?.$ref?.$ref
@@ -76,9 +79,9 @@ export const getJsonSchema = async (jsonSchema, $widget, credentials) => {
 						? $widget?.params?.model?.schema?.properties[property]?._fetch?.url
 						: `api/v1/${jsonSchema.properties[property]?.$ref?.api}`
 				}`,
-				headers: {
-					authorization: `Bearer ${credentials?.token}`
-				},
+				headers: !credentials?.apikey
+					? { authorization: `Bearer ${credentials?.token}` }
+					: { 'x-api-key': credentials?.token },
 				id: jsonSchema.properties[property]?.$ref?.id,
 				label: jsonSchema.properties[property]?.$ref?.value
 			}
@@ -134,9 +137,9 @@ export const getJsonSchema = async (jsonSchema, $widget, credentials) => {
 				url: `${credentials?.baseUrl}/services/files/static/images/badges/`,
 				method: 'PUT',
 				payload: 'file_name',
-				headers: {
-					authorization: `Bearer ${credentials?.token}`
-				}
+				headers: !credentials?.apikey
+					? { authorization: `Bearer ${credentials?.token}` }
+					: { 'x-api-key': credentials?.token }
 			}
 
 			if (jsonSchema.properties[property]?.['ui:help'])
@@ -148,7 +151,7 @@ export const getJsonSchema = async (jsonSchema, $widget, credentials) => {
 	return jsonSchema
 }
 
-export const getSchemaComputed = (jsonSchema: Record<string, unknown>, $widget) => {
+export const getSchemaComputed = async (jsonSchema: Record<string, unknown>, $widget) => {
 	jsonSchema = merge({}, jsonSchema, $widget?.params?.model?.schema || {})
 
 	// if ($widget?.params?.model?.schema?.$withoutDefs && jsonSchema?.$defs) {
@@ -164,7 +167,7 @@ export const getSchemaComputed = (jsonSchema: Record<string, unknown>, $widget) 
 		$widget?.params?.model?.callback?.preRender &&
 		utilFunctionsMap[$widget?.params?.model?.callback?.preRender]
 	) {
-		utilFunctionsMap[$widget?.params?.model?.callback?.preRender]({
+		jsonSchema = await utilFunctionsMap[$widget?.params?.model?.callback?.preRender]({
 			jsonSchema,
 			$widget
 		})
@@ -177,7 +180,7 @@ export const getSchemaComputed = (jsonSchema: Record<string, unknown>, $widget) 
 
 export const handleSubmitForm = async (handleValidateForm: any, type: string, $widget, extra) => {
 	const payload = handleValidateForm()
-	console.log(payload)
+
 	if (!Array.isArray(payload)) {
 		let filteredPayload = { ...$widget?.params?.model?.defaults, ...payload }
 		$widget?.params?.model?._ignore?.forEach((item) => {
@@ -218,6 +221,10 @@ export const handleSubmitForm = async (handleValidateForm: any, type: string, $w
 					widget: $widget
 				}
 			})
+		}
+
+		if (extra.tokenCaptcha) {
+			filteredPayload = { ...filteredPayload, ctoken: extra.tokenCaptcha }
 		}
 
 		return await handleSubmit(filteredPayload, type, $widget, extra)
@@ -309,6 +316,7 @@ export const utilFunctionsMap: { [key: string]: (params: any) => any } = {
 	handlePreRenderMileageSearchStores: handlePreRenderMileageSearchStores,
 	handleFunctionMileageSearchStores: handleFunctionMileageSearchStores,
 	handlePreRenderProServicesSearchEmployee: handlePreRenderProServicesSearchEmployee,
+	handlePreRenderWeProtectUforPublic: handlePreRenderWeProtectUforPublic,
 	handleFunctionProServicesSearchEmployees: handleFunctionProServicesSearchEmployees,
 	handleFunctionCallbackPrePayloadTicketForBose: handleFunctionCallbackPrePayloadTicketForBose,
 	handleFunctionCallbackPrePayloadRequiredInHide: handleFunctionCallbackPrePayloadRequiredInHide,
@@ -449,6 +457,8 @@ function handlePreRenderMileageSearchStores(params) {
 			associate_oid: user?.domain
 		}
 	}
+
+	return params.jsonSchema
 }
 
 function handleFunctionMileageSearchStores(params) {
@@ -501,6 +511,26 @@ function handlePreRenderProServicesSearchEmployee(params) {
 			associate_oid: user?.domain
 		}
 	}
+
+	return params.jsonSchema
+}
+
+async function handlePreRenderWeProtectUforPublic(params) {
+	const user = get(storeUser)
+
+	if (user?.apikey) {
+		const dataUsersGuests = await getApiData('troc_guest_users', 'GET')
+		const userFind = dataUsersGuests.find((item) => item.username === user.username)
+
+		if (userFind) {
+			params.jsonSchema.properties.custom_radio.items.enum =
+				params.jsonSchema.properties.custom_radio.items.enum.filter(
+					(item) => item.value !== 'non_anonymous'
+				)
+		}
+	}
+
+	return params.jsonSchema
 }
 
 function handleFunctionProServicesSearchEmployees(params) {

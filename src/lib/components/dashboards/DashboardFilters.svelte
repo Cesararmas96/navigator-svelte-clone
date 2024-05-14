@@ -6,8 +6,8 @@
 	import Spinner from '../common/Spinner.svelte'
 	import { Button } from 'flowbite-svelte'
 
-	export let open = false
-
+	export let open: boolean = false
+	open = Boolean(open)
 	const check = () => {
 		if (open) console.log('open')
 		open = !open

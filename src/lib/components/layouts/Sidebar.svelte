@@ -11,6 +11,7 @@
 	import Icon from '../common/Icon.svelte'
 	import { menuHidden, sidebarMin } from '$lib/stores/sidebar'
 	import { onMount } from 'svelte'
+	import { storeUser } from '$lib/stores'
 	interface menuItem {
 		type: string
 		name: string
@@ -88,6 +89,10 @@
 			document.removeEventListener('click', closeSidebarOnClickOutside)
 		}
 	})
+
+	const createUrlApikey = (url: string) => {
+		return !$storeUser.apikey ? url : `${url}?apikey=${$storeUser.token}`
+	}
 </script>
 
 <Sidebar
@@ -155,7 +160,7 @@
 				{:else}
 					<SidebarItem
 						label={item.name}
-						href={item.url}
+						href={createUrlApikey(item.url || '')}
 						active={activeUrl === item.url}
 						class="px-3 py-2"
 						spanClass="flex-1 ml-3 whitespace-nowrap menu-text"

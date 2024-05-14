@@ -9,8 +9,11 @@ export const load = async ({ params, fetch, locals, url }) => {
 
 	const urlBase = import.meta.env.VITE_API_URL
 
-	const token = locals.user?.token
-	const headers = token ? { authorization: `Bearer ${token}` } : {}
+	const headers = locals.user?.token
+		? !locals.user?.apikey
+			? { authorization: `Bearer ${locals.user?.token}` }
+			: { 'x-api-key': locals.user?.token }
+		: {}
 
 	try {
 		const dashboard = await getApiData(

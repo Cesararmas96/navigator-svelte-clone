@@ -29,6 +29,7 @@
 	let loadButton = false
 	const baseUrl = import.meta.env.VITE_API_URL
 	const token = $storeUser?.token
+	const apikey = $storeUser?.apikey
 	let responseServer = null
 	let recaptchaToken
 
@@ -39,35 +40,41 @@
 	}
 	let state = State.idle
 
-	async function doRecaptcha(
-		handleValidateForm: any,
-		type: string,
-		handleResetForm,
-		handleSetFormErrors
-	) {
-		if ($widget?.params?.model?.recaptcha) {
-			state = State.requesting
-			grecaptcha.ready(function () {
-				try {
-					grecaptcha
-						.execute(import.meta.env.VITE_GOOGLE_RECAPTCHA_SITE_KEY, { action: 'submit' })
-						.then(function (t) {
-							state = State.success
-							recaptchaToken = t
-							handleSubmitFormLocal(handleValidateForm, type, handleResetForm, handleSetFormErrors)
-						})
-				} catch (error) {
-					state = State.idle
-					sendErrorNotification(error)
-				}
-			})
-		} else {
-			handleSubmitFormLocal(handleValidateForm, type, handleResetForm, handleSetFormErrors)
-		}
-	}
+	// async function doRecaptcha(
+	// 	handleValidateForm: any,
+	// 	type: string,
+	// 	handleResetForm,
+	// 	handleSetFormErrors
+	// ) {
+	// 	if ($widget?.params?.model?.recaptcha) {
+	// 		state = State.requesting
+	// 		grecaptcha.ready(function () {
+	// 			try {
+	// 				grecaptcha
+	// 					.execute(import.meta.env.VITE_GOOGLE_RECAPTCHA_SITE_KEY, { action: 'submit' })
+	// 					.then(function (t) {
+	// 						state = State.success
+	// 						recaptchaToken = t
+	// 						handleSubmitFormLocal(handleValidateForm, type, handleResetForm, handleSetFormErrors)
+	// 					})
+	// 			} catch (error) {
+	// 				state = State.idle
+	// 				sendErrorNotification(error)
+	// 			}
+	// 		})
+	// 	} else {
+	// 		handleSubmitFormLocal(handleValidateForm, type, handleResetForm, handleSetFormErrors)
+	// 	}
+	// }
 
-	const onCaptchaSuccess = (event) => {
-		recaptchaToken = event.detail.token
+	async function getCaptcha() {
+		await new Promise((resolve, reject) => {
+			grecaptcha.ready(resolve)
+		})
+		const token = await grecaptcha.execute(import.meta.env.VITE_GOOGLE_RECAPTCHA_SITE_KEY, {
+			action: 'fbForm'
+		})
+		return token
 	}
 
 	async function handleSubmitFormLocal(
@@ -76,7 +83,11 @@
 		handleResetForm,
 		handleSetFormErrors
 	) {
+		console.log('handleSubmitFormLocal')
 		loadButton = true
+
+		const tokenCaptcha = $widget.params?.model?.recaptcha ? await getCaptcha() : ''
+
 		const reference = type === 'formBottom' ? formBottomWidget : $widget
 		const endpoint = `${reference?.endpoint || reference?.params?.model?.meta}`
 
@@ -86,7 +97,8 @@
 			handleSetFormErrors,
 			widgetContext: widget,
 			...reference?.params?.model?.extras,
-			dashboard
+			dashboard,
+			tokenCaptcha
 		})
 
 		if (response) {
@@ -132,12 +144,16 @@
 			'GET'
 		)
 		if (prepareJsonSchema) {
-			const jsonSchema = await getJsonSchema(prepareJsonSchema, reference, { baseUrl, token })
+			const jsonSchema = await getJsonSchema(prepareJsonSchema, reference, {
+				baseUrl,
+				token,
+				apikey
+			})
 
 			if (_type === 'bottom') {
-				schemaBottom = getSchemaComputed(jsonSchema, reference)
+				schemaBottom = await getSchemaComputed(jsonSchema, reference)
 			} else {
-				schema = getSchemaComputed(jsonSchema, reference)
+				schema = await getSchemaComputed(jsonSchema, reference)
 				// console.log(JSON.stringify(schema))
 			}
 
@@ -161,14 +177,12 @@
 </script>
 
 <svelte:head>
-	{#if $widget?.params?.model?.recaptcha}
-		<script
-			src="https://www.google.com/recaptcha/api.js?render={import.meta.env
-				.VITE_GOOGLE_RECAPTCHA_SITE_KEY}"
-			async
-			defer
-		></script>
-	{/if}
+	<script
+		src="https://www.google.com/recaptcha/api.js?render={import.meta.env
+			.VITE_GOOGLE_RECAPTCHA_SITE_KEY}{$widget?.params?.model?.recaptcha ? '' : '1'}&hl=en"
+		async
+		defer
+	></script>
 </svelte:head>
 
 {#if data}
@@ -208,7 +222,7 @@
 								<button
 									class="btn btn-form text-md disabled:text-gray-400 disabled:hover:cursor-not-allowed dark:text-white"
 									on:click={() =>
-										doRecaptcha(
+										handleSubmitFormLocal(
 											handleValidateForm,
 											'formSaved',
 											handleResetForm,

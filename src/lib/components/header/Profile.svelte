@@ -9,39 +9,42 @@
 
 <Avatar
 	src="/images/troc.png"
-	class="avatarProfile dark:bg-gray-0 cursor-pointer bg-white/0 hover:bg-white/10 dark:hover:bg-gray-600"
+	class="avatarProfile dark:bg-gray-0 {!$storeUser?.apikey
+		? 'cursor-pointer hover:bg-white/10 dark:hover:bg-gray-600'
+		: ''} bg-white/0 "
 	rounded
 	border={false}
 	size={'sm'}
 />
-
-<Dropdown triggeredBy=".avatarProfile" containerClass="min-w-[150px]">
-	<div>
-		<DropdownItem>
-			<a href="/profile">
-				<div class="mx-2 flex cursor-pointer flex-row items-center">
-					<Icon icon="line-md:account" size="20px" classes="mr-3" />
-					Profile
-				</div>
-			</a>
-		</DropdownItem>
-		{#if $storeUser.superuser}
+{#if !$storeUser?.apikey}
+	<Dropdown triggeredBy=".avatarProfile" containerClass="min-w-[150px]">
+		<div>
 			<DropdownItem>
-				<a href="/admin">
+				<a href="/profile">
 					<div class="mx-2 flex cursor-pointer flex-row items-center">
-						<Icon icon="line-md:clipboard-check" size="20px" classes="mr-3" />
-						Admin
+						<Icon icon="line-md:account" size="20px" classes="mr-3" />
+						Profile
 					</div>
 				</a>
 			</DropdownItem>
-		{/if}
-		<DropdownItem slot="footer">
-			<form action="/logout" method="POST" use:enhance>
-				<button type="submit" class="mx-2 flex cursor-pointer flex-row items-center">
-					<Icon icon="line-md:arrow-align-left" size="20px" classes="mr-3" />
-					Log Out
-				</button>
-			</form>
-		</DropdownItem>
-	</div>
-</Dropdown>
+			{#if $storeUser.superuser}
+				<DropdownItem>
+					<a href="/admin">
+						<div class="mx-2 flex cursor-pointer flex-row items-center">
+							<Icon icon="line-md:clipboard-check" size="20px" classes="mr-3" />
+							Admin
+						</div>
+					</a>
+				</DropdownItem>
+			{/if}
+			<DropdownItem slot="footer">
+				<form action="/logout" method="POST" use:enhance>
+					<button type="submit" class="mx-2 flex cursor-pointer flex-row items-center">
+						<Icon icon="line-md:arrow-align-left" size="20px" classes="mr-3" />
+						Log Out
+					</button>
+				</form>
+			</DropdownItem>
+		</div>
+	</Dropdown>
+{/if}

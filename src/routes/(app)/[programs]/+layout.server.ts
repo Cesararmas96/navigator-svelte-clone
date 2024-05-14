@@ -9,12 +9,15 @@ export const load = async ({ params, fetch, locals, url }) => {
 
 	const next = locals.user.next
 	if (next && params.programs !== next) {
-		throw redirect(302, `/${next}`)
+		const url = `/${next}${locals.user.apikey ? '?apikey=' + locals.user.token : ''}`
+		throw redirect(302, url)
 	}
 
 	const urlBase = import.meta.env.VITE_API_URL
 
-	const headers = { authorization: `Bearer ${locals.user.token}` }
+	const headers = !locals.user?.apikey
+		? { authorization: `Bearer ${locals.user?.token}` }
+		: { 'x-api-key': locals.user?.token }
 
 	const program_slug = next ? next : params.programs
 	const tenant = url.hostname.split('.')[0]
@@ -28,10 +31,17 @@ export const load = async ({ params, fetch, locals, url }) => {
 		fetch,
 		false
 	)
-
 	try {
 		if (!locals.client || locals.client?.client_slug !== tenant) {
-			const resp = await getApiData(`${urlBase}/api/v1/clients?subdomain_prefix=${tenant}`, 'GET')
+			const resp = await getApiData(
+				`${urlBase}/api/v1/clients?subdomain_prefix=${tenant}`,
+				'GET',
+				{},
+				{},
+				{ 'no-auth': true },
+				fetch,
+				false
+			)
 			locals.client = resp[0]
 		}
 		const programs = await getApiData(
@@ -91,9 +101,10 @@ export const load = async ({ params, fetch, locals, url }) => {
 			variablesOperational
 		}
 	} catch (err: any) {
+		console.log(err.status, err)
 		const origin = `<div class="origin-error hidden mt-2">Origin URL:<br>${url.origin}`
 		if (url.origin.includes('teams')) throw redirect(302, 'error/403')
-		throw error(err.status, err.body.message + origin)
+		throw error(err.status, err.body?.message + origin)
 		// if (url.origin.includes('teams')) throw redirect(302, 'error/403')
 		// else throw redirect(302, 'home')
 	}
