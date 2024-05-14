@@ -10,71 +10,17 @@
 	import { setContentHeight } from '$lib/helpers/widget/widget'
 
 	export let data: any
+
 	const widget: any = getContext('widget')
-	const dashboard = getContext<Writable<any>>('dashboard')
+	// const dashboard = getContext<Writable<any>>('dashboard')
 	const widgetActions = getContext<Writable<any[]>>('widgetActions')
 	const resizeAction = getWidgetAction($widgetActions, 'resize')
 
 	export let id = 'chart-' + $widget.widget_id
 	export let theme = 'macarons'
 	export let width = 200
-	export let height = 200
-	export let options = {
-		textStyle: {
-			fontSize: 12,
-			height: 80,
-			fontFamily: 'Montserrat, Helvetica, Arial, sans-serif'
-		},
-		grid: {
-			top: '15%',
-			left: '3%',
-			right: '3%',
-			bottom: '3%',
-			containLabel: true
-		},
-		tooltip: {
-			trigger: 'axis',
-			axisPointer: {
-				type: 'cross',
-				label: {
-					backgroundColor: '#6a7985'
-				}
-			}
-		},
-		legend: {
-			top: '20',
-			orient: 'horizontal',
-			textStyle: {
-				color: '#333',
-				fontSize: '13'
-			}
-		},
-		// color: map(
-		//   Object.keys($widget.colors!),
-		//   // @ts-ignore
-		//   (color: string) => $widget.colors![color]
-		// ),
-		resizable: true,
-		xAxis: {
-			type: 'category',
-			axisLabel: {
-				rotate: 30
-				// formatter:
-				//   $widget.params!.graph && $widget.params!.graph.xformat
-				//     ? function (value: any, index: any) {
-				//         return fnFormatEchart(value)
-				//       }
-				//     : `{value}`,
-			}
-		},
-		yAxis: {
-			type: 'value'
-		},
-		dataset: {
-			source: []
-		},
-		series: []
-	}
+	// export let height = 200
+	export let options: any = {}
 	// export let notMerge = false
 	// export let replaceMerge = undefined
 	// export let lazyUpdate = false
@@ -89,17 +35,54 @@
 
 	let chart // our chart instance
 
+	const obtainData = () => {
+		const newData: any[] = []
+
+		data.forEach((item: any) => {
+			const newItem = {}
+
+			Object.keys(item).forEach((key) => {
+				if (series[key]) {
+					newItem[series[key]] = item[key]
+				} else {
+					if (typeof item[key] === 'number') {
+						newItem['value'] = item[key]
+					} else if (typeof item[key] === 'string') {
+						newItem['name'] = item[key]
+					} else {
+						newItem[key] = item[key]
+					}
+				}
+			})
+			newData.push(newItem)
+		})
+
+		return newData
+	}
+
 	const buildOptions = async () => {
 		if (chart && !chart.isDisposed()) {
 			const type = $widget.params.graph && $widget.params.graph.type
-			const typeConfig = await import(`./types/${type}.ts`).catch(() => {})
+
+			const graph =
+				type === 'echarts' || type === 'dimensions' || type === 'area' || type === 'barline'
+					? 'bar'
+					: type
+
+			const typeConfig = await import(`./types/${graph}.ts`).catch((e) => console.error(e))
 
 			if (typeConfig && typeConfig.default) {
-				options = merge({}, options, typeConfig.default())
+				options = merge({}, options, typeConfig.default($widget.params.graph))
 			} else {
 				// options.series = generateSeriesDefault!(type)
 			}
-			options.series = generateSeriesDefault!(type)
+			if (graph === 'bar') {
+				options.series = generateSeriesDefault!(type)
+			} else {
+				options.series.map((serie: any) => {
+					serie.data = obtainData()
+				})
+			}
 
 			// console.log(options)
 			options = merge({}, options, $widget?.params?.echarts || {}, {
@@ -129,7 +112,7 @@
 	const makeChart = (mode: string = '') => {
 		destroyChart()
 		theme = mode === 'dark' ? 'dark' : $themeColor
-		chart = echarts.init(document.getElementById(id), 'macarons')
+		chart = echarts.init(document.getElementById(id), theme)
 	}
 
 	function generateSeriesDefault(typeEchart: string) {
@@ -196,16 +179,16 @@
 							type: type,
 							// name: useFormat(xdata, 'capitalize'),
 							name: xdata,
-							markPoint: {
-								data: [
-									{ type: 'max', name: 'Max' },
-									{ type: 'min', name: 'Min' }
-								],
-								label: {
-									color: '#000',
-									fontSize: 10
-								}
-							},
+							// markPoint: {
+							// 	data: [
+							// 		{ type: 'max', name: 'Max' },
+							// 		{ type: 'min', name: 'Min' }
+							// 	],
+							// 	label: {
+							// 		color: '#000',
+							// 		fontSize: 10
+							// 	}
+							// },
 							barGap: 0,
 							label: {
 								show: true,
@@ -276,10 +259,10 @@
 
 		makeChart($themeMode)
 		resizeEchartToContent()
-		if ($dashboard?.attributes?.explorer === 'v2') {
-			// console.log('resizeAction')
-			resizeAction.action()
-		}
+		// if ($dashboard?.attributes?.explorer === 'v2') {
+		// 	// console.log('resizeAction')
+		// 	resizeAction.action()
+		// }
 	})
 
 	onDestroy(() => {
@@ -298,7 +281,7 @@
 		}
 	}
 
-	$: width && handleResize()
+	// $: width && handleResize()
 	// $: options && buildOptions()
 	$: if (chart && theme) {
 		makeChart()

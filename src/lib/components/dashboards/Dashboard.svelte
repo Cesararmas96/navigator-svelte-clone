@@ -77,8 +77,9 @@
 	$: if (!$storeDashboard.loaded) {
 		filterComponent = null
 		setGridItems($storeDashboard.dashboard_id)
-		filtersOpen = $storeDashboard?.attributes?.collapse_shows
+		filtersOpen = $storeDashboard?.attributes?.filter_expanded
 		if (filtersOpen === undefined) filtersOpen = false
+		if (typeof filtersOpen === 'string') filtersOpen = filtersOpen === 'true'
 		// filtersOpen = !!$storeDashboard?.attributes?.collapse_shows
 		filterComponent = DashboardFilters
 		if ($storeUser.aux.filtering_fixed)
