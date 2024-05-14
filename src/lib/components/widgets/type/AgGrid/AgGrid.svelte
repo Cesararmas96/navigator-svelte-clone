@@ -653,7 +653,7 @@
 	 * @description Actualiza la configuración de la tabla cuando se cambia el tamaño de la tabla
 	 */
 	function onGridSizeChanged(event: any) {
-		const columnLimits = Object.keys($widget.format_definition)
+		const columnLimits = Object.keys($widget.format_definition || [])
 			.map((key: any) => {
 				return {
 					key: key,

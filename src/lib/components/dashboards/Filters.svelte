@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/stores'
-	import { hideDashboardFilters, storeDashboard } from '$lib/stores/dashboards'
+	import { hideDashboardFilters } from '$lib/stores/dashboards'
 	import { storeStores } from '$lib/stores/modules'
 	import _ from 'lodash'
 	import Date from './filter/Date.svelte'

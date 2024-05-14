@@ -109,6 +109,7 @@
 				class="hover:bg-wite/10 px-3 py-2"
 				spanClass="flex-1 text-left menu-text ml-3 whitespace-nowrap"
 				on:click={handleDrawer}
+				data-sveltekit-reload
 			>
 				<svelte:fragment slot="icon">
 					{#if $page.data.programs.length > 1}
@@ -164,6 +165,7 @@
 						active={activeUrl === item.url}
 						class="px-3 py-2"
 						spanClass="flex-1 ml-3 whitespace-nowrap menu-text"
+						data-sveltekit-reload
 					>
 						<svelte:fragment slot="icon">
 							<Icon icon={item.icon} />
