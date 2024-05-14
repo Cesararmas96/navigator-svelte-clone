@@ -109,8 +109,8 @@ export const generateColumnDefsByDefinition = (widget: any, callbacks: any) => {
 						headerClass: headerClass(col),
 						cellStyle: cssToObjet(col.style),
 
-						wrapText: true, // Habilitar wrapText
-						autoHeight: true, // Si quieres que la altura de la fila se ajuste al texto
+						wrapText: true,
+						autoHeight: true,
 
 						sort: sort,
 						cellRenderer: (params: ValueGetterParams) => {
