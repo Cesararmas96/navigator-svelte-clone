@@ -2,8 +2,7 @@
 	import SimpleCard from './SimpleCard.svelte'
 	import { fnFormats } from '$lib/utils/formats'
 	import { getContext, onMount } from 'svelte'
-	import { getWidgetAction } from '$lib/helpers'
-	import type { Writable } from 'svelte/store'
+	import { sortBy } from 'lodash-es'
 
 	export let data: any
 
@@ -12,11 +11,6 @@
 	$: if (data) {
 		buildCards()
 	}
-
-	// $: if (data) {
-	// 	console.log('buildCards 2', data)
-	// 	buildCards()
-	// }
 
 	let cards: any[] = []
 	const trendcard = {}
@@ -31,6 +25,7 @@
 
 	function buildCards() {
 		cards = []
+		let cardsTemp: any[] = []
 		const values = data ? data[0] : []
 		Object.keys(values).map((card, cardIndex) => {
 			let configExtend = (format_definition && format_definition[card]) || {}
@@ -41,7 +36,7 @@
 				// 	// configExtend = generateTrendCard(card, configExtend)
 				// }
 
-				cards.push({
+				cardsTemp.push({
 					uid: card,
 					title: fnFormats(card, 'toUpperCase'),
 					data: values[card],
@@ -58,6 +53,8 @@
 					...configExtend
 				})
 			}
+
+			cards = sortBy(cardsTemp, 'order')
 		})
 	}
 
@@ -70,11 +67,15 @@
 </script>
 
 {#if data}
-	<div class="grid grid-cols-12 gap-1">
+	<div class="mt-1 grid grid-cols-12 gap-1">
 		{#each cards as card}
 			<div style:grid-column={`span ${card.col} / span ${card.col}`}>
 				<SimpleCard {card} />
 			</div>
+
+			{#if card.jump}
+				<div class="col-span-12" />
+			{/if}
 		{/each}
 	</div>
 {/if}
