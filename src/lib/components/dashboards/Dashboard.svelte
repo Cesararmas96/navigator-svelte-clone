@@ -2,6 +2,7 @@
 	import Grid, { GridItem, type GridController } from 'svelte-grid-extended'
 	import Widget from '../widgets/Widget.svelte'
 	import WidgetBox from '../widgets/WidgetBox.svelte'
+	import { storeModule } from '$lib/stores/modules'
 	import {
 		loadV2Locations,
 		loadV3Locations,
@@ -565,6 +566,12 @@
 		})
 	}
 
+	let filters = $storeDashboard?.filtering_show
+		? { ...$storeDashboard?.filtering_show }
+		: $storeModule.filtering_show
+		? { ...$storeModule.filtering_show }
+		: {}
+
 	onMount(() => {
 		haveBreadcrumb = document.getElementById('breadcrumb') ? true : false
 	})
@@ -582,7 +589,7 @@
 	></script>
 </svelte:head>
 
-{#if Boolean($storeDashboard?.allow_filtering) && Boolean($storeDashboard?.attributes?.sticky)}
+{#if Boolean($storeDashboard?.allow_filtering) && Boolean($storeDashboard?.attributes?.sticky) && Object.keys(filters).length > 0}
 	<section bind:clientHeight>
 		<svelte:component this={filterComponent} bind:open={filtersOpen} />
 	</section>
@@ -594,7 +601,7 @@
 	style={heightStyle}
 	class:overflow-y-auto={!isMobileDevice()}
 >
-	{#if Boolean($storeDashboard?.allow_filtering) && !Boolean($storeDashboard?.attributes?.sticky)}
+	{#if Boolean($storeDashboard?.allow_filtering) && !Boolean($storeDashboard?.attributes?.sticky) && Object.keys(filters).length > 0}
 		<section>
 			<svelte:component this={filterComponent} bind:open={filtersOpen} />
 		</section>

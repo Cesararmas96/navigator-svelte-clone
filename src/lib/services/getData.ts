@@ -105,7 +105,8 @@ export async function getData(
 		}
 		return await response.json()
 	} catch (error) {
-		if (showErrorNotification) sendErrorNotification(error)
+		// if (showErrorNotification) sendErrorNotification(error)
+		console.log(error)
 		throw error
 	}
 }

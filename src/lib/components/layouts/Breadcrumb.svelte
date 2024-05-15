@@ -1,11 +1,14 @@
 <script lang="ts">
 	import { page } from '$app/stores'
-	import { storeProgram } from '$lib/stores/programs'
-	import { onMount } from 'svelte'
+	import { storeProgram, variablesOperationalProgram } from '$lib/stores/programs'
+	import { getContext, onMount } from 'svelte'
 	import Icon from '../common/Icon.svelte'
-	import { format } from 'date-fns'
 	import { storeModule } from '$lib/stores/modules'
 	import { Tooltip } from 'flowbite-svelte'
+	import moment from 'moment'
+	import type { Writable } from 'svelte/store'
+
+	const dashboard: Writable<any> = getContext('dashboard')
 
 	const createUrl = (item: any) => {
 		if (item.attributes?.order === '0') {
@@ -53,6 +56,38 @@
 		link.setAttribute('target', '_blank')
 		link.click()
 	}
+
+	function handleOperationalDate() {
+		try {
+			const module = $page.data.trocModule
+			const variables = $variablesOperationalProgram
+
+			let moduleOperationalDate = null
+			let dashboardOperationalDate = null
+			try {
+				moduleOperationalDate =
+					module && module.attributes ? module.attributes.operational_date : null
+				dashboardOperationalDate =
+					$dashboard && $dashboard?.attributes ? $dashboard?.attributes?.operational_date : null
+			} catch (error) {
+				console.log(error)
+			}
+
+			return dashboardOperationalDate && moment(dashboardOperationalDate).isValid()
+				? dashboardOperationalDate
+				: moduleOperationalDate && moment(moduleOperationalDate).isValid()
+				? moduleOperationalDate
+				: dashboardOperationalDate && variables[dashboardOperationalDate]
+				? variables[dashboardOperationalDate]
+				: moduleOperationalDate && variables[moduleOperationalDate]
+				? variables[moduleOperationalDate]
+				: moment().format('YYYY-MM-DD')
+		} catch (error) {
+			return moment().format('YYYY-MM-DD')
+		}
+	}
+
+	let date: any = handleOperationalDate()
 </script>
 
 <div id="breadcrumb" class="content-header px-5">
@@ -66,11 +101,13 @@
 		{/each}
 	</ol>
 	<i class="ml-auto" />
-	<div id="date" class="hidden text-md text-muted lg:block">
-		<span>{format(new Date(), 'EEEE, LLLL d, yyyy')}</span>
+	<div class="hidden text-md text-muted lg:block">
+		<span>Last updated on {moment(date).format('LL')}</span>
 	</div>
 	{#if $page.data.dashboards?.length > 1}
 		<Icon icon="mdi:share-variant" classes="ml-3 cursor-pointer" on:click={handleShareModule} />
-		<Tooltip>Share module {program.program_name} > {trocModule.description}</Tooltip>
+		<Tooltip placement="left"
+			>Share module {program.program_name} > {trocModule.description}</Tooltip
+		>
 	{/if}
 </div>

@@ -324,7 +324,7 @@
 	<div class="card my-2 ml-[5px] mr-[10px] w-full p-1">
 		<div class="nav-scroll gap-1 overflow-visible font-bold text-heading">
 			{#if $storeDashboards && $storeDashboards.length > 0 && currentDashboard}
-				{#each $storeDashboards as dashboard}
+				{#each $storeDashboards as dashboard (dashboard.dashboard_id)}
 					<TabItem
 						open={dashboard.dashboard_id === currentDashboard.dashboard_id}
 						inactiveClasses="!cursor-pointer"
