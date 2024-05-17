@@ -5,11 +5,11 @@ dependencies:
     specifier: ^1.4.5
     version: 1.4.5
   '@mixoo/form':
-    specifier: ^4.2.3
-    version: 4.2.3(@mixoo/ui@1.3.3)(svelte@4.1.1)
+    specifier: ^4.2.4
+    version: 4.2.4(@mixoo/ui@1.3.4)(svelte@4.1.1)
   '@mixoo/ui':
-    specifier: ^1.3.3
-    version: 1.3.3(monaco-editor@0.44.0)(svelte@4.1.1)(tailwindcss@3.4.1)
+    specifier: ^1.3.4
+    version: 1.3.4(monaco-editor@0.44.0)(svelte@4.1.1)(tailwindcss@3.4.1)
   '@nextlint/core':
     specifier: ^1.2.0
     version: 1.2.0
@@ -771,8 +771,8 @@ packages:
       svelte: 4.1.1
     dev: false
 
-  /@mixoo-ui/select@1.0.16(svelte@4.1.1):
-    resolution: {integrity: sha512-+A63PJMfxkXaPHpEoE++GoAxxlLNi6GclErTuxzvFjCI+5v1R+D4B8Th0IQJc32z2LpI2IYfXG3rgMA0/gPnPg==}
+  /@mixoo-ui/select@1.0.17(svelte@4.1.1):
+    resolution: {integrity: sha512-V0PMQ4DO1Aa8tqtJ9A1pghR1h0sZlrl6w2r0sHJwnFVq4c+UCQKlhfvFyGmQvAKfJEBlRoGFBhQK8UzsLjelHQ==}
     peerDependencies:
       svelte: ^4
     dependencies:
@@ -841,15 +841,15 @@ packages:
       svelte: 4.1.1
     dev: false
 
-  /@mixoo/form@4.2.3(@mixoo/ui@1.3.3)(svelte@4.1.1):
-    resolution: {integrity: sha512-R2hLn7cTGr1ApDenC829lJQ88X78p7ZDKBfHVV43ohE2BhWDX8v/l3tGGx11uZDoXbpxbQpug5Ixvbs79MtJvg==}
+  /@mixoo/form@4.2.4(@mixoo/ui@1.3.4)(svelte@4.1.1):
+    resolution: {integrity: sha512-DEwtVclKqZQd5a2x76DbyvY4N3e9HG7JUE78Ac6aZ4Hpyj6OcGsj7I+3D3cl0Oj526mMv4IyGT1ZX/3PcI2XfA==}
     peerDependencies:
-      '@mixoo/ui': ^1.3.3
+      '@mixoo/ui': ^1.3.4
       svelte: ^4
     dependencies:
       '@mixoo-ui/core': 1.0.5
       '@mixoo/stores': 1.0.2
-      '@mixoo/ui': 1.3.3(monaco-editor@0.44.0)(svelte@4.1.1)(tailwindcss@3.4.1)
+      '@mixoo/ui': 1.3.4(monaco-editor@0.44.0)(svelte@4.1.1)(tailwindcss@3.4.1)
       jsonschema: 1.4.1
       svelte: 4.1.1
       url: 0.11.3
@@ -861,8 +861,8 @@ packages:
       nanostores: 0.9.3
     dev: false
 
-  /@mixoo/ui@1.3.3(monaco-editor@0.44.0)(svelte@4.1.1)(tailwindcss@3.4.1):
-    resolution: {integrity: sha512-ydRHIWFxp/W0U7uNjeqP0W7u1NzOkv+FZkQoJE009EW3AwwCC/boWxV+a4RgVfDgV9zMrt7cL36Ys6PTai/fig==}
+  /@mixoo/ui@1.3.4(monaco-editor@0.44.0)(svelte@4.1.1)(tailwindcss@3.4.1):
+    resolution: {integrity: sha512-qQm4XVyeifG+LIED/5O4SZyc5Ekvnar0lL+M7iuhJf6H6xIDb32AHRkweHhzRiVgmce56vonqrg7lX0b7g70Tg==}
     peerDependencies:
       svelte: ^4
     dependencies:
@@ -876,7 +876,7 @@ packages:
       '@mixoo-ui/number': 1.0.7(svelte@4.1.1)
       '@mixoo-ui/password': 1.0.8(svelte@4.1.1)
       '@mixoo-ui/radio': 1.0.11(svelte@4.1.1)
-      '@mixoo-ui/select': 1.0.16(svelte@4.1.1)
+      '@mixoo-ui/select': 1.0.17(svelte@4.1.1)
       '@mixoo-ui/slider': 1.0.9(svelte@4.1.1)
       '@mixoo-ui/switch': 1.0.9(svelte@4.1.1)
       '@mixoo-ui/table': 0.0.5(svelte@4.1.1)(tailwindcss@3.4.1)

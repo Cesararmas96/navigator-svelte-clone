@@ -154,7 +154,7 @@
 				schemaBottom = await getSchemaComputed(jsonSchema, reference)
 			} else {
 				schema = await getSchemaComputed(jsonSchema, reference)
-				// console.log(JSON.stringify(schema))
+				console.log(JSON.stringify(schema))
 			}
 
 			if (_type === 'default') {
