@@ -20,9 +20,12 @@
 	import { loading } from '$lib/stores/preferences'
 	import { storeUser } from '$lib/stores'
 	import { generateRandomString } from '$lib/helpers/common/common'
+	import { onMount } from 'svelte'
 
 	export let trocModule: any
 	export let isShared: boolean = false
+	let scrollableDiv
+	let showButtons = false
 
 	const baseUrl = import.meta.env.VITE_API_URL
 	let dropdownOpen = false
@@ -316,12 +319,43 @@
 			size: 'md'
 		})
 	}
+
+	function scrollBy(position) {
+		if (scrollableDiv) {
+			scrollableDiv.scrollBy({
+				left: position,
+				behavior: 'smooth'
+			})
+		}
+	}
+
+	onMount(() => {
+		const resizeObserver = new ResizeObserver(() => {
+			showButtons = scrollableDiv.scrollWidth > scrollableDiv.clientWidth
+		})
+		resizeObserver.observe(scrollableDiv)
+
+		return () => {
+			resizeObserver.disconnect()
+		}
+	})
 </script>
 
 <Alerts position="top" />
 
-<Tabs style="pill" contentClass="mt-0">
-	<div class="card my-2 ml-[5px] mr-[10px] w-full p-1">
+<Tabs style="pill" contentClass="mt-0" defaultClass="flex  items-center justify-center ">
+	{#if showButtons}
+		<button
+			on:click={() => scrollBy(-350)}
+			class="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-center text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-primary-700 dark:border-gray-600 dark:bg-transparent dark:text-gray-400 dark:hover:border-gray-700 dark:hover:text-white"
+			><Icon icon="line-md:arrow-left-circle" /></button
+		>
+	{/if}
+
+	<div
+		bind:this={scrollableDiv}
+		class="card mx-0.5 h-10 flex-1 items-center justify-center overflow-hidden whitespace-nowrap"
+	>
 		<div class="nav-scroll gap-1 overflow-visible font-bold text-heading">
 			{#if $storeDashboards && $storeDashboards.length > 0 && currentDashboard}
 				{#each $storeDashboards as dashboard (dashboard.dashboard_id)}
@@ -447,7 +481,16 @@
 			{/if} -->
 		</div>
 	</div>
+
+	{#if showButtons}
+		<button
+			on:click={() => scrollBy(350)}
+			class="inline-flex h-10 w-10 rotate-180 items-center justify-center rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-center text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-primary-700 dark:border-gray-600 dark:bg-transparent dark:text-gray-400 dark:hover:border-gray-700 dark:hover:text-white"
+			><Icon icon="line-md:arrow-left-circle" /></button
+		>
+	{/if}
 </Tabs>
+
 <Modal bind:open={popupRemoveModal} size="xs" autoclose>
 	<div class="text-center">
 		<Icon
