@@ -75,6 +75,7 @@
 	}
 
 	$: if (!$storeDashboard.loaded) {
+		$storeDashboard.loaded = true
 		filterComponent = null
 		setGridItems($storeDashboard.dashboard_id)
 		filtersOpen = $storeDashboard?.attributes?.filter_expanded
@@ -224,8 +225,6 @@
 				'Error loading the widgets',
 				`There was a problem with the server. Please try again later or contact technical support if the issue persists. (${error.message})`
 			)
-		} finally {
-			$storeDashboard.loaded = true
 		}
 	}
 
@@ -233,8 +232,8 @@
 		if ($storeDashboard?.attributes?.user_id !== $storeUser?.user_id) return
 
 		const widget_location = getControllerItemsLocations(
-			$storeDashboard.gridItems,
-			gridController.gridParams
+			$storeDashboard?.gridItems,
+			gridController?.gridParams
 		)
 		widget_location['timestamp'] = new Date().getTime()
 		const attributes = {
@@ -242,6 +241,7 @@
 			explorer: 'v3',
 			widget_location
 		}
+
 		const resp = await postData(`${baseUrl}/api/v2/dashboards/${$storeDashboard.dashboard_id}`, {
 			attributes: attributes
 		})
@@ -270,13 +270,15 @@
 		let response: any
 		let item: any
 		const { dashboard_id } = dashboard
+		const title = `${copiedWidget.title.split(' #')[0]} #${generateRandomString()}`
 
 		if ($storeCCPWidgetBehavior.type === 'copy') {
+			delete copiedWidget.attributes?.user_id
 			const payload = {
 				program_id: dashboard.program_id,
 				dashboard_id,
-				title: `${copiedWidget.title.split(' #')[0]} #${generateRandomString()}`,
-				attributes: copiedWidget.attributes,
+				title,
+				attributes: { ...copiedWidget.attributes, user_id: $storeUser?.user_id, title },
 				description: copiedWidget.description,
 				params: copiedWidget.params,
 				url: copiedWidget.url,
@@ -305,12 +307,15 @@
 			if (dashboard.gridItems.some((item: any) => item.title === copiedWidget.title)) {
 				payload = {
 					...payload,
-					title: `${copiedWidget.title.split(' #')[0]} #${generateRandomString()}`
+					title
 				}
 			}
 			response = await patchData(`${baseUrl}/api/v2/widgets/${copiedWidget.widget_id}`, payload)
 
-			removeWidgetLocalstore($storeCCPWidgetBehavior.dashboard_id, copiedWidget.title)
+			removeWidgetLocalstore(
+				$storeCCPWidgetBehavior.dashboard_id,
+				copiedWidget.attributes?.title || copiedWidget.title
+			)
 
 			const _dashboard = $storeDashboards.find(
 				(d: any) => d.dashboard_id === $storeCCPWidgetBehavior.dashboard_id
@@ -523,21 +528,27 @@
 			newItem.x = position.x
 			newItem.y = position.y
 			newItem.title = widget.title
+
 			dashboard.widget_location = {
 				...dashboard.widget_location,
-				[widget.title]: {
+				[widget.attributes?.title]: {
 					x: newItem.x,
 					y: newItem.y,
 					w: newItem.w,
 					h: newItem.h
 				}
 			}
+
 			$storeDashboard.gridItems = [...$storeDashboard.gridItems, newItem]
 			widgets = [...widgets, widget]
-			updateLocations()
-			// await postData(`${baseUrl}/api/v2/dashboard/widgets/location/${dashboard.dashboard_id}`, {
-			// 	widget_location: dashboard.widget_location
-			// })
+			await updateLocations()
+			await postData(`${baseUrl}/api/v2/dashboard/widgets/location/${dashboard.dashboard_id}`, {
+				attributes: {
+					...$storeDashboard.attributes,
+					explorer: 'v3',
+					widget_location: dashboard.widget_location
+				}
+			})
 		} catch (error: any) {
 			sendErrorNotification('An error occurred:', error.message)
 		}
@@ -629,7 +640,7 @@
 							if (dashboard?.attributes?.user_id === $storeUser?.user_id) changeItemSize(item)
 						}}
 						let:active
-						bind:id={item.data.title}
+						bind:id={item.data.attributes.title}
 					>
 						<WidgetBox
 							widget={item.data}

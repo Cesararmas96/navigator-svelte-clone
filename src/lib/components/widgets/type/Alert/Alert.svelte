@@ -10,7 +10,7 @@
 	const dashboard: any = getContext('dashboard')
 
 	export let alert: AlertMessage = $widget.format_definition
-	export let data: any
+	export let data: any = null
 
 	$: if (data?.message) alert.message = data.message
 

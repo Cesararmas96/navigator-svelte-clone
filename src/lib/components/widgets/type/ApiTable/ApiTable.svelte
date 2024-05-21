@@ -13,9 +13,9 @@
 	const widgetActions = getContext<Writable<any[]>>('widgetActions')
 
 	const resizeAgGridToContent = () => {
-		console.log('resizeAgGridToContent')
+		// console.log('resizeAgGridToContent')
 		const eGridDiv: HTMLElement = document.querySelector(`#grid-${$widget.widget_id}`)!
-		console.log('eGridDiv', $widget.widget_name, gridHeight($widget.widget_id))
+		// console.log('eGridDiv', $widget.widget_name, gridHeight($widget.widget_id))
 		eGridDiv.style['min-height'] = !$widget.temp
 			? gridHeight($widget.widget_id)
 			: gridInstanceHeight($widget.widget_id)
