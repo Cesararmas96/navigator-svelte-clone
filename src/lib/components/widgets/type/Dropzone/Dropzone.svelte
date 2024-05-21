@@ -8,10 +8,11 @@
 	let dragging = false
 	let _files: FileList
 
-	export let isModal = false
+	// export let data = null
+	// export let isModal = false
 	export let props: {
 		subtitle: string
-	}
+	} = { subtitle: '' }
 
 	function handleDragOver(event) {
 		event.preventDefault()
@@ -39,7 +40,7 @@
 	}
 </script>
 
-<h1 class="text-2xl">{props.subtitle}</h1>
+<h1 class="text-2xl">{props?.subtitle || ''}</h1>
 <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <!-- svelte-ignore a11y-no-static-element-interactions -->

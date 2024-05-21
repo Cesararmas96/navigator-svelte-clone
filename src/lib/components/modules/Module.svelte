@@ -223,6 +223,28 @@
 		const payload = { dashboard_id, module_id: trocModule.module_id }
 
 		try {
+			const widget_location = {}
+			$storeCCPDashboard.gridItems.forEach((item: any) => {
+				widget_location[item.title] = {
+					x: item.x,
+					y: item.y,
+					w: item.w,
+					h: item.h,
+					order: item.order
+				}
+			})
+			await postData(`${baseUrl}/api/v2/dashboard/widgets/location/${dashboard_id}`, {
+				attributes: {
+					...$storeCCPDashboard.attributes,
+					explorer: 'v3',
+					widget_location
+				}
+			})
+		} catch (e: any) {
+			sendErrorNotification(e)
+		}
+
+		try {
 			const clone = await postData(`${baseUrl}/api/v2/dashboard/clone`, payload)
 			$storeDashboards = [...$storeDashboards, clone.data]
 		} catch (e: any) {

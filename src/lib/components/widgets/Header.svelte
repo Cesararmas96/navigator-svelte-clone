@@ -14,7 +14,7 @@
 		<HeaderTitle
 			icon={$widget?.params?.settings?.header?.icon ? $widget?.attributes?.icon : undefined}
 			title={$widget?.params?.settings?.header?.title
-				? $widget?.attributes.title || $widget?.title
+				? $widget?.title || $widget?.attributes?.title
 				: undefined}
 		/>
 		<WidgetToolbar {isToolbarVisible} {isMobileDevice} />

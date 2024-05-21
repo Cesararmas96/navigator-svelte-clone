@@ -109,33 +109,41 @@ export const generateColumnDefsByDefinition = (widget: any, callbacks: any) => {
 						headerClass: headerClass(col),
 						cellStyle: cssToObjet(col.style),
 
-						wrapText: true, // Habilitar wrapText
-						autoHeight: true, // Si quieres que la altura de la fila se ajuste al texto
+						wrapText: true,
+						autoHeight: true,
 
 						sort: sort,
 						cellRenderer: (params: ValueGetterParams) => {
 							if (col.render && gridCellBuildFunctionsMap[col.render])
 								return gridCellBuildFunctionsMap[col.render](params, callbacks, col)
-							// if ($widget.params.pqgrid?.formulas && Array.isArray($widget.params.pqgrid?.formulas)) {
-							// 	$widget.params.pqgrid.formulas.map((formula: any, formulaIndex: number) => {
-							// 		if (typeof formulaFunctionsMap[formula[1]] === 'function') {
-							// 			const pqFormula = formula[1].toString()
-							// 			return formulaFunctionsMap[pqFormula](params, $widget)
 
-							// 			// $widget.params.pqgrid.formulas[formulaIndex][1] = (...args: any) => {
-							// 			// 	return formulaFunctionsMap[pqFormula](params)
-							// 			// }
-							// 		} else {
-							// 			// console.log(
-							// 			// 	`The formula ${payload.params.value.pqgrid.formulas} function not exist.`
-							// 			// )
-							// 			// delete payload.params.value.pqgrid.formulas[formulaIndex]
-							// 		}
-							// 	})
-							// } else {
-							// 	// 	: params.data[key]
-							// 	return params.data[key]
-							// }
+							if (
+								widget.params.pqgrid?.formulas &&
+								Array.isArray(widget.params.pqgrid?.formulas) &&
+								widget.params.pqgrid?.formulas.some((item) => item.includes(col.dataIndx))
+							) {
+								const a = widget.params.pqgrid.formulas.map(
+									(formula: any, formulaIndex: number) => {
+										if (typeof formulaFunctionsMap[formula[1]] === 'function') {
+											const pqFormula = formula[1].toString()
+											return formulaFunctionsMap[pqFormula](params, widget)
+
+											// $widget.params.pqgrid.formulas[formulaIndex][1] = (...args: any) => {
+											// 	return formulaFunctionsMap[pqFormula](params)
+											// }
+										} else {
+											// console.log(
+											// 	`The formula ${payload.params.value.pqgrid.formulas} function not exist.`
+											// )
+											// delete payload.params.value.pqgrid.formulas[formulaIndex]
+										}
+									}
+								)
+								return a[0]
+							} else {
+								// 	: params.data[key]
+								// return params.data[key]
+							}
 							return col.format
 								? formatByPattern(params.data[key], col.format)
 								: !Array.isArray(params.data[key])
@@ -1255,29 +1263,49 @@ export const formulaFunctionsMap: { [key: string]: (params: any, widget: any) =>
 //   }
 // }
 
+function evalThresholds(data, thresholds, field, callback) {
+	const column = data[field]
+	const threshold = thresholds[field]
+
+	if (!threshold) {
+		return false
+	}
+
+	Object.keys(threshold).map((key) => {
+		const operator = operatorTokens[threshold[key].operator]
+
+		try {
+			// eslint-disable-next-line no-eval
+			const validationOperator = eval(`${column} ${operator} ${threshold[key].value}`)
+
+			if (typeof callback === 'function' && validationOperator) {
+				callback(data, threshold[key], field)
+			}
+		} catch (error) {
+			return false
+		}
+	})
+}
+
 function goldStarStatus(params: any, widget: any) {
-	console.log('goldStarStatus', params)
-	if (widget.params.thresholds!) {
-		const goldStartCount = 0
+	if (widget.params?.thresholds) {
+		let goldStartCount = 0
 
-		// const pqGrid = pq.getPqGrid()
+		Object.keys(params.data).forEach((column: any) => {
+			let green = false
 
-		// pqGrid.getColModel().forEach((column: any) => {
-		//   let green = false
-
-		//   evalThresholds(
-		//     rd,
-		//     widget.thresholds!.value,
-		//     column.dataIndx,
-		//     (data: any, threshold: any, field: any) => {
-		//       return (green = true)
-		//     }
-		//   )
-
-		//   if (green) {
-		//     goldStartCount++
-		//   }
-		// })
+			evalThresholds(
+				params.data,
+				widget.params?.thresholds,
+				column,
+				(data: any, threshold: any, field: any) => {
+					return (green = true)
+				}
+			)
+			if (green) {
+				goldStartCount++
+			}
+		})
 
 		return goldStartCount
 	} else {

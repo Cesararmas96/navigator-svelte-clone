@@ -164,7 +164,7 @@
 			// const fiscalMonth = fiscalMonthQuarter(operationalDate, false)
 			// date = `${fiscalMonth[0]} - ${fiscalMonth[1]}`
 		} else {
-			date = `${date[0]} - ${date[1]}`
+			date = date ? `${date[0]} - ${date[1]}` : ''
 		}
 
 		setMomentWeek(false)
