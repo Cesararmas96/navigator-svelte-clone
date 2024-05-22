@@ -438,7 +438,7 @@
 	{/if}
 </Tabs>
 <Dropdown
-	id={currentDashboard.dashboard_id.toString()}
+	id={currentDashboard?.dashboard_id?.toString()}
 	triggeredBy=".tab-menu"
 	containerClass="divide-y z-50 overflow-visible absolute top-10 left-0"
 >
@@ -509,7 +509,7 @@
 	>
 	{#if isOwner || currentDashboard.user_id === $storeUser.user_id}
 		<DropdownItem
-			on:click={() => handleDashboardRemove(currentDashboard.dashboard_id)}
+			on:click={() => handleDashboardRemove(currentDashboard?.dashboard_id)}
 			defaultClass="flex flex-row text-red-500 font-medium py-2 pl-2 pr-4 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"
 		>
 			<Icon icon="tabler:trash" size="18" classes="mr-1" />
