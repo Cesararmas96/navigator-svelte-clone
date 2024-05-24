@@ -181,6 +181,7 @@ export const getSchemaComputed = async (jsonSchema: Record<string, unknown>, $wi
 export const handleSubmitForm = async (handleValidateForm: any, type: string, $widget, extra) => {
 	const payload = handleValidateForm()
 
+	// console.log(payload)
 	if (!Array.isArray(payload)) {
 		let filteredPayload = { ...$widget?.params?.model?.defaults, ...payload }
 		$widget?.params?.model?._ignore?.forEach((item) => {
@@ -250,6 +251,11 @@ async function handleSubmit(payload: any, type: string, $widget, extra) {
 
 	if (extra?.method) method = extra.method
 	if (extra?.message) message = extra.message
+	if (extra?.queryparams) {
+		extra.queryparams.map((item) => {
+			url = url.concat(`?${item}=${payload[item]}`)
+		})
+	}
 
 	try {
 		const dataModel = await getApiData(url, method, payload)
@@ -309,6 +315,7 @@ async function handleSubmit(payload: any, type: string, $widget, extra) {
 export const utilFunctionsMap: { [key: string]: (params: any) => any } = {
 	supportTicket: supportTicket,
 	supportTicketBose: supportTicketBose,
+	getAlertEmailGraduate: getAlertEmailGraduate,
 	handleSupportTicketsWithPin: handleSupportTicketsWithPin,
 	handleSupportTicketsWithPinForm: handleSupportTicketsWithPinForm,
 	handleFormEditGraduade: handleFormEditGraduade,
@@ -346,6 +353,10 @@ export function supportTicketBose(params) {
 	const message = `Your report was submitted, and a case was opened under <strong>Ticket ID ${params?.response?.ticket_number}</strong>, please take note of this number in case you want to follow up on this ticket later.`
 
 	return message
+}
+
+export function getAlertEmailGraduate(params) {
+	return `Please review your personal profile information, and complete any fields that you consider outdated or are empty.`
 }
 
 function handleSupportTicketsWithPin(params) {
@@ -418,28 +429,71 @@ function handleFormEditGraduade(params) {
 		params: {
 			model: {
 				url: '/',
-				meta: 'support/api/v1/protect_ticket', // TODO: API for edit graduates form
+				meta: 'polestar/api/v1/graduate_updates',
 				primaryKey: 'title',
 				responseAlert: true,
 				callback: {
 					form: 'handleCloseFormBottom'
 				},
+				extras: {
+					message: 'Your profile information has been updated successfully.'
+				},
 				schema: {
+					required: [
+						'first_name',
+						'last_name',
+						'city',
+						'state',
+						'postal_code',
+						'country',
+						'street_address',
+						'phone'
+					],
 					properties: {
-						email_addrees: {
-							readonly: true,
-							readOnly: true,
-							default: params?.data?.ticket?.id
+						first_name: {
+							grid: 6,
+							order: 1,
+							default: params?.data?.first_name
+						},
+						last_name: {
+							grid: 6,
+							order: 2,
+							default: params?.data?.last_name
+						},
+						city: {
+							grid: 6,
+							order: 5,
+							default: params?.data?.city
+						},
+						state: {
+							grid: 6,
+							order: 4,
+							default: params?.data?.state
+						},
+						postal_code: {
+							grid: 6,
+							order: 6,
+							default: params?.data?.postal_code
+						},
+						country: {
+							order: 3,
+							grid: 6,
+							default: params?.data?.country
+						},
+						street_address: {
+							order: 8,
+							default: params?.data?.street_address
+						},
+						phone: {
+							type: 'integer',
+							order: 7,
+							default: Number(params?.data?.phone)
 						}
 					}
 				},
 				defaults: {
-					ticket: {
-						number: params?.data?.ticket?.number,
-						title: params?.data?.ticket?.title,
-						owner_id: params?.data?.ticket?.owner_id,
-						customer_id: params?.data?.ticket?.customer_id
-					}
+					graduate_id: params?.data?.graduate_id,
+					email_address: params?.data?.email_address
 				}
 			}
 		}
