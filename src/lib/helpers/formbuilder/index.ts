@@ -450,9 +450,17 @@ function handleFormEditGraduade(params) {
 						'phone'
 					],
 					properties: {
+						email_address: {
+							order: 1,
+							readOnly: true,
+							attrs: {
+								visible: true
+							},
+							default: params?.data?.email_address
+						},
 						first_name: {
 							grid: 6,
-							order: 1,
+							order: 1.5,
 							default: params?.data?.first_name
 						},
 						last_name: {
@@ -492,8 +500,7 @@ function handleFormEditGraduade(params) {
 					}
 				},
 				defaults: {
-					graduate_id: params?.data?.graduate_id,
-					email_address: params?.data?.email_address
+					graduate_id: params?.data?.graduate_id
 				}
 			}
 		}
