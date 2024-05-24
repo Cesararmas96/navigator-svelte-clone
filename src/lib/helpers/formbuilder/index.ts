@@ -311,6 +311,7 @@ export const utilFunctionsMap: { [key: string]: (params: any) => any } = {
 	supportTicketBose: supportTicketBose,
 	handleSupportTicketsWithPin: handleSupportTicketsWithPin,
 	handleSupportTicketsWithPinForm: handleSupportTicketsWithPinForm,
+	handleFormEditGraduade: handleFormEditGraduade,
 	handleActiveDrilldown: handleActiveDrilldown,
 	handleCloseFormBottom: handleCloseFormBottom,
 	handlePreRenderMileageSearchStores: handlePreRenderMileageSearchStores,
@@ -393,6 +394,39 @@ function handleSupportTicketsWithPinForm(params) {
 				schema: {
 					properties: {
 						ticket_id: {
+							readonly: true,
+							readOnly: true,
+							default: params?.data?.ticket?.id
+						}
+					}
+				},
+				defaults: {
+					ticket: {
+						number: params?.data?.ticket?.number,
+						title: params?.data?.ticket?.title,
+						owner_id: params?.data?.ticket?.owner_id,
+						customer_id: params?.data?.ticket?.customer_id
+					}
+				}
+			}
+		}
+	}
+}
+
+function handleFormEditGraduade(params) {
+	return {
+		params: {
+			model: {
+				url: '/',
+				meta: 'support/api/v1/protect_ticket', // TODO: API for edit graduates form
+				primaryKey: 'title',
+				responseAlert: true,
+				callback: {
+					form: 'handleCloseFormBottom'
+				},
+				schema: {
+					properties: {
+						email_addrees: {
 							readonly: true,
 							readOnly: true,
 							default: params?.data?.ticket?.id
