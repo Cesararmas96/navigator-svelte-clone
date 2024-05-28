@@ -189,12 +189,9 @@
 			let items: any[] = []
 
 			const setNewLocations =
-				!dashboard.widget_location || Object.keys(dashboard.widget_location).length === 0
-
-			if (dashboard.attributes.widget_location) {
-				dashboard.widget_location = { ...dashboard.attributes.widget_location }
-				$storeDashboard.widget_location = { ...dashboard.attributes.widget_location }
-			}
+				(!dashboard.attributes.widget_location ||
+					Object.keys(dashboard.attributes.widget_location).length === 0) &&
+				dashboard.widget_location
 
 			/**
 			 * Load widgets from local storage
@@ -213,10 +210,9 @@
 			/**
 			 * Load widgets from database
 			 */
-			items =
-				dashboard.attributes.widget_location || setNewLocations
-					? loadV3Locations(dashboard.widget_location, widgets, cols, isMobile())
-					: loadV2Locations(dashboard.widget_location, dashboard, widgets, cols, isMobile())
+			items = setNewLocations
+				? loadV2Locations(dashboard.widget_location, dashboard, widgets, cols, isMobile())
+				: loadV3Locations(dashboard.attributes.widget_location, widgets, cols, isMobile())
 			console.log('items', items)
 
 			$storeDashboard.gridItems = [...items]
@@ -231,7 +227,6 @@
 
 	const updateWidgetLocation = async () => {
 		if ($storeDashboard?.attributes?.user_id !== $storeUser?.user_id) return
-
 		const widget_location = getControllerItemsLocations(
 			$storeDashboard?.gridItems,
 			gridController?.gridParams
@@ -242,12 +237,10 @@
 			explorer: 'v3',
 			widget_location
 		}
-
 		const resp = await postData(`${baseUrl}/api/v2/dashboards/${$storeDashboard.dashboard_id}`, {
 			attributes: attributes
 		})
-
-		if (resp[0]) $storeDashboard.attributes = resp[0].attributes
+		$storeDashboard.attributes = resp[0] ? resp[0].attributes : attributes
 
 		return $storeDashboard.attributes
 	}

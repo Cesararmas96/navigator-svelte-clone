@@ -253,7 +253,9 @@ async function handleSubmit(payload: any, type: string, $widget, extra) {
 	if (extra?.message) message = extra.message
 	if (extra?.queryparams) {
 		extra.queryparams.map((item) => {
-			url = url.concat(`?${item}=${payload[item]}`)
+			url = url.concat(
+				!url.includes('?') ? `?${item}=${payload[item]}` : `&${item}=${payload[item]}`
+			)
 		})
 	}
 

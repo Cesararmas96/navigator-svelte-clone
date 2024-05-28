@@ -4,6 +4,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import type { GridParams } from 'svelte-grid-extended/types'
 import { generateRandomString, generateUID } from '../common/common'
+import { postData } from '$lib/services/getData'
+import { sendErrorNotification } from '$lib/stores/toast'
 
 const rowHeight = 12
 const minRowHeight = 14
@@ -69,7 +71,6 @@ export const loadV3Locations = (
 					: widget.title
 
 			widget.attributes = { ...widget.attributes, title }
-
 			widgetLocation[title] = {
 				title,
 				x: 0,
@@ -100,7 +101,6 @@ export const loadV3Locations = (
 					_widgets.filter((i) => i.title === data.title).length > 1
 						? data.title + ' ' + generateRandomString()
 						: data.title
-
 				data.attributes = { ...data.attributes, title }
 			}
 			return { title: data.attributes?.title, ...item, data }
@@ -164,7 +164,7 @@ export const getControllerItemsLocations = (gridItems: any[], gridParams: GridPa
 	// }, {})
 }
 
-export const saveLocalStorageLocations = (
+export const saveLocalStorageLocations = async (
 	dashboard: any,
 	gridItems: any[],
 	gridParams: GridParams
@@ -180,7 +180,8 @@ export const saveLocalStorageLocations = (
 		} else {
 			deletedItems.push(key)
 		}
-		acc[key] = { x: item.x, y: item.y, w: item.w, h: item.h, order: gridItem.order }
+		const order = gridItem?.order ? { order: gridItem.order } : {}
+		acc[key] = { x: item.x, y: item.y, w: item.w, h: item.h, ...order }
 		return acc
 	}, {})
 	// dashboard.widget_location = items
@@ -190,6 +191,15 @@ export const saveLocalStorageLocations = (
 			delete gridParams.items[key]
 		})
 	}
+
+	const _items = gridItems.filter((item) => item.data?.attributes?.explorer === 'v2')
+	await _items.map(async (item) => {
+		const attributes = { ...item.data.attributes, explorer: 'v3' }
+		await postData(`${import.meta.env.VITE_API_URL}/api/v2/widgets/${item.data.widget_id}`, {
+			attributes
+		})
+		return true
+	})
 
 	const grid = localStorage.getItem('grid')
 	if (grid) {
