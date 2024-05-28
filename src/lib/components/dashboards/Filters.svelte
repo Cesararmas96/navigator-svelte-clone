@@ -180,7 +180,7 @@
 		class="border-gay-200 mt-2 flex flex-row justify-end border-t-[1px] p-4 pr-2 dark:border-dark-200"
 	>
 		<Button
-			class=" flex flex-row items-center rounded-md bg-primary  px-4 py-2 text-sm font-medium text-white hover:opacity-80 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75"
+			class=" flex flex-row items-center rounded-md bg-theme px-4 py-2 text-sm font-medium text-white hover:opacity-80 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75"
 			on:click={() => apply()}
 		>
 			<Icon icon="mdi:filter" size="18" classes="mr-1" />

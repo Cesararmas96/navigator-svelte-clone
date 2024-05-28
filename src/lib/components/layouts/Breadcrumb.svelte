@@ -87,7 +87,7 @@
 		}
 	}
 
-	let date: any = handleOperationalDate()
+	let date: any = new Date() //handleOperationalDate()
 </script>
 
 <div id="breadcrumb" class="content-header px-5">
