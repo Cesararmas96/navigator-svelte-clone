@@ -197,12 +197,14 @@
 			/**
 			 * Load widgets from local storage
 			 */
-			items = loadLocalStoredLocations(
-				dashboard,
-				widgets,
-				isMobile(),
-				$storeDashboard.widget_location?.timestamp || 0
-			)!
+			try {
+				items = loadLocalStoredLocations(
+					dashboard,
+					widgets,
+					isMobile(),
+					$storeDashboard.widget_location?.timestamp || 0
+				)!
+			} catch (error: any) {}
 			if (items && items.length > 0) {
 				$storeDashboard.gridItems = [...items]
 				return
