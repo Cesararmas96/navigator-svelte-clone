@@ -12,9 +12,11 @@
 	import { isIconWhite } from '$lib/helpers/common/common.js'
 	import { themeColor } from '$lib/stores/preferences.js'
 	import ChatGoogle from '$lib/components/common/ChatGoogle.svelte'
+	import { afterUpdate } from 'svelte'
 
 	export let data
-	$: $storeModule = data.trocModule
+
+	$storeModule = data.trocModule
 	$storeModules = data.menu
 	$storePrograms = data.programs
 	$storeUser = data.user
@@ -46,6 +48,10 @@
 	if (!$storeStores || !$storeStores[$page.params.programs]) setStores()
 
 	let width: number
+
+	afterUpdate(() => {
+		$storeModule = data.trocModule
+	})
 </script>
 
 <svelte:window bind:innerWidth={width} />
