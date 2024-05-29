@@ -304,15 +304,16 @@
 		loading.set(true)
 		sendSuccessNotification('Generating the screenshot, please wait...')
 		setTimeout(async () => {
-			const mainContent = document.getElementById(`grid`)!
-			const spinner = mainContent.querySelector(`#spinner`)
+			const mainContent = document.querySelector(`.dashboard-screenshot`)
+			console.log(mainContent)
+			const spinner = mainContent!.querySelector(`#spinner`)
 			if (spinner) spinner.classList.add('hidden')
 
-			mainContent.querySelectorAll('.animate__animated').forEach((element) => {
+			mainContent!.querySelectorAll('.animate__animated').forEach((element) => {
 				element.classList.remove('animate__animated')
 			})
 
-			const canvas = await html2canvas(mainContent)
+			const canvas = await html2canvas(mainContent as HTMLElement)
 			sendSuccessNotification('Preparing to download...')
 			const link = document.createElement('a')
 			link.href = canvas.toDataURL('image/png')
@@ -398,7 +399,10 @@
 							<p title={dashboard?.dashboard_id}>
 								{dashboard.name}
 							</p>
+							<!-- svelte-ignore a11y-click-events-have-key-events -->
+							<!-- svelte-ignore a11y-no-static-element-interactions -->
 							<div
+								on:click={() => (dropdownOpen = !dropdownOpen)}
 								class:hidden={currentDashboard.dashboard_id !== dashboard.dashboard_id}
 								class="tab-menu flex items-center"
 							>
@@ -440,6 +444,8 @@
 <Dropdown
 	id={currentDashboard?.dashboard_id?.toString()}
 	triggeredBy=".tab-menu"
+	trigger="click"
+	bind:open={dropdownOpen}
 	containerClass="divide-y z-50 overflow-visible absolute top-10 left-0"
 >
 	{#if isOwner}

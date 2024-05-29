@@ -616,7 +616,7 @@
 		{#if !isMobileDevice()}
 			<Grid
 				{itemSize}
-				class="grid-container"
+				class="grid-container dashboard-screenshot"
 				gap={5}
 				{cols}
 				collision="compress"
@@ -674,7 +674,7 @@
 				{/each}
 			</Grid>
 		{:else}
-			<div class="grid grid-cols-1 gap-y-3 p-2">
+			<div class="dashboard-screenshot grid grid-cols-1 gap-y-3 p-2">
 				{#each getSortedItems($storeDashboard.gridItems) as item (item.data.widget_id)}
 					<div class:hidden={item.data.params.hidden}>
 						<WidgetBox
