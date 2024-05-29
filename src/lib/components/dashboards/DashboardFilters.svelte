@@ -43,7 +43,7 @@
 				class:hidden={!open}
 				class="overflow-visible"
 			>
-				{#if $storeStores && $storeStores[$page.params.programs]}
+				{#if $storeStores && $storeStores[$page.params.programs || $page.data.program?.program_slug]}
 					<Filters drawer={false} />
 				{:else}
 					<Spinner fullScreen={false} />

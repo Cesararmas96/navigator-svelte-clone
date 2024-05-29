@@ -27,8 +27,8 @@
 	const loadData = () => {
 		filters = $dashboard?.filtering_show
 			? { ...$dashboard?.filtering_show }
-			: trocModule.filtering_show
-			? { ...trocModule.filtering_show }
+			: trocModule?.filtering_show
+			? { ...trocModule?.filtering_show }
 			: {}
 
 		filtersArray = Object.entries(filters?.filtering || {})
@@ -45,19 +45,23 @@
 	}
 
 	const fillDropdowns = () => {
-		if (!$storeStores || !$storeStores[$page.params.programs]) return
+		if (!$storeStores || !$storeStores[$page.params.programs || $page.data.program?.program_slug])
+			return
 		let selectedFilters: any[] = []
 		for (const key in filtersSorted) {
 			if (filtersSorted[key].type === 'date') continue
-			const grouped = _.groupBy($storeStores[$page.params.programs], (item) => {
-				if (
-					selectedFilters.length > 0 &&
-					!selectedFilters.every((filtro) => item[filtro.id].toString() === filtro.value)
-				)
-					return
+			const grouped = _.groupBy(
+				$storeStores[$page.params.programs || $page.data.program?.program_slug],
+				(item) => {
+					if (
+						selectedFilters.length > 0 &&
+						!selectedFilters.every((filtro) => item[filtro.id].toString() === filtro.value)
+					)
+						return
 
-				return `${item[filtersSorted[key].id]}||${item[filtersSorted[key].value]}`
-			})
+					return `${item[filtersSorted[key].id]}||${item[filtersSorted[key].value]}`
+				}
+			)
 			if (grouped.undefined) delete grouped.undefined
 			const items = _.map(grouped, (group, key) => {
 				const [value, label] = key.split('||')

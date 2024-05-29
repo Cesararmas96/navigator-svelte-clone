@@ -118,6 +118,8 @@ export const loadLocalStoredLocations = (
 	const grid = localStorage.getItem('grid')
 	if (!grid) return []
 
+	console.log('loadLocalStoredLocations')
+
 	const y = 0
 	const gridData = JSON.parse(grid)
 	const dashboardGrid = gridData.widget_location[_dashboard.dashboard_id]
