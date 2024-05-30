@@ -43,7 +43,7 @@
 				</div>
 			</div>
 			<div>
-				{#if $storeStores && $storeStores[$page.params.programs]}
+				{#if $storeStores && $storeStores[$page.params?.programs || $page.data.program?.program_slug]}
 					<Filters drawer={true} />
 				{/if}
 			</div>

@@ -1,7 +1,7 @@
 import * as echarts from 'echarts'
 
 export async function fetchDarkMode() {
-	return fetch(`../mock/echarts-theme-dark.json`)
+	return fetch(`/mock/echarts-theme-dark.json`)
 		.then((r) => r.json())
 		.then((theme) => {
 			echarts.registerTheme('dark', theme)
@@ -10,7 +10,7 @@ export async function fetchDarkMode() {
 }
 
 export async function fetchThemeColor(color: string) {
-	return fetch(`../mock/echarts-theme-${color}.json`)
+	return fetch(`/mock/echarts-theme-${color}.json`)
 		.then((r) => r.json())
 		.then((theme) => {
 			echarts.registerTheme(color, theme)

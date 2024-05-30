@@ -196,25 +196,25 @@
 			/**
 			 * Load widgets from local storage
 			 */
-			items = loadLocalStoredLocations(
-				dashboard,
-				widgets,
-				isMobile(),
-				$storeDashboard.widget_location?.timestamp || 0
-			)!
-			if (items && items.length > 0) {
-				$storeDashboard.gridItems = [...items]
-				return
+			try {
+				items = loadLocalStoredLocations(
+					dashboard,
+					widgets,
+					isMobile(),
+					$storeDashboard.widget_location?.timestamp || 0
+				)!
+			} catch (error: any) {}
+
+			if (!items || items.length === 0) {
+				/**
+				 * Load widgets from database
+				 */
+				items = setNewLocations
+					? loadV2Locations(dashboard.widget_location, dashboard, widgets, cols, isMobile())
+					: loadV3Locations(dashboard.attributes.widget_location, widgets, cols, isMobile())
 			}
 
-			/**
-			 * Load widgets from database
-			 */
-			items = setNewLocations
-				? loadV2Locations(dashboard.widget_location, dashboard, widgets, cols, isMobile())
-				: loadV3Locations(dashboard.attributes.widget_location, widgets, cols, isMobile())
 			console.log('items', items)
-
 			$storeDashboard.gridItems = [...items]
 		} catch (error: any) {
 			sendErrorNotification(error)
@@ -572,8 +572,8 @@
 
 	let filters = $storeDashboard?.filtering_show
 		? { ...$storeDashboard?.filtering_show }
-		: $storeModule.filtering_show
-		? { ...$storeModule.filtering_show }
+		: $storeModule?.filtering_show
+		? { ...$storeModule?.filtering_show }
 		: {}
 
 	onMount(() => {
@@ -598,7 +598,6 @@
 		<svelte:component this={filterComponent} bind:open={filtersOpen} />
 	</section>
 {/if}
-
 <div
 	id="grid"
 	class="block w-full overflow-x-hidden"
@@ -617,7 +616,7 @@
 		{#if !isMobileDevice()}
 			<Grid
 				{itemSize}
-				class="grid-container"
+				class="grid-container dashboard-screenshot"
 				gap={5}
 				{cols}
 				collision="compress"
@@ -675,7 +674,7 @@
 				{/each}
 			</Grid>
 		{:else}
-			<div class="grid grid-cols-1 gap-y-3 p-2">
+			<div class="dashboard-screenshot grid grid-cols-1 gap-y-3 p-2">
 				{#each getSortedItems($storeDashboard.gridItems) as item (item.data.widget_id)}
 					<div class:hidden={item.data.params.hidden}>
 						<WidgetBox
@@ -716,7 +715,7 @@
 	<Tooltip placement="left">Assign Badge</Tooltip>
 {/if}
 
-{#if $storeDashboard?.allow_filtering && $hideDashboardFilters}
+{#if $storeDashboard?.allow_filtering && $hideDashboardFilters && !isShared}
 	<Button
 		pill={true}
 		class="fixed bottom-6 right-6 !p-3 shadow-md"
@@ -725,7 +724,7 @@
 	<Tooltip placement="left">Filters</Tooltip>
 {/if}
 
-{#if $storeDashboard?.allow_filtering}
+{#if $storeDashboard?.allow_filtering && !isShared}
 	<DrawerFilters />
 {/if}
 
