@@ -515,6 +515,7 @@
 					aproveReject(action, value, JSON.parse(colDef), colId, jsonData, rowId)
 					break
 				case 'comments':
+					gridOptions.api?.redrawRows()
 					const gridElement = document.querySelector(
 						`#aggrid-container-${$widget.widget_id} .ag-body-viewport`
 					)
