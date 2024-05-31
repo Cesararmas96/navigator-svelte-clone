@@ -32,13 +32,14 @@
 	import { addInstance, clearInstances } from '$lib/helpers/widget/instances'
 	import { page } from '$app/stores'
 	import { setWidgetBottom } from '$lib/helpers/widget/widget-bottom'
-	import { merge } from 'lodash-es'
 
 	export let data: any
 	export let simpleTable: boolean = false
 
 	const widget = getContext<Writable<any>>('widget')
 	const dashboard = getContext<Writable<any>>('dashboard')
+
+	let approveds, rejecteds
 
 	const formatDefinitionKeys = $widget.format_definition
 		? Object.keys($widget.format_definition).map((key: string) => key)
@@ -502,7 +503,103 @@
 			// addInstance(widget, drilldowns[1])
 			// $widget.instance_loading = false
 			// console.log('drilldowns')
+		},
+		async postRenderMileageActions(params: any) {
+			const { action, data, colDef, keys, rowId, colId } = params.srcElement.dataset
+			const jsonData = JSON.parse(data)
+			const value = !jsonData[colId]
+
+			switch (action) {
+				case 'aprove':
+				case 'reject':
+					aproveReject(action, value, JSON.parse(colDef), colId, jsonData, rowId)
+					break
+				case 'comments':
+					const gridElement = document.querySelector(
+						`#aggrid-container-${$widget.widget_id} .ag-body-viewport`
+					)
+
+					const openEL = gridElement?.querySelectorAll(`.info-row[data-info-row-id="${rowId}"]`)
+					if (openEL && openEL?.length > 0) {
+						openEL.forEach((el) => el.remove())
+						return
+					}
+
+					const gridViewport = document.querySelector(
+						`#aggrid-container-${$widget.widget_id} .ag-center-cols-viewport`
+					) as HTMLElement
+
+					if (gridViewport) gridViewport.style['overflow-y'] = 'scroll'
+
+					const rowElements = gridElement?.querySelectorAll('.ag-row')
+
+					const infoElements = gridElement?.querySelectorAll('.info-row')
+					infoElements?.forEach((el) => el.remove())
+
+					const infoElement = document.createElement('div')
+					infoElement.className = 'info-row'
+					infoElement.innerHTML = `<div class="ag-comments">
+							<div class="font-bold text-lg mb-2">Convesation:</div>
+							${await getComments(rowId)}
+						</div>`
+					infoElement.dataset.infoRowId = rowId
+					const currentRow = rowElements && rowElements[rowId]
+
+					const rowRect = currentRow?.getBoundingClientRect()
+					const gridRect = gridElement?.getBoundingClientRect()
+					const absoluteTop =
+						rowRect!.top - gridRect!.top + gridElement!.scrollTop + currentRow!.clientHeight
+
+					infoElement.style.position = 'relative'
+					infoElement.style.top = `${absoluteTop}px`
+					infoElement.style.width = '100%'
+					currentRow?.insertAdjacentElement('afterend', infoElement)
+					break
+			}
+		},
+		action_mileageActionsSave(params: any) {
+			const { rowsToDisplay } = gridOptions.api?.rowModel
+			const data = rowsToDisplay.map((row) => row.data).filter((item) => item.aprove || item.reject)
+			approveds = data.filter((item) => item.aprove)
+			rejecteds = data.filter((item) => item.reject)
+			console.log('Approveds', approveds)
+			console.log('Rejecteds', rejecteds)
 		}
+	}
+	import jsonCommentsData from '../../../../../data/comments.json'
+
+	const getComments = async (rowId: number) => {
+		const comments = jsonCommentsData.find((comment) => Number(comment.rowId) === Number(rowId))
+		if (comments) {
+			let conversation = comments.conversation
+			return conversation
+				.map((comment: any) => {
+					return `<div class="flex ${comment.type === 'boss' ? 'justify-end' : ''}">
+						<div class="ag-comment-box ${comment.type}">
+							<div class="ag-comment-user">${comment.name}</div>
+							${comment.message}
+							<div class="ag-comment-date text-right mt-2">${comment.date}</div>
+						</div>
+					</div>`
+				})
+				.toString()
+				.replace(/,/g, '')
+		}
+		return []
+	}
+
+	async function aproveReject(
+		action: string,
+		value: any,
+		colDef: any,
+		colId: any,
+		data: any,
+		rowId: number
+	) {
+		if (data[action] === value) delete data[action]
+		else data[action] = value
+
+		updateItem({ dataModel: data, rowId: rowId })
 	}
 
 	async function confirmYesOrNo(value: any, colDef: any, colId: any, data: any, rowId: number) {
@@ -580,7 +677,7 @@
 		animateRows: true,
 
 		rowSelection: 'multiple',
-		suppressRowClickSelection: true,
+		suppressRowClickSelection: false,
 
 		getRowClass: (params) => {
 			const rowInit = $widget.params.pqgrid?.rowInit
@@ -601,7 +698,10 @@
 				resizeAgGridToContent()
 			}, 500)
 		},
-		onGridSizeChanged: onGridSizeChanged
+		onGridSizeChanged: onGridSizeChanged,
+		onCellValueChanged: function (event) {
+			updateItem({ dataModel: event.data, rowId: event.node.id })
+		}
 		// groupRowInnerRenderer: function (params) {
 		// 	// Aquí puedes verificar las condiciones y devolver el total
 		// 	if (params.node.group && $widget.params?.table?.roll_up?.total) {
@@ -788,6 +888,7 @@
 		class:ag-theme-balham={!isDark}
 		class:ag-theme-balham-dark={isDark}
 	/>
+
 	{#if !data}
 		<NoDataFound />
 	{/if}
@@ -801,5 +902,23 @@
 		--ag-header-foreground-color: #000;
 	}
 
+	.default {
+		border: 1px solid transparent !important;
+		padding: 4px;
+	}
+	.numeric-input {
+		box-sizing: border-box;
+		padding-left: var(--ag-grid-size);
+		width: 100%;
+		height: 100%;
+	}
+
+	.my-simple-editor {
+		box-sizing: border-box;
+		padding-left: var(--ag-grid-size);
+		width: 100%;
+		height: 100%;
+		background-color: red;
+	}
 	/* Estilo para el contenedor */
 </style>

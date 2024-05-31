@@ -7,15 +7,16 @@ import { capitalizeWord } from '../common/common'
 import type { ValueGetterParams } from 'ag-grid-community'
 import { fnFormatMoney, fnFormatPercent, formats } from '../common/formats'
 import { addInstance, clearInstances } from './instances'
+import { SimpleTextEditor } from './aggrid-cell-input'
 
 export const colAction = (widget: any, callbacks: any, colDef?: Record<string, any>) => {
 	return {
 		headerName: 'Actions',
 		field: 'actions',
-		order: 9999,
+		order: colDef?.order || 9999,
 		cellClass: 'text-center',
 		headerClass: 'header-center',
-		maxWidth: 100,
+		maxWidth: 140,
 		cellRenderer: (params: ValueGetterParams) => {
 			return gridCellBuildFunctionsMap['actions'](
 				{
@@ -103,11 +104,13 @@ export const generateColumnDefsByDefinition = (widget: any, callbacks: any) => {
 						headerCheckboxSelection: col.checkbox,
 						checkboxSelection: col.checkbox,
 						showDisabledCheckboxes: col.checkbox,
+						cellEditor: col.cellEditor, //? SimpleTextEditor : undefined,
 						// format: col.format,
 						cellClass: cellClass(col),
 						cellClassRules: cellClassRules(key, col, widget.params.thresholds),
 						headerClass: headerClass(col),
 						cellStyle: cssToObjet(col.style),
+						editable: col.cellEditor ? true : false,
 
 						wrapText: true,
 						autoHeight: true,
@@ -258,6 +261,8 @@ export const formatByPattern = (value: number, pattern: string): string => {
 	let result = ''
 	// if (!value) return result
 
+	let date, year, month, day, hour, minute, second
+
 	switch (pattern) {
 		case '####':
 			result = value ? value.toString() : '0'
@@ -286,10 +291,10 @@ export const formatByPattern = (value: number, pattern: string): string => {
 			break
 
 		case 'yy-mm-dd':
-			const date = new Date(value)
-			const year = String(date.getFullYear()).slice(-2)
-			const month = String(date.getMonth() + 1).padStart(2, '0')
-			const day = String(date.getDate()).padStart(2, '0')
+			date = new Date(value)
+			year = String(date.getFullYear()).slice(-2)
+			month = String(date.getMonth() + 1).padStart(2, '0')
+			day = String(date.getDate()).padStart(2, '0')
 			result = `${year}-${month}-${day}`
 			break
 
@@ -818,7 +823,10 @@ const icons: any = {
 	edit: 'material-symbols:edit-square-outline-rounded',
 	delete: 'material-symbols:delete-outline-rounded',
 	play: 'tabler:play',
-	upload: 'tabler:cloud-upload'
+	upload: 'tabler:cloud-upload',
+	aprove: 'material-symbols:select-check-box-rounded',
+	reject: 'material-symbols:dangerous-outline-rounded',
+	comments: 'fa-solid:comment'
 }
 
 function createActionBtn(
@@ -828,7 +836,6 @@ function createActionBtn(
 ) {
 	const data = params.data
 	const widget = params.widget
-
 	const btn = document.createElement('iconify-icon')
 	btn.icon = icons[params.btn]
 	btn.height = '20px'
@@ -844,6 +851,10 @@ function createActionBtn(
 	if (colDef) btn.dataset.colDef = JSON.stringify(colDef)
 
 	btn.classList.add('cursor-pointer')
+	btn.classList.add('actions-btn')
+	if (colDef && colDef[`${params.btn}Class`] && data[params.btn])
+		btn.classList.add(colDef[`${params.btn}Class`])
+
 	if (callback && typeof callback === 'function') {
 		btn.addEventListener('click', callback)
 	}
