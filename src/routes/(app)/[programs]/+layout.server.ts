@@ -56,7 +56,18 @@ export const load = async ({ params, fetch, locals, url }) => {
 			false
 		)
 		const program = programs.find((item: any) => item.program_slug == program_slug)
-		if (!program) throw error(404, 'No program found')
+		// if (!program) throw error(404, 'No program found')
+		if (!program)
+			return {
+				program,
+				programs,
+				trocModule: null,
+				dashboards: [],
+				menu: [],
+				user: locals.user,
+				tenant,
+				variablesOperational
+			}
 
 		const modules = await getApiData(
 			`${urlBase}/api/v2/modules?program_slug=${program_slug}`,
