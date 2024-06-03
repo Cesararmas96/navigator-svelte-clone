@@ -21,10 +21,11 @@
 
 	const errorCodes = {
 		'400':
-			'Bad Request. Please double-check your credentials and try again. For persistent issues contact support.',
+			'Bad Request. Please double-check your credentials and try again.<br>For persistent issues contact support.',
 		'401':
-			'User Not Found: The email you entered does not exist. Please check your entry for any errors and try again.',
-		'403': 'Incorrect Password: Please double-check your credentials and try again.'
+			'Authentication fail. Please double-check your credentials and try again.<br>For persistent issues contact support.',
+		'403':
+			'Authentication fail. Please double-check your credentials and try again.<br>For persistent issues contact support.'
 	}
 
 	const keyDownEnter = (e) => {
@@ -195,7 +196,7 @@
 								<p
 									class="mb-2 mt-2 w-full rounded-md border bg-red-100 p-2 text-center text-red-500"
 								>
-									{errorCodes[form?.message?.status]
+									{@html errorCodes[form?.message?.status]
 										? errorCodes[form?.message?.status]
 										: form?.message?.reason}
 								</p>
