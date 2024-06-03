@@ -367,7 +367,6 @@
 
 <Alerts position="top" />
 
-<!-- <Tabs style="pill" contentClass="mt-0" defaultClass="flex items-center justify-center"> -->
 <Tabs style="pill" contentClass="mt-0" defaultClass="flex items-center justify-center">
 	{#if showButtons}
 		<button

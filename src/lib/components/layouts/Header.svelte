@@ -39,9 +39,9 @@
 				<!-- <Icon icon="tabler:layout-sidebar" size="20px" classes="btn-sidebar-toggle" /> -->
 			</button>
 		{/if}
-		<NavBrand class="">
+		<NavBrand class="" href={`/${$page.data.program ? $page.data.program.program_slug : ''}`}>
 			<span class=" ml-4 self-center whitespace-nowrap text-3xl font-extrabold dark:text-white">
-				{#if $page.params.programs}
+				{#if $page.params.programs && $page.data.program}
 					{#if $page.data.program?.attributes?.logo_text}
 						<span class="logo-text color{iconColor($themeColor)}"
 							>{$page.data.program.attributes.logo_text}</span
