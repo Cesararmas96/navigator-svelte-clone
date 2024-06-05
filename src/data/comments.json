@@ -25,6 +25,54 @@
 				"name": "Alice",
 				"message": "Thank you, Mr. Smith!",
 				"date": "2024-05-31T09:06:00"
+			},
+			{
+				"type": "user",
+				"name": "Bob",
+				"message": "I just logged 15 miles. Can you please approve?",
+				"date": "2024-05-31T10:15:00"
+			},
+			{
+				"type": "boss",
+				"name": "Ms. Johnson",
+				"message": "Sure, Bob. I'll take a look at it now.",
+				"date": "2024-05-31T10:16:00"
+			},
+			{
+				"type": "boss",
+				"name": "Ms. Johnson",
+				"message": "Your 15 miles are now approved.",
+				"date": "2024-05-31T10:20:00"
+			},
+			{
+				"type": "user",
+				"name": "Bob",
+				"message": "Thanks a lot, Ms. Johnson!",
+				"date": "2024-05-31T10:21:00"
+			},
+			{
+				"type": "user",
+				"name": "Charlie",
+				"message": "Logged 8 miles today. Awaiting your approval.",
+				"date": "2024-05-31T11:30:00"
+			},
+			{
+				"type": "boss",
+				"name": "Mr. Brown",
+				"message": "Thanks for the update, Charlie. I'll review it.",
+				"date": "2024-05-31T11:31:00"
+			},
+			{
+				"type": "boss",
+				"name": "Mr. Brown",
+				"message": "Your 8 miles have been approved.",
+				"date": "2024-05-31T11:35:00"
+			},
+			{
+				"type": "user",
+				"name": "Charlie",
+				"message": "Awesome, thank you!",
+				"date": "2024-05-31T11:36:00"
 			}
 		]
 	},
@@ -59,32 +107,7 @@
 	},
 	{
 		"rowId": 2,
-		"conversation": [
-			{
-				"type": "user",
-				"name": "Charlie",
-				"message": "Logged 8 miles today. Awaiting your approval.",
-				"date": "2024-05-31T11:30:00"
-			},
-			{
-				"type": "boss",
-				"name": "Mr. Brown",
-				"message": "Thanks for the update, Charlie. I'll review it.",
-				"date": "2024-05-31T11:31:00"
-			},
-			{
-				"type": "boss",
-				"name": "Mr. Brown",
-				"message": "Your 8 miles have been approved.",
-				"date": "2024-05-31T11:35:00"
-			},
-			{
-				"type": "user",
-				"name": "Charlie",
-				"message": "Awesome, thank you!",
-				"date": "2024-05-31T11:36:00"
-			}
-		]
+		"conversation": []
 	},
 	{
 		"rowId": 3,

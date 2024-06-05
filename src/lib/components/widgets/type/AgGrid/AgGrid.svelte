@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Grid, type ColDef, type GridOptions, type GridReadyEvent } from 'ag-grid-community'
+	import { Grid, type ColDef, type GridReadyEvent } from 'ag-grid-community'
 	import { getContext, onMount } from 'svelte'
 	import { themeMode } from '$lib/stores/preferences'
 	import 'ag-grid-community/styles/ag-grid.css'
@@ -32,6 +32,7 @@
 	import { addInstance, clearInstances } from '$lib/helpers/widget/instances'
 	import { page } from '$app/stores'
 	import { setWidgetBottom } from '$lib/helpers/widget/widget-bottom'
+	import jsonCommentsData from '../../../../../data/comments.json'
 
 	export let data: any
 	export let simpleTable: boolean = false
@@ -510,95 +511,76 @@
 			const value = !jsonData[colId]
 
 			switch (action) {
-				case 'aprove':
+				case 'approve':
+					openModal('Approve Mileage', 'ActionModalMileage', {
+						action,
+						data: jsonCommentsData.find((comment) => Number(comment.rowId) === Number(rowId)),
+						callback: (comment: any) => {
+							approveReject(action, value, JSON.parse(colDef), colId, jsonData, rowId, comment)
+						}
+					})
+					break
 				case 'reject':
-					aproveReject(action, value, JSON.parse(colDef), colId, jsonData, rowId)
+					openModal('Reject Mileage', 'ActionModalMileage', {
+						action,
+						data: jsonCommentsData.find((comment) => Number(comment.rowId) === Number(rowId)),
+						callback: (comment: any) => {
+							approveReject(action, value, JSON.parse(colDef), colId, jsonData, rowId, comment)
+						}
+					})
 					break
 				case 'comments':
-					gridOptions.api?.redrawRows()
-					const gridElement = document.querySelector(
-						`#aggrid-container-${$widget.widget_id} .ag-body-viewport`
-					)
-
-					const openEL = gridElement?.querySelectorAll(`.info-row[data-info-row-id="${rowId}"]`)
-					if (openEL && openEL?.length > 0) {
-						openEL.forEach((el) => el.remove())
-						return
-					}
-
-					const gridViewport = document.querySelector(
-						`#aggrid-container-${$widget.widget_id} .ag-center-cols-viewport`
-					) as HTMLElement
-
-					if (gridViewport) gridViewport.style['overflow-y'] = 'scroll'
-
-					const rowElements = gridElement?.querySelectorAll('.ag-row')
-
-					const infoElements = gridElement?.querySelectorAll('.info-row')
-					infoElements?.forEach((el) => el.remove())
-
-					const infoElement = document.createElement('div')
-					infoElement.className = 'info-row'
-					infoElement.innerHTML = `<div class="ag-comments">
-							<div class="font-bold text-lg mb-2">Convesation:</div>
-							${await getComments(rowId)}
-						</div>`
-					infoElement.dataset.infoRowId = rowId
-					const currentRow = rowElements && rowElements[rowId]
-
-					const rowRect = currentRow?.getBoundingClientRect()
-					const gridRect = gridElement?.getBoundingClientRect()
-					const absoluteTop =
-						rowRect!.top - gridRect!.top + gridElement!.scrollTop + currentRow!.clientHeight
-
-					infoElement.style.position = 'relative'
-					infoElement.style.top = `${absoluteTop}px`
-					infoElement.style.width = '100%'
-					currentRow?.insertAdjacentElement('afterend', infoElement)
+					openModal('Comments', 'ActionModalMileage', {
+						action,
+						data: jsonCommentsData.find((comment) => Number(comment.rowId) === Number(rowId))
+					})
 					break
 			}
 		},
 		action_mileageActionsSave(params: any) {
 			const { rowsToDisplay } = gridOptions.api?.rowModel
-			const data = rowsToDisplay.map((row) => row.data).filter((item) => item.aprove || item.reject)
-			approveds = data.filter((item) => item.aprove)
+			const data = rowsToDisplay
+				.map((row) => row.data)
+				.filter((item) => item.approve || item.reject)
+			approveds = data.filter((item) => item.approve)
 			rejecteds = data.filter((item) => item.reject)
 			console.log('Approveds', approveds)
 			console.log('Rejecteds', rejecteds)
+		},
+		addMileage(params: any) {
+			const { data, colDef, keys, rowId, colId } = params.srcElement.dataset
+			const jsonData = JSON.parse(data)
+			const value = !jsonData[colId]
+			openModal('Distance confirmation', 'ActionModalMileage', {
+				action: 'add',
+				data: jsonCommentsData.find((comment) => Number(comment.rowId) === Number(rowId)),
+				callback: (comment: any) => {
+					approveReject('add', value, JSON.parse(colDef), colId, jsonData, rowId, comment)
+				}
+			})
 		}
 	}
-	import jsonCommentsData from '../../../../../data/comments.json'
 
-	const getComments = async (rowId: number) => {
-		const comments = jsonCommentsData.find((comment) => Number(comment.rowId) === Number(rowId))
-		if (comments) {
-			let conversation = comments.conversation
-			return conversation
-				.map((comment: any) => {
-					return `<div class="flex ${comment.type === 'boss' ? 'justify-end' : ''}">
-						<div class="ag-comment-box ${comment.type}">
-							<div class="ag-comment-user">${comment.name}</div>
-							${comment.message}
-							<div class="ag-comment-date text-right mt-2">${comment.date}</div>
-						</div>
-					</div>`
-				})
-				.toString()
-				.replace(/,/g, '')
-		}
-		return []
-	}
-
-	async function aproveReject(
+	async function approveReject(
 		action: string,
 		value: any,
 		colDef: any,
 		colId: any,
 		data: any,
-		rowId: number
+		rowId: number,
+		comment: any
 	) {
 		if (data[action] === value) delete data[action]
 		else data[action] = value
+
+		const statuses = {
+			add: 'pending',
+			approve: 'approved',
+			reject: 'rejected'
+		}
+
+		if (comment && comment['mileage']) data['confirmed_mileage'] = comment['mileage']
+		data['status'] = statuses[action]
 
 		updateItem({ dataModel: data, rowId: rowId })
 	}
@@ -678,7 +660,7 @@
 		animateRows: true,
 
 		rowSelection: 'multiple',
-		suppressRowClickSelection: false,
+		suppressRowClickSelection: true,
 
 		getRowClass: (params) => {
 			const rowInit = $widget.params.pqgrid?.rowInit
@@ -844,12 +826,23 @@
 		}
 	}
 	function onFilterTextBoxChanged(elementId: any) {
+		console.log('ENTRO AL FILTRO', (document.getElementById(elementId)! as HTMLInputElement).value)
 		gridOptions.api!.setQuickFilter((document.getElementById(elementId)! as HTMLInputElement).value)
 	}
 
 	addWidgetAction(widgetActions, {
 		name: 'agGridFilterTextBox',
 		action: (elementId) => onFilterTextBoxChanged(elementId)
+	})
+
+	function onFilterSelectorChanged(text: any) {
+		console.log('ENTRO AL FILTRO', text)
+		gridOptions.api!.setQuickFilter(text)
+	}
+
+	addWidgetAction(widgetActions, {
+		name: 'agGridFilterSelector',
+		action: (text) => onFilterSelectorChanged(text)
 	})
 
 	addWidgetAction(widgetActions, {
@@ -875,6 +868,18 @@
 			widgetID: $widget.widget_id,
 			btnsActions: $widget.params.btnsActions,
 			btnCallback: 'agGridBtnMap'
+		})
+	}
+
+	if ($widget.params?.selectorTop) {
+		console.log('ENTRO AL FILTRO')
+		const widgetTop = getContext<Writable<any>>('WidgetTop')
+		setWidgetTop(widgetTop, 'AgGridToolbar', {
+			position: 'top',
+			widgetID: $widget.widget_id,
+			btnsActions: $widget.params.btnsActions,
+			filterCallback: 'agGridFilterTextBox',
+			selectorCallback: 'agGridFilterSelector'
 		})
 	}
 </script>

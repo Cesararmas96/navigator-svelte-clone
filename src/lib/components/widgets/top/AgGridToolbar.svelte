@@ -5,6 +5,7 @@
 	import AgGridFilter from './AgGridFilter.svelte'
 	import type { Writable } from 'svelte/store'
 	import { getWidgetAction } from '$lib/helpers'
+	import AgGridFilterSelector from './AgGridFilterSelector.svelte'
 
 	const widgetActions = getContext<Writable<any[]>>('widgetActions')
 
@@ -12,9 +13,11 @@
 	export let widgetID: string
 	export let btnsActions: any
 	export let filterCallback: string | undefined = undefined
+	export let selectorCallback: string | undefined = undefined
 	export let btnCallback: string | undefined = undefined
 
 	const fCallback = filterCallback ? getWidgetAction($widgetActions, filterCallback) : null
+	const sCallback = selectorCallback ? getWidgetAction($widgetActions, selectorCallback) : null
 	const bCallback = btnCallback ? getWidgetAction($widgetActions, btnCallback) : null
 
 	const buttons =
@@ -26,6 +29,9 @@
 <div id={`aggrid-toolbar-${widgetID}-${position}`} class="flex flex-row justify-between">
 	{#if fCallback}
 		<AgGridFilter filterCallback={fCallback.action} />
+	{/if}
+	{#if sCallback}
+		<AgGridFilterSelector selectorCallback={sCallback.action} />
 	{/if}
 	<div
 		class={'widget-toolbar flex w-full flex-row justify-end px-3 py-3 '}

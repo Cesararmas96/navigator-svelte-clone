@@ -34,7 +34,7 @@ export const sendWarningNotification = (message: string, timeout = 3000) => {
 }
 
 export const sendErrorNotification = (error: any, timeout = 3000) => {
-	const message = error.message || error
+	const message = error?.message || error
 	sendNotification({
 		id: generateId(),
 		type: ToastType.ERROR,
