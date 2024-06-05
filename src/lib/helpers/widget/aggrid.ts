@@ -11,7 +11,7 @@ import { SimpleTextEditor } from './aggrid-cell-input'
 
 export const colAction = (widget: any, callbacks: any, colDef?: Record<string, any>) => {
 	return {
-		headerName: 'Actions',
+		headerName: colDef?.title || 'Actions',
 		field: 'actions',
 		order: colDef?.order || 9999,
 		cellClass: 'text-center',
@@ -590,7 +590,9 @@ export const gridCellBuildFunctionsMap: {
 	isActiveYesOrNo: isActiveYesOrNo,
 	tasksActions: tasksActions,
 	ticketsForBoseZammad: ticketsForBoseZammad,
-	clickCell: clickCell
+	clickCell: clickCell,
+	addMileage: addMileage,
+	status: status
 	// btnsRenderTasksActions: btnsRenderTasksActions
 }
 
@@ -661,6 +663,45 @@ function isActiveYesOrNo(
 			a.innerHTML = title
 			return a
 		}
+	} catch (error) {
+		console.log(error)
+	}
+}
+
+function status(
+	params: any,
+	callback?: Record<string, () => void> | (() => void),
+	colDef?: Record<string, any>
+) {
+	try {
+		const status = params.data[params.column.colId]
+		let badge = 'aqua'
+		let title = 'To be Confirmed'
+
+		switch (status) {
+			case 'waiting':
+				badge = 'aqua'
+				title = 'To be Confirmed'
+				break
+			case 'pending':
+				badge = 'info'
+				title = 'Pending from Approval'
+				break
+			case 'approved':
+				badge = 'success'
+				title = 'Approved'
+				break
+			case 'rejected':
+				badge = 'danger'
+				title = 'Rejected'
+				break
+		}
+		const span = document.createElement('span')
+		span.classList.add('badge')
+		span.classList.add('badge-' + badge)
+		span.title = status
+		span.innerHTML = title
+		return span
 	} catch (error) {
 		console.log(error)
 	}
@@ -824,7 +865,7 @@ const icons: any = {
 	delete: 'material-symbols:delete-outline-rounded',
 	play: 'tabler:play',
 	upload: 'tabler:cloud-upload',
-	aprove: 'material-symbols:select-check-box-rounded',
+	approve: 'material-symbols:select-check-box-rounded',
 	reject: 'material-symbols:dangerous-outline-rounded',
 	comments: 'fa-solid:comment'
 }
@@ -887,6 +928,38 @@ function clickCell(
 	div.addEventListener('click', callback!['postRenderOpenDrilldown'])
 	div.title = 'Click for details'
 	div.innerHTML = `${params.data[params.column.colId]}`
+	div.appendChild(icon)
+	return div
+}
+
+function addMileage(
+	params: any,
+	callback?: Record<string, () => void> | (() => void),
+	colDef?: Record<string, any>
+) {
+	const icon = document.createElement('iconify-icon')
+	icon.icon = params.data[params.column.colId] ? 'tabler:pencil' : 'tabler:hand-finger'
+	icon.classList.add('ml-1')
+	icon.dataset.colId = params.column.colId
+	icon.dataset.data = JSON.stringify(params.data)
+	icon.dataset.colDef = JSON.stringify(colDef)
+	icon.dataset.rowId = params.rowIndex
+	icon.addEventListener('click', (event) => {
+		event.preventDefault()
+		callback!['addMileage']()
+	})
+
+	const div = document.createElement('div')
+	div.classList.add('ag-cell-clickable')
+	div.dataset.colId = params.column.colId
+	div.dataset.data = JSON.stringify(params.data)
+	div.dataset.colDef = JSON.stringify(colDef)
+	div.dataset.rowId = params.rowIndex
+	div.title = 'Click for details'
+	div.innerHTML = params.data[params.column.colId]
+		? `${params.data[params.column.colId]} miles - (edit)`
+		: 'Confirm mileage'
+	div.addEventListener('click', callback!['addMileage'])
 	div.appendChild(icon)
 	return div
 }
