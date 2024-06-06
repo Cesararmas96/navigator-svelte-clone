@@ -139,6 +139,7 @@
 	color: #fff;
 	background-color: #dc3545;
 }
+
 .badge.badge-generated {
 	color: #fff;
 	background-color: #007bff;
@@ -175,6 +176,7 @@
 	color: #212529;
 	background-color: #54c7fd;
 }
+
 .badge.badge-orange {
 	color: #212529;
 	background-color: #ff9500;
@@ -199,6 +201,7 @@
 	color: #fff;
 	background-color: #17a2b8;
 }
+
 .badge-dark {
 	color: #fff;
 	background-color: #343a40;
@@ -906,4 +909,40 @@ input[type='datetime-local'][data-theme='dark'] {
 .ag-comment-date {
 	font-size: 10px;
 	color: #666;
+}
+
+.badge.badge-ag-pending,
+.badge.badge-ag-waiting,
+.badge.badge-ag-approved,
+.badge.badge-ag-rejected {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: 150px !important;
+	height: 28px !important;
+	font-weight: bold;
+}
+
+.badge.badge-ag-approved {
+	color: #28a745;
+	border: 1px solid #28a745;
+	background-color: #bff3cc;
+}
+
+.badge.badge-ag-rejected {
+	color: #dc3545;
+	border: 1px solid #dc3545;
+	background-color: #ffc4ca;
+}
+
+.badge.badge-ag-waiting {
+	background: #fff3cd;
+	border: 1px solid #856404;
+	color: #856404;
+}
+
+.badge-ag-pending {
+	background: #ffd54f;
+	border: 1px solid #ff6f00;
+	color: #ff6f00;
 }

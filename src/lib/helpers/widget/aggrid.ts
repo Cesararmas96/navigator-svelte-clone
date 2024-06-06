@@ -680,24 +680,24 @@ function status(
 ) {
 	try {
 		const status = params.data[params.column.colId]
-		let badge = 'aqua'
+		let badge = 'ag-waiting'
 		let title = 'To be Confirmed'
 
 		switch (status) {
 			case 'waiting':
-				badge = 'aqua'
+				badge = 'ag-waiting'
 				title = 'To be Confirmed'
 				break
 			case 'pending':
-				badge = 'info'
+				badge = 'ag-pending'
 				title = 'Pending from Approval'
 				break
 			case 'approved':
-				badge = 'success'
+				badge = 'ag-approved'
 				title = 'Approved'
 				break
 			case 'rejected':
-				badge = 'danger'
+				badge = 'ag-rejected'
 				title = 'Rejected'
 				break
 		}
