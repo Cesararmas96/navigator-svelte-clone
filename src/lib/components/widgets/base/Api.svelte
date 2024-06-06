@@ -278,13 +278,23 @@
 			console.log(error)
 		}
 
-		return dashboardOperationalDate && moment(dashboardOperationalDate).isValid()
-			? dashboardOperationalDate
-			: moduleOperationalDate && moment(moduleOperationalDate).isValid()
-			? moduleOperationalDate
-			: dashboardOperationalDate && variables[dashboardOperationalDate]
+		// return dashboardOperationalDate && moment(dashboardOperationalDate).isValid()
+		// 	? dashboardOperationalDate
+		// 	: moduleOperationalDate && moment(moduleOperationalDate).isValid()
+		// 	? moduleOperationalDate
+		// 	: dashboardOperationalDate && variables[dashboardOperationalDate]
+		// 	? variables[dashboardOperationalDate]
+		// 	: moduleOperationalDate && variables[moduleOperationalDate]
+		// 	? variables[moduleOperationalDate]
+		// 	: moment().format('YYYY-MM-DD')
+
+		return dashboardOperationalDate &&
+			variables[dashboardOperationalDate] &&
+			moment(variables[dashboardOperationalDate]).isValid()
 			? variables[dashboardOperationalDate]
-			: moduleOperationalDate && variables[moduleOperationalDate]
+			: moduleOperationalDate &&
+			  variables[moduleOperationalDate] &&
+			  moment(variables[moduleOperationalDate]).isValid()
 			? variables[moduleOperationalDate]
 			: moment().format('YYYY-MM-DD')
 	}

@@ -7,15 +7,16 @@ import { capitalizeWord } from '../common/common'
 import type { ValueGetterParams } from 'ag-grid-community'
 import { fnFormatMoney, fnFormatPercent, formats } from '../common/formats'
 import { addInstance, clearInstances } from './instances'
+import { SimpleTextEditor } from './aggrid-cell-input'
 
 export const colAction = (widget: any, callbacks: any, colDef?: Record<string, any>) => {
 	return {
-		headerName: 'Actions',
+		headerName: colDef?.title || 'Actions',
 		field: 'actions',
-		order: 9999,
+		order: colDef?.order || 9999,
 		cellClass: 'text-center',
 		headerClass: 'header-center',
-		maxWidth: 100,
+		maxWidth: 140,
 		cellRenderer: (params: ValueGetterParams) => {
 			return gridCellBuildFunctionsMap['actions'](
 				{
@@ -103,11 +104,13 @@ export const generateColumnDefsByDefinition = (widget: any, callbacks: any) => {
 						headerCheckboxSelection: col.checkbox,
 						checkboxSelection: col.checkbox,
 						showDisabledCheckboxes: col.checkbox,
+						cellEditor: col.cellEditor, //? SimpleTextEditor : undefined,
 						// format: col.format,
 						cellClass: cellClass(col),
 						cellClassRules: cellClassRules(key, col, widget.params.thresholds),
 						headerClass: headerClass(col),
 						cellStyle: cssToObjet(col.style),
+						editable: col.cellEditor ? true : false,
 
 						wrapText: true,
 						autoHeight: true,
@@ -258,6 +261,8 @@ export const formatByPattern = (value: number, pattern: string): string => {
 	let result = ''
 	// if (!value) return result
 
+	let date, year, month, day, hour, minute, second
+
 	switch (pattern) {
 		case '####':
 			result = value ? value.toString() : '0'
@@ -286,10 +291,10 @@ export const formatByPattern = (value: number, pattern: string): string => {
 			break
 
 		case 'yy-mm-dd':
-			const date = new Date(value)
-			const year = String(date.getFullYear()).slice(-2)
-			const month = String(date.getMonth() + 1).padStart(2, '0')
-			const day = String(date.getDate()).padStart(2, '0')
+			date = new Date(value)
+			year = String(date.getFullYear()).slice(-2)
+			month = String(date.getMonth() + 1).padStart(2, '0')
+			day = String(date.getDate()).padStart(2, '0')
 			result = `${year}-${month}-${day}`
 			break
 
@@ -585,7 +590,9 @@ export const gridCellBuildFunctionsMap: {
 	isActiveYesOrNo: isActiveYesOrNo,
 	tasksActions: tasksActions,
 	ticketsForBoseZammad: ticketsForBoseZammad,
-	clickCell: clickCell
+	clickCell: clickCell,
+	addMileage: addMileage,
+	status: status
 	// btnsRenderTasksActions: btnsRenderTasksActions
 }
 
@@ -656,6 +663,45 @@ function isActiveYesOrNo(
 			a.innerHTML = title
 			return a
 		}
+	} catch (error) {
+		console.log(error)
+	}
+}
+
+function status(
+	params: any,
+	callback?: Record<string, () => void> | (() => void),
+	colDef?: Record<string, any>
+) {
+	try {
+		const status = params.data[params.column.colId]
+		let badge = 'aqua'
+		let title = 'To be Confirmed'
+
+		switch (status) {
+			case 'waiting':
+				badge = 'aqua'
+				title = 'To be Confirmed'
+				break
+			case 'pending':
+				badge = 'info'
+				title = 'Pending from Approval'
+				break
+			case 'approved':
+				badge = 'success'
+				title = 'Approved'
+				break
+			case 'rejected':
+				badge = 'danger'
+				title = 'Rejected'
+				break
+		}
+		const span = document.createElement('span')
+		span.classList.add('badge')
+		span.classList.add('badge-' + badge)
+		span.title = status
+		span.innerHTML = title
+		return span
 	} catch (error) {
 		console.log(error)
 	}
@@ -818,7 +864,10 @@ const icons: any = {
 	edit: 'material-symbols:edit-square-outline-rounded',
 	delete: 'material-symbols:delete-outline-rounded',
 	play: 'tabler:play',
-	upload: 'tabler:cloud-upload'
+	upload: 'tabler:cloud-upload',
+	approve: 'material-symbols:select-check-box-rounded',
+	reject: 'material-symbols:dangerous-outline-rounded',
+	comments: 'fa-solid:comment'
 }
 
 function createActionBtn(
@@ -828,7 +877,6 @@ function createActionBtn(
 ) {
 	const data = params.data
 	const widget = params.widget
-
 	const btn = document.createElement('iconify-icon')
 	btn.icon = icons[params.btn]
 	btn.height = '20px'
@@ -844,6 +892,10 @@ function createActionBtn(
 	if (colDef) btn.dataset.colDef = JSON.stringify(colDef)
 
 	btn.classList.add('cursor-pointer')
+	btn.classList.add('actions-btn')
+	if (colDef && colDef[`${params.btn}Class`] && data[params.btn])
+		btn.classList.add(colDef[`${params.btn}Class`])
+
 	if (callback && typeof callback === 'function') {
 		btn.addEventListener('click', callback)
 	}
@@ -876,6 +928,38 @@ function clickCell(
 	div.addEventListener('click', callback!['postRenderOpenDrilldown'])
 	div.title = 'Click for details'
 	div.innerHTML = `${params.data[params.column.colId]}`
+	div.appendChild(icon)
+	return div
+}
+
+function addMileage(
+	params: any,
+	callback?: Record<string, () => void> | (() => void),
+	colDef?: Record<string, any>
+) {
+	const icon = document.createElement('iconify-icon')
+	icon.icon = params.data[params.column.colId] ? 'tabler:pencil' : 'tabler:hand-finger'
+	icon.classList.add('ml-1')
+	icon.dataset.colId = params.column.colId
+	icon.dataset.data = JSON.stringify(params.data)
+	icon.dataset.colDef = JSON.stringify(colDef)
+	icon.dataset.rowId = params.rowIndex
+	icon.addEventListener('click', (event) => {
+		event.preventDefault()
+		callback!['addMileage']()
+	})
+
+	const div = document.createElement('div')
+	div.classList.add('ag-cell-clickable')
+	div.dataset.colId = params.column.colId
+	div.dataset.data = JSON.stringify(params.data)
+	div.dataset.colDef = JSON.stringify(colDef)
+	div.dataset.rowId = params.rowIndex
+	div.title = 'Click for details'
+	div.innerHTML = params.data[params.column.colId]
+		? `${params.data[params.column.colId]} miles - (edit)`
+		: 'Confirm mileage'
+	div.addEventListener('click', callback!['addMileage'])
 	div.appendChild(icon)
 	return div
 }

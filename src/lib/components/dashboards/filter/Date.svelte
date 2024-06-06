@@ -9,7 +9,8 @@
 	import { page } from '$app/stores'
 	import type { Writable } from 'svelte/store'
 
-	// export let selectedValue: string
+	export let selectedValue: string
+	selectedValue
 	// const date = ref<string>(modelValue || '')
 	const dispatch = createEventDispatcher()
 
@@ -586,7 +587,7 @@
 	}
 
 	function setMomentWeek(value: any) {
-		moment.locale('en', {
+		moment.updateLocale('en', {
 			week: {
 				dow:
 					value && params?.picker?.locale?.firstDayOfWeek
@@ -623,15 +624,27 @@
 			console.log(error)
 		}
 
+		// return selected && moment(selected).isValid()
+		// 	? selected
+		// 	: dashboardOperationalDate && moment(dashboardOperationalDate).isValid()
+		// 	? dashboardOperationalDate
+		// 	: moduleOperationalDate && moment(moduleOperationalDate).isValid()
+		// 	? moduleOperationalDate
+		// 	: dashboardOperationalDate && variables[dashboardOperationalDate]
+		// 	? variables[dashboardOperationalDate]
+		// 	: moduleOperationalDate && variables[moduleOperationalDate]
+		// 	? variables[moduleOperationalDate]
+		// 	: moment().format('YYYY-MM-DD')
+
 		return selected && moment(selected).isValid()
 			? selected
-			: dashboardOperationalDate && moment(dashboardOperationalDate).isValid()
-			? dashboardOperationalDate
-			: moduleOperationalDate && moment(moduleOperationalDate).isValid()
-			? moduleOperationalDate
-			: dashboardOperationalDate && variables[dashboardOperationalDate]
+			: dashboardOperationalDate &&
+			  variables[dashboardOperationalDate] &&
+			  moment(variables[dashboardOperationalDate]).isValid()
 			? variables[dashboardOperationalDate]
-			: moduleOperationalDate && variables[moduleOperationalDate]
+			: moduleOperationalDate &&
+			  variables[moduleOperationalDate] &&
+			  moment(variables[moduleOperationalDate]).isValid()
 			? variables[moduleOperationalDate]
 			: moment().format('YYYY-MM-DD')
 	}

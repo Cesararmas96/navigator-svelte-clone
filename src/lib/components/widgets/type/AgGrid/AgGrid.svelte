@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Grid, type ColDef, type GridOptions, type GridReadyEvent } from 'ag-grid-community'
+	import { Grid, type ColDef, type GridReadyEvent } from 'ag-grid-community'
 	import { getContext, onMount } from 'svelte'
 	import { themeMode } from '$lib/stores/preferences'
 	import 'ag-grid-community/styles/ag-grid.css'
@@ -32,13 +32,15 @@
 	import { addInstance, clearInstances } from '$lib/helpers/widget/instances'
 	import { page } from '$app/stores'
 	import { setWidgetBottom } from '$lib/helpers/widget/widget-bottom'
-	import { merge } from 'lodash-es'
+	import jsonCommentsData from '../../../../../data/comments.json'
 
 	export let data: any
 	export let simpleTable: boolean = false
 
 	const widget = getContext<Writable<any>>('widget')
 	const dashboard = getContext<Writable<any>>('dashboard')
+
+	let approveds, rejecteds
 
 	const formatDefinitionKeys = $widget.format_definition
 		? Object.keys($widget.format_definition).map((key: string) => key)
@@ -502,7 +504,85 @@
 			// addInstance(widget, drilldowns[1])
 			// $widget.instance_loading = false
 			// console.log('drilldowns')
+		},
+		async postRenderMileageActions(params: any) {
+			const { action, data, colDef, keys, rowId, colId } = params.srcElement.dataset
+			const jsonData = JSON.parse(data)
+			const value = !jsonData[colId]
+
+			switch (action) {
+				case 'approve':
+					openModal('Approve Mileage', 'ActionModalMileage', {
+						action,
+						data: jsonCommentsData.find((comment) => Number(comment.rowId) === Number(rowId)),
+						callback: (comment: any) => {
+							approveReject(action, value, JSON.parse(colDef), colId, jsonData, rowId, comment)
+						}
+					})
+					break
+				case 'reject':
+					openModal('Reject Mileage', 'ActionModalMileage', {
+						action,
+						data: jsonCommentsData.find((comment) => Number(comment.rowId) === Number(rowId)),
+						callback: (comment: any) => {
+							approveReject(action, value, JSON.parse(colDef), colId, jsonData, rowId, comment)
+						}
+					})
+					break
+				case 'comments':
+					openModal('Comments', 'ActionModalMileage', {
+						action,
+						data: jsonCommentsData.find((comment) => Number(comment.rowId) === Number(rowId))
+					})
+					break
+			}
+		},
+		action_mileageActionsSave(params: any) {
+			const { rowsToDisplay } = gridOptions.api?.rowModel
+			const data = rowsToDisplay
+				.map((row) => row.data)
+				.filter((item) => item.approve || item.reject)
+			approveds = data.filter((item) => item.approve)
+			rejecteds = data.filter((item) => item.reject)
+			console.log('Approveds', approveds)
+			console.log('Rejecteds', rejecteds)
+		},
+		addMileage(params: any) {
+			const { data, colDef, keys, rowId, colId } = params.srcElement.dataset
+			const jsonData = JSON.parse(data)
+			const value = !jsonData[colId]
+			openModal('Distance confirmation', 'ActionModalMileage', {
+				action: 'add',
+				data: jsonCommentsData.find((comment) => Number(comment.rowId) === Number(rowId)),
+				callback: (comment: any) => {
+					approveReject('add', value, JSON.parse(colDef), colId, jsonData, rowId, comment)
+				}
+			})
 		}
+	}
+
+	async function approveReject(
+		action: string,
+		value: any,
+		colDef: any,
+		colId: any,
+		data: any,
+		rowId: number,
+		comment: any
+	) {
+		if (data[action] === value) delete data[action]
+		else data[action] = value
+
+		const statuses = {
+			add: 'pending',
+			approve: 'approved',
+			reject: 'rejected'
+		}
+
+		if (comment && comment['mileage']) data['confirmed_mileage'] = comment['mileage']
+		data['status'] = statuses[action]
+
+		updateItem({ dataModel: data, rowId: rowId })
 	}
 
 	async function confirmYesOrNo(value: any, colDef: any, colId: any, data: any, rowId: number) {
@@ -601,7 +681,10 @@
 				resizeAgGridToContent()
 			}, 500)
 		},
-		onGridSizeChanged: onGridSizeChanged
+		onGridSizeChanged: onGridSizeChanged,
+		onCellValueChanged: function (event) {
+			updateItem({ dataModel: event.data, rowId: event.node.id })
+		}
 		// groupRowInnerRenderer: function (params) {
 		// 	// Aquí puedes verificar las condiciones y devolver el total
 		// 	if (params.node.group && $widget.params?.table?.roll_up?.total) {
@@ -743,12 +826,23 @@
 		}
 	}
 	function onFilterTextBoxChanged(elementId: any) {
+		console.log('ENTRO AL FILTRO', (document.getElementById(elementId)! as HTMLInputElement).value)
 		gridOptions.api!.setQuickFilter((document.getElementById(elementId)! as HTMLInputElement).value)
 	}
 
 	addWidgetAction(widgetActions, {
 		name: 'agGridFilterTextBox',
 		action: (elementId) => onFilterTextBoxChanged(elementId)
+	})
+
+	function onFilterSelectorChanged(text: any) {
+		console.log('ENTRO AL FILTRO', text)
+		gridOptions.api!.setQuickFilter(text)
+	}
+
+	addWidgetAction(widgetActions, {
+		name: 'agGridFilterSelector',
+		action: (text) => onFilterSelectorChanged(text)
 	})
 
 	addWidgetAction(widgetActions, {
@@ -776,6 +870,18 @@
 			btnCallback: 'agGridBtnMap'
 		})
 	}
+
+	if ($widget.params?.selectorTop) {
+		console.log('ENTRO AL FILTRO')
+		const widgetTop = getContext<Writable<any>>('WidgetTop')
+		setWidgetTop(widgetTop, 'AgGridToolbar', {
+			position: 'top',
+			widgetID: $widget.widget_id,
+			btnsActions: $widget.params.btnsActions,
+			filterCallback: 'agGridFilterTextBox',
+			selectorCallback: 'agGridFilterSelector'
+		})
+	}
 </script>
 
 <svelte:window bind:innerWidth />
@@ -788,6 +894,7 @@
 		class:ag-theme-balham={!isDark}
 		class:ag-theme-balham-dark={isDark}
 	/>
+
 	{#if !data}
 		<NoDataFound />
 	{/if}
@@ -801,5 +908,23 @@
 		--ag-header-foreground-color: #000;
 	}
 
+	.default {
+		border: 1px solid transparent !important;
+		padding: 4px;
+	}
+	.numeric-input {
+		box-sizing: border-box;
+		padding-left: var(--ag-grid-size);
+		width: 100%;
+		height: 100%;
+	}
+
+	.my-simple-editor {
+		box-sizing: border-box;
+		padding-left: var(--ag-grid-size);
+		width: 100%;
+		height: 100%;
+		background-color: red;
+	}
 	/* Estilo para el contenedor */
 </style>

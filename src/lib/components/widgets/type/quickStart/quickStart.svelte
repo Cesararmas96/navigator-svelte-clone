@@ -5,6 +5,9 @@
 	import { Tooltip } from 'flowbite-svelte'
 	import { page } from '$app/stores'
 
+	export let data = null
+	data
+
 	const modules = $storeModules
 
 	const createUrlApikey = (item: Record<string, any>) => {
