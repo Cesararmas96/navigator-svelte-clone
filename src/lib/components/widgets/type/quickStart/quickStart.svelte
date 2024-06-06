@@ -33,10 +33,14 @@
 						<span class="text-white"> <Icon icon={module?.attributes?.icon} size="30" /> </span>
 					</span>
 				</div>
-				<Tooltip defaultClass="py-2 px-3 text-sm font-medium z-50">
-					{module.description}
-				</Tooltip>
+				<div class="flex-1 overflow-hidden p-2">
+					<div class="text-center text-body group-hover:text-link">{module.description}</div>
+					<!-- <div class="text-sm text-muted group-hover:text-link">{module.description}</div> -->
+				</div>
 			</a>
+			<!-- <Tooltip defaultClass="py-2 px-3 text-sm font-medium z-50">
+				{module.description}
+			</Tooltip> -->
 		{/if}
 	{/each}
 </div>

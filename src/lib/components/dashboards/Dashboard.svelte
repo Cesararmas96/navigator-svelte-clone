@@ -204,17 +204,20 @@
 					$storeDashboard.widget_location?.timestamp || 0
 				)!
 			} catch (error: any) {}
-
-			if (!items || items.length === 0) {
-				/**
-				 * Load widgets from database
-				 */
-				items = setNewLocations
-					? loadV2Locations(dashboard.widget_location, dashboard, widgets, cols, isMobile())
-					: loadV3Locations(dashboard.attributes.widget_location, widgets, cols, isMobile())
+			if (items && items.length > 0) {
+				$storeDashboard.gridItems = [...items]
+				return
 			}
 
+			/**
+			 * Load widgets from database
+			 */
+			items =
+				dashboard.attributes.widget_location || setNewLocations
+					? loadV3Locations(dashboard.widget_location, widgets, cols, isMobile())
+					: loadV2Locations(dashboard.widget_location, dashboard, widgets, cols, isMobile())
 			console.log('items', items)
+
 			$storeDashboard.gridItems = [...items]
 		} catch (error: any) {
 			sendErrorNotification(error)

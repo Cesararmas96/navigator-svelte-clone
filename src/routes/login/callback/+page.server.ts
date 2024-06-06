@@ -31,7 +31,7 @@ export const load: PageServerLoad = async ({ locals, cookies }) => {
 		secure: true, //import.meta.env.ENV === 'production',
 		maxAge: 60 * 60 * 24 * 30
 	})
-
+	console.log('callback', locals.user?.next)
 	if (locals.user?.next) {
 		cookies.set('_program', locals.user.next, {
 			path: '/',
@@ -41,6 +41,7 @@ export const load: PageServerLoad = async ({ locals, cookies }) => {
 			maxAge: 60 * 60
 		})
 		const url = `/${locals.user.next}${locals.user.apikey ? '?apikey=' + locals.user.token : ''}`
+		console.log('callback PASO', url)
 		throw redirect(302, url)
 	}
 	throw redirect(302, '/')
