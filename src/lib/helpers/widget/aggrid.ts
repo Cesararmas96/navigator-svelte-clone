@@ -7,18 +7,22 @@ import { capitalizeWord } from '../common/common'
 import type { ValueGetterParams } from 'ag-grid-community'
 import { fnFormatMoney, fnFormatPercent, formats } from '../common/formats'
 import { addInstance, clearInstances } from './instances'
-import { SimpleTextEditor } from './aggrid-cell-input'
 
-export const colAction = (widget: any, callbacks: any, colDef?: Record<string, any>) => {
+export const colAction = (
+	key: string,
+	widget: any,
+	callbacks: any,
+	colDef?: Record<string, any>
+) => {
 	return {
 		headerName: colDef?.title || 'Actions',
-		field: 'actions',
+		field: key,
 		order: colDef?.order || 9999,
 		cellClass: 'text-center',
 		headerClass: 'header-center',
 		maxWidth: 140,
 		cellRenderer: (params: ValueGetterParams) => {
-			return gridCellBuildFunctionsMap['actions'](
+			return gridCellBuildFunctionsMap[colDef?.render || key](
 				{
 					data: params.data,
 					tableParams: params,
@@ -95,8 +99,8 @@ export const generateColumnDefsByDefinition = (widget: any, callbacks: any) => {
 		.map(([key, col]: [string, any]) => {
 			const sort = colSorted(col, widget.params?.pqgrid?.sortModel?.sorter)
 			col.sorted = sort ? true : false
-			return key === 'actions'
-				? colAction(widget, callbacks, col)
+			return key === 'actions' || key === 'custom_actions'
+				? colAction(key, widget, callbacks, col)
 				: {
 						order: col.order,
 						headerName: col.title,
@@ -591,9 +595,10 @@ export const gridCellBuildFunctionsMap: {
 	tasksActions: tasksActions,
 	ticketsForBoseZammad: ticketsForBoseZammad,
 	clickCell: clickCell,
-	addMileage: addMileage,
-	status: status
-	// btnsRenderTasksActions: btnsRenderTasksActions
+	confirmMileage: confirmMileage,
+	mileageActions: mileageActions,
+	status: status,
+	numberWithPattern: numberWithPattern
 }
 
 function modulesActive(params: any) {
@@ -842,6 +847,26 @@ function ticketsForBoseZammad(params: any) {
 	}
 }
 
+function mileageActions(
+	params: any,
+	callback?: Record<string, () => void> | (() => void),
+	colDef?: Record<string, any>
+) {
+	const container = document.createElement('span')
+	container.classList.add('flex', 'items-center', 'justify-center', 'gap-1', 'mt-0.5', 'opacity-60')
+	const constrols = params.widget?.params?.actions?.btns
+	if (constrols) {
+		constrols.map((btn: any) => {
+			if (btn === 'approve' && params.data['status'] !== 'pending') return
+			if (btn === 'reject' && params.data['status'] !== 'pending') return
+			if (params.data?.attributes?.show_controls && !params.data?.attributes?.show_controls[btn])
+				return
+			container.appendChild(createActionBtn({ btn, ...params }, callback, colDef))
+		})
+	}
+	return container
+}
+
 function actions(
 	params: any,
 	callback?: Record<string, () => void> | (() => void),
@@ -932,7 +957,7 @@ function clickCell(
 	return div
 }
 
-function addMileage(
+function confirmMileage(
 	params: any,
 	callback?: Record<string, () => void> | (() => void),
 	colDef?: Record<string, any>
@@ -949,18 +974,52 @@ function addMileage(
 		callback!['addMileage']()
 	})
 
+	const isClickable = params.data['status'] !== 'approved'
+
 	const div = document.createElement('div')
-	div.classList.add('ag-cell-clickable')
 	div.dataset.colId = params.column.colId
 	div.dataset.data = JSON.stringify(params.data)
 	div.dataset.colDef = JSON.stringify(colDef)
 	div.dataset.rowId = params.rowIndex
 	div.title = 'Click for details'
 	div.innerHTML = params.data[params.column.colId]
-		? `${params.data[params.column.colId]} miles - (edit)`
+		? `${params.data[params.column.colId]} miles${isClickable ? ' - (edit)' : ''}`
 		: 'Confirm mileage'
-	div.addEventListener('click', callback!['addMileage'])
-	div.appendChild(icon)
+	if (isClickable) {
+		div.classList.add('ag-cell-clickable')
+		div.addEventListener('click', callback!['addMileage'])
+		div.appendChild(icon)
+	} else {
+		div.classList.add('ag-cell-no-clickable')
+	}
+	return div
+}
+
+function numberWithPattern(
+	params: any,
+	callback?: Record<string, () => void> | (() => void),
+	colDef?: Record<string, any>
+) {
+	const number = params.data[params.column.colId]
+	if (!number) return
+	const decimalMatch = colDef?.pattern.match(/#\.(#+)/)
+	let decimalPlaces = 0
+
+	if (decimalMatch) {
+		decimalPlaces = decimalMatch[1].length
+	}
+
+	const formattedNumber = number.toFixed(decimalPlaces)
+	const formattedString = colDef?.pattern.replace('#.' + '#'.repeat(decimalPlaces), formattedNumber)
+
+	const div = document.createElement('div')
+	div.dataset.colId = params.column.colId
+	div.dataset.data = JSON.stringify(params.data)
+	div.dataset.colDef = JSON.stringify(colDef)
+	div.dataset.rowId = params.rowIndex
+	div.classList.add('w-full')
+	div.innerHTML = formattedString
+
 	return div
 }
 
