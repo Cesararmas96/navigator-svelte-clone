@@ -1,13 +1,8 @@
-import { page } from '$app/stores'
-import { sendErrorNotification } from '$lib/stores/toast'
-import { redirect } from '@sveltejs/kit'
-import { get } from 'svelte/store'
-
 export const buildImageUrls = (data, rootLink) => {
 	const { branding, slideshow, client, auth_backends: authMethods } = data
 	const { favicon, icon, logo_client, logo_home, sidebar } = branding
 
-	const slideshowUrls = slideshow.map((slide) => `${rootLink}${slide}`)
+	const slideshowUrls = slideshow?.map((slide) => `${rootLink}${slide}`) || []
 	const favIconUrl = `${rootLink}${favicon}`
 	const iconUrl = `${rootLink}${icon}`
 	const logoClientUrl = `${rootLink}${logo_client}`

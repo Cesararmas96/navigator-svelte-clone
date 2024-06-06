@@ -12,9 +12,12 @@
 	import { isIconWhite } from '$lib/helpers/common/common.js'
 	import { themeColor } from '$lib/stores/preferences.js'
 	import ChatGoogle from '$lib/components/common/ChatGoogle.svelte'
+	import { afterUpdate } from 'svelte'
+	import Error from '$lib/components/common/Error.svelte'
 
 	export let data
-	$: $storeModule = data.trocModule
+
+	$storeModule = data.trocModule
 	$storeModules = data.menu
 	$storePrograms = data.programs
 	$storeUser = data.user
@@ -43,34 +46,52 @@
 			$storeStores = { ...$storeStores }
 		}
 	}
-	if (!$storeStores || !$storeStores[$page.params.programs]) setStores()
+	if (data.program && (!$storeStores || !$storeStores[$page.params.programs])) setStores()
 
 	let width: number
+
+	afterUpdate(() => {
+		$storeModule = data.trocModule
+	})
 </script>
 
 <svelte:window bind:innerWidth={width} />
 
+<svelte:head>
+	<script
+		async
+		defer
+		src="https://maps.googleapis.com/maps/api/js?key={import.meta.env
+			.VITE_GOOGLE_MAPS_KEY}&libraries=places,marker,drawing,geometry&loading=async"
+		type="text/javascript"
+	></script>
+</svelte:head>
+
 <Header />
 
-<Sidebar menu={data.menu} />
+{#if data.program}
+	<Sidebar menu={data.menu} />
 
-<div
-	id="content"
-	class={$sidebarMin ? 'content-alt' : ''}
-	class:text-not-white={!isIconWhite($themeColor)}
->
-	<Breadcrumb />
+	<div
+		id="content"
+		class={$sidebarMin ? 'content-alt' : ''}
+		class:text-not-white={!isIconWhite($themeColor)}
+	>
+		<Breadcrumb />
 
-	<div data-simplebar>
-		<main>
-			<slot />
-			<!-- <div class="ml-[5px] mr-[10px]">
+		<div data-simplebar>
+			<main>
+				<slot />
+				<!-- <div class="ml-[5px] mr-[10px]">
 				<Footer />
 			</div> -->
-		</main>
+			</main>
+		</div>
 	</div>
-</div>
 
-{#if data.program?.attributes?.chat_google}
-	<ChatGoogle />
+	{#if data.program?.attributes?.chat_google}
+		<ChatGoogle />
+	{/if}
+{:else}
+	<Error code="404" />
 {/if}

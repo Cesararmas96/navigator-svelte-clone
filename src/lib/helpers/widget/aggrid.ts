@@ -8,16 +8,21 @@ import type { ValueGetterParams } from 'ag-grid-community'
 import { fnFormatMoney, fnFormatPercent, formats } from '../common/formats'
 import { addInstance, clearInstances } from './instances'
 
-export const colAction = (widget: any, callbacks: any, colDef?: Record<string, any>) => {
+export const colAction = (
+	key: string,
+	widget: any,
+	callbacks: any,
+	colDef?: Record<string, any>
+) => {
 	return {
-		headerName: 'Actions',
-		field: 'actions',
-		order: 9999,
+		headerName: colDef?.title || 'Actions',
+		field: key,
+		order: colDef?.order || 9999,
 		cellClass: 'text-center',
 		headerClass: 'header-center',
-		maxWidth: 100,
+		maxWidth: 140,
 		cellRenderer: (params: ValueGetterParams) => {
-			return gridCellBuildFunctionsMap['actions'](
+			return gridCellBuildFunctionsMap[colDef?.render || key](
 				{
 					data: params.data,
 					tableParams: params,
@@ -94,8 +99,8 @@ export const generateColumnDefsByDefinition = (widget: any, callbacks: any) => {
 		.map(([key, col]: [string, any]) => {
 			const sort = colSorted(col, widget.params?.pqgrid?.sortModel?.sorter)
 			col.sorted = sort ? true : false
-			return key === 'actions'
-				? colAction(widget, callbacks, col)
+			return key === 'actions' || key === 'custom_actions'
+				? colAction(key, widget, callbacks, col)
 				: {
 						order: col.order,
 						headerName: col.title,
@@ -103,39 +108,49 @@ export const generateColumnDefsByDefinition = (widget: any, callbacks: any) => {
 						headerCheckboxSelection: col.checkbox,
 						checkboxSelection: col.checkbox,
 						showDisabledCheckboxes: col.checkbox,
+						cellEditor: col.cellEditor, //? SimpleTextEditor : undefined,
 						// format: col.format,
 						cellClass: cellClass(col),
 						cellClassRules: cellClassRules(key, col, widget.params.thresholds),
 						headerClass: headerClass(col),
 						cellStyle: cssToObjet(col.style),
+						editable: col.cellEditor ? true : false,
 
-						wrapText: true, // Habilitar wrapText
-						autoHeight: true, // Si quieres que la altura de la fila se ajuste al texto
+						wrapText: true,
+						autoHeight: true,
 
 						sort: sort,
 						cellRenderer: (params: ValueGetterParams) => {
 							if (col.render && gridCellBuildFunctionsMap[col.render])
 								return gridCellBuildFunctionsMap[col.render](params, callbacks, col)
-							// if ($widget.params.pqgrid?.formulas && Array.isArray($widget.params.pqgrid?.formulas)) {
-							// 	$widget.params.pqgrid.formulas.map((formula: any, formulaIndex: number) => {
-							// 		if (typeof formulaFunctionsMap[formula[1]] === 'function') {
-							// 			const pqFormula = formula[1].toString()
-							// 			return formulaFunctionsMap[pqFormula](params, $widget)
 
-							// 			// $widget.params.pqgrid.formulas[formulaIndex][1] = (...args: any) => {
-							// 			// 	return formulaFunctionsMap[pqFormula](params)
-							// 			// }
-							// 		} else {
-							// 			// console.log(
-							// 			// 	`The formula ${payload.params.value.pqgrid.formulas} function not exist.`
-							// 			// )
-							// 			// delete payload.params.value.pqgrid.formulas[formulaIndex]
-							// 		}
-							// 	})
-							// } else {
-							// 	// 	: params.data[key]
-							// 	return params.data[key]
-							// }
+							if (
+								widget.params.pqgrid?.formulas &&
+								Array.isArray(widget.params.pqgrid?.formulas) &&
+								widget.params.pqgrid?.formulas.some((item) => item.includes(col.dataIndx))
+							) {
+								const a = widget.params.pqgrid.formulas.map(
+									(formula: any, formulaIndex: number) => {
+										if (typeof formulaFunctionsMap[formula[1]] === 'function') {
+											const pqFormula = formula[1].toString()
+											return formulaFunctionsMap[pqFormula](params, widget)
+
+											// $widget.params.pqgrid.formulas[formulaIndex][1] = (...args: any) => {
+											// 	return formulaFunctionsMap[pqFormula](params)
+											// }
+										} else {
+											// console.log(
+											// 	`The formula ${payload.params.value.pqgrid.formulas} function not exist.`
+											// )
+											// delete payload.params.value.pqgrid.formulas[formulaIndex]
+										}
+									}
+								)
+								return a[0]
+							} else {
+								// 	: params.data[key]
+								// return params.data[key]
+							}
 							return col.format
 								? formatByPattern(params.data[key], col.format)
 								: !Array.isArray(params.data[key])
@@ -250,6 +265,8 @@ export const formatByPattern = (value: number, pattern: string): string => {
 	let result = ''
 	// if (!value) return result
 
+	let date, year, month, day, hour, minute, second
+
 	switch (pattern) {
 		case '####':
 			result = value ? value.toString() : '0'
@@ -278,10 +295,10 @@ export const formatByPattern = (value: number, pattern: string): string => {
 			break
 
 		case 'yy-mm-dd':
-			const date = new Date(value)
-			const year = String(date.getFullYear()).slice(-2)
-			const month = String(date.getMonth() + 1).padStart(2, '0')
-			const day = String(date.getDate()).padStart(2, '0')
+			date = new Date(value)
+			year = String(date.getFullYear()).slice(-2)
+			month = String(date.getMonth() + 1).padStart(2, '0')
+			day = String(date.getDate()).padStart(2, '0')
 			result = `${year}-${month}-${day}`
 			break
 
@@ -577,8 +594,11 @@ export const gridCellBuildFunctionsMap: {
 	isActiveYesOrNo: isActiveYesOrNo,
 	tasksActions: tasksActions,
 	ticketsForBoseZammad: ticketsForBoseZammad,
-	clickCell: clickCell
-	// btnsRenderTasksActions: btnsRenderTasksActions
+	clickCell: clickCell,
+	confirmMileage: confirmMileage,
+	mileageActions: mileageActions,
+	status: status,
+	numberWithPattern: numberWithPattern
 }
 
 function modulesActive(params: any) {
@@ -648,6 +668,45 @@ function isActiveYesOrNo(
 			a.innerHTML = title
 			return a
 		}
+	} catch (error) {
+		console.log(error)
+	}
+}
+
+function status(
+	params: any,
+	callback?: Record<string, () => void> | (() => void),
+	colDef?: Record<string, any>
+) {
+	try {
+		const status = params.data[params.column.colId]
+		let badge = 'ag-waiting'
+		let title = 'To be Confirmed'
+
+		switch (status) {
+			case 'waiting':
+				badge = 'ag-waiting'
+				title = 'To be Confirmed'
+				break
+			case 'pending':
+				badge = 'ag-pending'
+				title = 'Pending from Approval'
+				break
+			case 'approved':
+				badge = 'ag-approved'
+				title = 'Approved'
+				break
+			case 'rejected':
+				badge = 'ag-rejected'
+				title = 'Rejected'
+				break
+		}
+		const span = document.createElement('span')
+		span.classList.add('badge')
+		span.classList.add('badge-' + badge)
+		span.title = status
+		span.innerHTML = title
+		return span
 	} catch (error) {
 		console.log(error)
 	}
@@ -788,6 +847,26 @@ function ticketsForBoseZammad(params: any) {
 	}
 }
 
+function mileageActions(
+	params: any,
+	callback?: Record<string, () => void> | (() => void),
+	colDef?: Record<string, any>
+) {
+	const container = document.createElement('span')
+	container.classList.add('flex', 'items-center', 'justify-center', 'gap-1', 'mt-0.5', 'opacity-60')
+	const constrols = params.widget?.params?.actions?.btns
+	if (constrols) {
+		constrols.map((btn: any) => {
+			if (btn === 'approve' && params.data['status'] !== 'pending') return
+			if (btn === 'reject' && params.data['status'] !== 'pending') return
+			if (params.data?.attributes?.show_controls && !params.data?.attributes?.show_controls[btn])
+				return
+			container.appendChild(createActionBtn({ btn, ...params }, callback, colDef))
+		})
+	}
+	return container
+}
+
 function actions(
 	params: any,
 	callback?: Record<string, () => void> | (() => void),
@@ -810,7 +889,10 @@ const icons: any = {
 	edit: 'material-symbols:edit-square-outline-rounded',
 	delete: 'material-symbols:delete-outline-rounded',
 	play: 'tabler:play',
-	upload: 'tabler:cloud-upload'
+	upload: 'tabler:cloud-upload',
+	approve: 'material-symbols:select-check-box-rounded',
+	reject: 'material-symbols:dangerous-outline-rounded',
+	comments: 'fa-solid:comment'
 }
 
 function createActionBtn(
@@ -820,7 +902,6 @@ function createActionBtn(
 ) {
 	const data = params.data
 	const widget = params.widget
-
 	const btn = document.createElement('iconify-icon')
 	btn.icon = icons[params.btn]
 	btn.height = '20px'
@@ -836,6 +917,10 @@ function createActionBtn(
 	if (colDef) btn.dataset.colDef = JSON.stringify(colDef)
 
 	btn.classList.add('cursor-pointer')
+	btn.classList.add('actions-btn')
+	if (colDef && colDef[`${params.btn}Class`] && data[params.btn])
+		btn.classList.add(colDef[`${params.btn}Class`])
+
 	if (callback && typeof callback === 'function') {
 		btn.addEventListener('click', callback)
 	}
@@ -869,6 +954,72 @@ function clickCell(
 	div.title = 'Click for details'
 	div.innerHTML = `${params.data[params.column.colId]}`
 	div.appendChild(icon)
+	return div
+}
+
+function confirmMileage(
+	params: any,
+	callback?: Record<string, () => void> | (() => void),
+	colDef?: Record<string, any>
+) {
+	const icon = document.createElement('iconify-icon')
+	icon.icon = params.data[params.column.colId] ? 'tabler:pencil' : 'tabler:hand-finger'
+	icon.classList.add('ml-1')
+	icon.dataset.colId = params.column.colId
+	icon.dataset.data = JSON.stringify(params.data)
+	icon.dataset.colDef = JSON.stringify(colDef)
+	icon.dataset.rowId = params.rowIndex
+	icon.addEventListener('click', (event) => {
+		event.preventDefault()
+		callback!['addMileage']()
+	})
+
+	const isClickable = params.data['status'] !== 'approved'
+
+	const div = document.createElement('div')
+	div.dataset.colId = params.column.colId
+	div.dataset.data = JSON.stringify(params.data)
+	div.dataset.colDef = JSON.stringify(colDef)
+	div.dataset.rowId = params.rowIndex
+	div.title = 'Click for details'
+	div.innerHTML = params.data[params.column.colId]
+		? `${params.data[params.column.colId]} miles${isClickable ? ' - (edit)' : ''}`
+		: 'Confirm mileage'
+	if (isClickable) {
+		div.classList.add('ag-cell-clickable')
+		div.addEventListener('click', callback!['addMileage'])
+		div.appendChild(icon)
+	} else {
+		div.classList.add('ag-cell-no-clickable')
+	}
+	return div
+}
+
+function numberWithPattern(
+	params: any,
+	callback?: Record<string, () => void> | (() => void),
+	colDef?: Record<string, any>
+) {
+	const number = params.data[params.column.colId]
+	if (!number) return
+	const decimalMatch = colDef?.pattern.match(/#\.(#+)/)
+	let decimalPlaces = 0
+
+	if (decimalMatch) {
+		decimalPlaces = decimalMatch[1].length
+	}
+
+	const formattedNumber = number.toFixed(decimalPlaces)
+	const formattedString = colDef?.pattern.replace('#.' + '#'.repeat(decimalPlaces), formattedNumber)
+
+	const div = document.createElement('div')
+	div.dataset.colId = params.column.colId
+	div.dataset.data = JSON.stringify(params.data)
+	div.dataset.colDef = JSON.stringify(colDef)
+	div.dataset.rowId = params.rowIndex
+	div.classList.add('w-full')
+	div.innerHTML = formattedString
+
 	return div
 }
 
@@ -1255,29 +1406,49 @@ export const formulaFunctionsMap: { [key: string]: (params: any, widget: any) =>
 //   }
 // }
 
+function evalThresholds(data, thresholds, field, callback) {
+	const column = data[field]
+	const threshold = thresholds[field]
+
+	if (!threshold) {
+		return false
+	}
+
+	Object.keys(threshold).map((key) => {
+		const operator = operatorTokens[threshold[key].operator]
+
+		try {
+			// eslint-disable-next-line no-eval
+			const validationOperator = eval(`${column} ${operator} ${threshold[key].value}`)
+
+			if (typeof callback === 'function' && validationOperator) {
+				callback(data, threshold[key], field)
+			}
+		} catch (error) {
+			return false
+		}
+	})
+}
+
 function goldStarStatus(params: any, widget: any) {
-	console.log('goldStarStatus', params)
-	if (widget.params.thresholds!) {
-		const goldStartCount = 0
+	if (widget.params?.thresholds) {
+		let goldStartCount = 0
 
-		// const pqGrid = pq.getPqGrid()
+		Object.keys(params.data).forEach((column: any) => {
+			let green = false
 
-		// pqGrid.getColModel().forEach((column: any) => {
-		//   let green = false
-
-		//   evalThresholds(
-		//     rd,
-		//     widget.thresholds!.value,
-		//     column.dataIndx,
-		//     (data: any, threshold: any, field: any) => {
-		//       return (green = true)
-		//     }
-		//   )
-
-		//   if (green) {
-		//     goldStartCount++
-		//   }
-		// })
+			evalThresholds(
+				params.data,
+				widget.params?.thresholds,
+				column,
+				(data: any, threshold: any, field: any) => {
+					return (green = true)
+				}
+			)
+			if (green) {
+				goldStartCount++
+			}
+		})
 
 		return goldStartCount
 	} else {

@@ -238,7 +238,7 @@ export const iconEquivalences: Record<string, any> = {
 	'fa fa-etsy': '',
 	'fa fa-eur': '',
 	'fa fa-euro': '',
-	'fa fa-exchange': '',
+	'fa fa-exchange': 'tabler:arrows-exchange',
 	'fa fa-exclamation': '',
 	'fa fa-exclamation-circle': '',
 	'fa fa-exclamation-triangle': '',

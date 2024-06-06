@@ -5,6 +5,7 @@
 	import Carousel from '$lib/components/common/Carousel.svelte'
 	import Icon from '$lib/components/common/Icon.svelte'
 	import { page } from '$app/stores'
+	import { errorCodes } from '$lib/helpers/auth/error-codes'
 
 	export let data
 	const { filteredObject, images } = data
@@ -18,14 +19,6 @@
 	let showPassword: boolean = false
 
 	let year = new Date().getFullYear()
-
-	const errorCodes = {
-		'400':
-			'Bad Request. Please double-check your credentials and try again. For persistent issues contact support.',
-		'401':
-			'User Not Found: The email you entered does not exist. Please check your entry for any errors and try again.',
-		'403': 'Incorrect Password: Please double-check your credentials and try again.'
-	}
 
 	const keyDownEnter = (e) => {
 		if (e.key === 'Enter') {
@@ -195,8 +188,10 @@
 								<p
 									class="mb-2 mt-2 w-full rounded-md border bg-red-100 p-2 text-center text-red-500"
 								>
-									{errorCodes[form?.message?.status]
-										? errorCodes[form?.message?.status]
+									{@html errorCodes[form?.message?.status]
+										? `${errorCodes[form?.message?.status].title}. ${
+												errorCodes[form?.message?.status].message
+										  }`
 										: form?.message?.reason}
 								</p>
 							{/if}

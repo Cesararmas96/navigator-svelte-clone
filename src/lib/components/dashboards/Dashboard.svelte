@@ -2,6 +2,7 @@
 	import Grid, { GridItem, type GridController } from 'svelte-grid-extended'
 	import Widget from '../widgets/Widget.svelte'
 	import WidgetBox from '../widgets/WidgetBox.svelte'
+	import { storeModule } from '$lib/stores/modules'
 	import {
 		loadV2Locations,
 		loadV3Locations,
@@ -75,6 +76,7 @@
 	}
 
 	$: if (!$storeDashboard.loaded) {
+		$storeDashboard.loaded = true
 		filterComponent = null
 		setGridItems($storeDashboard.dashboard_id)
 		filtersOpen = $storeDashboard?.attributes?.filter_expanded
@@ -187,12 +189,9 @@
 			let items: any[] = []
 
 			const setNewLocations =
-				!dashboard.widget_location || Object.keys(dashboard.widget_location).length === 0
-
-			if (dashboard.attributes.widget_location) {
-				dashboard.widget_location = { ...dashboard.attributes.widget_location }
-				$storeDashboard.widget_location = { ...dashboard.attributes.widget_location }
-			}
+				(!dashboard.attributes.widget_location ||
+					Object.keys(dashboard.attributes.widget_location).length === 0) &&
+				dashboard.widget_location
 
 			/**
 			 * Load widgets from local storage
@@ -226,17 +225,14 @@
 				'Error loading the widgets',
 				`There was a problem with the server. Please try again later or contact technical support if the issue persists. (${error.message})`
 			)
-		} finally {
-			$storeDashboard.loaded = true
 		}
 	}
 
 	const updateWidgetLocation = async () => {
 		if ($storeDashboard?.attributes?.user_id !== $storeUser?.user_id) return
-
 		const widget_location = getControllerItemsLocations(
-			$storeDashboard.gridItems,
-			gridController.gridParams
+			$storeDashboard?.gridItems,
+			gridController?.gridParams
 		)
 		widget_location['timestamp'] = new Date().getTime()
 		const attributes = {
@@ -247,8 +243,7 @@
 		const resp = await postData(`${baseUrl}/api/v2/dashboards/${$storeDashboard.dashboard_id}`, {
 			attributes: attributes
 		})
-
-		if (resp[0]) $storeDashboard.attributes = resp[0].attributes
+		$storeDashboard.attributes = resp[0] ? resp[0].attributes : attributes
 
 		return $storeDashboard.attributes
 	}
@@ -272,13 +267,15 @@
 		let response: any
 		let item: any
 		const { dashboard_id } = dashboard
+		const title = `${copiedWidget.title.split(' #')[0]} #${generateRandomString()}`
 
 		if ($storeCCPWidgetBehavior.type === 'copy') {
+			delete copiedWidget.attributes?.user_id
 			const payload = {
 				program_id: dashboard.program_id,
 				dashboard_id,
-				title: `${copiedWidget.title.split(' #')[0]} #${generateRandomString()}`,
-				attributes: copiedWidget.attributes,
+				title,
+				attributes: { ...copiedWidget.attributes, user_id: $storeUser?.user_id, title },
 				description: copiedWidget.description,
 				params: copiedWidget.params,
 				url: copiedWidget.url,
@@ -307,12 +304,15 @@
 			if (dashboard.gridItems.some((item: any) => item.title === copiedWidget.title)) {
 				payload = {
 					...payload,
-					title: `${copiedWidget.title.split(' #')[0]} #${generateRandomString()}`
+					title
 				}
 			}
 			response = await patchData(`${baseUrl}/api/v2/widgets/${copiedWidget.widget_id}`, payload)
 
-			removeWidgetLocalstore($storeCCPWidgetBehavior.dashboard_id, copiedWidget.title)
+			removeWidgetLocalstore(
+				$storeCCPWidgetBehavior.dashboard_id,
+				copiedWidget.attributes?.title || copiedWidget.title
+			)
 
 			const _dashboard = $storeDashboards.find(
 				(d: any) => d.dashboard_id === $storeCCPWidgetBehavior.dashboard_id
@@ -525,21 +525,27 @@
 			newItem.x = position.x
 			newItem.y = position.y
 			newItem.title = widget.title
+
 			dashboard.widget_location = {
 				...dashboard.widget_location,
-				[widget.title]: {
+				[widget.attributes?.title]: {
 					x: newItem.x,
 					y: newItem.y,
 					w: newItem.w,
 					h: newItem.h
 				}
 			}
+
 			$storeDashboard.gridItems = [...$storeDashboard.gridItems, newItem]
 			widgets = [...widgets, widget]
-			updateLocations()
-			// await postData(`${baseUrl}/api/v2/dashboard/widgets/location/${dashboard.dashboard_id}`, {
-			// 	widget_location: dashboard.widget_location
-			// })
+			await updateLocations()
+			await postData(`${baseUrl}/api/v2/dashboard/widgets/location/${dashboard.dashboard_id}`, {
+				attributes: {
+					...$storeDashboard.attributes,
+					explorer: 'v3',
+					widget_location: dashboard.widget_location
+				}
+			})
 		} catch (error: any) {
 			sendErrorNotification('An error occurred:', error.message)
 		}
@@ -567,6 +573,12 @@
 		})
 	}
 
+	let filters = $storeDashboard?.filtering_show
+		? { ...$storeDashboard?.filtering_show }
+		: $storeModule?.filtering_show
+		? { ...$storeModule?.filtering_show }
+		: {}
+
 	onMount(() => {
 		haveBreadcrumb = document.getElementById('breadcrumb') ? true : false
 	})
@@ -574,29 +586,18 @@
 
 <svelte:window bind:innerWidth />
 
-<svelte:head>
-	<script
-		async
-		defer
-		src="https://maps.googleapis.com/maps/api/js?key={import.meta.env
-			.VITE_GOOGLE_MAPS_KEY}&libraries=places,marker,drawing,geometry&loading=async"
-		type="text/javascript"
-	></script>
-</svelte:head>
-
-{#if Boolean($storeDashboard?.allow_filtering) && Boolean($storeDashboard?.attributes?.sticky)}
+{#if Boolean($storeDashboard?.allow_filtering) && Boolean($storeDashboard?.attributes?.sticky) && Object.keys(filters).length > 0}
 	<section bind:clientHeight>
 		<svelte:component this={filterComponent} bind:open={filtersOpen} />
 	</section>
 {/if}
-
 <div
 	id="grid"
 	class="block w-full overflow-x-hidden"
 	style={heightStyle}
 	class:overflow-y-auto={!isMobileDevice()}
 >
-	{#if Boolean($storeDashboard?.allow_filtering) && !Boolean($storeDashboard?.attributes?.sticky)}
+	{#if Boolean($storeDashboard?.allow_filtering) && !Boolean($storeDashboard?.attributes?.sticky) && Object.keys(filters).length > 0}
 		<section>
 			<svelte:component this={filterComponent} bind:open={filtersOpen} />
 		</section>
@@ -608,7 +609,7 @@
 		{#if !isMobileDevice()}
 			<Grid
 				{itemSize}
-				class="grid-container"
+				class="grid-container dashboard-screenshot"
 				gap={5}
 				{cols}
 				collision="compress"
@@ -631,7 +632,7 @@
 							if (dashboard?.attributes?.user_id === $storeUser?.user_id) changeItemSize(item)
 						}}
 						let:active
-						bind:id={item.data.title}
+						bind:id={item.data.attributes.title}
 					>
 						<WidgetBox
 							widget={item.data}
@@ -666,7 +667,7 @@
 				{/each}
 			</Grid>
 		{:else}
-			<div class="grid grid-cols-1 gap-y-3 p-2">
+			<div class="dashboard-screenshot grid grid-cols-1 gap-y-3 p-2">
 				{#each getSortedItems($storeDashboard.gridItems) as item (item.data.widget_id)}
 					<div class:hidden={item.data.params.hidden}>
 						<WidgetBox
@@ -707,7 +708,7 @@
 	<Tooltip placement="left">Assign Badge</Tooltip>
 {/if}
 
-{#if $storeDashboard?.allow_filtering && $hideDashboardFilters}
+{#if $storeDashboard?.allow_filtering && $hideDashboardFilters && !isShared}
 	<Button
 		pill={true}
 		class="fixed bottom-6 right-6 !p-3 shadow-md"
@@ -716,7 +717,7 @@
 	<Tooltip placement="left">Filters</Tooltip>
 {/if}
 
-{#if $storeDashboard?.allow_filtering}
+{#if $storeDashboard?.allow_filtering && !isShared}
 	<DrawerFilters />
 {/if}
 

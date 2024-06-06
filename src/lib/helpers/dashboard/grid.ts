@@ -3,8 +3,9 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import type { GridParams } from 'svelte-grid-extended/types'
-import { generateUID } from '../common/common'
-import { collapse } from '../common/collapse'
+import { generateRandomString, generateUID } from '../common/common'
+import { postData } from '$lib/services/getData'
+import { sendErrorNotification } from '$lib/stores/toast'
 
 const rowHeight = 12
 const minRowHeight = 14
@@ -26,7 +27,11 @@ export const loadV2Locations = (
 			Object.entries(widgetLocation[value]).map(([key, item]: [string, any]) => {
 				const data = _widgets.find((item) => item.widget_id === key)
 				if (!data) return
-				const title = data.title
+
+				if (widgets.some((i) => i.title === data.title))
+					data.attributes = { ...data.attributes, title: data.title + ' ' + generateRandomString() }
+				else data.attributes = { ...data.attributes, title: data.title }
+				const title = data.attributes?.title
 				data.resize_on_load = true
 				let w = !isMobile ? parseInt(locations[index]) * (cols / 12) : cols
 				w = Number(w) ? w : cols
@@ -40,7 +45,8 @@ export const loadV2Locations = (
 		})
 	} else {
 		const data = _widgets[0]
-		widgets.push({ title: data.title, x: 0, y: 0, w: cols, h: minRowHeight, data })
+		data.attributes = { ...data.attributes, title: data.title }
+		widgets.push({ title: data.attributes?.title, x: 0, y: 0, w: cols, h: minRowHeight, data })
 	}
 	return widgets
 }
@@ -58,8 +64,15 @@ export const loadV3Locations = (
 		return _widgets.map((widget: any) => {
 			widget.hidden = widget.query_slug?.dashboard ? true : false
 			widget.resize_on_load = true
-			widgetLocation[widget.title] = {
-				title: widget.title,
+
+			const title =
+				_widgets.filter((i) => i.title === widget.title).length > 1
+					? widget.title + ' ' + generateRandomString()
+					: widget.title
+
+			widget.attributes = { ...widget.attributes, title }
+			widgetLocation[title] = {
+				title,
 				x: 0,
 				y: row,
 				w: cols,
@@ -67,10 +80,9 @@ export const loadV3Locations = (
 				data: widget
 			}
 			row += minRowHeight
-			return { ...widgetLocation[widget.title] }
+			return { ...widgetLocation[title] }
 		})
 	}
-
 	// if (isMobile) {
 	// 	let y = 0
 	// 	return Object.entries(widgetLocation).map(([key, item]: [string, any]) => {
@@ -81,10 +93,17 @@ export const loadV3Locations = (
 	return Object.entries(widgetLocation)
 		.map(([key, item]: [string, any]) => {
 			const data =
-				_widgets.find((_item) => _item.title === key || _item.widget_slug === key) || null
+				_widgets.find((_item) => _item.attributes?.title === key || _item.title === key) || null
 			if (!data) return null
 			data.hidden = data.query_slug?.dashboard ? true : false
-			return { title: data.title, ...item, data }
+			if (!data.attributes?.title) {
+				const title =
+					_widgets.filter((i) => i.title === data.title).length > 1
+						? data.title + ' ' + generateRandomString()
+						: data.title
+				data.attributes = { ...data.attributes, title }
+			}
+			return { title: data.attributes?.title, ...item, data }
 		})
 		.filter((item) => item !== null)
 	// }
@@ -98,6 +117,8 @@ export const loadLocalStoredLocations = (
 ) => {
 	const grid = localStorage.getItem('grid')
 	if (!grid) return []
+
+	console.log('loadLocalStoredLocations')
 
 	const y = 0
 	const gridData = JSON.parse(grid)
@@ -125,15 +146,17 @@ export const loadLocalStoredLocations = (
 }
 
 export const getControllerItemsLocations = (gridItems: any[], gridParams: GridParams) => {
-	return Object.entries(gridParams.items).reduce((acc, [key, item]) => {
+	return Object.entries(gridParams?.items || {}).reduce((acc, [key, item]) => {
 		const gridItem = gridItems.find((i) => i.title === key)
+		let order = {}
 		if (gridItem) {
 			gridItem.x = item.x
 			gridItem.y = item.y
 			gridItem.w = item.w
 			gridItem.h = item.h
+			order = gridItem.order ? { order: gridItem.order } : {}
 		}
-		acc[key] = { x: item.x, y: item.y, w: item.w, h: item.h }
+		acc[key] = { x: item.x, y: item.y, w: item.w, h: item.h, ...order }
 		return acc
 	}, {})
 
@@ -143,7 +166,7 @@ export const getControllerItemsLocations = (gridItems: any[], gridParams: GridPa
 	// }, {})
 }
 
-export const saveLocalStorageLocations = (
+export const saveLocalStorageLocations = async (
 	dashboard: any,
 	gridItems: any[],
 	gridParams: GridParams
@@ -159,7 +182,8 @@ export const saveLocalStorageLocations = (
 		} else {
 			deletedItems.push(key)
 		}
-		acc[key] = { x: item.x, y: item.y, w: item.w, h: item.h }
+		const order = gridItem?.order ? { order: gridItem.order } : {}
+		acc[key] = { x: item.x, y: item.y, w: item.w, h: item.h, ...order }
 		return acc
 	}, {})
 	// dashboard.widget_location = items
@@ -169,6 +193,15 @@ export const saveLocalStorageLocations = (
 			delete gridParams.items[key]
 		})
 	}
+
+	const _items = gridItems.filter((item) => item.data?.attributes?.explorer === 'v2')
+	await _items.map(async (item) => {
+		const attributes = { ...item.data.attributes, explorer: 'v3' }
+		await postData(`${import.meta.env.VITE_API_URL}/api/v2/widgets/${item.data.widget_id}`, {
+			attributes
+		})
+		return true
+	})
 
 	const grid = localStorage.getItem('grid')
 	if (grid) {

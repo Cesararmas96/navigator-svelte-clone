@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/stores'
-	import { hideDashboardFilters, storeDashboard } from '$lib/stores/dashboards'
+	import { hideDashboardFilters } from '$lib/stores/dashboards'
 	import { storeStores } from '$lib/stores/modules'
 	import _ from 'lodash'
 	import Date from './filter/Date.svelte'
@@ -27,8 +27,8 @@
 	const loadData = () => {
 		filters = $dashboard?.filtering_show
 			? { ...$dashboard?.filtering_show }
-			: trocModule.filtering_show
-			? { ...trocModule.filtering_show }
+			: trocModule?.filtering_show
+			? { ...trocModule?.filtering_show }
 			: {}
 
 		filtersArray = Object.entries(filters?.filtering || {})
@@ -45,19 +45,23 @@
 	}
 
 	const fillDropdowns = () => {
-		if (!$storeStores || !$storeStores[$page.params.programs]) return
+		if (!$storeStores || !$storeStores[$page.params.programs || $page.data.program?.program_slug])
+			return
 		let selectedFilters: any[] = []
 		for (const key in filtersSorted) {
 			if (filtersSorted[key].type === 'date') continue
-			const grouped = _.groupBy($storeStores[$page.params.programs], (item) => {
-				if (
-					selectedFilters.length > 0 &&
-					!selectedFilters.every((filtro) => item[filtro.id].toString() === filtro.value)
-				)
-					return
+			const grouped = _.groupBy(
+				$storeStores[$page.params.programs || $page.data.program?.program_slug],
+				(item) => {
+					if (
+						selectedFilters.length > 0 &&
+						!selectedFilters.every((filtro) => item[filtro.id].toString() === filtro.value)
+					)
+						return
 
-				return `${item[filtersSorted[key].id]}||${item[filtersSorted[key].value]}`
-			})
+					return `${item[filtersSorted[key].id]}||${item[filtersSorted[key].value]}`
+				}
+			)
 			if (grouped.undefined) delete grouped.undefined
 			const items = _.map(grouped, (group, key) => {
 				const [value, label] = key.split('||')
@@ -180,7 +184,7 @@
 		class="border-gay-200 mt-2 flex flex-row justify-end border-t-[1px] p-4 pr-2 dark:border-dark-200"
 	>
 		<Button
-			class=" flex flex-row items-center rounded-md bg-primary  px-4 py-2 text-sm font-medium text-white hover:opacity-80 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75"
+			class=" flex flex-row items-center rounded-md bg-theme px-4 py-2 text-sm font-medium text-white hover:opacity-80 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75"
 			on:click={() => apply()}
 		>
 			<Icon icon="mdi:filter" size="18" classes="mr-1" />

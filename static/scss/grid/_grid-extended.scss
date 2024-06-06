@@ -35,8 +35,19 @@
 	align-items: center;
 	height: 100%;
 }
+.ag-cell-value span {
+	width: 100%;
+}
 .ag-cell-clickable {
 	cursor: pointer;
+	display: block;
+	align-content: center;
+	height: 100%;
+	width: 100%;
+	padding-left: 2px;
+	padding-right: 5px;
+}
+.ag-cell-no-clickable {
 	display: block;
 	align-content: center;
 	height: 100%;

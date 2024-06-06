@@ -5,6 +5,9 @@
 	import { Tooltip } from 'flowbite-svelte'
 	import { page } from '$app/stores'
 
+	export let data = null
+	data
+
 	const modules = $storeModules
 
 	const createUrlApikey = (item: Record<string, any>) => {
@@ -30,7 +33,6 @@
 						<span class="text-white"> <Icon icon={module?.attributes?.icon} size="30" /> </span>
 					</span>
 				</div>
-
 				<div class="flex-1 overflow-hidden p-2">
 					<div class="text-center text-body group-hover:text-link">{module.description}</div>
 					<!-- <div class="text-sm text-muted group-hover:text-link">{module.description}</div> -->

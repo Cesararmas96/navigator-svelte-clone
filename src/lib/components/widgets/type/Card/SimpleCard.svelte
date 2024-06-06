@@ -68,8 +68,8 @@
 	}
 	$: isLoading = $widget.instance_loading && drilldownOpen
 
-	const cardClass = `apiCard-content animate__animated animate__zoomIn card  ${
-		card.class || 'navigator-blue'
+	const cardClass = ` animate__animated animate__zoomIn card  ${
+		card.class || 'apiCard-content'
 	} h-full overflow-hidden rounded-md border border-light-200 py-3 hover:-translate-y-0.5 hover:scale-100 hover:shadow-lg dark:border-dark-200 dark:bg-[#22313a]`
 </script>
 
@@ -110,6 +110,10 @@
 		<div class="card-hover-message">Click for details</div>
 	{/if}
 </div>
+
+<!-- {#if card.drilldowns && !drilldownOpen}
+	<Tooltip defaultClass="py-2 px-3 text-sm font-medium z-50">Click for details</Tooltip>
+{/if} -->
 
 <!-- {#if card.drilldowns && !drilldownOpen}
 	<div class="relative left-5 top-5">Click for details</div>
