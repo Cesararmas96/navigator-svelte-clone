@@ -40,7 +40,31 @@
 	const widget = getContext<Writable<any>>('widget')
 	const dashboard = getContext<Writable<any>>('dashboard')
 
-	let approveds, rejecteds
+	/**
+	 * TODO: Se debe eliminar
+	 */
+	const statusTemp = ['waiting', 'pending', 'approved', 'rejected']
+
+	if ($widget.widget_id === 'ffc1f306-8b29-4a0c-b5be-92508dd8f22d') {
+		data = data.map((item: any) => {
+			const indiceAleatorio = Math.floor(Math.random() * statusTemp.length)
+			item['status'] = statusTemp[indiceAleatorio]
+			if (indiceAleatorio !== 0)
+				item['confirmed_mileage'] = Math.floor(Math.random() * (120 - 10 + 1)) + 10
+			return item
+		})
+	} else if ($widget.widget_id === 'ffc1f306-6b29-4a0c-b5be-92208dd8f22d') {
+		data = data.map((item: any) => {
+			const indiceAleatorio = Math.floor(Math.random() * statusTemp.length)
+			item['status'] = statusTemp[indiceAleatorio]
+			if (indiceAleatorio !== 0)
+				item['confirmed_mileage'] = Math.floor(Math.random() * (120 - 10 + 1)) + 10
+			return item
+		})
+	}
+	/**
+	 * TODO: Se debe eliminar
+	 */
 
 	const formatDefinitionKeys = $widget.format_definition
 		? Object.keys($widget.format_definition).map((key: string) => key)
@@ -506,7 +530,8 @@
 			// console.log('drilldowns')
 		},
 		async postRenderMileageActions(params: any) {
-			const { action, data, colDef, keys, rowId, colId } = params.srcElement.dataset
+			const { action, data, colDef, keys, colId } = params.srcElement.dataset
+			const rowId = getRowId(params.target)
 			const jsonData = JSON.parse(data)
 			const value = !jsonData[colId]
 
@@ -537,18 +562,9 @@
 					break
 			}
 		},
-		action_mileageActionsSave(params: any) {
-			const { rowsToDisplay } = gridOptions.api?.rowModel
-			const data = rowsToDisplay
-				.map((row) => row.data)
-				.filter((item) => item.approve || item.reject)
-			approveds = data.filter((item) => item.approve)
-			rejecteds = data.filter((item) => item.reject)
-			console.log('Approveds', approveds)
-			console.log('Rejecteds', rejecteds)
-		},
 		addMileage(params: any) {
-			const { data, colDef, keys, rowId, colId } = params.srcElement.dataset
+			const { data, colDef, keys, colId } = params.srcElement.dataset
+			const rowId = getRowId(params.target)
 			const jsonData = JSON.parse(data)
 			const value = !jsonData[colId]
 			openModal('Distance confirmation', 'ActionModalMileage', {
@@ -558,6 +574,20 @@
 					approveReject('add', value, JSON.parse(colDef), colId, jsonData, rowId, comment)
 				}
 			})
+		}
+	}
+
+	const getRowId = (target: any) => {
+		let element = target
+
+		while (element && element.getAttribute('role') !== 'row') {
+			element = element.parentElement
+		}
+
+		if (element) {
+			let rowId = element.getAttribute('row-id')
+			console.log('Row ID:', rowId)
+			return rowId
 		}
 	}
 
@@ -641,7 +671,7 @@
 	 * @description Genera la columna de acciones
 	 */
 	if ($widget.params.actions && !formatDefinitionKeys.includes('actions')) {
-		columnDefs.push(colAction($widget, actionBtnMap))
+		columnDefs.push(colAction('actions', $widget, actionBtnMap))
 	}
 	columnDefs = columnDefs.sort((a: any, b: any) => a.order - b.order)
 
@@ -655,7 +685,7 @@
 		paginationPageSize: recordsPerPage($widget.params),
 		columnDefs,
 		rowData: data ? data : null,
-		// rowHeight: 25,
+		rowHeight: $widget.params.aggrid?.['row-height'] || 25,
 		// autoHeight: true,
 		animateRows: true,
 
@@ -732,6 +762,7 @@
 	}
 
 	let innerWidth: number
+	$: isMobileDevice = innerWidth < 1024
 	/**
 	 * @description Actualiza la configuración de la tabla cuando se cambia el tamaño de la tabla
 	 */
@@ -745,7 +776,7 @@
 			})
 			.filter((column: any) => column.minWidth)
 
-		if (innerWidth >= 1024) gridOptions.api!.sizeColumnsToFit({ columnLimits })
+		if (!isMobileDevice) gridOptions.api!.sizeColumnsToFit({ columnLimits })
 		const scrollModel = $widget.params.pqgrid?.scrollModel
 		if (scrollModel && scrollModel?.autoFit === false) {
 			event.columnApi.autoSizeAllColumns(true)
@@ -777,18 +808,20 @@
 	// }
 
 	const resizeAgGridToContent = () => {
+		$widget.resized = false
+		console.log('isMobileDevice', isMobileDevice)
 		const eGridDiv: HTMLElement = document.querySelector(`#grid-${$widget.widget_id}`)!
 		eGridDiv.style['min-height'] = !$widget.temp
 			? gridHeight($widget.widget_id)
 			: gridInstanceHeight($widget.widget_id)
 		eGridDiv.style['height'] = eGridDiv.style['min-height']
-		$widget.resized = false
 	}
 	addWidgetAction(widgetActions, {
 		name: 'resizeContent',
 		action: () => {
 			setContentHeight($widget.widget_id)
-			if (!$widget.instances || $widget.instances.length === 0) resizeAgGridToContent()
+			if ((!$widget.instances || $widget.instances.length === 0) && !isMobileDevice)
+				resizeAgGridToContent()
 		}
 	})
 
@@ -811,7 +844,10 @@
 	}
 
 	const updateItem = (obj: any) => {
-		const rowNode = gridOptions.api!.getRowNode(obj.rowId)
+		const rowId = obj.oldRowTop || obj.rowId
+		console.log('updateItem', obj)
+		const rowNode = gridOptions.api!.getRowNode(rowId)
+		console.log('rowNode', rowNode)
 		if (rowNode) {
 			rowNode.setData({ ...obj.dataModel })
 			gridOptions.api!.redrawRows({ rowNodes: [rowNode] })
@@ -826,7 +862,6 @@
 		}
 	}
 	function onFilterTextBoxChanged(elementId: any) {
-		console.log('ENTRO AL FILTRO', (document.getElementById(elementId)! as HTMLInputElement).value)
 		gridOptions.api!.setQuickFilter((document.getElementById(elementId)! as HTMLInputElement).value)
 	}
 
@@ -836,7 +871,6 @@
 	})
 
 	function onFilterSelectorChanged(text: any) {
-		console.log('ENTRO AL FILTRO', text)
 		gridOptions.api!.setQuickFilter(text)
 	}
 
