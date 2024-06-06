@@ -23,6 +23,7 @@
 	const resizeAction = getWidgetAction($widgetActions, 'resize')
 	let title: string = ''
 	let description: string = ''
+	let oneShot: any
 	let schema: any
 	let schemaBottom: any
 	let formBottomWidget: any
@@ -83,7 +84,6 @@
 		handleResetForm,
 		handleSetFormErrors
 	) {
-		console.log('handleSubmitFormLocal')
 		loadButton = true
 
 		const tokenCaptcha = $widget.params?.model?.recaptcha ? await getCaptcha() : ''
@@ -131,6 +131,17 @@
 					getModel(formBottomWidget, 'bottom')
 				}
 			}
+
+			if ($widget?.params?.model?.oneShot) {
+				schema = null
+				oneShot =
+					typeof $widget?.params?.model?.oneShot === 'boolean'
+						? 'Your information has been saved'
+						: $widget?.params?.model?.oneShot
+
+				scrollToTop()
+			}
+
 			recaptchaToken = null
 			handleResetForm()
 		}
@@ -166,6 +177,13 @@
 		}
 	}
 
+	function scrollToTop() {
+		const container = document.getElementById('grid')
+		if (container) {
+			container.scrollTo({ top: 0, behavior: 'smooth' })
+		}
+	}
+
 	onMount(() => {
 		if ($dashboard?.attributes?.explorer === 'v2') {
 			console.log('resizeAction')
@@ -191,8 +209,8 @@
 		{#if $widget?.params?.model?.static?.top}
 			{@html $widget.params.model.static.top}
 		{/if}
-		{#if schema}
-			<div class="px-4 pb-4">
+		<div class="px-4 pb-4">
+			{#if schema}
 				{#if !$widget?.params?.model?.static?.hideTitle}
 					<div class="mb-2 flex items-center">
 						<h5 class=" inline-flex items-center text-base font-semibold">
@@ -239,70 +257,98 @@
 						</div>
 					</div>
 				</Form>
+			{/if}
 
-				{#if responseServer}
-					<div class="pt-6">
-						<Alert
-							color="blue"
-							dismissable
-							on:close={() => {
-								responseServer = null
-							}}
-						>
-							{@html responseServer}
-						</Alert>
-					</div>
-				{/if}
+			{#if responseServer}
+				<div class="pt-6">
+					<Alert
+						color="blue"
+						dismissable
+						on:close={() => {
+							responseServer = null
+						}}
+					>
+						{@html responseServer}
+					</Alert>
+				</div>
+			{/if}
 
-				{#if schemaBottom}
-					<div class="mt-2 flex items-center">
-						<h5 class=" inline-flex items-center text-base font-semibold">
-							<Icon icon="mdi:widgets-outline" classes="mr-1" size="16px" />
-							{schemaBottom?.title}
-						</h5>
-					</div>
-					<div class="px-2 text-md font-bold text-heading">
-						{schemaBottom?.description}
-					</div>
+			{#if schemaBottom}
+				<div class="mt-2 flex items-center">
+					<h5 class=" inline-flex items-center text-base font-semibold">
+						<Icon icon="mdi:widgets-outline" classes="mr-1" size="16px" />
+						{schemaBottom?.title}
+					</h5>
+				</div>
+				<div class="px-2 text-md font-bold text-heading">
+					{schemaBottom?.description}
+				</div>
 
-					<Form schema={schemaBottom}>
-						<div
-							class="w-full"
-							slot="buttons-footer"
-							let:handleValidateForm
-							let:handleResetForm
-							let:handleSetFormErrors
-						>
-							<div class="flex items-end justify-end">
-								{#if loadButton}
-									<button class="btn btn-form text-md" disabled>
-										<Spinner class="me-3" size="4" color="white" />Loading ...
-									</button>
-								{:else}
-									<button
-										class="btn btn-form text-md"
-										on:click={() =>
-											handleSubmitFormLocal(
-												handleValidateForm,
-												'formBottom',
-												handleResetForm,
-												handleSetFormErrors
-											)}
-									>
-										<Icon icon="tabler:plus" classes="mr-2" />
+				<Form schema={schemaBottom}>
+					<div
+						class="w-full"
+						slot="buttons-footer"
+						let:handleValidateForm
+						let:handleResetForm
+						let:handleSetFormErrors
+					>
+						<div class="flex items-end justify-end">
+							{#if loadButton}
+								<button class="btn btn-form text-md" disabled>
+									<Spinner class="me-3" size="4" color="white" />Loading ...
+								</button>
+							{:else}
+								<button
+									class="btn btn-form text-md"
+									on:click={() =>
+										handleSubmitFormLocal(
+											handleValidateForm,
+											'formBottom',
+											handleResetForm,
+											handleSetFormErrors
+										)}
+								>
+									<Icon icon="tabler:plus" classes="mr-2" />
 
-										{schemaBottom && schemaBottom.settings && schemaBottom.settings.SubmitLabel
-											? schemaBottom.settings.SubmitLabel
-											: 'Save changes'}
-									</button>
-								{/if}
-							</div>
+									{schemaBottom && schemaBottom.settings && schemaBottom.settings.SubmitLabel
+										? schemaBottom.settings.SubmitLabel
+										: 'Save changes'}
+								</button>
+							{/if}
 						</div>
-					</Form>
-				{/if}
-			</div>
-		{:else}
-			<Loading />
-		{/if}
+					</div>
+				</Form>
+			{/if}
+
+			{#if oneShot}
+				<div
+					class="m-auto flex max-w-md flex-col items-center justify-center rounded-lg border border-gray-200 bg-white p-6 text-center shadow dark:border-gray-700 dark:bg-gray-800"
+				>
+					<div
+						class=" rounded-full border-2 border-green-500 bg-green-50 p-4 text-green-500 shadow"
+					>
+						<svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 14 14"
+							><path
+								fill="none"
+								stroke="currentColor"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								d="m.5 8.55l2.73 3.51a1 1 0 0 0 .78.39a1 1 0 0 0 .78-.36L13.5 1.55"
+							/></svg
+						>
+					</div>
+
+					<h5 class="m-2 mb-4 text-2xl font-semibold tracking-tight text-gray-700 dark:text-white">
+						Successful
+					</h5>
+
+					<p class="font-sm mb-4 text-center text-gray-700 dark:text-gray-400">
+						{oneShot}
+					</p>
+				</div>
+			{/if}
+		</div>
 	</div>
+{:else}
+	<Loading />
 {/if}
