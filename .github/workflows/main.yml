@@ -28,7 +28,7 @@ jobs:
           sed -i 's|VITE_API_URL=.*|VITE_API_URL=https://api.trocdigital.io|' .env
           sed -i 's|VITE_DATE_URL=.*|VITE_DATE_URL=https://data.trocdigital.io|' .env
           sed -i 's|VITE_BASE_URL=.*|VITE_BASE_URL=https://front.trocdigital.io|' .env
-          sed -i 's|VITE_ENV=.*|VITE_ENV=prod|' .env
+          sed -i 's|VITE_ENV=.*|VITE_ENV=prodd|' .env
           sed -i 's|VITE_API_URL_IMAGES=.*|VITE_API_URL_IMAGES=https://api.trocdigital.io|' .env
 
       - name: Build project
