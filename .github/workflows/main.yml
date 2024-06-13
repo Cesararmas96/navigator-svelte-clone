@@ -22,3 +22,6 @@ jobs:
           sed -i 's|VITE_BASE_URL=.*|VITE_BASE_URL=https://front.trocdigital.io|' .env
           sed -i 's|VITE_ENV=.*|VITE_ENV=prod|' .env
           sed -i 's|VITE_API_URL_IMAGES=.*|VITE_API_URL_IMAGES=https://api.trocdigital.io|' .env
+
+      - name: Debug .env content
+        run: cat .env # Muestra el contenido del archivo .env para depuración
