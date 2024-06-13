@@ -21,7 +21,7 @@ jobs:
           node-version: '14'  # Cambia esto a la versión que necesites
 
       - name: Install dependencies
-        run: pnpm install
+        run: npm install
 
       - name: Update .env for main branch
         run: |
