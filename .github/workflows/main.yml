@@ -15,6 +15,9 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
+      - name: Debug .env content before update
+        run: cat .env
+
       - name: Update .env for main branch
         run: |
           sed -i 's|VITE_API_URL=.*|VITE_API_URL=https://api.trocdigital.io|' .env
@@ -23,5 +26,5 @@ jobs:
           sed -i 's|VITE_ENV=.*|VITE_ENV=prod|' .env
           sed -i 's|VITE_API_URL_IMAGES=.*|VITE_API_URL_IMAGES=https://api.trocdigital.io|' .env
 
-      - name: Debug .env content
-        run: cat .env # Muestra el contenido del archivo .env para depuración
+      - name: Debug .env content after update
+        run: cat .env
