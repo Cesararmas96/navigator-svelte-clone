@@ -20,6 +20,9 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
+      - name: Check Node.js version
+        run: node -v
+
       - name: Debug .env content before update
         run: cat .env
 
