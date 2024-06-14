@@ -1,4 +1,4 @@
-name: Deploy to Main
+name: Update .env on Main
 
 on:
   pull_request:
@@ -7,32 +7,29 @@ on:
     types: [closed]
 
 jobs:
-  deploy:
+  update-env:
     if: github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'main'
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: '14'  # Cambia esto a la versión que necesites
-
-      - name: Install dependencies
-        run: pnpm install
+        uses: actions/checkout@v3
 
       - name: Update .env for main branch
         run: |
+          echo "Updating environment variables for main branch..."
           sed -i 's|VITE_API_URL=.*|VITE_API_URL=https://api.trocdigital.io|' .env
           sed -i 's|VITE_DATE_URL=.*|VITE_DATE_URL=https://data.trocdigital.io|' .env
           sed -i 's|VITE_BASE_URL=.*|VITE_BASE_URL=https://front.trocdigital.io|' .env
-          sed -i 's|VITE_ENV=.*|VITE_ENV=prod|' .env
+          sed -i 's|VITE_ENV=.*|VITE_ENV=prodss|' .env
           sed -i 's|VITE_API_URL_IMAGES=.*|VITE_API_URL_IMAGES=https://api.trocdigital.io|' .env
 
-      - name: Build project
-        run: npm run build
-
-      - name: Deploy project
-        run: npm run deploy  # Cambia esto al comando que utilices para desplegar
+      - name: Commit and push changes
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add .env
+          git commit -m "Update environment variables for production"
+          git push origin main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
