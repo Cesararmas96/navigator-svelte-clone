@@ -15,26 +15,21 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Debug .env content before update
-        run: cat .env
-
       - name: Update .env for main branch
         run: |
+          echo "Updating environment variables for main branch..."
           sed -i 's|VITE_API_URL=.*|VITE_API_URL=https://api.trocdigital.io|' .env
           sed -i 's|VITE_DATE_URL=.*|VITE_DATE_URL=https://data.trocdigital.io|' .env
           sed -i 's|VITE_BASE_URL=.*|VITE_BASE_URL=https://front.trocdigital.io|' .env
-          sed -i 's|VITE_ENV=.*|VITE_ENV=prod|' .env
+          sed -i 's|VITE_ENV=.*|VITE_ENV=prodss|' .env
           sed -i 's|VITE_API_URL_IMAGES=.*|VITE_API_URL_IMAGES=https://api.trocdigital.io|' .env
-
-      - name: Debug .env content after update
-        run: cat .env
 
       - name: Commit and push changes
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git add .env
-          git commit -m "Update .env for production"
+          git commit -m "Update environment variables for production"
           git push origin main
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
